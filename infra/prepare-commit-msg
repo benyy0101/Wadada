@@ -4,9 +4,19 @@ if [ -z "$BRANCHES_TO_SKIP" ]; then
   BRANCHES_TO_SKIP=(master hotfix develop feature_login_dev feature_front)
 fi
 
+# Get the branch name
 BRANCH_NAME=$(git symbolic-ref --short HEAD)
-BRANCH_NAME="${BRANCH_NAME##*/}"
-JIRA_ID="S10P22A102-$BRANCH_NAME"
+
+# Extract the issue number using regular expressions
+if [[ $BRANCH_NAME =~ ([0-9]+)_ ]]; then
+    ISSUE_NUMBER=${BASH_REMATCH[1]}
+else
+    echo "Error: Branch name doesn't match the expected format."
+    exit 1
+fi
+
+# Construct the JIRA ID
+JIRA_ID="S10P31A704-$ISSUE_NUMBER"
 
 BRANCH_EXCLUDED=$(printf "%s\n" "${BRANCHES_TO_SKIP[@]}" | grep -c "^$BRANCH_NAME$")
 BRANCH_IN_COMMIT=$(grep -c "$JIRA_ID" $1)
