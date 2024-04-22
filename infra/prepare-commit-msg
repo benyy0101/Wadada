@@ -7,6 +7,12 @@ fi
 # Get the branch name
 BRANCH_NAME=$(git symbolic-ref --short HEAD)
 
+# Check if the current branch is in the BRANCHES_TO_SKIP array
+if [[ " ${BRANCHES_TO_SKIP[@]} " =~ " ${BRANCH_NAME} " ]]; then
+    echo "Skipping git hook for branch $BRANCH_NAME"
+    exit 0
+fi
+
 # Extract the issue number using regular expressions
 if [[ $BRANCH_NAME =~ ([0-9]+)_ ]]; then
     ISSUE_NUMBER=${BASH_REMATCH[1]}
@@ -21,8 +27,7 @@ JIRA_ID="S10P31A704-$ISSUE_NUMBER"
 BRANCH_EXCLUDED=$(printf "%s\n" "${BRANCHES_TO_SKIP[@]}" | grep -c "^$BRANCH_NAME$")
 BRANCH_IN_COMMIT=$(grep -c "$JIRA_ID" $1)
 
-REGEX="^[0-9]+$"
-if [[ $BRANCH_NAME =~ $REGEX ]] && [ -n $JIRA_ID ] && ! [[ $BRANCH_EXCLUDED -eq 1 ]] && ! [[ $BRANCH_IN_COMMIT -ge 1 ]]; then
+if [ -n $JIRA_ID ] && ! [[ $BRANCH_EXCLUDED -eq 1 ]] && ! [[ $BRANCH_IN_COMMIT -ge 1 ]]; then
     # echo "Adding JIRA ID to commit message"
     # echo $1
     sed -i.bak -e "1s/^/$JIRA_ID /" $1
