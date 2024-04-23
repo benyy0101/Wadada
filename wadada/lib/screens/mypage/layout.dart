@@ -76,7 +76,87 @@ class RecordList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const list = [1, 23, 34, 5, 5];
-    return Text("TEST");
+    const list = ['2024-01-01', '2024-01-02', '2024-01-03'];
+    return Container(
+      padding: EdgeInsets.fromLTRB(60, 0, 60, 0),
+      child: ListView(
+        shrinkWrap: true,
+        children: list
+            .map((e) => Container(
+                margin: EdgeInsets.all(10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [Text(e.toString()), RecordCard()],
+                )))
+            .toList(),
+      ),
+    );
+  }
+}
+
+class RecordCard extends StatelessWidget {
+  const RecordCard({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+        borderRadius: BorderRadius.circular(10),
+        child: Container(
+            color: Colors.amber,
+            child: Column(
+              children: [
+                ListTile(
+                    title: const Text('자유 모드'),
+                    subtitle: const Row(
+                      children: [
+                        Text('싱글'),
+                        SizedBox(
+                          width: 20.0,
+                        ),
+                        Text('2.1km'),
+                      ],
+                    ),
+                    trailing: IconButton(
+                      onPressed: () {
+                        print("HIHIHIHIHI");
+                      },
+                      icon: const Icon(Icons.arrow_forward_ios_rounded),
+                    )),
+                ListTile(
+                    title: const Text('자유 모드'),
+                    subtitle: const Row(
+                      children: [
+                        Text('싱글'),
+                        SizedBox(
+                          width: 20.0,
+                        ),
+                        Text('2.1km'),
+                      ],
+                    ),
+                    trailing: IconButton(
+                      onPressed: () {
+                        print("HIHIHIHIHI");
+                      },
+                      icon: const Icon(Icons.arrow_forward_ios_rounded),
+                    )),
+                ListTile(
+                    title: const Text('자유 모드'),
+                    subtitle: const Row(
+                      children: [
+                        Text('싱글'),
+                        SizedBox(
+                          width: 20.0,
+                        ),
+                        Text('2.1km'),
+                      ],
+                    ),
+                    trailing: IconButton(
+                      onPressed: () {
+                        print("HIHIHIHIHI");
+                      },
+                      icon: const Icon(Icons.arrow_forward_ios_rounded),
+                    )),
+              ],
+            )));
   }
 }
