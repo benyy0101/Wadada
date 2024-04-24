@@ -30,6 +30,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  percent_indicator: ^4.0.1
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -60,6 +61,8 @@ flutter:
   assets:
     - assets/shoes.png
     - assets/mode_select_btn.png
+    - assets/running.png
+    - assets/map.png
     
   # To add assets to your application, add an assets section, like this:
   # assets:

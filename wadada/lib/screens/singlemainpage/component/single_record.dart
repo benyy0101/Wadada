@@ -20,13 +20,14 @@ class SingleRecord extends StatelessWidget{
         ),
         width: 400,
         child: Padding(
-          padding: const EdgeInsets.only(top: 30, bottom: 30),
+          padding: const EdgeInsets.only(top: 30, left: 30, bottom: 30),
           child: Column(
             children: const [
               Row(
                 children: [
                   Expanded(
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text('총 운동거리',
                           style: TextStyle(
@@ -47,6 +48,7 @@ class SingleRecord extends StatelessWidget{
                   ),
                   Expanded(
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text('평균 스피드',
                           style: TextStyle(
@@ -72,6 +74,7 @@ class SingleRecord extends StatelessWidget{
                 children: [
                   Expanded(
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text('평균 페이스',
                           style: TextStyle(
@@ -92,6 +95,7 @@ class SingleRecord extends StatelessWidget{
                   ),
                   Expanded(
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text('평균 심박수',
                           style: TextStyle(

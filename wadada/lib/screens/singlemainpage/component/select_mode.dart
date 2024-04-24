@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:wadada/single_free_mode.dart';
+// import 'package:wadada/screens/singleoptionpage/single_free_option.dart';
 
 class SelectMode extends StatelessWidget{
   final String icon, name, des, btn;
@@ -16,7 +16,7 @@ class SelectMode extends StatelessWidget{
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => SingleFreeMode()));
+        // Navigator.push(context, MaterialPageRoute(builder: (context) => SingleFreeMode()));
       },
       child: Container(
         decoration: BoxDecoration(
@@ -40,7 +40,7 @@ class SelectMode extends StatelessWidget{
                 width: 80,
                 child: Image.asset(icon),
               ),
-              SizedBox(width:20),
+              SizedBox(width:15),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -57,7 +57,7 @@ class SelectMode extends StatelessWidget{
                     des,
                     style: TextStyle(
                       color: Colors.black45,
-                      fontSize: 17,
+                      fontSize: 16,
                     )
                   ),
                 ],

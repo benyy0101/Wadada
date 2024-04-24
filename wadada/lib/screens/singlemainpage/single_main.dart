@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:wadada/component/select_option.dart';
+import 'package:wadada/screens/singlemainpage/component/select_mode.dart';
+import 'package:wadada/screens/singlemainpage/component/single_record.dart';
 
-class SingleFreeMode extends StatelessWidget{
-  const SingleFreeMode({super.key});
+class SingleMain extends StatelessWidget{
+  const SingleMain({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -10,7 +11,7 @@ class SingleFreeMode extends StatelessWidget{
         backgroundColor: Colors.white,
         body: 
           Container(
-            padding: EdgeInsets.only(left: 20, right: 20),
+            padding: EdgeInsets.only(left: 30, right: 30),
             child:Column(
               children: [
                 SizedBox(
@@ -20,7 +21,7 @@ class SingleFreeMode extends StatelessWidget{
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: const [
                     Column(children: [
-                      Text('자유모드 - 싱글',
+                      Text('싱글모드',
                         style: TextStyle(
                           color: Colors.black,
                           fontSize: 30,
@@ -35,18 +36,32 @@ class SingleFreeMode extends StatelessWidget{
                   height: 40,
                 ),
                 Container(
-                  child:Column(
+                  child:Row(
                     children: const [
-                      Text('거리설정',
+                      Text('김태수님의 최근 기록',
                         style: TextStyle(
                           color: Colors.black54,
                           fontSize: 15,
                         )
-                      ),
-                      SizedBox(height:10),
-                      SelectOption(),
+                      )
                     ],
                   ),
+                ),
+                SizedBox(height: 10,),
+                SingleRecord(),
+                SizedBox(height: 50,),
+                SelectMode(
+                  icon: 'assets/shoes.png', 
+                  name: '자유모드', 
+                  des: '자유롭게 달리고 기록합니다.',
+                  btn: '28',
+                ),
+                SizedBox(height: 30,),
+                SelectMode(
+                  icon: 'assets/map.png', 
+                  name: '챌린지모드', 
+                  des: '코스를 뛰고, 기록에 도전하세요.',
+                  btn: '8',
                 ),
               ],
           ),
