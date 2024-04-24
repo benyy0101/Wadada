@@ -2,23 +2,30 @@ package org.api.wadada.single.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.joda.time.DateTime;
+import org.locationtech.jts.geom.Point;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.awt.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@EntityListeners(AuditingEntityListener.class)
 public class SingleRecord {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int singleRecordId;
+    @Column(name = "single_record_seq")
+    private int singleRecordSeq;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private Member memberSeq;
+    @JoinColumn(name = "member_seq")
+    private Member member;
 
     @Column(nullable = false)
     private Point singleRecordStart;
@@ -33,25 +40,52 @@ public class SingleRecord {
 
     private String singleRecordWay;
 
+    // 페이스
     private String singleRecordPace;
 
     private int singleRecordMeanPace;
 
+    //심박수
     private String singleRecordHeartbeat;
 
     private int singleRecordMeanHeartbeat;
 
+    //속도
     private String singleRecordSpeed;
 
     private int singleRecordMeanSpeed;
 
-    @Column(nullable = false)
-    private DateTime createdAt;
+    @CreatedDate
+    @Column(name = "created_at",nullable = false)
+    private LocalDateTime createdAt;
 
-    @Column(nullable = false)
-    private DateTime isDeleted;
+    @Column(name = "is_deleted",nullable = false)
+    private int isDeleted;
 
-    @Column(nullable = false)
-    private DateTime updatedAt;
+
+    @LastModifiedDate
+    @Column(name = "updated_at",nullable = false)
+    private LocalDateTime updatedAt;
+
+    @Builder
+    public SingleRecord( Member member, Point singleRecordStart, Point singleRecordEnd, int singleRecordTime, int singleRecordDist,
+                        String singleRecordImage, String singleRecordWay, String singleRecordPace, int singleRecordMeanPace,
+                        String singleRecordHeartbeat, int singleRecordMeanHeartbeat, String singleRecordSpeed,
+                        int singleRecordMeanSpeed, int isDeleted) {
+        this.member = member;
+        this.singleRecordStart = singleRecordStart;
+        this.singleRecordEnd = singleRecordEnd;
+        this.singleRecordTime = singleRecordTime;
+        this.singleRecordDist = singleRecordDist;
+        this.singleRecordImage = singleRecordImage;
+        this.singleRecordWay = singleRecordWay;
+        this.singleRecordPace = singleRecordPace;
+        this.singleRecordMeanPace = singleRecordMeanPace;
+        this.singleRecordHeartbeat = singleRecordHeartbeat;
+        this.singleRecordMeanHeartbeat = singleRecordMeanHeartbeat;
+        this.singleRecordSpeed = singleRecordSpeed;
+        this.singleRecordMeanSpeed = singleRecordMeanSpeed;
+        this.isDeleted = isDeleted;
+    }
 
 }

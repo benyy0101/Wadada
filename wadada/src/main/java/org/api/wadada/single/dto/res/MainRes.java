@@ -1,25 +1,26 @@
 package org.api.wadada.single.dto.res;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
-@Builder
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class MainRes {
 
     // 총 운동시간
     private int recordTime;
 
     //총 거리
-    private double dist;
+    private double recordDist;
 
     //평균 속력
-    private String speed;
+    private double recordSpeed;
 
     //평균 심박수
-    private String recordHeartbeat;
+    private double recordHeartbeat;
 
     //평균 페이스
-    private String recordPace;
+    private double recordPace;
 
 }
