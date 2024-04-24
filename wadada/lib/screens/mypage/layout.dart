@@ -1,137 +1,100 @@
 import 'package:flutter/material.dart';
 import 'package:wadada/common/const/colors.dart';
+import 'package:wadada/screens/mypage/recordList.dart';
 import 'package:wadada/screens/mypage/smallNav.dart';
 
-class MyPageLayout extends StatelessWidget {
+import 'package:flutter/material.dart';
+import 'package:wadada/common/const/colors.dart';
+import 'package:wadada/screens/mypage/smallNav.dart';
+
+import 'package:flutter/material.dart';
+import 'package:wadada/common/const/colors.dart';
+import 'package:wadada/screens/mypage/smallNav.dart';
+
+class MyPageLayout extends StatefulWidget {
   const MyPageLayout({Key? key}) : super(key: key);
+
+  @override
+  State<MyPageLayout> createState() => _MyPageLayoutState();
+}
+
+class _MyPageLayoutState extends State<MyPageLayout>
+    with TickerProviderStateMixin {
+  late TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 3, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _tabController.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Center(
-          child: Text('마이페이지'),
-        ),
-      ),
-      body: const Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [SmallNav(), RecordList()],
-      ),
-    );
-  }
-}
-
-class RecordList extends StatelessWidget {
-  const RecordList({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    const list = ['2024-01-01', '2024-01-02', '2024-01-03'];
-    return Container(
-      padding: EdgeInsets.fromLTRB(30, 0, 30, 0),
-      child: ListView(
-        shrinkWrap: true,
-        children: list
-            .map((e) => Container(
-                margin: EdgeInsets.all(10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      e.toString(),
-                      style: TextStyle(color: GRAY_400),
+      body: SafeArea(
+        child: Column(
+          children: [
+            PreferredSize(
+              preferredSize:
+                  Size.fromHeight(100), // Specify the preferred height
+              child: Container(
+                height: 100,
+                child: TabBar(
+                  controller: _tabController,
+                  dividerColor: Colors.transparent,
+                  labelColor: DARK_GREEN_COLOR,
+                  indicatorColor: Colors.transparent,
+                  unselectedLabelColor: GRAY_400,
+                  tabs: [
+                    Tab(
+                      text: "내 기록",
+                      icon: Icon(
+                        Icons.history_edu_rounded,
+                        size: 30.0,
+                      ),
                     ),
-                    SizedBox(height: 10.0),
-                    RecordCard()
+                    Tab(
+                      text: "아바타",
+                      icon: Icon(
+                        Icons.sentiment_very_satisfied_rounded,
+                        size: 30.0,
+                      ),
+                    ),
+                    Tab(
+                      text: "프로필 수정",
+                      icon: Icon(
+                        Icons.access_alarm,
+                        size: 30.0,
+                      ),
+                    ),
                   ],
-                )))
-            .toList(),
-      ),
-    );
-  }
-}
-
-class RecordCard extends StatelessWidget {
-  const RecordCard({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-        decoration: BoxDecoration(
-          color: OATMEAL_COLOR,
-          borderRadius: BorderRadius.all(Radius.circular(10)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.7),
-              spreadRadius: 0,
-              blurRadius: 5.0,
-              offset: Offset(0, 3), // changes position of shadow
+                ),
+              ),
+            ),
+            Expanded(
+              child: Container(
+                height: 100,
+                child: TabBarView(
+                  controller: _tabController,
+                  children: [
+                    RecordList(),
+                    Text("2"),
+                    Text("3"),
+                  ],
+                ),
+              ),
             ),
           ],
         ),
-        child: ListTileWidget());
-  }
-}
-
-class ListTileWidget extends StatelessWidget {
-  const ListTileWidget({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        ListTile(
-            title: const Text('자유 모드'),
-            subtitle: const Row(
-              children: [
-                Text('싱글'),
-                SizedBox(
-                  width: 20.0,
-                ),
-                Text('2.1km'),
-              ],
-            ),
-            trailing: IconButton(
-              onPressed: () {
-                print("HIHIHIHIHI");
-              },
-              icon: const Icon(Icons.arrow_forward_ios_rounded),
-            )),
-        ListTile(
-            title: const Text('자유 모드'),
-            subtitle: const Row(
-              children: [
-                Text('싱글'),
-                SizedBox(
-                  width: 20.0,
-                ),
-                Text('2.1km'),
-              ],
-            ),
-            trailing: IconButton(
-              onPressed: () {
-                print("HIHIHIHIHI");
-              },
-              icon: const Icon(Icons.arrow_forward_ios_rounded),
-            )),
-        ListTile(
-            title: const Text('자유 모드'),
-            subtitle: const Row(
-              children: [
-                Text('싱글'),
-                SizedBox(
-                  width: 20.0,
-                ),
-                Text('2.1km'),
-              ],
-            ),
-            trailing: IconButton(
-              onPressed: () {
-                print("HIHIHIHIHI");
-              },
-              icon: const Icon(Icons.arrow_forward_ios_rounded),
-            )),
-      ],
+      ),
     );
   }
 }
+
+
