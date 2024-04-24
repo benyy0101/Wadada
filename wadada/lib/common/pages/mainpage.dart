@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:wadada/common/const/colors.dart';
 
 void main() {
-
   runApp(const MainPage());
 }
-
 
 class MainPage extends StatelessWidget {
   // ignore: use_super_parameters
@@ -13,69 +11,66 @@ class MainPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        backgroundColor: OATMEAL_COLOR,
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image.asset('assets/images/logo_green.png'),
-            const SizedBox(
-              height: 20,
-            ),
-            const Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Column(
-                  children: [
-                  Text('혼자 달려',
+    return Scaffold(
+      backgroundColor: OATMEAL_COLOR,
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Image.asset('assets/images/logo_green.png'),
+          const SizedBox(
+            height: 20,
+          ),
+          const Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Column(
+                children: [
+                  Text(
+                    '혼자 달려',
                     style: TextStyle(
-                      color: DARK_GREEN_COLOR,
-                      fontSize: 40,
-                      fontWeight: FontWeight.w800),
-
-                    ),
-                  Text('친구랑 달려',
+                        color: DARK_GREEN_COLOR,
+                        fontSize: 40,
+                        fontWeight: FontWeight.w800),
+                  ),
+                  Text(
+                    '친구랑 달려',
                     style: TextStyle(
-                      color: DARK_GREEN_COLOR,
-                      fontSize: 40,
-                      fontWeight: FontWeight.w800),
-
-                    ),
-                  Text('일단 달려',
+                        color: DARK_GREEN_COLOR,
+                        fontSize: 40,
+                        fontWeight: FontWeight.w800),
+                  ),
+                  Text(
+                    '일단 달려',
                     style: TextStyle(
-                      color: DARK_GREEN_COLOR,
-                      fontSize: 40,
-                      fontWeight: FontWeight.w800),
-                    ),
-                  Text('와다다',
+                        color: DARK_GREEN_COLOR,
+                        fontSize: 40,
+                        fontWeight: FontWeight.w800),
+                  ),
+                  Text(
+                    '와다다',
                     style: TextStyle(
-                      color: DARK_GREEN_COLOR,
-                      fontSize: 40,
-                      fontWeight: FontWeight.w800),
-                    ),
-                  ],
-                )
-              ],
-            ),
-            const SizedBox(
-              height: 50
-            ),
-            // ignore: prefer_const_constructors
-            _KakaoButton(),
-          ],
-        ),
+                        color: DARK_GREEN_COLOR,
+                        fontSize: 40,
+                        fontWeight: FontWeight.w800),
+                  ),
+                ],
+              )
+            ],
+          ),
+          const SizedBox(height: 50),
+          // ignore: prefer_const_constructors
+          _KakaoButton(),
+        ],
       ),
     );
   }
 }
 
-
 // ignore: unused_element
 class _KakaoButton extends StatelessWidget {
   // ignore: use_super_parameters
   const _KakaoButton({Key? key}) : super(key: key);
-  
+
   @override
   Widget build(BuildContext context) {
     return Container(

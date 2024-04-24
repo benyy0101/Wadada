@@ -10,7 +10,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:wadada/common/pages/mainpage.dart';
 
 // ignore: unused_import
-import 'package:wadada/common/main.dart';
+import 'package:wadada/main.dart';
 
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
