@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wadada/common/const/colors.dart';
 import 'package:wadada/screens/singleoptionpage/single_free_option.dart';
 
 class SelectMode extends StatelessWidget{
@@ -47,7 +48,7 @@ class SelectMode extends StatelessWidget{
                   Text(
                     name,
                     style: TextStyle(
-                      color: Color(0xff5BC879),
+                      color: GREEN_COLOR,
                       fontSize: 25,
                       fontWeight: FontWeight.w900,
                     )

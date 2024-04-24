@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wadada/common/const/colors.dart';
 
 class SingleRecord extends StatelessWidget{
   const SingleRecord({super.key});
@@ -12,9 +13,9 @@ class SingleRecord extends StatelessWidget{
           boxShadow: const [
             BoxShadow(
               color: Colors.black12,
-              spreadRadius: 2, // 그림자 범위
-              blurRadius: 5, // 그림자 흐림 정도
-              offset: Offset(1, 2), // 그림자 위치
+              spreadRadius: 2,
+              blurRadius: 5,
+              offset: Offset(1, 2),
             ),
           ],
         ),
@@ -38,7 +39,7 @@ class SingleRecord extends StatelessWidget{
                         SizedBox(height: 20),
                         Text('3000 km',
                           style: TextStyle(
-                            color: Color(0xff5BC879),
+                            color: GREEN_COLOR,
                             fontSize: 30,
                             fontWeight: FontWeight.w700,
                           )
@@ -59,7 +60,7 @@ class SingleRecord extends StatelessWidget{
                         SizedBox(height: 20),
                         Text('290 kcal',
                           style: TextStyle(
-                            color: Color(0xff5BC879),
+                            color: GREEN_COLOR,
                             fontSize: 30,
                             fontWeight: FontWeight.w700,
                           )
@@ -85,7 +86,7 @@ class SingleRecord extends StatelessWidget{
                         SizedBox(height: 20),
                         Text('1.7 km / h',
                           style: TextStyle(
-                            color: Color(0xff5BC879),
+                            color: GREEN_COLOR,
                             fontSize: 30,
                             fontWeight: FontWeight.w700,
                           )
@@ -106,7 +107,7 @@ class SingleRecord extends StatelessWidget{
                         SizedBox(height: 20),
                         Text('120 hz',
                           style: TextStyle(
-                            color: Color(0xff5BC879),
+                            color: GREEN_COLOR,
                             fontSize: 30,
                             fontWeight: FontWeight.w700,
                           )
