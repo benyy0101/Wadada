@@ -65,7 +65,7 @@ class SelectMode extends StatelessWidget{
               SizedBox(width: double.parse(btn)),
               SizedBox(
                 width: 20,
-                child: Image.asset('assets/mode_select_btn.png'),
+                child: Image.asset('assets/images/mode_select_btn.png'),
               ),
             ],
           )

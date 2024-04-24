@@ -51,14 +51,14 @@ class SingleMain extends StatelessWidget{
                 SingleRecord(),
                 SizedBox(height: 50,),
                 SelectMode(
-                  icon: 'assets/shoes.png', 
+                  icon: 'assets/images/shoes.png', 
                   name: '자유모드', 
                   des: '자유롭게 달리고 기록합니다.',
                   btn: '28',
                 ),
                 SizedBox(height: 30,),
                 SelectMode(
-                  icon: 'assets/map.png', 
+                  icon: 'assets/images/map.png', 
                   name: '챌린지모드', 
                   des: '코스를 뛰고, 기록에 도전하세요.',
                   btn: '8',
