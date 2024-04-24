@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wadada/common/const/colors.dart';
+import 'package:wadada/screens/mypage/avartar.dart';
 import 'package:wadada/screens/mypage/recordList.dart';
 import 'package:wadada/screens/mypage/smallNav.dart';
 
@@ -37,6 +38,7 @@ class _MyPageLayoutState extends State<MyPageLayout>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: Column(
           children: [
@@ -84,7 +86,7 @@ class _MyPageLayoutState extends State<MyPageLayout>
                   controller: _tabController,
                   children: [
                     RecordList(),
-                    Text("2"),
+                    avatarWidget(),
                     Text("3"),
                   ],
                 ),
@@ -96,5 +98,3 @@ class _MyPageLayoutState extends State<MyPageLayout>
     );
   }
 }
-
-
