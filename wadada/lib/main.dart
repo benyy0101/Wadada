@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wadada/common/component/myRecords.dart';
 import 'package:wadada/common/pages/mainpage.dart';
 import 'package:wadada/screens/mypage/layout.dart';
 
@@ -13,7 +14,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
-      home: MyPageLayout(),
+      home: MyRecords(),
     );
   }
 }
