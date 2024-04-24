@@ -7,7 +7,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:wadada/common/pages/mainpage.dart';
 
 // ignore: unused_import
 import 'package:wadada/main.dart';
@@ -15,7 +14,7 @@ import 'package:wadada/main.dart';
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(const App());
+    await tester.pumpWidget(const MyApp());
     await tester.pumpWidget(const MainPage());
 
     // Verify that our counter starts at 0.
