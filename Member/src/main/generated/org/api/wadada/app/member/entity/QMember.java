@@ -28,7 +28,7 @@ public class QMember extends EntityPathBase<Member> {
     //inherited
     public final BooleanPath isDeleted = _super.isDeleted;
 
-    public final DateTimePath<java.time.LocalDateTime> memberBirthday = createDateTime("memberBirthday", java.time.LocalDateTime.class);
+    public final DatePath<java.time.LocalDate> memberBirthday = createDate("memberBirthday", java.time.LocalDate.class);
 
     public final NumberPath<Integer> memberExp = createNumber("memberExp", Integer.class);
 

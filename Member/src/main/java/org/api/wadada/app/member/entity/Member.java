@@ -5,11 +5,15 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.api.wadada.app.member.controller.dto.MemberUpdateRequestDto;
 import org.api.wadada.common.BaseEntity;
+import org.joda.time.DateTime;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -38,7 +42,8 @@ public class Member extends BaseEntity implements UserDetails {
     private String memberNickName;
 
     @Column(name = "member_birthday",nullable = false)
-    private LocalDateTime memberBirthday;
+
+    private LocalDate memberBirthday;
 
     @Column(name = "member_gender",nullable = false)
     private String memberGender;
@@ -70,6 +75,15 @@ public class Member extends BaseEntity implements UserDetails {
         deleteSoftly();
     }
 
+    public void updateMember(MemberUpdateRequestDto dto){
+        if (dto.getMemberBirthday() != null) this.memberBirthday = dto.getMemberBirthday();
+        if (dto.getMemberGender() != null) this.memberGender = dto.getMemberGender();
+        if (dto.getMemberEmail() != null) this.memberMainEmail = dto.getMemberEmail();
+        if (dto.getMemberNickname() != null) this.memberNickName = dto.getMemberNickname();
+        if (dto.getMemberProfileImage() != null) this.memberProfileImage = dto.getMemberProfileImage();
+
+    }
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -82,6 +96,7 @@ public class Member extends BaseEntity implements UserDetails {
     public String getPassword() {
         return getMemberMainEmail();
     }
+
     @Override
     public String getUsername() {
         return this.memberId;

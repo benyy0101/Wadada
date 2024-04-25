@@ -7,9 +7,12 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.Optional;
 
-public interface MemberRepository extends JpaRepository<Member, String> {
+public interface MemberRepository extends JpaRepository<Member, String>, MemberCustomRepository {
 
-    @Query("SELECT m from Member m WHERE m.memberId = :memberId")
+
+    @Query("SELECT m from Member m WHERE m.memberId = :memberId and m.isDeleted = false")
     Optional<Member> findByParentId(@Param("memberId") String memberId);
-    boolean existsByMemberId(String id);
+
+    boolean existsByMemberIdAndIsDeleted(String memberId, boolean isDeleted);
+
 }
