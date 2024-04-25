@@ -88,4 +88,26 @@ public class SingleRecord {
         this.isDeleted = isDeleted;
     }
 
+    public void updateEnd(Point singleRecordStart, Point singleRecordEnd, int singleRecordTime, int singleRecordDist,
+                          String singleRecordImage, String singleRecordWay, String singleRecordPace, int singleRecordMeanPace,
+                          String singleRecordHeartbeat, int singleRecordMeanHeartbeat, String singleRecordSpeed,
+                          int singleRecordMeanSpeed){
+        this.singleRecordStart = singleRecordStart;
+        this.singleRecordEnd = singleRecordEnd;
+        this.singleRecordTime = singleRecordTime;
+        this.singleRecordDist = singleRecordDist;
+        this.singleRecordImage = singleRecordImage;
+        this.singleRecordWay = singleRecordWay;
+        this.singleRecordPace = singleRecordPace;
+        this.singleRecordMeanPace = singleRecordMeanPace;
+        this.singleRecordHeartbeat = singleRecordHeartbeat;
+        this.singleRecordMeanHeartbeat = singleRecordMeanHeartbeat;
+        this.singleRecordSpeed = singleRecordSpeed;
+        this.singleRecordMeanSpeed = singleRecordMeanSpeed;
+
+    }
+    public void delete(){
+        this.isDeleted = 1;
+    }
+
 }

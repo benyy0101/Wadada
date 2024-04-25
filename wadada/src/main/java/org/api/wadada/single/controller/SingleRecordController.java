@@ -2,6 +2,7 @@ package org.api.wadada.single.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.api.wadada.single.dto.req.SingleEndReq;
 import org.api.wadada.single.dto.req.SingleMainReq;
 import org.api.wadada.single.dto.req.SingleStartReq;
 import org.api.wadada.single.dto.res.MainRes;
@@ -12,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 //import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,8 +39,9 @@ public class SingleRecordController {
 
     @PostMapping("/result")
     @Transactional
-    public void saveEndSingle(){
-
+    public ResponseEntity<Integer> saveEndSingle(@RequestBody SingleEndReq singleEndReq) throws ParseException {
+        int seq = singleRecordService.saveEndSingle(singleEndReq);
+        return new ResponseEntity<>(seq,HttpStatus.OK);
     }
 
 
