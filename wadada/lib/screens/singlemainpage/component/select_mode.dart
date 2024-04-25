@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-// import 'package:wadada/screens/singleoptionpage/single_free_option.dart';
+import 'package:wadada/common/const/colors.dart';
+import 'package:wadada/screens/singleoptionpage/single_free_option.dart';
 
 class SelectMode extends StatelessWidget{
   final String icon, name, des, btn;
@@ -16,7 +17,7 @@ class SelectMode extends StatelessWidget{
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        // Navigator.push(context, MaterialPageRoute(builder: (context) => SingleFreeMode()));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => SingleFreeMode()));
       },
       child: Container(
         decoration: BoxDecoration(
@@ -47,7 +48,7 @@ class SelectMode extends StatelessWidget{
                   Text(
                     name,
                     style: TextStyle(
-                      color: Color(0xff5BC879),
+                      color: GREEN_COLOR,
                       fontSize: 25,
                       fontWeight: FontWeight.w900,
                     )
