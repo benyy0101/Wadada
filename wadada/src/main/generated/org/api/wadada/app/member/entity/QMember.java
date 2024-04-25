@@ -28,13 +28,27 @@ public class QMember extends EntityPathBase<Member> {
     //inherited
     public final BooleanPath isDeleted = _super.isDeleted;
 
+    public final DateTimePath<java.time.LocalDateTime> memberBirthday = createDateTime("memberBirthday", java.time.LocalDateTime.class);
+
+    public final NumberPath<Integer> memberExp = createNumber("memberExp", Integer.class);
+
+    public final StringPath memberGender = createString("memberGender");
+
     public final StringPath memberId = createString("memberId");
+
+    public final NumberPath<Byte> memberLevel = createNumber("memberLevel", Byte.class);
+
+    public final StringPath memberMainEmail = createString("memberMainEmail");
+
+    public final StringPath memberNickName = createString("memberNickName");
+
+    public final StringPath memberProfileImage = createString("memberProfileImage");
 
     public final StringPath memberSeq = createString("memberSeq");
 
-    public final StringPath nickname = createString("nickname");
+    public final NumberPath<Integer> memberTotalDist = createNumber("memberTotalDist", Integer.class);
 
-    public final StringPath password = createString("password");
+    public final NumberPath<Integer> memberTotalTime = createNumber("memberTotalTime", Integer.class);
 
     public final ListPath<String, StringPath> roles = this.<String, StringPath>createList("roles", String.class, StringPath.class, PathInits.DIRECT2);
 

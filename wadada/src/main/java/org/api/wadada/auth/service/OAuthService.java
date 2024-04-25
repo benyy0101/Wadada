@@ -19,11 +19,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.api.wadada.error.errorcode.CustomErrorCode.*;
@@ -59,6 +63,7 @@ public class OAuthService {
     public LoginResponseDto kakaoOAuthLogin(String status, String code) {
         KakaoOAuthMemberInfoResponse res = getKakaoUserInfo(status, code);
         String memberId = res.getId();
+        System.out.println(memberId);
         createIfNewMember(memberId, res);
         return login(memberId);
     }
@@ -70,7 +75,7 @@ public class OAuthService {
 
         return LoginResponseDto.builder()
                 .memberId(memberId)
-                .nickname(member.getNickname())
+                .nickname(member.getMemberNickName())
                 .jwtToken(jwtToken)
                 .build();
     }
@@ -85,22 +90,29 @@ public class OAuthService {
     }
 
     private JwtToken makeJwtToken(String memberId) {
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(memberId, memberId+salt);
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(memberId,memberId+salt);
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         return jwtTokenProvider.generateToken(authentication);
     }
-
     private void createIfNewMember(String memberId, KakaoOAuthMemberInfoResponse res) {
         if (!memberRepository.existsByMemberId(memberId)) {
             Member member =
                     Member.builder()
                             .memberId(memberId)
-                            .password(passwordEncoder.encode(memberId + salt))
-                            .nickname(res.getKakaoAccount().profile.nickname)
+                            .memberNickName("임시")
+                            .memberGender("F")
+                            .memberExp(1)
+                            .memberMainEmail(passwordEncoder.encode(memberId + salt))
+                            .memberProfileImage("123213")
+                            .memberTotalDist(1)
+                            .memberTotalTime(1)
+                            .memberLevel((byte) 1)
+                            .memberBirthday(LocalDateTime.now())
                             .roles(List.of("SOCIAL")).build();
             memberRepository.save(member);
         }
     }
+
 
     @Transactional
     public void logout(String memberId){

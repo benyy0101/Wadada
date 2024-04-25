@@ -5,12 +5,12 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.api.wadada.app.member.controller.dto.MemberUpdateRequestDto;
 import org.api.wadada.common.BaseEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -23,32 +23,48 @@ import static lombok.AccessLevel.PROTECTED;
 @NoArgsConstructor(access = PROTECTED)
 @AllArgsConstructor
 @Builder
-@Table(name = "parent")
+@Table(name = "member")
 public class Member extends BaseEntity implements UserDetails {
-
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="parent_kakao_seq", updatable = false, unique = true, nullable = false)
+    @Column(name="member_seq", updatable = false, unique = true, nullable = false)
     private String memberSeq;
 
-    @Column(name="parent_kakao_id", updatable = false, unique = true, nullable = false)
+    @Column(name="member_id", updatable = false, unique = true, nullable = false)
     private String memberId;
 
-    @Column(name = "parent_kakao_email",nullable = false)
-    private String password;
+    @Column(name = "member_nickname",nullable = false)
+    private String memberNickName;
 
-    @Column(name = "parent_kakao_name",nullable = false)
-    private String nickname;
+    @Column(name = "member_birthday",nullable = false)
+    private LocalDateTime memberBirthday;
+
+    @Column(name = "member_gender",nullable = false)
+    private String memberGender;
+
+    @Column(name = "member_main_email",nullable = false)
+    private String memberMainEmail;
+
+    @Column(name = "member_profile_image",nullable = false)
+    private String memberProfileImage;
+
+    @Column(name = "member_exp",nullable = false)
+    private Integer memberExp;
+
+    @Column(name = "member_total_dist",nullable = false)
+    private Integer memberTotalDist;
+
+    @Column(name = "member_total_time",nullable = false)
+    private Integer memberTotalTime;
+
+    @Column(name = "member_level",nullable = false)
+    private Byte memberLevel;
 
     @Builder.Default
     @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "parent_role", joinColumns = @JoinColumn(name = "parent_kakao_id"))
+    @CollectionTable(name = "member_role", joinColumns = @JoinColumn(name = "member_id"))
     private List<String> roles = new ArrayList<>();
-    public void updateMember(MemberUpdateRequestDto dto){
-        if (dto.getPassword() != null) this.password = dto.getPassword();
-        if (dto.getNickname() != null) this.nickname = dto.getNickname();
-    }
 
     public void delete(){
         deleteSoftly();
@@ -62,6 +78,10 @@ public class Member extends BaseEntity implements UserDetails {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public String getPassword() {
+        return getMemberMainEmail();
+    }
     @Override
     public String getUsername() {
         return this.memberId;
