@@ -26,7 +26,7 @@ public class SingleRecordController {
     private final SingleRecordService singleRecordService;
 
     @PostMapping
-    public ResponseEntity<MainRes> SingleMain(SingleMainReq singleMainReq){
+    public ResponseEntity<MainRes> SingleMain(@RequestBody SingleMainReq singleMainReq){
         return new ResponseEntity<>(singleRecordService.getSingleMain(singleMainReq.getMemberSeq()), HttpStatus.OK);
     }
 
