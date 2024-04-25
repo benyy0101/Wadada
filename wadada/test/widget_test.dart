@@ -7,7 +7,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:wadada/common/pages/mainpage.dart';
 
 // ignore: unused_import
 import 'package:wadada/main.dart';
