@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -95,7 +96,8 @@ public class OAuthService {
         return jwtTokenProvider.generateToken(authentication);
     }
     private void createIfNewMember(String memberId, KakaoOAuthMemberInfoResponse res) {
-        if (!memberRepository.existsByMemberId(memberId)) {
+        if (!memberRepository.existsByMemberIdAndIsDeleted(memberId, false)) {
+            System.out.println("멤버 새로만듬");
             Member member =
                     Member.builder()
                             .memberId(memberId)
@@ -107,7 +109,7 @@ public class OAuthService {
                             .memberTotalDist(1)
                             .memberTotalTime(1)
                             .memberLevel((byte) 1)
-                            .memberBirthday(LocalDateTime.now())
+                            .memberBirthday(LocalDate.now())
                             .roles(List.of("SOCIAL")).build();
             memberRepository.save(member);
         }
