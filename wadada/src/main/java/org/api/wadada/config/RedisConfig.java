@@ -1,4 +1,4 @@
-package org.api.wadada.redis;
+package org.api.wadada.config;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties;

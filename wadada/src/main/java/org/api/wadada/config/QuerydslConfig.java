@@ -1,4 +1,4 @@
-package org.api.wadada.querydsl;
+package org.api.wadada.config;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;

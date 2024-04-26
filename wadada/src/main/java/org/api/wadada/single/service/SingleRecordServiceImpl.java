@@ -38,8 +38,8 @@ public class SingleRecordServiceImpl implements SingleRecordService {
     }
 
     @Override
-    public int saveStartSingle(SingleStartReq singleStartReq) throws ParseException {
-        Optional<Member> optional = memberRepository.findById(singleStartReq.getMemberSeq());
+    public int saveStartSingle(Member member,SingleStartReq singleStartReq) throws ParseException {
+        Optional<Member> optional = memberRepository.findById(member.getMemberSeq());
         if(optional.isEmpty()){
             throw new NullPointerException("멤버를 찾을 수 없습니다");
         }
@@ -54,8 +54,8 @@ public class SingleRecordServiceImpl implements SingleRecordService {
     }
 
     @Override
-    public int saveEndSingle(SingleEndReq singleEndReq) throws ParseException {
-        Optional<Member> optionalMember = memberRepository.findById(singleEndReq.getMemberSeq());
+    public int saveEndSingle(Member member,SingleEndReq singleEndReq) throws ParseException {
+        Optional<Member> optionalMember = memberRepository.findById(member.getMemberSeq());
         if(optionalMember.isEmpty()){
             throw new NullPointerException("멤버를 찾을 수 없습니다");
         }
