@@ -14,6 +14,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -43,6 +44,7 @@ public class Member extends BaseEntity implements UserDetails {
     private String memberNickName;
 
     @Column(name = "member_birthday",nullable = false)
+
     private LocalDate memberBirthday;
 
     @Column(name = "member_gender",nullable = false)
@@ -95,7 +97,6 @@ public class Member extends BaseEntity implements UserDetails {
     public String getPassword() {
         return getMemberMainEmail();
     }
-
 
     @Override
     public String getUsername() {

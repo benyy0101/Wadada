@@ -51,8 +51,6 @@ public class SecurityConfig {
                 // JwtException 핸들링을 위한 Exception 필터
                 .addFilterBefore(new JwtExceptionFilter(objectMapper), JwtAuthenticationFilter.class).build();
     }
-
-
     @Bean
     public PasswordEncoder passwordEncoder() {
         // BCrypt Encoder 사용
