@@ -40,28 +40,29 @@ class SingleDetail {
   final double recordMeanHeartbeat;
 
   SingleDetail({
-    required String this.recordType,
-    required int this.recordRank,
-    required String this.recordImage,
-    required double this.recordDist,
-    required TimeOfDay this.recordTime,
-    required Point this.recordStartLocation,
-    required Point this.recordEndLocation,
-    required List<Point> this.recordSpeed,
-    required List<Point> this.recordHeartbeat,
-    required List<Point> this.recordPace,
-    required DateTime this.recordCreatedAt,
-    required double this.recordMeanSpeed,
-    required double this.recordMeanPace,
-    required double this.recordMeanHeartbeat,
+    required this.recordType,
+    required this.recordRank,
+    required this.recordImage,
+    required this.recordDist,
+    required this.recordTime,
+    required this.recordStartLocation,
+    required this.recordEndLocation,
+    required this.recordSpeed,
+    required this.recordHeartbeat,
+    required this.recordPace,
+    required this.recordCreatedAt,
+    required this.recordMeanSpeed,
+    required this.recordMeanPace,
+    required this.recordMeanHeartbeat,
   });
 }
 
 //MYPAGE-003
 class MultiDetail extends SingleDetail {
   final List<Rank> rankings;
-  MultiDetail(this.rankings,
-      {required super.recordType,
+  MultiDetail(
+      {required this.rankings,
+      required super.recordType,
       required super.recordRank,
       required super.recordImage,
       required super.recordDist,
@@ -88,8 +89,9 @@ class Rank {
 //MYPAGE-004
 class MarathonDetail extends SingleDetail {
   final List<RankMarathon> rankings;
-  MarathonDetail(this.rankings,
-      {required super.recordType,
+  MarathonDetail(
+      {required this.rankings,
+      required super.recordType,
       required super.recordRank,
       required super.recordImage,
       required super.recordDist,
@@ -107,8 +109,9 @@ class MarathonDetail extends SingleDetail {
 
 class RankMarathon extends Rank {
   final int rank;
-  RankMarathon(this.rank,
-      {required super.name,
+  RankMarathon(
+      {required this.rank,
+      required super.name,
       required super.metric,
       required super.profileImage});
 }
