@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:wadada/common/const/colors.dart';
 import 'package:wadada/screens/singlerunpage/component/clock.dart';
-// import 'package:wadada/screens/singlerunpage/component/map.dart';
+import 'package:wadada/screens/singlerunpage/component/map.dart';
 import 'package:wadada/screens/singlerunpage/component/progress_bar.dart';
 
 class SingleFreeRun extends StatelessWidget{
@@ -38,10 +38,10 @@ class SingleFreeRun extends StatelessWidget{
                       )
                     ),
                     SizedBox(height: 10),
-                    // LocationPage(),
+                    MyMap(),
                   ],
                 ),
-                SizedBox(height: 30),
+                SizedBox(height: 35),
                 // 이동거리, 현재 페이스
                 Row(
                   children: const [
@@ -89,7 +89,7 @@ class SingleFreeRun extends StatelessWidget{
                     ),
                   ],
                 ),
-                SizedBox(height: 20),
+                SizedBox(height: 30),
                 // 소요 시간
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -104,7 +104,7 @@ class SingleFreeRun extends StatelessWidget{
                     Clock(time: time),
                   ],
                 ),
-                SizedBox(height: 20),
+                SizedBox(height: 30),
                 // 심박수
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
