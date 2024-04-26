@@ -13,6 +13,7 @@ import org.api.wadada.error.errorcode.CommonErrorCode;
 import org.api.wadada.error.errorcode.CustomErrorCode;
 import org.api.wadada.error.exception.RestApiException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,7 +24,7 @@ import java.util.Optional;
 @AllArgsConstructor
 public class MemberService {
     private final MemberRepository memberRepository;
-
+    private final PasswordEncoder passwordEncoder;
     @Transactional
     public void deleteMember(String memberId) {
         System.out.println(memberId);
@@ -33,7 +34,8 @@ public class MemberService {
     @Transactional
     public void update(MemberUpdateRequestDto req, String memberId) {
         Member member = memberRepository.findByParentId(memberId).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_MEMBER));
-        member.updateMember(req);
+
+        member.updateMember(req,passwordEncoder.encode(req.getMemberEmail()));
     }
 
     public MemberDetailResponseDto getMemberDetail(String memberId) {

@@ -8,9 +8,11 @@ import lombok.NoArgsConstructor;
 import org.api.wadada.app.member.controller.dto.MemberUpdateRequestDto;
 import org.api.wadada.common.BaseEntity;
 import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -73,13 +75,12 @@ public class Member extends BaseEntity implements UserDetails {
         deleteSoftly();
     }
 
-    public void updateMember(MemberUpdateRequestDto dto){
+    public void updateMember(MemberUpdateRequestDto dto, String encodeEmail){
         if (dto.getMemberBirthday() != null) this.memberBirthday = dto.getMemberBirthday();
         if (dto.getMemberGender() != null) this.memberGender = dto.getMemberGender();
-        if (dto.getMemberEmail() != null) this.memberMainEmail = dto.getMemberEmail();
+        if (dto.getMemberEmail() != null) this.memberMainEmail = encodeEmail;
         if (dto.getMemberNickname() != null) this.memberNickName = dto.getMemberNickname();
         if (dto.getMemberProfileImage() != null) this.memberProfileImage = dto.getMemberProfileImage();
-
     }
 
 
@@ -88,7 +89,6 @@ public class Member extends BaseEntity implements UserDetails {
         return this.roles.stream()
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
-//        return null;
     }
 
     @Override

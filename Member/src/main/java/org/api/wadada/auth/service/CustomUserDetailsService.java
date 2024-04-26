@@ -24,7 +24,6 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .map(this::createUserDetails)
                 .orElseThrow(() -> new RestApiException(CustomErrorCode.NO_MEMBER));
 
-        System.out.println("123123123123");
 
         return user;
     }

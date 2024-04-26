@@ -32,7 +32,7 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
         } catch (ExpiredJwtException e){
             log.info("expired jwt token, redirect to auth/reissue");
             res.setHeader("Access-Control-Allow-Origin", "*");
-            res.sendRedirect("/AndyLogin/auth/reissue");
+            res.sendRedirect("/Wadada/auth/reissue");
         }
         catch (JwtException e) {
             makeErrorResponse(res);

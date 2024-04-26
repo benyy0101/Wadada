@@ -5,6 +5,6 @@ import org.api.wadada.auth.controller.dto.OAuthAccessTokenResponse;
 import org.api.wadada.auth.controller.dto.OAuthMemberInfoResponse;
 
 public interface OAuthClient {
-    OAuthAccessTokenResponse getAccessToken(String status, String code);
+    OAuthAccessTokenResponse getAccessToken(String code);
     OAuthMemberInfoResponse getMemberInfo(String accessToken);
 }

@@ -61,10 +61,9 @@ public class OAuthService {
     }
 
     @Transactional
-    public LoginResponseDto kakaoOAuthLogin(String status, String code) {
-        KakaoOAuthMemberInfoResponse res = getKakaoUserInfo(status, code);
+    public LoginResponseDto kakaoOAuthLogin(String code) {
+        KakaoOAuthMemberInfoResponse res = getKakaoUserInfo(code);
         String memberId = res.getId();
-        System.out.println(memberId);
         createIfNewMember(memberId, res);
         return login(memberId);
     }
@@ -81,9 +80,9 @@ public class OAuthService {
                 .build();
     }
 
-    private KakaoOAuthMemberInfoResponse getKakaoUserInfo(String status, String code) {
+    private KakaoOAuthMemberInfoResponse getKakaoUserInfo(String code) {
         try {
-            OAuthAccessTokenResponse tokenResponse = kakaoOAuthClient.getAccessToken(status, code);
+            OAuthAccessTokenResponse tokenResponse = kakaoOAuthClient.getAccessToken(code);
             return kakaoOAuthClient.getMemberInfo(tokenResponse.getAccessToken());
         } catch (HttpClientErrorException e) {
             throw new RestApiException(CustomErrorCode.KAKAO_AUTHORIZATION_ERROR);
@@ -114,18 +113,6 @@ public class OAuthService {
             memberRepository.save(member);
         }
     }
-//    private void createIfNewMember(String memberId, KakaoOAuthMemberInfoResponse res) {
-//        if (!memberRepository.existsByMemberId(memberId)) {
-//            Member member =
-//                    Member.builder()
-//                            .memberId(memberId)
-//                            .password(passwordEncoder.encode(memberId + salt))
-//                            .nickname(res.getKakaoAccount().profile.nickname)
-//                            .roles(List.of("SOCIAL")).build();
-//            memberRepository.save(member);
-//        }
-//    }
-
     @Transactional
     public void logout(String memberId){
         jwtRedisRepository.delete(KeyUtil.getRefreshTokenKey(memberId));

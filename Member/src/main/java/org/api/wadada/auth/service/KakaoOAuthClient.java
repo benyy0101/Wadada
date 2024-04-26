@@ -29,7 +29,7 @@ public class KakaoOAuthClient implements OAuthClient {
     }
 
     @Override
-    public OAuthAccessTokenResponse getAccessToken(String status, String code) {
+    public OAuthAccessTokenResponse getAccessToken(String code) {
         // 헤더 설정
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
@@ -39,8 +39,9 @@ public class KakaoOAuthClient implements OAuthClient {
         params.add("grant_type", "authorization_code");
         params.add("client_id", clientId);
 
-        String uri = "prod".equals(status) ? RedirectUri.KAKAO_PROD_OAUTH.getUri() : RedirectUri.KAKAO_DEV_OAUTH.getUri();
-
+        //혹시 로컬테스트를 진행할때 필요할 수 있음
+//      String uri = "prod".equals(status) ? RedirectUri.KAKAO_PROD_OAUTH.getUri() : RedirectUri.KAKAO_DEV_OAUTH.getUri();
+        String uri = RedirectUri.KAKAO_DEV_OAUTH.getUri();
         params.add("redirect_uri", uri);
         params.add("code", code);
 
