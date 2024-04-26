@@ -4,11 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:wadada/util/serializable.dart';
 
 //Request는 직렬화(Serializable)를, Response는 역직렬화 해줘야 사용가능함
-TimeOfDay _parseTimeOfDay(String timeString) {
+
+Duration _parseTimeOfDay(String timeString) {
   final hoursAndMinutes = timeString.split(':');
-  return TimeOfDay(
-    hour: int.parse(hoursAndMinutes[0]),
-    minute: int.parse(hoursAndMinutes[1]),
+  return Duration(
+    hours: int.parse(hoursAndMinutes[0]),
+    minutes: int.parse(hoursAndMinutes[1]),
+    seconds: int.parse(hoursAndMinutes[2]),
   );
 }
 
@@ -91,7 +93,7 @@ class SingleDetail {
   final int recordRank;
   final String recordImage;
   final double recordDist;
-  final TimeOfDay recordTime;
+  final Duration recordTime;
   final Point recordStartLocation;
   final Point recordEndLocation;
   final List<Point> recordSpeed;

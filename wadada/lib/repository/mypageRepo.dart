@@ -53,7 +53,7 @@ class MypageRepository extends GetxService implements AbstractMypageRepository {
   @override
   Future<SingleDetail> getSingleDetail(RecordRequest req) async {
     try {
-      Response res = await mypageAPI.getMultiDetail(req);
+      Response res = await mypageAPI.getSingleDetail(req);
       return SingleDetail.fromJson(res.body);
     } catch (e) {
       print("ERROR: $e");
