@@ -2,6 +2,13 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
+class RecordRequest {
+  final int recordSeq;
+  final String recordType;
+
+  RecordRequest({required this.recordSeq, required this.recordType});
+}
+
 //MYPAGE-001
 class MonthlyRecord {
   final List<SimpleRecord> monthlyRecord;
