@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:wadada/common/const/colors.dart';
+import 'package:wadada/screens/singlemainpage/single_main.dart';
 
 class MainPageLayout extends StatelessWidget {
   const MainPageLayout({super.key});
@@ -67,31 +68,31 @@ class MainPageLayout extends StatelessWidget {
 class KakaoLoginButton extends StatelessWidget {
   const KakaoLoginButton({super.key});
 
-  // 카카오톡 앱을 통한 로그인 시도
-  void _loginWithKakaoTalk(BuildContext context) async {
-    try {
-      var token = await UserApi.instance.loginWithKakaoTalk();
-      print('카카오톡으로 로그인 성공, 액세스 토큰: ${token.accessToken}');
-    } catch (error) {
-      print('카카오톡으로 로그인 실패: $error');
-      _loginWithKakaoAccount(context); // 카카오톡 로그인 실패 시, 카카오 계정 로그인 시도
-    }
-  }
+  // // 카카오톡 앱을 통한 로그인 시도
+  // void _loginWithKakaoTalk(BuildContext context) async {
+  //   try {
+  //     var token = await UserApi.instance.loginWithKakaoTalk();
+  //     print('카카오톡으로 로그인 성공, 액세스 토큰: ${token.accessToken}');
+  //   } catch (error) {
+  //     print('카카오톡으로 로그인 실패: $error');
+  //     _loginWithKakaoAccount(context); // 카카오톡 로그인 실패 시, 카카오 계정 로그인 시도
+  //   }
+  // }
 
-  // 카카오 계정(이메일/비밀번호)을 통한 로그인 시도
-  void _loginWithKakaoAccount(BuildContext context) async {
-    try {
-      var token = await UserApi.instance.loginWithKakaoAccount();
-      print('카카오 계정으로 로그인 성공, 액세스 토큰: ${token.accessToken}');
-    } catch (error) {
-      print('카카오 계정으로 로그인 실패: $error');
-    }
-  }
+  // // 카카오 계정(이메일/비밀번호)을 통한 로그인 시도
+  // void _loginWithKakaoAccount(BuildContext context) async {
+  //   try {
+  //     var token = await UserApi.instance.loginWithKakaoAccount();
+  //     print('카카오 계정으로 로그인 성공, 액세스 토큰: ${token.accessToken}');
+  //   } catch (error) {
+  //     print('카카오 계정으로 로그인 실패: $error');
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => signWithKakao(),
+      onTap: () => signWithKakao(context),
       child: Container(
         decoration: const BoxDecoration(
           boxShadow: [
@@ -110,13 +111,14 @@ class KakaoLoginButton extends StatelessWidget {
 }
 
 
-signWithKakao() async {
+signWithKakao(BuildContext context) async {
   // 카카오톡 실행 가능 여부 확인
   // 카카오톡 실행이 가능하면 카카오톡으로 로그인, 아니면 카카오계정으로 로그인
   if (await isKakaoTalkInstalled()) {
     try {
         await UserApi.instance.loginWithKakaoTalk();
         print('카카오톡으로 로그인 성공');
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SingleMain()));
     } catch (error) {
       print('카카오톡으로 로그인 실패 $error');
 
@@ -129,6 +131,7 @@ signWithKakao() async {
       try {
           await UserApi.instance.loginWithKakaoAccount();
           print('카카오계정으로 로그인 성공');
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SingleMain()));
       } catch (error) {
           print('카카오계정으로 로그인 실패 $error');
       }
@@ -137,6 +140,7 @@ signWithKakao() async {
     try {
       await UserApi.instance.loginWithKakaoAccount();
       print('카카오계정으로 로그인 성공');
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SingleMain()));
     } catch (error) {
       print('카카오계정으로 로그인 실패 $error');
     }
