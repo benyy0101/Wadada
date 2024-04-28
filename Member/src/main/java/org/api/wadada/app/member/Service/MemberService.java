@@ -28,12 +28,12 @@ public class MemberService {
     @Transactional
     public void deleteMember(String memberId) {
         System.out.println(memberId);
-        Member member = memberRepository.findByParentId(memberId).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_MEMBER));
+        Member member = memberRepository.findByMemberId(memberId).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_MEMBER));
         member.delete();
     }
     @Transactional
     public void update(MemberUpdateRequestDto req, String memberId) {
-        Member member = memberRepository.findByParentId(memberId).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_MEMBER));
+        Member member = memberRepository.findByMemberId(memberId).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_MEMBER));
 
         member.updateMember(req,passwordEncoder.encode(req.getMemberEmail()));
     }

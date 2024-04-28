@@ -5,7 +5,11 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.api.wadada.app.member.entity.Member;
+import org.api.wadada.app.member.repository.MemberRepository;
 import org.api.wadada.auth.repository.JwtRedisRepository;
+import org.api.wadada.error.errorcode.CustomErrorCode;
+import org.api.wadada.error.exception.RestApiException;
 import org.api.wadada.util.AES128Util;
 import org.api.wadada.util.KeyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +18,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -28,7 +33,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Component
 public class JwtTokenProvider {
-
+    private final MemberRepository memberRepository;
     private JwtRedisRepository jwtRedisRepository;
     private Key key;
     private long accessTokenValidityInSeconds;
@@ -36,11 +41,12 @@ public class JwtTokenProvider {
     private final AES128Util aes128Util;
 
     @Autowired
-    public JwtTokenProvider(@Value("${spring.jwt.secret}") String secretKey,
+    public JwtTokenProvider(@Value("${spring.jwt.secret}") String secretKey, MemberRepository memberRepository,
                             @Value("${spring.jwt.access-token-validity-in-seconds}") long accessTokenValidityInSeconds,
                             @Value("${spring.jwt.refresh-token-validity-in-seconds}") long refreshTokenValidityInSeconds,
                             JwtRedisRepository jwtRedisRepository,
                             AES128Util aes128Util) {
+        this.memberRepository = memberRepository;
         byte[] keyBytes = Decoders.BASE64.decode(secretKey); // base64로 디코딩 -> 바이트 배열로 변환
         this.key = Keys.hmacShaKeyFor(keyBytes); // hmacsha256으로 다시 암호화?
         this.accessTokenValidityInSeconds = accessTokenValidityInSeconds;
@@ -110,8 +116,16 @@ public class JwtTokenProvider {
         // UsernamePasswordAuthenticationToken : Authentication 구현체
         // credentials : 패스워드나 토큰과 같은 비밀번호 인증 정보 ( 보안을 위해 비워둠 )
         // credentials이 없어도 principal, authorities정보에 중점을 두고 처리
-        UserDetails principal = new User(claims.getSubject(), "", authorities);
-        return new UsernamePasswordAuthenticationToken(principal, "", authorities);
+
+            Member member = memberRepository.findByMemberId(claims.getSubject()).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_MEMBER));
+//            Authentication authentication = new UsernamePasswordAuthenticationToken(member, "", authorities);
+//            SecurityContextHolder.getContext().setAuthentication(authentication);
+//
+//       // UserDetails principal = new User(claims.getSubject(), "", authorities);
+//
+//
+//        UserDetails principal = new User(claims.getSubject(), "", authorities);
+        return new UsernamePasswordAuthenticationToken(member, "", authorities);
     }
 
     // 토큰 정보를 검증하는 메서드

@@ -35,7 +35,7 @@ public class Member extends BaseEntity implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="member_seq", updatable = false, unique = true, nullable = false)
-    private String memberSeq;
+    private Integer memberSeq;
 
     @Column(name="member_id", updatable = false, unique = true, nullable = false)
     private String memberId;
@@ -68,6 +68,10 @@ public class Member extends BaseEntity implements UserDetails {
     @Column(name = "member_level",nullable = false)
     private Byte memberLevel;
 
+    @Column(name = "member_password",nullable = false)
+    private String memberPassword;
+
+
     @Builder.Default
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "member_role", joinColumns = @JoinColumn(name = "member_id"))
@@ -80,7 +84,7 @@ public class Member extends BaseEntity implements UserDetails {
     public void updateMember(MemberUpdateRequestDto dto, String encodeEmail){
         if (dto.getMemberBirthday() != null) this.memberBirthday = dto.getMemberBirthday();
         if (dto.getMemberGender() != null) this.memberGender = dto.getMemberGender();
-        if (dto.getMemberEmail() != null) this.memberMainEmail = encodeEmail;
+        if (dto.getMemberEmail() != null) this.memberMainEmail = dto.getMemberEmail();
         if (dto.getMemberNickname() != null) this.memberNickName = dto.getMemberNickname();
         if (dto.getMemberProfileImage() != null) this.memberProfileImage = dto.getMemberProfileImage();
     }
@@ -94,8 +98,7 @@ public class Member extends BaseEntity implements UserDetails {
     }
 
     @Override
-    public String getPassword() {
-        return getMemberMainEmail();
+    public String getPassword() {return this.memberPassword;
     }
 
     @Override
