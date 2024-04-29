@@ -51,7 +51,6 @@ public class ChannelInboundInterceptor  implements ChannelInterceptor {
         }
         if (StompCommand.SUBSCRIBE.equals(command)) {
             Principal principal = accessor.getUser();
-//            log.info(principal.getName());
             setValue(accessor,"userName",principal.getName());
         }
 

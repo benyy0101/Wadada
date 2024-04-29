@@ -3,7 +3,7 @@ package org.api.wadada.multi.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.api.wadada.multi.dto.req.CreateRoomReq;
-import org.api.wadada.multi.entity.Member;
+import org.api.wadada.multi.dto.res.AttendRoomRes;
 import org.api.wadada.multi.service.RoomService;
 import org.springframework.context.event.EventListener;
 import org.springframework.http.HttpStatus;
@@ -11,10 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.socket.messaging.SessionConnectEvent;
@@ -36,19 +32,16 @@ public class MultiController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<?> createRoom(@RequestBody CreateRoomReq createRoomReq){
+    public ResponseEntity<?> createRoom(@RequestBody CreateRoomReq createRoomReq, Principal principal){
         log.info(createRoomReq.toString());
-        roomService.createRoom(createRoomReq);
+        roomService.createRoom(createRoomReq,principal);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @MessageMapping("/attend/{roomSeq}")
     @SendTo("/sub/attend/{roomSeq}")
-    public String attendRoom(@DestinationVariable int roomSeq, Principal principal){
-        Member member = (Member)((Authentication) principal).getPrincipal();
-        log.info(member.toString());
-        //        System.out.println("userDetails.toString() = " + userDetails.toString());
-        return "hihi";
+    public ResponseEntity<?> attendRoom(@DestinationVariable int roomSeq, Principal principal){
+        return new ResponseEntity<AttendRoomRes>(roomService.attendRoom(principal),HttpStatus.OK);
     }
 
     @MessageMapping("/out/{roomSeq}")
