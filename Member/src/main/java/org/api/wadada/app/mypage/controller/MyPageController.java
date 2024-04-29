@@ -30,19 +30,21 @@ public class MyPageController {
         return ResponseEntity.ok(myPageService.getRecord(memberSeq,startDateTime,endDateTime));
     }
 
-    @PostMapping("/single")
-    public ResponseEntity<?> getSingleRecords(){
-
-        return ResponseEntity.ok().build();
+    @GetMapping("/single/{record}")
+    public ResponseEntity<?> getSingleRecords(@Valid @PathVariable("record") Integer SingleRecord ){
+        Integer memberSeq = MemberUtil.getMemberSeq();
+        return ResponseEntity.ok(myPageService.getSingleRecord(memberSeq,SingleRecord));
     }
-    @PostMapping("/multi")
-    public ResponseEntity<?> getMultiRecords(){
+    @GetMapping("/multi/{record}")
+    public ResponseEntity<?> getMultiRecords(@Valid @PathVariable("record") Integer MultiRecord ){
+        Integer memberSeq = MemberUtil.getMemberSeq();
+        return ResponseEntity.ok(myPageService.getMultiRecord(memberSeq,MultiRecord));
 
-        return ResponseEntity.ok().build();
     }
-    @PostMapping("/marathon")
-    public ResponseEntity<?> getMarathonRecords(){
+    @GetMapping("/marathon/{record}")
+    public ResponseEntity<?> getMarathonRecords(@Valid @PathVariable("record") Integer MarathonRecord ){
+        Integer memberSeq = MemberUtil.getMemberSeq();
+        return ResponseEntity.ok(myPageService.getMarathonRecord(memberSeq,MarathonRecord));
 
-        return ResponseEntity.ok().build();
     }
 }

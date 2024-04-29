@@ -3,8 +3,9 @@ package org.api.wadada.app.mypage.Entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.api.wadada.common.BaseEntity;
+import org.locationtech.jts.geom.Point;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-import java.awt.Point;
+
 import java.time.LocalDateTime;
 
 @Entity
@@ -28,10 +29,10 @@ public class MultiRecord extends BaseEntity {
     @Column(name = "member_seq", nullable = false)
     private Integer memberSeq;
 
-    @Column(name = "multi_record_start", columnDefinition = "Point", nullable = false)
+    @Column(name = "multi_record_start")
     private Point multiRecordStart;
 
-    @Column(name = "multi_record_end", columnDefinition = "Point")
+    @Column(name = "multi_record_end")
     private Point multiRecordEnd;
 
     @Column(name = "multi_record_time", nullable = true)

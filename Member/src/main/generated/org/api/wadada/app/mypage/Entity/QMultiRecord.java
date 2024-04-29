@@ -31,7 +31,7 @@ public class QMultiRecord extends EntityPathBase<MultiRecord> {
 
     public final NumberPath<Integer> multiRecordDist = createNumber("multiRecordDist", Integer.class);
 
-    public final SimplePath<java.awt.Point> multiRecordEnd = createSimple("multiRecordEnd", java.awt.Point.class);
+    public final ComparablePath<org.locationtech.jts.geom.Point> multiRecordEnd = createComparable("multiRecordEnd", org.locationtech.jts.geom.Point.class);
 
     public final StringPath multiRecordHeartbeat = createString("multiRecordHeartbeat");
 
@@ -53,7 +53,7 @@ public class QMultiRecord extends EntityPathBase<MultiRecord> {
 
     public final StringPath multiRecordSpeed = createString("multiRecordSpeed");
 
-    public final SimplePath<java.awt.Point> multiRecordStart = createSimple("multiRecordStart", java.awt.Point.class);
+    public final ComparablePath<org.locationtech.jts.geom.Point> multiRecordStart = createComparable("multiRecordStart", org.locationtech.jts.geom.Point.class);
 
     public final NumberPath<Integer> multiRecordTime = createNumber("multiRecordTime", Integer.class);
 

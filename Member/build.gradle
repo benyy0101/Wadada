@@ -49,7 +49,8 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
 	// Apache Commons Lang for RandomUtil
-	implementation 'org.apache.commons:commons-lang3:3.12.0'
+	implementation 'org.apache.commons:commons-lang3:3.12.0'// https://mvnrepository.com/artifact/org.locationtech.jts/jts-core
+	implementation 'org.locationtech.jts:jts-core:1.19.0'
 
 }
 

@@ -41,11 +41,13 @@ public class QMarathonRecord extends EntityPathBase<MarathonRecord> {
 
     public final BooleanPath marathonRecordIsWin = createBoolean("marathonRecordIsWin");
 
-    public final NumberPath<Integer> marathonRecordMeanHeartbeat = createNumber("marathonRecordMeanHeartbeat", Integer.class);
+    public final NumberPath<Byte> marathonRecordMeanHeartbeat = createNumber("marathonRecordMeanHeartbeat", Byte.class);
 
     public final NumberPath<Integer> marathonRecordMeanPace = createNumber("marathonRecordMeanPace", Integer.class);
 
     public final NumberPath<Integer> marathonRecordMeanSpeed = createNumber("marathonRecordMeanSpeed", Integer.class);
+
+    public final NumberPath<Byte> marathonRecordRank = createNumber("marathonRecordRank", Byte.class);
 
     public final NumberPath<Integer> marathonRecordSeq = createNumber("marathonRecordSeq", Integer.class);
 

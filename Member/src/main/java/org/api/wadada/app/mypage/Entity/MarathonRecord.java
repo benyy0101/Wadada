@@ -29,6 +29,9 @@ public class MarathonRecord extends BaseEntity {
     @Column(name = "marathon_seq", nullable = false)
     private Integer marathonSeq;
 
+    @Column(name = "marathon_record_rank")
+    private Byte marathonRecordRank;
+
     @Column(name = "marathon_record_start", columnDefinition = "Point", nullable = false)
     private Point marathonRecordStart;
 
@@ -63,7 +66,7 @@ public class MarathonRecord extends BaseEntity {
     private String marathonRecordHeartbeat;
 
     @Column(name = "marathon_record_mean_heartbeat")
-    private Integer marathonRecordMeanHeartbeat;
+    private Byte marathonRecordMeanHeartbeat;
 
     @Column(name = "marathon_record_is_win", nullable = false)
     private Boolean marathonRecordIsWin;

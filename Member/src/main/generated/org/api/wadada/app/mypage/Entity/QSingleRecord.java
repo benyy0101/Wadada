@@ -31,7 +31,7 @@ public class QSingleRecord extends EntityPathBase<SingleRecord> {
 
     public final NumberPath<Integer> singleRecordDist = createNumber("singleRecordDist", Integer.class);
 
-    public final SimplePath<java.awt.Point> singleRecordEnd = createSimple("singleRecordEnd", java.awt.Point.class);
+    public final ComparablePath<org.locationtech.jts.geom.Point> singleRecordEnd = createComparable("singleRecordEnd", org.locationtech.jts.geom.Point.class);
 
     public final StringPath singleRecordHeartbeat = createString("singleRecordHeartbeat");
 
@@ -49,7 +49,7 @@ public class QSingleRecord extends EntityPathBase<SingleRecord> {
 
     public final StringPath singleRecordSpeed = createString("singleRecordSpeed");
 
-    public final SimplePath<java.awt.Point> singleRecordStart = createSimple("singleRecordStart", java.awt.Point.class);
+    public final ComparablePath<org.locationtech.jts.geom.Point> singleRecordStart = createComparable("singleRecordStart", org.locationtech.jts.geom.Point.class);
 
     public final NumberPath<Integer> singleRecordTime = createNumber("singleRecordTime", Integer.class);
 

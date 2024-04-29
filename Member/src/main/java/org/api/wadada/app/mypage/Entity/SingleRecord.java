@@ -3,10 +3,9 @@ package org.api.wadada.app.mypage.Entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.api.wadada.common.BaseEntity;
+import org.locationtech.jts.geom.Point;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.awt.*;
-import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -26,10 +25,10 @@ public class SingleRecord extends BaseEntity {
     private Integer memberSeq;
 
     // For spatial data type, additional configuration might be required.
-    @Column(name = "single_record_start", columnDefinition = "Point", nullable = false)
+    @Column(name = "single_record_start")
     private Point singleRecordStart;
 
-    @Column(name = "single_record_end", columnDefinition = "Point")
+    @Column(name = "single_record_end")
     private Point singleRecordEnd;
 
     @Column(name = "single_record_time")
