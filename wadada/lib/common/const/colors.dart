@@ -11,3 +11,13 @@ const GREEN_COLOR = Color(0XFF5BC879);
 const OATMEAL_COLOR = Color(0XFFF6F4E9);
 
 const GRAY_400 = Color(0XFFADB5BD);
+
+const GRAY_500 = Color(0XFF909090);
+
+const GRAY_900 = Color(0XFF292D32);
+
+const mainTextStyle =
+    TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: GRAY_500);
+
+const highlightTextStyle =
+    TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: GREEN_COLOR);

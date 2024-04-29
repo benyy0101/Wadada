@@ -2,37 +2,41 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:wadada/common/const/colors.dart';
 
-class SelectOption extends StatefulWidget{
+class SelectDistOption extends StatefulWidget{
   final String option, optionstr;
+  final Function(SelectDistOptionState)? onStateUpdated;
   
-  const SelectOption({
+  const SelectDistOption({
     super.key,
     required this.option,
     required this.optionstr,
+    this.onStateUpdated,
   });
 
   @override
-  SelectOptionState createState() => SelectOptionState();
+  SelectDistOptionState createState() => SelectDistOptionState();
 }
 
-class SelectOptionState extends State<SelectOption> {
+class SelectDistOptionState extends State<SelectDistOption> {
+  double dist = 0.0;
   int selectnum = 0;
-  final TextEditingController _controller = TextEditingController(text: "0");
+  final TextEditingController controller = TextEditingController(text: "0");
+  String? errorText;
 
-  void incrementNum() {
-    setState(() {
-      selectnum += 1;
-      _controller.text = selectnum.toString();
-    });
-  }
+  void updateErrorText() {
+    final value = controller.text;
+    // if (value.startsWith('0') && value.length > 1 || value.isEmpty || int.tryParse(value) == null) {
+    if (value.startsWith('0') && value.length > 1) {
+      errorText = '정수 값을 입력하세요.';
+    } else {
+      errorText = null;
+    }
 
-  void decrementNum() {
-    setState(() {
-      if (selectnum > 0) {
-        selectnum -= 1;
-      }
-      _controller.text = selectnum.toString();
-    });
+    setState(() {});
+    dist = double.tryParse(value) ?? 0.0;
+    if (widget.onStateUpdated != null) {
+      widget.onStateUpdated!(this);
+    }
   }
 
   @override
@@ -67,7 +71,7 @@ class SelectOptionState extends State<SelectOption> {
               Row(
                 children: [
                   SizedBox(
-                    width: 150,
+                    width: 200,
                     child: TextField(
                       keyboardType: TextInputType.number,
                       inputFormatters: [
@@ -95,51 +99,19 @@ class SelectOptionState extends State<SelectOption> {
                         filled: true,
                         fillColor: Colors.white,
                         contentPadding: EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+                        errorText: errorText,
                       ),
                       // textAlign: TextAlign.center,
-                      controller: _controller,
+                      controller: controller,
                       onChanged: (value) {
-                          setState(() {
-                              selectnum = int.tryParse(value) ?? 0;
-                          });
-                        },
+                        setState(() {
+                            selectnum = int.tryParse(value) ?? 0;
+                            updateErrorText();
+                        });
+                      },
                     ),
                   ),
                   SizedBox(width: 10),
-                  Column(
-                    children: [
-                        Container(
-                          width: 25,
-                          height: 25,
-                          decoration: BoxDecoration(
-                            color: DARK_GREEN_COLOR,
-                            borderRadius: BorderRadius.circular(5),
-                          ),
-                          child: IconButton(
-                            padding: EdgeInsets.zero,
-                            icon: const Icon(Icons.arrow_drop_up),
-                            color: Colors.white,
-                            onPressed: incrementNum,
-                          ),
-                        ),
-                        SizedBox(height: 5),
-                        Container(
-                          width: 25,
-                          height: 25,
-                          decoration: BoxDecoration(
-                            color: DARK_GREEN_COLOR,
-                            borderRadius: BorderRadius.circular(5),
-                          ),
-                          child: IconButton(
-                            padding: EdgeInsets.zero,
-                            icon: const Icon(Icons.arrow_drop_down),
-                            color: Colors.white,
-                            onPressed: decrementNum,
-                          ),
-                        ),
-                    ],
-                  ),
-                  SizedBox(width: 15),
                   Text(
                     widget.optionstr,
                     style: TextStyle(

@@ -4,7 +4,8 @@
     <application
         android:label="wadada"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:enableOnBackInvokedCallback="true">
 
         <!-- 카카오 로그인 커스텀 URL 스킴 설정 -->
         <activity 

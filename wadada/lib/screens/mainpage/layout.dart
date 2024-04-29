@@ -68,27 +68,6 @@ class MainPageLayout extends StatelessWidget {
 class KakaoLoginButton extends StatelessWidget {
   const KakaoLoginButton({super.key});
 
-  // // 카카오톡 앱을 통한 로그인 시도
-  // void _loginWithKakaoTalk(BuildContext context) async {
-  //   try {
-  //     var token = await UserApi.instance.loginWithKakaoTalk();
-  //     print('카카오톡으로 로그인 성공, 액세스 토큰: ${token.accessToken}');
-  //   } catch (error) {
-  //     print('카카오톡으로 로그인 실패: $error');
-  //     _loginWithKakaoAccount(context); // 카카오톡 로그인 실패 시, 카카오 계정 로그인 시도
-  //   }
-  // }
-
-  // // 카카오 계정(이메일/비밀번호)을 통한 로그인 시도
-  // void _loginWithKakaoAccount(BuildContext context) async {
-  //   try {
-  //     var token = await UserApi.instance.loginWithKakaoAccount();
-  //     print('카카오 계정으로 로그인 성공, 액세스 토큰: ${token.accessToken}');
-  //   } catch (error) {
-  //     print('카카오 계정으로 로그인 실패: $error');
-  //   }
-  // }
-
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -116,9 +95,17 @@ signWithKakao(BuildContext context) async {
   // 카카오톡 실행이 가능하면 카카오톡으로 로그인, 아니면 카카오계정으로 로그인
   if (await isKakaoTalkInstalled()) {
     try {
-        await UserApi.instance.loginWithKakaoTalk();
-        print('카카오톡으로 로그인 성공');
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SingleMain()));
+      // 응답값 확인
+      // 카카오톡으로 로그인 시도
+      OAuthToken token = await UserApi.instance.loginWithKakaoTalk();
+      print('슛슛 카카오톡으로 로그인 성공');
+      print('엑세스토큰: ${token.accessToken}');
+      print('RefreshToken: ${token.refreshToken}');
+      
+      // 원래 요청 코드
+      await UserApi.instance.loginWithKakaoTalk();
+      print('카카오톡으로 로그인 성공');
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SingleMain()));
     } catch (error) {
       print('카카오톡으로 로그인 실패 $error');
 
@@ -129,6 +116,16 @@ signWithKakao(BuildContext context) async {
       }
       // 카카오톡에 연결된 카카오계정이 없는 경우, 카카오계정으로 로그인
       try {
+          // 
+          OAuthToken token = await UserApi.instance.loginWithKakaoAccount();
+          print('슛슛 카카오계정으로 로그인 성공');
+          print('엑세스토큰: ${token.accessToken}');
+          print('RefreshToken: ${token.refreshToken}');
+
+
+
+
+          // 요청 코드
           await UserApi.instance.loginWithKakaoAccount();
           print('카카오계정으로 로그인 성공');
           Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SingleMain()));
@@ -137,7 +134,15 @@ signWithKakao(BuildContext context) async {
       }
     }
   } else {
+
     try {
+      // 카카오톡 미설치 상태에서 바로 카카오계정으로 로그인 시도
+      OAuthToken token = await UserApi.instance.loginWithKakaoAccount();
+      print('33카카오계정으로 로그인 성공');
+      print('엑세스토큰: ${token.accessToken}');
+      print('RefreshToken: ${token.refreshToken}');
+
+      // 요청 코드
       await UserApi.instance.loginWithKakaoAccount();
       print('카카오계정으로 로그인 성공');
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SingleMain()));
