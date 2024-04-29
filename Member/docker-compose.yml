@@ -4,7 +4,7 @@ services:
     build: ./Member
     container_name: member_dev
     env_file:
-      -.env
+      -./.env
     networks:
       - deploy
     ports:
