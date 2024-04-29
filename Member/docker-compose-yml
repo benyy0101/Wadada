@@ -1,0 +1,15 @@
+version: '3.8'
+services:
+  member_dev:
+    build: ./Member
+    container_name: member_dev
+    env_file:
+      - ./Member/.env
+    networks:
+      - deploy
+    ports:
+      - "8080:8080"
+
+networks:
+  deploy:
+    driver: bridge
