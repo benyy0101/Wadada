@@ -72,7 +72,7 @@ public class OAuthService {
     private LoginResponseDto login(String memberId) {
         JwtToken jwtToken = makeJwtToken(memberId);
 
-        Member member = memberRepository.findByParentId(memberId).orElseThrow(() -> new RestApiException(NO_MEMBER));
+        Member member = memberRepository.findByMemberId(memberId).orElseThrow(() -> new RestApiException(NO_MEMBER));
 
         return LoginResponseDto.builder()
                 .memberId(memberId)
@@ -91,6 +91,7 @@ public class OAuthService {
     }
 
     private JwtToken makeJwtToken(String memberId) {
+        System.out.println(memberId+" "+memberId+salt);
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(memberId,memberId+salt);
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         return jwtTokenProvider.generateToken(authentication);
@@ -104,12 +105,13 @@ public class OAuthService {
                             .memberNickName("임시")
                             .memberGender("F")
                             .memberExp(1)
-                            .memberMainEmail(passwordEncoder.encode(memberId + salt))
+                            .memberMainEmail("123123")
                             .memberProfileImage("123213")
                             .memberTotalDist(1)
                             .memberTotalTime(1)
                             .memberLevel((byte) 1)
                             .memberBirthday(LocalDate.now())
+                            .memberPassword(passwordEncoder.encode(memberId + salt))
                             .roles(List.of("SOCIAL")).build();
             memberRepository.save(member);
         }

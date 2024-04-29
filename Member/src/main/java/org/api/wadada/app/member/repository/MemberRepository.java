@@ -11,7 +11,7 @@ public interface MemberRepository extends JpaRepository<Member, String>, MemberC
 
 
     @Query("SELECT m from Member m WHERE m.memberId = :memberId and m.isDeleted = false")
-    Optional<Member> findByParentId(@Param("memberId") String memberId);
+    Optional<Member> findByMemberId(@Param("memberId") String memberId);
 
     boolean existsByMemberIdAndIsDeleted(String memberId, boolean isDeleted);
 
