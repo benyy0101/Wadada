@@ -2,16 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:wadada/common/const/colors.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 
-class ProgressBar extends StatefulWidget{
+class TimeBar extends StatefulWidget{
   // final double dist;
   // const ProgressBar({super.key, required this.dist});
-  const ProgressBar({super.key});
+  const TimeBar({super.key});
 
   @override
-  State<ProgressBar> createState() => ProgressBarState();
+  State<TimeBar> createState() => ProgressBarState();
 }
 
-class ProgressBarState extends State<ProgressBar>{
+class ProgressBarState extends State<TimeBar>{
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +22,7 @@ class ProgressBarState extends State<ProgressBar>{
         Container(
           alignment: FractionalOffset(percent, 1 - percent),
           child: FractionallySizedBox(
-            child: Image.asset('assets/images/running.png', width: 20)),
+            child: Image.asset('assets/images/run_clock.png', width: 20)),
         ),
         ClipRRect(
           borderRadius: BorderRadius.circular(20),

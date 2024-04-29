@@ -36,7 +36,7 @@ class SingleRecord extends StatelessWidget{
                             fontWeight: FontWeight.w600,
                           )
                         ),
-                        SizedBox(height: 20),
+                        SizedBox(height: 10),
                         Text('3000 km',
                           style: TextStyle(
                             color: GREEN_COLOR,
@@ -57,7 +57,7 @@ class SingleRecord extends StatelessWidget{
                             fontWeight: FontWeight.w600,
                           )
                         ),
-                        SizedBox(height: 20),
+                        SizedBox(height: 10),
                         Text('290 kcal',
                           style: TextStyle(
                             color: GREEN_COLOR,
@@ -70,7 +70,7 @@ class SingleRecord extends StatelessWidget{
                   ),
                 ],
               ),
-              SizedBox(height: 40),
+              SizedBox(height: 30),
               Row(
                 children: [
                   Expanded(
@@ -83,7 +83,7 @@ class SingleRecord extends StatelessWidget{
                             fontWeight: FontWeight.w600,
                           )
                         ),
-                        SizedBox(height: 20),
+                        SizedBox(height: 10),
                         Text('1.7 km / h',
                           style: TextStyle(
                             color: GREEN_COLOR,
@@ -104,7 +104,7 @@ class SingleRecord extends StatelessWidget{
                             fontWeight: FontWeight.w600,
                           )
                         ),
-                        SizedBox(height: 20),
+                        SizedBox(height: 10),
                         Text('120 hz',
                           style: TextStyle(
                             color: GREEN_COLOR,

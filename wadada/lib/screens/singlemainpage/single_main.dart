@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wadada/screens/singleoptionpage/single_free_option.dart';
 import 'package:wadada/screens/singlemainpage/component/select_mode.dart';
 import 'package:wadada/screens/singlemainpage/component/single_record.dart';
 
@@ -49,19 +50,44 @@ class SingleMain extends StatelessWidget{
                 ),
                 SizedBox(height: 10,),
                 SingleRecord(),
-                SizedBox(height: 50,),
+                SizedBox(height: 30,),
                 SelectMode(
                   icon: 'assets/images/shoes.png', 
-                  name: '자유모드', 
-                  des: '자유롭게 달리고 기록합니다.',
+                  name: '거리모드', 
+                  des: '목표한 거리만큼 달려보세요.',
                   btn: '28',
+                  onTapAction: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => SingleOption(isDistMode: true)),
+                    );
+                  },
                 ),
-                SizedBox(height: 30,),
+                SizedBox(height: 25,),
+                SelectMode(
+                  icon: 'assets/images/clock.png',
+                  name: '시간모드', 
+                  des: '목표한 시간만큼 달려보세요.',
+                  btn: '28',
+                  onTapAction: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => SingleOption(isDistMode: false)),
+                    );
+                  },
+                ),
+                SizedBox(height: 25,),
                 SelectMode(
                   icon: 'assets/images/map.png', 
                   name: '챌린지모드', 
                   des: '코스를 뛰고, 기록에 도전하세요.',
                   btn: '8',
+                  onTapAction: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => SingleOption(isDistMode: false)),
+                    );
+                  },
                 ),
               ],
           ),
