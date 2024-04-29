@@ -5,7 +5,10 @@ import 'package:percent_indicator/percent_indicator.dart';
 class DistBar extends StatefulWidget{
   // final double dist;
   // const ProgressBar({super.key, required this.dist});
-  const DistBar({super.key});
+  final double dist;
+  final double formattedDistance;
+
+  const DistBar({super.key, required this.dist, required this.formattedDistance});
 
   @override
   State<DistBar> createState() => ProgressBarState();
@@ -15,7 +18,8 @@ class ProgressBarState extends State<DistBar>{
 
   @override
   Widget build(BuildContext context) {
-    double percent = 0.15;
+    // double percent = 0.15;
+    double percent = widget.formattedDistance / widget.dist;
 
     return Column(
         children: [

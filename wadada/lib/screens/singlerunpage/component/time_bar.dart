@@ -5,17 +5,25 @@ import 'package:percent_indicator/percent_indicator.dart';
 class TimeBar extends StatefulWidget{
   // final double dist;
   // const ProgressBar({super.key, required this.dist});
-  const TimeBar({super.key});
+  final double initialTime; // 초기 시간 (분 단위)
+  final double elapsedTime; // 현재 소요 시간 (초 단위)
+
+  const TimeBar({super.key, required this.initialTime, required this.elapsedTime});
 
   @override
   State<TimeBar> createState() => ProgressBarState();
 }
 
 class ProgressBarState extends State<TimeBar>{
-
   @override
   Widget build(BuildContext context) {
-    double percent = 0.15;
+    double percent = 0.0;
+    // double percent = 0.15;
+    if (widget.initialTime > 0) {
+      double totalInitialTimeInSeconds = widget.initialTime * 60.0;
+      percent = (totalInitialTimeInSeconds - widget.elapsedTime) / totalInitialTimeInSeconds;
+      percent = percent.clamp(0.0, 1.0); // 계산된 퍼센트를 0과 1 사이로 제한합니다.
+    }
 
     return Column(
         children: [

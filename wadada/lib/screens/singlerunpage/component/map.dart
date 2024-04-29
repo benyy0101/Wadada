@@ -8,12 +8,14 @@ class MyMap extends StatefulWidget{
   // const SingleFreeRun({super.key, required this.time, required this.dist});
   final String appKey;
   ValueNotifier<double> totalDistanceNotifier = ValueNotifier<double>(0.0);
+  ValueNotifier<double> speedNotifier = ValueNotifier<double>(0.0);
+  ValueNotifier<double> paceNotifier = ValueNotifier<double>(0.0);
 
   MyMap({super.key, required this.appKey});
-  // final String baseUrl;
+
   void _updateTotalDistance(double distance) {
     totalDistanceNotifier.value += distance;
-    print(totalDistanceNotifier.value);
+    // print(totalDistanceNotifier.value);
     // print('업데이트');
   }
 
@@ -77,6 +79,9 @@ class _MyMapState extends State<MyMap> {
           currentLatitude = position.latitude;
           currentLongitude = position.longitude;
 
+          // print("Current Latitude: $currentLatitude");
+          // print("Current Longitude: $currentLongitude");
+
           if (previousLatitude != null && previousLongitude != null) {
               double distance = Geolocator.distanceBetween(
                   previousLatitude!,
@@ -84,31 +89,29 @@ class _MyMapState extends State<MyMap> {
                   currentLatitude!,
                   currentLongitude!,
               );
+              
               totalDistance += distance;
-              // print(totalDistance);
+              Duration timeDiff = DateTime.now().difference(previousTime!);
+              
+              double currentSpeed = distance / timeDiff.inSeconds; // 속도
+              widget.speedNotifier.value = currentSpeed;
+
+              // double currentPace = (1 / (currentSpeed / 3.6)) * 60;  // 페이스 계산
+
+              if (currentSpeed > 0) {
+                  double speedKmh = currentSpeed * 3.6;
+                  double currentPace = 60 / speedKmh;
+                  // double currentPace = (1 / (currentSpeed * 3.6)) * 60;
+                  widget.paceNotifier.value = currentPace;
+              } else {
+                  // 속도가 0인 경우 페이스를 정의할 수 없거나 무한대가 됩니다.
+                  // 이 경우 페이스 값을 0 또는 사용자 정의 값으로 설정할 수 있습니다.
+                  widget.paceNotifier.value = 0;
+              }
+              
               widget._updateTotalDistance(distance);
           }
-
-          // 이전 위치 업데이트 시간 추적
           previousTime = DateTime.now();
-
-          // Update the markers set
-          // markers.add(
-          //   Marker(
-          //     markerId: UniqueKey().toString(),
-          //     latLng: LatLng(currentLatitude!, currentLongitude!),
-          //     width: 40,
-          //     height: 54,
-          //     markerImageSrc: 'https://w7.pngwing.com/pngs/96/889/png-transparent-marker-map-interesting-places-the-location-on-the-map-the-location-of-the-thumbnail.png',
-          //   )
-          // );
-
-          // Update the map center
-          // LatLng newCenter = LatLng(currentLatitude!, currentLongitude!);
-          // mapController!.setCenter(newCenter);
-          
-          // Polyline existingPolyline = polylines.first;
-          // existingPolyline.points?.add(newCenter);
 
           if (mapController != null) {
               LatLng newCenter = LatLng(currentLatitude!, currentLongitude!);
@@ -116,9 +119,7 @@ class _MyMapState extends State<MyMap> {
               Polyline existingPolyline = polylines.first;
               existingPolyline.points?.add(newCenter);
           }
-          
-          // print(existingPolyline.points);
-          // 지도에 변경 사항을 반영
+
           setState(() {});
         });
       }

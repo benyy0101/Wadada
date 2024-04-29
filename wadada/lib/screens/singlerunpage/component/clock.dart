@@ -12,6 +12,7 @@ class Clock extends StatefulWidget{
 
 class ClockState extends State<Clock> {
   Duration _elapsed = Duration.zero;
+  Duration get elapsed => _elapsed;
   bool _isRunning = false;
   List<String> savetimes = [];
   late Timer _timer;

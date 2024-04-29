@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
+// import 'package:flutter/rendering.dart';
 import 'package:wadada/common/const/colors.dart';
 import 'package:wadada/screens/singleresultpage/singleresultpage.dart';
 
@@ -22,6 +22,8 @@ class SingleFreeRun extends StatefulWidget{
 class _SingleFreeRunState extends State<SingleFreeRun> {
   double totalDistance = 0.0;
   String formattedDistance = '0.00';
+  final GlobalKey<ClockState> _clockKey = GlobalKey<ClockState>();
+  late Clock clock;
 
   late MyMap myMap;
 
@@ -29,6 +31,7 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
   void initState() {
     super.initState();
     myMap = MyMap(appKey: widget.appKey);
+    clock = Clock(key: _clockKey, time: widget.time);
     _subscribeToTotalDistance();
   }
 
@@ -36,11 +39,20 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
     myMap.totalDistanceNotifier.addListener(() {
       setState(() {
         totalDistance = myMap.totalDistanceNotifier.value;
-        formattedDistance = totalDistance.toStringAsFixed(2);
+        double distanceInKm = totalDistance / 1000.0;
+        formattedDistance = distanceInKm.toStringAsFixed(2);
         // print(totalDistance);
         // print(formattedDistance);
+        print('이동거리: $formattedDistance km');
       });
     });
+  }
+
+  String formatPace(double paceInSecondsPerKm) {
+    int minutes = (paceInSecondsPerKm / 60).floor();
+    int seconds = (paceInSecondsPerKm % 60).round();
+
+    return "$minutes'${seconds.toString().padLeft(2, '0')}''";
   }
 
   @override
@@ -48,9 +60,14 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
     Widget progressBar = Container();
 
     if (widget.dist > 0) {
-        progressBar = DistBar();
+        progressBar = DistBar(dist: widget.dist, formattedDistance: double.parse(formattedDistance));
     } else if (widget.time > 0) {
-        progressBar = TimeBar();
+        // progressBar = TimeBar(initialTime: widget.time);
+        Duration elapsedTime = _clockKey.currentState?.elapsed ?? Duration.zero;
+        double elapsedTimeInSeconds = elapsedTime.inSeconds.toDouble();
+        double remainingTimeInSeconds = widget.time - elapsedTimeInSeconds;
+        double progressPercentage = 1.0 - (remainingTimeInSeconds / widget.time);
+        progressBar = TimeBar(initialTime: widget.time, elapsedTime: elapsedTimeInSeconds);
     }
 
     // double totalDistance = myMap.getTotalDistance();
@@ -82,64 +99,71 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
                       )
                     ),
                     SizedBox(height: 10),
-                    MyMap(appKey: widget.appKey),
+                    myMap,
                   ],
                 ),
                 SizedBox(height: 35),
                 // 이동거리, 현재 페이스
-                Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('이동거리',
-                            style: TextStyle(
-                              color: Colors.black54,
-                              fontSize: 15,
-                            )
+                    // formattedDistance = totalDistance.toStringAsFixed(2);
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('이동거리',
+                                style: TextStyle(
+                                    color: Colors.black54,
+                                    fontSize: 15,
+                                )
+                              ),
+                              SizedBox(height: 5),
+                              ValueListenableBuilder<double>(
+                                  valueListenable: myMap.totalDistanceNotifier,
+                                  builder: (context, totalDistance, _) {
+                                      // double distanceInKm = totalDistance / 1000.0;
+                                      // formattedDistance = distanceInKm.toStringAsFixed(2);
+                                      return Text('$formattedDistance km',
+                                          style: TextStyle(
+                                              color: GREEN_COLOR,
+                                              fontSize: 30,
+                                              fontWeight: FontWeight.w700,
+                                          )
+                                      );
+                                  }
+                              ),
+                            ],
                           ),
-                          SizedBox(height: 5),
-                          // Text('1.21km',
-                          //   style: TextStyle(
-                          //     color: GREEN_COLOR,
-                          //     fontSize: 30,
-                          //     fontWeight: FontWeight.w700,
-                          //   )
-                          // ),
-                          Text('$formattedDistance km',
-                              style: TextStyle(
-                                  color: GREEN_COLOR,
-                                  fontSize: 30,
-                                  fontWeight: FontWeight.w700,
-                              )
+                        ),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('현재 페이스',
+                                style: TextStyle(
+                                    color: Colors.black54,
+                                    fontSize: 15,
+                                )
+                              ),
+                              SizedBox(height: 5),
+                              ValueListenableBuilder<double>(
+                                  valueListenable: myMap.paceNotifier,
+                                  builder: (context, pace, _) {
+                                      String formattedPace = formatPace(pace);
+                                      return Text(formattedPace,
+                                          style: TextStyle(
+                                              color: GREEN_COLOR,
+                                              fontSize: 30,
+                                              fontWeight: FontWeight.w700,
+                                          )
+                                      );
+                                  }
+                              ),
+                            ],
+                          ),
                           ),
                         ],
-                      ),
                     ),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
-                          Text('현재 페이스',
-                            style: TextStyle(
-                              color: Colors.black54,
-                              fontSize: 15,
-                            )
-                          ),
-                          SizedBox(height: 5),
-                          Text('10',
-                            style: TextStyle(
-                              color: GREEN_COLOR,
-                              fontSize: 30,
-                              fontWeight: FontWeight.w700,
-                            )
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
                 SizedBox(height: 30),
                 // 소요 시간
                 Column(
@@ -156,23 +180,28 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
                   ],
                 ),
                 SizedBox(height: 30),
-                // 심박수
+                // 현재 속도
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
-                    Text('심박수',
+                  children: [
+                    Text('현재 속도',
                       style: TextStyle(
                         color: Colors.black54,
                         fontSize: 15,
                       )
                     ),
                     SizedBox(height: 5),
-                    Text('100',
-                      style: TextStyle(
-                        color: GREEN_COLOR,
-                        fontSize: 30,
-                        fontWeight: FontWeight.w700,
-                      )
+                    ValueListenableBuilder<double>(
+                        valueListenable: myMap.speedNotifier,
+                        builder: (context, speed, _) {
+                            return Text('${speed.toStringAsFixed(2)} km/h',
+                                style: TextStyle(
+                                    color: GREEN_COLOR,
+                                    fontSize: 30,
+                                    fontWeight: FontWeight.w700,
+                                )
+                            );
+                        }
                     ),
                   ],
                 ),
