@@ -13,7 +13,7 @@ class chartData {
 class LineChart<T extends chartData> extends StatelessWidget {
   final List<T> chartData;
   final String metrics;
-  const LineChart({
+  LineChart({
     super.key,
     required this.chartData,
     required this.metrics,
@@ -50,7 +50,7 @@ class LineChart<T extends chartData> extends StatelessWidget {
                 anchorRangeToVisiblePoints: false),
             backgroundColor: OATMEAL_COLOR,
             palette: [
-              DARK_GREEN_COLOR
+              GREEN_COLOR
             ],
             series: <CartesianSeries>[
               // Renders line chart
