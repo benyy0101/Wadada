@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
+import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:wadada/common/const/colors.dart';
+import 'package:wadada/screens/singlemainpage/single_main.dart';
 
 class MainPageLayout extends StatelessWidget {
-  const MainPageLayout({Key? key}) : super(key: key);
+  const MainPageLayout({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +57,7 @@ class MainPageLayout extends StatelessWidget {
           const SizedBox(
             height: 50
           ),
-          _KakaoButton(),
+          KakaoLoginButton(),
         ],
       ),
     );
@@ -61,24 +65,89 @@ class MainPageLayout extends StatelessWidget {
 }
 
 
+class KakaoLoginButton extends StatelessWidget {
+  const KakaoLoginButton({super.key});
 
-class _KakaoButton extends StatelessWidget {
-  const _KakaoButton({Key? key}) : super(key: key);
-  
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black12,
-            spreadRadius: 2,
-            blurRadius: 5,
-            offset: Offset(1, 5),
-          ),
-        ],
+    return GestureDetector(
+      onTap: () => signWithKakao(context),
+      child: Container(
+        decoration: const BoxDecoration(
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black12,
+              spreadRadius: 2,
+              blurRadius: 5,
+              offset: Offset(1, 5),
+            ),
+          ],
+        ),
+        child: Image.asset('assets/images/kakao_button.png'),
       ),
-      child: Image.asset('assets/images/kakao_button.png'),
     );
+  }
+}
+
+
+signWithKakao(BuildContext context) async {
+  // 카카오톡 실행 가능 여부 확인
+  // 카카오톡 실행이 가능하면 카카오톡으로 로그인, 아니면 카카오계정으로 로그인
+  if (await isKakaoTalkInstalled()) {
+    try {
+      // 응답값 확인
+      // 카카오톡으로 로그인 시도
+      OAuthToken token = await UserApi.instance.loginWithKakaoTalk();
+      print('슛슛 카카오톡으로 로그인 성공');
+      print('엑세스토큰: ${token.accessToken}');
+      print('RefreshToken: ${token.refreshToken}');
+      
+      // 원래 요청 코드
+      // await UserApi.instance.loginWithKakaoTalk();
+      print('카카오톡으로 로그인 성공');
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SingleMain()));
+    } catch (error) {
+      print('카카오톡으로 로그인 실패 $error');
+
+      // 사용자가 카카오톡 설치 후 디바이스 권한 요청 화면에서 로그인을 취소한 경우,
+      // 의도적인 로그인 취소로 보고 카카오계정으로 로그인 시도 없이 로그인 취소로 처리 (예: 뒤로 가기)
+      if (error is PlatformException && error.code == 'CANCELED') {
+          return;
+      }
+      // 카카오톡에 연결된 카카오계정이 없는 경우, 카카오계정으로 로그인
+      try {
+          // 
+          OAuthToken token = await UserApi.instance.loginWithKakaoAccount();
+          print('슛슛 카카오계정으로 로그인 성공');
+          print('엑세스토큰: ${token.accessToken}');
+          print('RefreshToken: ${token.refreshToken}');
+
+
+
+
+          // 요청 코드
+          // await UserApi.instance.loginWithKakaoAccount();
+          print('카카오계정으로 로그인 성공');
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SingleMain()));
+      } catch (error) {
+          print('카카오계정으로 로그인 실패 $error');
+      }
+    }
+  } else {
+
+    try {
+      // 카카오톡 미설치 상태에서 바로 카카오계정으로 로그인 시도
+      OAuthToken token = await UserApi.instance.loginWithKakaoAccount();
+      print('33카카오계정으로 로그인 성공');
+      print('엑세스토큰: ${token.accessToken}');
+      print('RefreshToken: ${token.refreshToken}');
+
+      // 요청 코드
+      // await UserApi.instance.loginWithKakaoAccount();
+      print('카카오계정으로 로그인 성공');
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SingleMain()));
+    } catch (error) {
+      print('카카오계정으로 로그인 실패 $error');
+    }
   }
 }
