@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.api.wadada.multi.dto.req.CreateRoomReq;
 import org.api.wadada.multi.dto.res.AttendRoomRes;
+import org.api.wadada.multi.dto.res.LeaveRoomRes;
 import org.api.wadada.multi.service.RoomService;
 import org.springframework.context.event.EventListener;
 import org.springframework.http.HttpStatus;
@@ -33,7 +34,6 @@ public class MultiController {
 
     @PostMapping("/create")
     public ResponseEntity<?> createRoom(@RequestBody CreateRoomReq createRoomReq, Principal principal){
-        log.info(createRoomReq.toString());
         roomService.createRoom(createRoomReq,principal);
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -45,8 +45,8 @@ public class MultiController {
     }
 
     @MessageMapping("/out/{roomSeq}")
-    @SendTo("/sub/{roomSeq}")
-    public ResponseEntity<?> outRoom(@DestinationVariable int roomSeq){
-        return null;
+    @SendTo("/sub/attend/{roomSeq}")
+    public ResponseEntity<?> leaveRoom(@DestinationVariable int roomSeq, Principal principal){
+        return new ResponseEntity<LeaveRoomRes>(roomService.leaveRoom(principal),HttpStatus.OK);
     }
 }

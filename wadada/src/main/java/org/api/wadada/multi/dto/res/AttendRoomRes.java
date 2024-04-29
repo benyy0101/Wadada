@@ -7,7 +7,9 @@ import lombok.Data;
 @Builder
 public class AttendRoomRes {
 
+    private String type;
     private String memberNickname;
+    private String memberId;
     private String memberGender;
     private String memberProfileImage;
     private int memberLevel;

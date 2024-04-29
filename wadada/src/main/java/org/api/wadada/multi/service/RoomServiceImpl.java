@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.api.wadada.multi.dto.req.CreateRoomReq;
 import org.api.wadada.multi.dto.res.AttendRoomRes;
+import org.api.wadada.multi.dto.res.LeaveRoomRes;
 import org.api.wadada.multi.entity.Member;
 import org.api.wadada.multi.entity.Room;
 import org.api.wadada.multi.exception.NotFoundMemberException;
@@ -46,7 +47,6 @@ public class RoomServiceImpl implements RoomService{
 
     @Override
     public AttendRoomRes attendRoom(Principal principal) {
-        log.info(principal.getName());
         Optional<Member> optional = memberRepository.getMemberByMemberId(principal.getName());
         Member member;
         if(optional.isEmpty()) {
@@ -54,10 +54,26 @@ public class RoomServiceImpl implements RoomService{
         }
         member = optional.get();
         return AttendRoomRes.builder()
+                .type("join")
+                .memberId(member.getMemberId())
                 .memberGender(member.getMemberGender())
                 .memberLevel(member.getMemberLevel())
                 .memberProfileImage(member.getMemberProfileImage())
                 .memberNickname(member.getMemberNickName())
+                .build();
+    }
+
+    @Override
+    public LeaveRoomRes leaveRoom(Principal principal) {
+        Optional<Member> optional = memberRepository.getMemberByMemberId(principal.getName());
+        Member member;
+        if(optional.isEmpty()) {
+            throw new NotFoundMemberException();
+        }
+        member = optional.get();
+        return LeaveRoomRes.builder()
+                .type("leave")
+                .memberId(member.getMemberId())
                 .build();
     }
 }
