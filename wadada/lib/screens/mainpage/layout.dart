@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
@@ -92,8 +94,60 @@ class KakaoLoginButton extends StatelessWidget {
 }
 
 
+Future<void> signWithKakao(BuildContext context) async {
+  try {
+    OAuthToken token;
+    // 카카오톡 실행 가능 여부 확인 (앱설치되어 있으면 )
+    if (await isKakaoTalkInstalled()) {
+      token = await UserApi.instance.loginWithKakaoTalk();
+      print('카카오톡 앱으로 로그인 성공');
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SingleMain()));
+      // 앱 설치 안 되어있으면 카카오계정으로 로그인
+    } else {
+      token = await UserApi.instance.loginWithKakaoAccount();
+      print('카카오계정으로 로그인 성공');
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SingleMain()));
+    }
+    
+    print('로그인 성공');
+    print('엑세스토큰: ${token.accessToken}');
+    await sendTokenToServer(token.accessToken);
+    
+    
+  } catch (error) {
+    print('로그인 실패 $error');
+  }
+}
+
+Future<void> sendTokenToServer(String accessToken) async {
+  try {
+    var url = Uri.parse('https://k10a704.p.ssafy.io/Wadada/auth/login');
+    Map<String, dynamic> res = {
+      'code': accessToken
+    };
+    
+    print(jsonEncode(res));  // {"code":"T58J8ySbYsfRtg46K_Up8FLMGOBZwfYhylAKKclfAAABjy2ONb76Fwx8Dt1GgQ"}
+
+    var response = await http.post(
+      url, 
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(res),
+    );
+    
+    if (response.statusCode == 200) {https://meeting.ssafy.com/s10p30a7/channels/a704#
+      print('서버에 토큰 전송 성공');
+      print('결과 ${response.body}');
+    } else {
+      print('서버에 토큰 전송 실패: ${response.body}');
+    }
+  } catch (e) {
+    print('요청 처리 중 에러 발생: $e');
+  }
+
+}
+
+
 // signWithKakao(BuildContext context) async {
-//   // 카카오톡 실행 가능 여부 확인
 //   // 카카오톡 실행이 가능하면 카카오톡으로 로그인, 아니면 카카오계정으로 로그인
 //   if (await isKakaoTalkInstalled()) {
 //     try {
@@ -101,12 +155,9 @@ class KakaoLoginButton extends StatelessWidget {
 //       // 카카오톡으로 로그인 시도
 //       OAuthToken token = await UserApi.instance.loginWithKakaoTalk();
 //       print('슛슛 카카오톡으로 로그인 성공');
-//       print('엑세스토큰: ${token.accessToken}');
-//       print('RefreshToken: ${token.refreshToken}');
       
 //       // 원래 요청 코드
 //       // await UserApi.instance.loginWithKakaoTalk();
-//       print('카카오톡으로 로그인 성공');
 
 
 //       // 로그인 후 액세스 토큰 얻기
@@ -121,7 +172,6 @@ class KakaoLoginButton extends StatelessWidget {
 //       print('카카오톡으로 로그인 실패 $error');
 
 //       // 사용자가 카카오톡 설치 후 디바이스 권한 요청 화면에서 로그인을 취소한 경우,
-//       // 의도적인 로그인 취소로 보고 카카오계정으로 로그인 시도 없이 로그인 취소로 처리 (예: 뒤로 가기)
 //       if (error is PlatformException && error.code == 'CANCELED') {
 //           return;
 //       }
@@ -130,8 +180,6 @@ class KakaoLoginButton extends StatelessWidget {
 //           // 
 //           OAuthToken token = await UserApi.instance.loginWithKakaoAccount();
 //           print('슛슛 카카오계정으로 로그인 성공');
-//           print('엑세스토큰: ${token.accessToken}');
-//           print('RefreshToken: ${token.refreshToken}');
 
 
 //           // 요청 코드
@@ -148,10 +196,7 @@ class KakaoLoginButton extends StatelessWidget {
 //       // 카카오톡 미설치 상태에서 바로 카카오계정으로 로그인 시도
 //       OAuthToken token = await UserApi.instance.loginWithKakaoAccount();
 //       print('33카카오계정으로 로그인 성공');
-//       print('엑세스토큰: $token');
-//       print('RefreshToken: ${token.refreshToken}');
 
-//       // 요청 코드
 //       // await UserApi.instance.loginWithKakaoAccount();
 //       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SingleMain()));
 //     } catch (error) {
@@ -159,36 +204,3 @@ class KakaoLoginButton extends StatelessWidget {
 //     }
 //   }
 // }
-
-Future<void> signWithKakao(BuildContext context) async {
-  try {
-    OAuthToken token;
-    // 카카오톡 실행 가능 여부 확인 (앱설치되어 있으면 )
-    if (await isKakaoTalkInstalled()) {
-      token = await UserApi.instance.loginWithKakaoTalk();
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SingleMain()));
-      // 앱 설치 안 되어있으면 카카오계정으로 로그인
-    } else {
-      token = await UserApi.instance.loginWithKakaoAccount();
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SingleMain()));
-    }
-    
-    print('로그인 성공');
-    print('엑세스토큰: ${token.accessToken}');
-    await sendTokenToServer(token.accessToken);
-    
-  } catch (error) {
-    print('로그인 실패 $error');
-  }
-}
-
-Future<void> sendTokenToServer(String accessToken) async {
-  var url = Uri.parse('https://k10a704.p.ssafy.io:8989/Wadada/auth/login');
-  var response = await http.post(url, body: {'accessToken': accessToken});
-  
-  if (response.statusCode == 200) {
-    print('서버에 토큰 전송 성공');
-  } else {
-    print('서버에 토큰 전송 실패: ${response.body}');
-  }
-}
