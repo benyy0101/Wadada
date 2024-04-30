@@ -35,6 +35,7 @@ public class OAuthController {
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDto> kakaoLogin(@RequestBody LoginReqeustDto req){
+        System.out.println(req.getCode());
         LoginResponseDto res = oAuthService.kakaoOAuthLogin(req.getCode());
         HttpHeaders headers = getHeadersWithCookie(res);
         return new ResponseEntity<>(res, headers, HttpStatus.OK);
