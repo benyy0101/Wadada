@@ -166,24 +166,24 @@ Future<void> signWithKakao(BuildContext context) async {
     // 카카오톡 실행 가능 여부 확인 (앱설치되어 있으면 )
     if (await isKakaoTalkInstalled()) {
       token = await UserApi.instance.loginWithKakaoTalk();
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SingleMain()));
       // 앱 설치 안 되어있으면 카카오계정으로 로그인
     } else {
       token = await UserApi.instance.loginWithKakaoAccount();
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SingleMain()));
     }
     
     print('로그인 성공');
     print('엑세스토큰: ${token.accessToken}');
-    
-    // 서버에 액세스 토큰 전송
     await sendTokenToServer(token.accessToken);
-    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SingleMain()));
+    
   } catch (error) {
     print('로그인 실패 $error');
   }
 }
 
 Future<void> sendTokenToServer(String accessToken) async {
-  var url = Uri.parse('서버 띄우면 주소♥');
+  var url = Uri.parse('https://k10a704.p.ssafy.io:8989/Wadada/auth/login');
   var response = await http.post(url, body: {'accessToken': accessToken});
   
   if (response.statusCode == 200) {
