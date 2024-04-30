@@ -10,4 +10,4 @@ services:
 
 networks:
   deploy:
-    driver: bridge
+    external : true
