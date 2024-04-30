@@ -1,10 +1,10 @@
-version: '3.8'
+version: '3'
 services:
   member_dev:
     build: ./Member
     container_name: member_dev
     env_file:
-      -./.env
+        .env
     networks:
       - deploy
     ports:
