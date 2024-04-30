@@ -6,6 +6,7 @@ import 'package:wadada/screens/mainpage/layout.dart';
 //import 'package:wadada/common/pages/mainpage.dart';
 // import 'package:wadada/screens/mypage/layout.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:wadada/screens/mypage/layout.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -35,6 +36,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       home: MainPageLayout(),
+      // home: MyPageLayout(),
     );
   }
 }
