@@ -30,13 +30,18 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  percent_indicator: ^4.0.1
-
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
+  image_picker: ^0.8.4+4
   cupertino_icons: ^1.0.6
-  kakao_map_plugin: ^0.3.0
+  percent_indicator: ^4.0.1
+  syncfusion_flutter_charts: ^25.1.41+1
+  intl: ^0.19.0
+  kakao_flutter_sdk: ^1.9.1+2
+  kakao_flutter_sdk_user: ^1.9.1+2
+  get: ^4.6.6
+  kakao_flutter_sdk_common: ^1.9.1+2
+  dio: ^5.4.3+1
   flutter_dotenv: ^5.1.0
+  kakao_map_plugin: ^0.3.0
   geolocator: ^11.0.0
 
 dev_dependencies:
@@ -64,11 +69,11 @@ flutter:
   #   - assets/mode_select_btn.png
   #   - assets/running.png
   #   - assets/map.png
-    
+
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/images/
-    - assets/env/.env
+    - assets/env/
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 

@@ -105,64 +105,64 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
                 SizedBox(height: 35),
                 // 이동거리, 현재 페이스
                     // formattedDistance = totalDistance.toStringAsFixed(2);
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('이동거리',
-                                style: TextStyle(
-                                    color: Colors.black54,
-                                    fontSize: 15,
-                                )
-                              ),
-                              SizedBox(height: 5),
-                              ValueListenableBuilder<double>(
-                                  valueListenable: myMap.totalDistanceNotifier,
-                                  builder: (context, totalDistance, _) {
-                                      // double distanceInKm = totalDistance / 1000.0;
-                                      // formattedDistance = distanceInKm.toStringAsFixed(2);
-                                      return Text('$formattedDistance km',
-                                          style: TextStyle(
-                                              color: GREEN_COLOR,
-                                              fontSize: 30,
-                                              fontWeight: FontWeight.w700,
-                                          )
-                                      );
-                                  }
-                              ),
-                            ],
-                          ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('이동거리',
+                              style: TextStyle(
+                                  color: Colors.black54,
+                                  fontSize: 15,
+                              )
+                            ),
+                            SizedBox(height: 5),
+                            ValueListenableBuilder<double>(
+                              valueListenable: myMap.totalDistanceNotifier,
+                              builder: (context, totalDistance, _) {
+                                // double distanceInKm = totalDistance / 1000.0;
+                                // formattedDistance = distanceInKm.toStringAsFixed(2);
+                                return Text('$formattedDistance km',
+                                  style: TextStyle(
+                                    color: GREEN_COLOR,
+                                    fontSize: 30,
+                                    fontWeight: FontWeight.w700,
+                                  )
+                                );
+                              }
+                            ),
+                          ],
                         ),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('현재 페이스',
-                                style: TextStyle(
-                                    color: Colors.black54,
-                                    fontSize: 15,
-                                )
-                              ),
-                              SizedBox(height: 5),
-                              ValueListenableBuilder<double>(
-                                  valueListenable: myMap.paceNotifier,
-                                  builder: (context, pace, _) {
-                                      String formattedPace = formatPace(pace);
-                                      return Text(formattedPace,
-                                          style: TextStyle(
-                                              color: GREEN_COLOR,
-                                              fontSize: 30,
-                                              fontWeight: FontWeight.w700,
-                                          )
-                                      );
-                                  }
-                              ),
-                            ],
-                          ),
-                          ),
-                        ],
+                      ),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('현재 페이스',
+                              style: TextStyle(
+                                  color: Colors.black54,
+                                  fontSize: 15,
+                              )
+                            ),
+                            SizedBox(height: 5),
+                            ValueListenableBuilder<double>(
+                              valueListenable: myMap.paceNotifier,
+                              builder: (context, pace, _) {
+                                String formattedPace = formatPace(pace);
+                                return Text(formattedPace,
+                                  style: TextStyle(
+                                    color: GREEN_COLOR,
+                                    fontSize: 30,
+                                    fontWeight: FontWeight.w700,
+                                  )
+                                );
+                              }
+                            ),
+                          ],
+                        ),
+                        ),
+                      ],
                     ),
                 SizedBox(height: 30),
                 // 소요 시간
@@ -192,16 +192,16 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
                     ),
                     SizedBox(height: 5),
                     ValueListenableBuilder<double>(
-                        valueListenable: myMap.speedNotifier,
-                        builder: (context, speed, _) {
-                            return Text('${speed.toStringAsFixed(2)} km/h',
-                                style: TextStyle(
-                                    color: GREEN_COLOR,
-                                    fontSize: 30,
-                                    fontWeight: FontWeight.w700,
-                                )
-                            );
-                        }
+                      valueListenable: myMap.speedNotifier,
+                      builder: (context, speed, _) {
+                        return Text('${speed.toStringAsFixed(2)} km/h',
+                          style: TextStyle(
+                            color: GREEN_COLOR,
+                            fontSize: 30,
+                            fontWeight: FontWeight.w700,
+                          )
+                        );
+                      }
                     ),
                   ],
                 ),

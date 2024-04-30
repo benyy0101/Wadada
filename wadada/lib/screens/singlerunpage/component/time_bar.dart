@@ -5,8 +5,8 @@ import 'package:percent_indicator/percent_indicator.dart';
 class TimeBar extends StatefulWidget{
   // final double dist;
   // const ProgressBar({super.key, required this.dist});
-  final double initialTime; // 초기 시간 (분 단위)
-  final double elapsedTime; // 현재 소요 시간 (초 단위)
+  final double initialTime;
+  final double elapsedTime;
 
   const TimeBar({super.key, required this.initialTime, required this.elapsedTime});
 

@@ -32,6 +32,7 @@ class _MyMapState extends State<MyMap> {
   double? previousLongitude;
 
   DateTime? previousTime;
+  late DateTime startTime;
 
   KakaoMapController? mapController;
   StreamSubscription<Position>? positionStream;
@@ -47,6 +48,8 @@ class _MyMapState extends State<MyMap> {
       appKey: widget.appKey,
       // baseUrl: widget.baseUrl,
     );
+
+    startTime = DateTime.now();
 
     _startTrackingLocation();
   }
@@ -70,7 +73,6 @@ class _MyMapState extends State<MyMap> {
       distanceFilter: 1,
     );
 
-    // Start tracking location
     positionStream = Geolocator.getPositionStream(locationSettings: locationSettings).listen((Position? position) {
       if (position != null) {
         setState(() {
@@ -79,45 +81,35 @@ class _MyMapState extends State<MyMap> {
           currentLatitude = position.latitude;
           currentLongitude = position.longitude;
 
-          // print("Current Latitude: $currentLatitude");
-          // print("Current Longitude: $currentLongitude");
-
           if (previousLatitude != null && previousLongitude != null) {
-              double distance = Geolocator.distanceBetween(
-                  previousLatitude!,
-                  previousLongitude!,
-                  currentLatitude!,
-                  currentLongitude!,
-              );
-              
-              totalDistance += distance;
-              Duration timeDiff = DateTime.now().difference(previousTime!);
-              
-              double currentSpeed = distance / timeDiff.inSeconds; // 속도
-              widget.speedNotifier.value = currentSpeed;
+            double distance = Geolocator.distanceBetween(
+              previousLatitude!,
+              previousLongitude!,
+              currentLatitude!,
+              currentLongitude!,
+            );
+            
+            totalDistance += distance;
+            Duration timeDiff = DateTime.now().difference(previousTime!);
+            double totalTime = DateTime.now().difference(startTime).inSeconds.toDouble();
+            
+            // 속도
+            double currentSpeed = distance / timeDiff.inSeconds;
+            widget.speedNotifier.value = currentSpeed;
 
-              // double currentPace = (1 / (currentSpeed / 3.6)) * 60;  // 페이스 계산
+            // 페이스
+            double paceInSecondsPerKm = totalTime / (totalDistance / 1000);
+            widget.paceNotifier.value = paceInSecondsPerKm;
 
-              if (currentSpeed > 0) {
-                  double speedKmh = currentSpeed * 3.6;
-                  double currentPace = 60 / speedKmh;
-                  // double currentPace = (1 / (currentSpeed * 3.6)) * 60;
-                  widget.paceNotifier.value = currentPace;
-              } else {
-                  // 속도가 0인 경우 페이스를 정의할 수 없거나 무한대가 됩니다.
-                  // 이 경우 페이스 값을 0 또는 사용자 정의 값으로 설정할 수 있습니다.
-                  widget.paceNotifier.value = 0;
-              }
-              
-              widget._updateTotalDistance(distance);
+            widget._updateTotalDistance(distance);
           }
           previousTime = DateTime.now();
 
           if (mapController != null) {
-              LatLng newCenter = LatLng(currentLatitude!, currentLongitude!);
-              mapController!.setCenter(newCenter);
-              Polyline existingPolyline = polylines.first;
-              existingPolyline.points?.add(newCenter);
+            LatLng newCenter = LatLng(currentLatitude!, currentLongitude!);
+            mapController!.setCenter(newCenter);
+            Polyline existingPolyline = polylines.first;
+            existingPolyline.points?.add(newCenter);
           }
 
           setState(() {});
