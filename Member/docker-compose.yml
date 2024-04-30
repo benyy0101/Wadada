@@ -1,8 +1,8 @@
 version: '3'
 services:
-  member_dev:
+  member:
     build: .
-    container_name: member_dev
+    container_name: member
     env_file:
       - .env
     networks:
