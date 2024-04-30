@@ -6,11 +6,13 @@ import org.api.wadada.single.dto.res.MainRes;
 import org.api.wadada.single.entity.Member;
 import org.locationtech.jts.io.ParseException;
 
+import java.security.Principal;
+
 public interface SingleRecordService {
 
-    MainRes getSingleMain(int memberSeq);
+    MainRes getSingleMain(Principal principal);
 
-    int saveStartSingle(Member member, SingleStartReq singleStartReq) throws ParseException;
+    int saveStartSingle(Principal principal, SingleStartReq singleStartReq) throws ParseException;
 
-    int saveEndSingle(Member member,SingleEndReq singleEndReq) throws ParseException;
+    int saveEndSingle(Principal principal,SingleEndReq singleEndReq) throws ParseException;
 }
