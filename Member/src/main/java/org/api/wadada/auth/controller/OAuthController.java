@@ -44,6 +44,7 @@ public class OAuthController {
         while ((line = reader.readLine()) != null) {
             stringBuilder.append(line);
         }
+        stringBuilder.append(" 123123123123");
         System.out.println(stringBuilder);
         LoginResponseDto res = oAuthService.kakaoOAuthLogin(req.getCode());
         HttpHeaders headers = getHeadersWithCookie(res);
