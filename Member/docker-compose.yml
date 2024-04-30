@@ -4,11 +4,9 @@ services:
     build: .
     container_name: member_dev
     env_file:
-      - /.env
+      - .env
     networks:
       - deploy
-    ports:
-      - "8080:8080"
 
 networks:
   deploy:
