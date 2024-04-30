@@ -11,6 +11,7 @@ import org.api.wadada.multi.dto.res.LeaveRoomRes;
 import org.api.wadada.multi.dto.res.RoomMemberRes;
 import org.api.wadada.multi.entity.Member;
 import org.api.wadada.multi.entity.Room;
+import org.api.wadada.multi.exception.CreateRoomException;
 import org.api.wadada.multi.exception.NotFoundMemberException;
 import org.api.wadada.multi.repository.MemberRepository;
 import org.api.wadada.multi.repository.RoomRepository;
@@ -37,6 +38,13 @@ public class RoomServiceImpl implements RoomService{
             throw new NotFoundMemberException();
         }
         Member member = optional.get();
+
+        Optional<Integer> optionalIndex = roomManager.getEmptyIndex();
+        if(optionalIndex.isEmpty()){
+            // 방 못 만들어요
+            throw new CreateRoomException();
+        }
+        String roomTitle = "WADADA" + optionalIndex.get();
         Room room = Room.builder()
                 .roomDist(createRoomReq.getRoomDist())
                 .roomTime(createRoomReq.getRoomTime())
@@ -44,7 +52,7 @@ public class RoomServiceImpl implements RoomService{
                 .roomTag(createRoomReq.getRoomTag())
                 .roomSecret(createRoomReq.getRoomSecret())
                 .roomPeople(createRoomReq.getRoomPeople())
-                .roomTitle(createRoomReq.getRoomTitle())
+                .roomTitle(roomTitle)
                 .roomMaker(member.getMemberSeq())
                 .build();
         Room savedRoom = roomRepository.save(room);

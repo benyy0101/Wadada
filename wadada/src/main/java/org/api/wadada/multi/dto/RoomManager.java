@@ -46,7 +46,7 @@ public class RoomManager {
         rooms.set(index, null);
     }
 
-    private Optional<Integer> getEmptyIndex() {
+    public Optional<Integer> getEmptyIndex() {
         for (int i = 0; i < MAX_ROOMS; i++) {
             if (rooms.get(i) == null) {
                 return Optional.of(i);
