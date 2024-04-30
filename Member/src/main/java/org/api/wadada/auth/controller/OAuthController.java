@@ -36,16 +36,8 @@ public class OAuthController {
     private long refreshTokenValidityInSeconds;
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponseDto> kakaoLogin(HttpServletRequest httpServletRequest,@RequestBody LoginReqeustDto req) throws IOException {
-        StringBuilder stringBuilder = new StringBuilder();
-        String line;
-        BufferedReader reader = httpServletRequest.getReader();
-
-        while ((line = reader.readLine()) != null) {
-            stringBuilder.append(line);
-        }
-        stringBuilder.append(" 123123123123");
-        System.out.println(stringBuilder);
+    public ResponseEntity<LoginResponseDto> kakaoLogin(@RequestBody LoginReqeustDto req) throws IOException {
+        System.out.println(req.getCode());
         LoginResponseDto res = oAuthService.kakaoOAuthLogin(req.getCode());
         HttpHeaders headers = getHeadersWithCookie(res);
         return new ResponseEntity<>(res, headers, HttpStatus.OK);
