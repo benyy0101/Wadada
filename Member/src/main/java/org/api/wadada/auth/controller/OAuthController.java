@@ -18,6 +18,8 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -34,8 +36,15 @@ public class OAuthController {
     private long refreshTokenValidityInSeconds;
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponseDto> kakaoLogin(@RequestBody LoginReqeustDto req){
-        System.out.println(req.getCode());
+    public ResponseEntity<LoginResponseDto> kakaoLogin(HttpServletRequest httpServletRequest,@RequestBody LoginReqeustDto req) throws IOException {
+        StringBuilder stringBuilder = new StringBuilder();
+        String line;
+        BufferedReader reader = httpServletRequest.getReader();
+
+        while ((line = reader.readLine()) != null) {
+            stringBuilder.append(line);
+        }
+        System.out.println(stringBuilder);
         LoginResponseDto res = oAuthService.kakaoOAuthLogin(req.getCode());
         HttpHeaders headers = getHeadersWithCookie(res);
         return new ResponseEntity<>(res, headers, HttpStatus.OK);
