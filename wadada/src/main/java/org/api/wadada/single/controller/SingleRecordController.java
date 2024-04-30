@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.security.Principal;
+
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/Single")
@@ -28,21 +30,21 @@ public class SingleRecordController {
     private final SingleRecordService singleRecordService;
 
     @PostMapping
-    public ResponseEntity<MainRes> SingleMain(@AuthenticationPrincipal Member member,@RequestBody SingleMainReq singleMainReq){
-        return new ResponseEntity<>(singleRecordService.getSingleMain(member.getMemberSeq()), HttpStatus.OK);
+    public ResponseEntity<MainRes> SingleMain(@AuthenticationPrincipal Principal principal){
+        return new ResponseEntity<>(singleRecordService.getSingleMain(principal), HttpStatus.OK);
     }
 
     @PostMapping("/start")
     @Transactional
-    public ResponseEntity<Integer> saveStartSingle(@AuthenticationPrincipal Member member, @RequestBody SingleStartReq singleStartReq) throws ParseException {
-        int seq = singleRecordService.saveStartSingle(member, singleStartReq);
+    public ResponseEntity<Integer> saveStartSingle(@AuthenticationPrincipal Principal principal, @RequestBody SingleStartReq singleStartReq) throws ParseException {
+        int seq = singleRecordService.saveStartSingle(principal, singleStartReq);
         return new ResponseEntity<>(seq,HttpStatus.OK);
     }
 
     @PostMapping("/result")
     @Transactional
-    public ResponseEntity<Integer> saveEndSingle(@AuthenticationPrincipal Member member,@RequestBody SingleEndReq singleEndReq) throws ParseException {
-        int seq = singleRecordService.saveEndSingle(member,singleEndReq);
+    public ResponseEntity<Integer> saveEndSingle(@AuthenticationPrincipal Principal principal,@RequestBody SingleEndReq singleEndReq) throws ParseException {
+        int seq = singleRecordService.saveEndSingle(principal,singleEndReq);
         return new ResponseEntity<>(seq,HttpStatus.OK);
     }
 

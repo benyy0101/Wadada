@@ -15,6 +15,6 @@ public interface SingleRecordRepository extends JpaRepository<SingleRecord, Inte
     // Point 직렬화 이슈 때문에 필요한 것만 골라서 가져옴...
     @Query("SELECT new org.api.wadada.single.dto.res.MainRes(s.singleRecordTime,s.singleRecordDist,s.singleRecordMeanSpeed" +
             ",s.singleRecordMeanHeartbeat,s.singleRecordMeanPace) " +
-            " FROM SingleRecord s WHERE s.member.memberSeq = :memberSeq ORDER BY s.createdAt DESC LIMIT 1")
-    Optional<MainRes> getSingleRecordByMemberSeq(int memberSeq);
+            " FROM SingleRecord s WHERE s.member.memberId = :memberId ORDER BY s.createdAt DESC LIMIT 1")
+    Optional<MainRes> getSingleRecordByMemberId(String memberId);
 }
