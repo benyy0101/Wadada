@@ -32,9 +32,10 @@ public class SingleRecordServiceImpl implements SingleRecordService {
         Optional<MainRes> optional = singleRecordRepository.getSingleRecordByMemberId(principal.getName());
         if(optional.isPresent()){
             return optional.get();
+
         }
         else{
-         throw new NotFoundMainResException();
+          throw new NotFoundMainResException();
         }
 
     }
@@ -75,6 +76,8 @@ public class SingleRecordServiceImpl implements SingleRecordService {
             Point startPoint = (Point) reader.read(singleEndReq.getRecordStartLocation());
             Point endPoint = (Point) reader.read(singleEndReq.getRecordEndLocation());
 
+            System.out.println(singleEndReq);
+
             // 기존 레코드 업데이트
             singleRecord.updateEnd(
                     startPoint, endPoint, singleEndReq.getRecordTime(), singleEndReq.getRecordDist(),
@@ -82,6 +85,8 @@ public class SingleRecordServiceImpl implements SingleRecordService {
                     singleEndReq.getRecordHeartbeat(), singleEndReq.getRecordMeanHeartbeat(), singleEndReq.getRecordSpeed(),
                     singleEndReq.getRecordMeanSpeed()
             );
+            System.out.println(singleRecord.getSingleRecordHeartbeat());
+
             //새로 저장 후 seq 반환
             SingleRecord savedRecord = singleRecordRepository.save(singleRecord);
             return savedRecord.getSingleRecordSeq();
