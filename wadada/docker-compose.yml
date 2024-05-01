@@ -1,6 +1,6 @@
 version: '3'
 services:
-  single:
+  multi:
     build: .
     container_name: multi
     env_file:
