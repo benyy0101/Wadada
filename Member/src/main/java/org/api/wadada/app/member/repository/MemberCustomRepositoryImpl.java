@@ -47,6 +47,7 @@ public class MemberCustomRepositoryImpl implements MemberCustomRepository{
                 .where(QMember.member.memberNickName.eq(memberNickName)
                         .and(QMember.member.isDeleted.eq(false)))
                 .fetchOne();
+
         return member != null;
     }
 
