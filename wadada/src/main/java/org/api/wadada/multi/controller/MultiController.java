@@ -53,5 +53,11 @@ public class MultiController {
         return new ResponseEntity<>(roomService.changeReady(roomIdx,principal),HttpStatus.OK);
     }
 
+    @GetMapping("/test/elk")
+    public ResponseEntity<?> elkTest(){
+        roomService.findByRoomTag("싸피");
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
 
 }

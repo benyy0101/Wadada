@@ -9,12 +9,16 @@ import org.api.wadada.multi.dto.req.CreateRoomReq;
 import org.api.wadada.multi.dto.res.AttendRoomRes;
 import org.api.wadada.multi.dto.res.LeaveRoomRes;
 import org.api.wadada.multi.dto.res.RoomMemberRes;
+import org.api.wadada.multi.entity.HashTag;
 import org.api.wadada.multi.entity.Member;
 import org.api.wadada.multi.entity.Room;
 import org.api.wadada.multi.exception.CreateRoomException;
 import org.api.wadada.multi.exception.NotFoundMemberException;
+import org.api.wadada.multi.repository.HashTagElasticsearchRepository;
 import org.api.wadada.multi.repository.MemberRepository;
 import org.api.wadada.multi.repository.RoomRepository;
+import org.springframework.data.elasticsearch.core.SearchHit;
+import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
@@ -29,6 +33,7 @@ public class RoomServiceImpl implements RoomService{
 
     private final RoomRepository roomRepository;
     private final MemberRepository memberRepository;
+    private final HashTagElasticsearchRepository elasticsearchRepository;
     private final RoomManager roomManager = new RoomManager();
 
     @Override
@@ -128,6 +133,19 @@ public class RoomServiceImpl implements RoomService{
         resultMap.put(roomIdx, memberResList);
         return resultMap;
 
+    }
+
+    @Override
+    public HashMap<String, Object> findByRoomTag(String roomTag) {
+        SearchHits<HashTag> searchHits = elasticsearchRepository.findByRoomTag(roomTag);
+        for (SearchHit<HashTag> searchHit : searchHits) {
+            HashTag hashTag = searchHit.getContent();
+            System.out.println("ID: " + hashTag.getId());
+            System.out.println("Room Tag: " + hashTag.getRoomTag());
+            System.out.println("Score: " + searchHit.getScore());
+        }
+        HashMap<String, Object> result = new HashMap<>();
+        return result;
     }
 }
 // 방 타이틀,
