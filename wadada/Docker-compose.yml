@@ -1,0 +1,14 @@
+version: '3'
+services:
+  single:
+    build: .
+    container_name: multi
+    env_file:
+      - .env
+    networks:
+      - deploy
+
+networks:
+  deploy:
+    external : true
+
