@@ -40,8 +40,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
-      // home: MainPageLayout(),
-      home: NewProfileLayout(),
+      home: MainPageLayout(),
     );
   }
 }
