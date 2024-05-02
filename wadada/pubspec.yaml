@@ -44,7 +44,6 @@ dependencies:
   http: ^1.2.1
   flutter_secure_storage: ^9.0.0
   flutter_launcher_icons: ^0.13.1
-  http: ^1.2.1
 
 flutter_launcher_icons:
   android: "launcher_icon"

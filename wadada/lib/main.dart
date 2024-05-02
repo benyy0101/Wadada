@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:kakao_flutter_sdk_common/kakao_flutter_sdk_common.dart';
+import 'package:wadada/common/component/tabbars.dart';
 // import 'package:wadada/common/component/myRecords.dart';
 import 'package:wadada/screens/mainpage/layout.dart';
 //import 'package:wadada/common/pages/mainpage.dart';
