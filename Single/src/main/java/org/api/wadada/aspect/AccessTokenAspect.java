@@ -13,7 +13,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 @Component
 public class AccessTokenAspect {
 
-    @Around("execution(* org.api.wadada.single.*.*(..))")
+    @Around("execution(* org.api.wadada.single..*.*(..))")
     public Object aroundControllerMethods(ProceedingJoinPoint joinPoint) throws Throwable {
         // 원래의 메서드를 실행합니다.
         Object proceed = joinPoint.proceed();
@@ -28,7 +28,7 @@ public class AccessTokenAspect {
             if (isAccessTokenUpdated && proceed instanceof ResponseEntity) {
                 // 업데이트된 액세스 토큰을 헤더에 추가하고 새로운 ResponseEntity를 반환합니다.
                 ResponseEntity<?> originalResponse = (ResponseEntity<?>) proceed;
-                return ResponseEntity.status(HttpServletResponse.SC_RESET_CONTENT)
+                return ResponseEntity.status(HttpServletResponse.SC_OK)
                         .headers(originalResponse.getHeaders())
                         .header("X-Access-Token-Updated", "true")
                         .header("AccessToken-Updated", request.getAttribute("newAccessToken").toString())
