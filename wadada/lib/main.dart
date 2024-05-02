@@ -27,6 +27,7 @@ void main() async {
 
   HttpOverrides.global = MyHttpOverrides();
 
+  setupInterceptor();
   runApp(const MyApp());
 }
 
