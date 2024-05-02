@@ -37,7 +37,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry){
         registry.addEndpoint("/Multi/ws")
-                .setAllowedOrigins("https://k10a704.p.ssafy.io", "http://k10a704.p.ssafy.io", "http://localhost:8080","https://localhost:8080")
+//                .setAllowedOrigins("https://k10a704.p.ssafy.io", "http://k10a704.p.ssafy.io", "http://localhost:8080","https://localhost:8080")
+                .setAllowedOrigins("*")
                 .withSockJS();
     }
 
