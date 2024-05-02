@@ -28,6 +28,7 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain chain) throws ServletException, IOException {
         try {
+            System.out.println(req.getRequestURI());
             chain.doFilter(req, res);
         } catch (ExpiredJwtException e){
             log.info("expired jwt token, redirect to auth/reissue");
