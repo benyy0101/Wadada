@@ -50,10 +50,14 @@ public class OAuthController {
 
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals("refreshToken")){
-                String encryptedRefreshToken = URLDecoder.decode(cookie.getValue(), StandardCharsets.UTF_8);
-                System.out.println(encryptedRefreshToken);
-                String newAccessToken = oAuthService.reissueAccessToken(encryptedRefreshToken);
-                return ResponseEntity.ok(newAccessToken);
+                try {
+                    String encryptedRefreshToken = URLDecoder.decode(cookie.getValue(), StandardCharsets.UTF_8);
+                    System.out.println(encryptedRefreshToken);
+                    String newAccessToken = oAuthService.reissueAccessToken(encryptedRefreshToken);
+                    return ResponseEntity.ok(newAccessToken);
+                }catch (Exception e){
+                    throw new RestApiException(CommonErrorCode.WRONG_REQUEST,"Refresh 토큰이 만료 혹은 잘못되었습니다 재로그인해주세요.");
+                }
             }
         }
         return new ResponseEntity<String>("필요한 쿠키가 존재하지 않습니다", HttpStatus.BAD_REQUEST);
