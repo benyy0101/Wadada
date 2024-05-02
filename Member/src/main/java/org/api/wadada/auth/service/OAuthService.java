@@ -83,8 +83,8 @@ public class OAuthService {
 
     private KakaoOAuthMemberInfoResponse getKakaoUserInfo(String code) {
         try {
-            //OAuthAccessTokenResponse tokenResponse = kakaoOAuthClient.getAccessToken(code);
-            return kakaoOAuthClient.getMemberInfo(code);
+            OAuthAccessTokenResponse tokenResponse = kakaoOAuthClient.getAccessToken(code);
+            return kakaoOAuthClient.getMemberInfo(tokenResponse.getAccessToken());
         } catch (HttpClientErrorException e) {
             throw new RestApiException(CustomErrorCode.KAKAO_AUTHORIZATION_ERROR);
         }

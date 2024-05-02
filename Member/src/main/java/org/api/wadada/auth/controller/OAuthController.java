@@ -51,6 +51,7 @@ public class OAuthController {
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals("refreshToken")){
                 String encryptedRefreshToken = URLDecoder.decode(cookie.getValue(), StandardCharsets.UTF_8);
+                System.out.println(encryptedRefreshToken);
                 String newAccessToken = oAuthService.reissueAccessToken(encryptedRefreshToken);
                 return ResponseEntity.ok(newAccessToken);
             }
@@ -69,7 +70,7 @@ public class OAuthController {
         try {
             // refreshToken 값을 URL 인코딩 적용
             String encodedRefreshToken = URLEncoder.encode(res.getJwtToken().deleteRefreshToken(),StandardCharsets.UTF_8);
-
+            System.out.println(encodedRefreshToken);
             ResponseCookie cookie = ResponseCookie.from("refreshToken", encodedRefreshToken)
                     .maxAge(refreshTokenValidityInSeconds)
                     .path("/")
