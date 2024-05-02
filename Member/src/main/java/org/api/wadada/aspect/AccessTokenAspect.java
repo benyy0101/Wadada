@@ -28,9 +28,9 @@ public class AccessTokenAspect {
             if (isAccessTokenUpdated && proceed instanceof ResponseEntity) {
                 // 업데이트된 액세스 토큰을 헤더에 추가하고 새로운 ResponseEntity를 반환합니다.
                 ResponseEntity<?> originalResponse = (ResponseEntity<?>) proceed;
-                System.out.println(originalResponse.getBody());
+                System.out.println(originalResponse.getBody().toString());
 
-                return ResponseEntity.status(HttpServletResponse.SC_RESET_CONTENT)
+                return ResponseEntity.status(HttpServletResponse.SC_OK)
                         .headers(originalResponse.getHeaders())
                         .header("X-Access-Token-Updated", "true")
                         .header("AccessToken-Updated", request.getAttribute("newAccessToken").toString())
