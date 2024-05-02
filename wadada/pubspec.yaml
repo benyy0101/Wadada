@@ -43,7 +43,7 @@ dependencies:
   flutter_dotenv: ^5.1.0
   http: ^1.2.1
   flutter_launcher_icons: ^0.13.1
-  http: ^1.2.1
+  flutter_secure_storage: ^9.0.0
 
 flutter_launcher_icons:
   android: "launcher_icon"
@@ -61,8 +61,6 @@ flutter_launcher_icons:
   macos:
     generate: true
     image_path: "assets/images/logo_green.png"
-
-  
 
 dev_dependencies:
   flutter_test:
