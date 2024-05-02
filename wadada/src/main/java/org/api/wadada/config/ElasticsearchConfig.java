@@ -1,8 +1,5 @@
 package org.api.wadada.config;
 
-import org.apache.http.conn.ssl.TrustAllStrategy;
-import org.apache.http.ssl.SSLContextBuilder;
-import org.apache.http.ssl.TrustStrategy;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,7 +17,7 @@ import javax.net.ssl.TrustManagerFactory;
 @EnableElasticsearchRepositories(basePackages = "org.api.wadada.multi.repository")
 public class ElasticsearchConfig extends ElasticsearchConfiguration {
 
-    @Value("${spring.elasticsearch.username}")
+    @Value("${ELS_USERNAME}")
     private String username;
 
     @Value("${spring.elasticsearch.password}")
@@ -29,15 +26,15 @@ public class ElasticsearchConfig extends ElasticsearchConfiguration {
     @Value("${spring.elasticsearch.uris}")
     private String[] esHost;
 
-    @Value("classpath:http_ca.crt")
+    @Value("classpath:http.p12")
     private Resource elasticsearchCert;
 
     @Bean
     public SSLContext sslContext() throws Exception {
-        // Load the trust store
-        KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+        KeyStore keyStore = KeyStore.getInstance("PKCS12");
+        char[] keyStorePassword = "-FDQ0vqATd6sm5lWRUMHIQ".toCharArray();
         try (InputStream trustStoreInputStream = elasticsearchCert.getInputStream()) {
-            keyStore.load(trustStoreInputStream, null);  // No password
+            keyStore.load(trustStoreInputStream, keyStorePassword);
         }
         TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
         tmf.init(keyStore);
@@ -45,6 +42,7 @@ public class ElasticsearchConfig extends ElasticsearchConfiguration {
         sslContext.init(null, tmf.getTrustManagers(), null);
         return sslContext;
     }
+
 
     @Override
     public ClientConfiguration clientConfiguration() {
