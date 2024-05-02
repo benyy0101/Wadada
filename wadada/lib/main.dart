@@ -8,6 +8,7 @@ import 'package:wadada/screens/mainpage/layout.dart';
 //import 'package:wadada/common/pages/mainpage.dart';
 // import 'package:wadada/screens/mypage/layout.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:wadada/screens/newprofilepage/layout.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,6 +27,7 @@ void main() async {
 
   HttpOverrides.global = MyHttpOverrides();
 
+  setupInterceptor();
   runApp(const MyApp());
 }
 
@@ -38,7 +40,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
-      home: MainPageLayout(),
+      // home: MainPageLayout(),
+      home: NewProfileLayout(),
     );
   }
 }

@@ -1,17 +1,29 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:wadada/common/const/colors.dart';
 import 'package:wadada/screens/singlemainpage/single_main.dart';
 import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
 
+AndroidOptions _getAndroidOptions() => const AndroidOptions(encryptedSharedPreferences: true,);
+final storage = FlutterSecureStorage(aOptions: _getAndroidOptions());
+final dio = Dio();
+  // ..options = BaseOptions(
+  //   baseUrl: 'https://k10a704.p.ssafy.io/Wadada',
+  //   validateStatus: (status) {
+  //     return status! < 500; // 500 미만의 모든 상태 코드를 성공으로 간주합니다.
+  //   },
+  // );
 
 class MainPageLayout extends StatelessWidget {
   const MainPageLayout({super.key});
-
+  
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -109,10 +121,24 @@ Future<void> signWithKakao(BuildContext context) async {
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SingleMain()));
     }
     
-    print('로그인 성공');
-    print('엑세스토큰: ${token.accessToken}');
     await sendTokenToServer(token.accessToken);
-    
+    // const surl = 'https://k10a704.p.ssafy.io/Wadada/profile'; 
+    // Map<String, dynamic> plz = {
+    //   "memberNickname": "ㅋㅋㅋㅋㅋㅋ",
+    //   "memberBirthday": "1990-01-01",
+    //   "memberGender": "F",
+    //   "memberEmail": "sample@example.com",
+    //   "memberProfileImage": "https://s3.example.com/path/to/image.jpg"
+    // };
+
+    // final single = await dio.patch(
+    //   surl,
+    //   options: Options(
+    //     headers: {'Content-Type' : 'application/json'},
+    //   ),
+    //   data: jsonEncode(plz)
+    // );
+    // print(single.data);
     
   } catch (error) {
     print('로그인 실패 $error');
@@ -121,86 +147,62 @@ Future<void> signWithKakao(BuildContext context) async {
 
 Future<void> sendTokenToServer(String accessToken) async {
   try {
-    var url = Uri.parse('https://k10a704.p.ssafy.io/Wadada/auth/login');
-    Map<String, dynamic> res = {
-      'code': accessToken
-    };
-    
-    print(jsonEncode(res));  // {"code":"T58J8ySbYsfRtg46K_Up8FLMGOBZwfYhylAKKclfAAABjy2ONb76Fwx8Dt1GgQ"}
+    const url = 'https://k10a704.p.ssafy.io/Wadada/auth/login';
+    Map<String, dynamic> res = {'code': accessToken};  // 카카오 토큰
+    // print(jsonEncode(res));  // {"code":"T58J8ySbYsfRtg46K_Up8FLMGOBZwfYhylAKKclfAAABjy2ONb76Fwx8Dt1GgQ"}
 
-    var response = await http.post(
+    // 서버에 요청 보내기
+    var response = await dio.post(
       url, 
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(res),
+      options: Options(
+        headers: {'Content-Type': 'application/json'}
+      ),
+      data: jsonEncode(res), 
     );
     
-    if (response.statusCode == 200) {https://meeting.ssafy.com/s10p30a7/channels/a704#
+    if (response.statusCode == 200) {
       print('서버에 토큰 전송 성공');
-      print('결과 ${response.body}');
+      print('결과 ${response.data}');
+      final responseData = response.data;
+      // print(responseData['jwtToken']['accessToken']);
+      
+      // jwt accesstoken 저장
+      await storage.write(key: 'server_token', value: responseData['jwtToken']['accessToken']);
+      // final wadada = await storage.read(key: 'server_token');
+      // print(wadada);
+
     } else {
-      print('서버에 토큰 전송 실패: ${response.body}');
+      print('서버에 토큰 전송 실패: ${response.data}');
     }
   } catch (e) {
     print('요청 처리 중 에러 발생: $e');
   }
-
 }
 
-
-// signWithKakao(BuildContext context) async {
-//   // 카카오톡 실행이 가능하면 카카오톡으로 로그인, 아니면 카카오계정으로 로그인
-//   if (await isKakaoTalkInstalled()) {
-//     try {
-//       // 응답값 확인
-//       // 카카오톡으로 로그인 시도
-//       OAuthToken token = await UserApi.instance.loginWithKakaoTalk();
-//       print('슛슛 카카오톡으로 로그인 성공');
-      
-//       // 원래 요청 코드
-//       // await UserApi.instance.loginWithKakaoTalk();
-
-
-//       // 로그인 후 액세스 토큰 얻기
-//       // AccessToken token = await TokenManager.instance.getToken();
-//       // print('카카오 로그인 성공: Access Token: ${token.accessToken}');
-
-//       // // 얻어진 액세스 토큰을 서버에 전송
-//       // await sendTokenToServer(token.accessToken);
-
-//       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SingleMain()));
-//     } catch (error) {
-//       print('카카오톡으로 로그인 실패 $error');
-
-//       // 사용자가 카카오톡 설치 후 디바이스 권한 요청 화면에서 로그인을 취소한 경우,
-//       if (error is PlatformException && error.code == 'CANCELED') {
-//           return;
-//       }
-//       // 카카오톡에 연결된 카카오계정이 없는 경우, 카카오계정으로 로그인
-//       try {
-//           // 
-//           OAuthToken token = await UserApi.instance.loginWithKakaoAccount();
-//           print('슛슛 카카오계정으로 로그인 성공');
-
-
-//           // 요청 코드
-//           // await UserApi.instance.loginWithKakaoAccount();
-//           print('카카오계정으로 로그인 성공');
-//           Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SingleMain()));
-//       } catch (error) {
-//           print('카카오계정으로 로그인 실패 $error');
-//       }
-//     }
-//   } else {
-
-//     try {
-//       // 카카오톡 미설치 상태에서 바로 카카오계정으로 로그인 시도
-//       OAuthToken token = await UserApi.instance.loginWithKakaoAccount();
-//       print('33카카오계정으로 로그인 성공');
-
-//       // await UserApi.instance.loginWithKakaoAccount();
-//       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SingleMain()));
-//     } catch (error) {
-//       print('카카오계정으로 로그인 실패 $error');
-//     }
-//   }
-// }
+void setupInterceptor() {
+  dio.interceptors.add(InterceptorsWrapper(
+    onRequest: (options, handler) async {
+      // Secure Storage에서 jwt 토큰 읽어옴
+      String? jwtToken = await storage.read(key: 'server_token');
+      if (jwtToken != null) {
+        // 읽어온 토큰 헤더에 추가
+        options.headers["Authorization"] = "Bearer $jwtToken";
+        print('헤더에 싣는다');
+        print(options.headers);
+      }
+      // 요청 진행 킵고잉
+      return handler.next(options); 
+    },
+    onResponse: (response, handler) {
+      // 요청 성공
+      print('성공 슛');
+      return handler.next(response);
+    },
+    // ignore: deprecated_member_use
+    onError: (DioError e, handler) {
+      // 요청 실패
+      print('실패 우웩');
+      return handler.next(e);
+    },
+  ));
+}

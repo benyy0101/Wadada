@@ -1,6 +1,8 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 // ignore: unnecessary_import
 import 'package:flutter/widgets.dart';
@@ -9,6 +11,7 @@ import 'package:wadada/screens/newprofilepage/widget/custom_text_form_field.dart
 import 'package:wadada/common/const/colors.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:wadada/screens/newprofilepage/widget/genderselction.dart';
+import 'package:http/http.dart' as http;
 
 class NewProfileLayout extends StatefulWidget {
   const NewProfileLayout({super.key});
@@ -358,3 +361,48 @@ class _MyButton extends StatelessWidget {
     );
   }
 }
+
+
+// 이거 수정 매우매우 필요한 상태 
+// 입력받은 값을 보내는 코드 필요
+// Future<void> sendMemberInfoToServer() async {
+//     final memberinfo = 
+//     final dio = Dio();
+        
+//     if (memberinfo != null) {
+//       final url = Uri.parse('https://k10a704.p.ssafy.io/Wadada/profile');
+
+//       final requestBody = jsonEncode({
+//         "memberNickname": "SampleNickname",
+//         "memberBirthday": "1990-01-01",
+//         "memberGender": "F",
+//         "memberEmail": "sample@example.com",
+//         "memberProfileImage": "https://s3.example.com/path/to/image.jpg"
+//       });
+      
+//       try {
+//         final response = await dio.post(
+//           url.toString(),
+//           data: requestBody,
+//           options: Options(
+//             headers: {
+//             'Content-Type': 'application/json',
+//             'Accept': 'application/json',
+//             'authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNDUyNzIxNzM3IiwiYXV0aCI6IlJPTEVfU09DSUFMIiwiZXhwIjoxNzE0ODkwMjQ1fQ.GABjqHm8MXBSgzv3ckROkNu3HeEyUrwrcQhsY-zWPSA',
+//             }
+//           ),
+//         );
+        
+//         if (response.statusCode == 200) {
+
+//           print('서버 요청 성공');
+//         } else {
+//           print('서버 요청 실패: ${response.statusCode}');
+//         }
+//       } catch (e) {
+//           print('요청 처리 중 에러 발생: $e');
+//       }
+//     } else {
+//         print("에러에러에러");
+//     }
+//   }
