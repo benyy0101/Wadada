@@ -13,7 +13,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 @Component
 public class AccessTokenAspect {
 
-    @Around("execution(* org.api.wadada.app.*.*(..))")
+    @Around("execution(* org.api.wadada.app..*.*(..))")
     public Object aroundControllerMethods(ProceedingJoinPoint joinPoint) throws Throwable {
         // 원래의 메서드를 실행합니다.
         Object proceed = joinPoint.proceed();
