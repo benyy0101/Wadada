@@ -20,7 +20,7 @@ public class HashTag {
     @Id
     private String id;
 
-    @Field(type = FieldType.Text ,analyzer = "nori")
+    @Field(type = FieldType.Text,name = "room_tag")
     private String roomTag;
 
     @Field(type = FieldType.Boolean)

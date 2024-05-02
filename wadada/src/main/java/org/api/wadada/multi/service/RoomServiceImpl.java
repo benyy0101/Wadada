@@ -17,6 +17,7 @@ import org.api.wadada.multi.exception.NotFoundMemberException;
 import org.api.wadada.multi.repository.HashTagElasticsearchRepository;
 import org.api.wadada.multi.repository.MemberRepository;
 import org.api.wadada.multi.repository.RoomRepository;
+import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.stereotype.Service;
@@ -137,13 +138,12 @@ public class RoomServiceImpl implements RoomService{
 
     @Override
     public HashMap<String, Object> findByRoomTag(String roomTag) {
-        SearchHits<HashTag> searchHits = elasticsearchRepository.findByRoomTag(roomTag);
-        for (SearchHit<HashTag> searchHit : searchHits) {
-            HashTag hashTag = searchHit.getContent();
-            System.out.println("ID: " + hashTag.getId());
-            System.out.println("Room Tag: " + hashTag.getRoomTag());
-            System.out.println("Score: " + searchHit.getScore());
+        List<HashTag> tags = elasticsearchRepository.findByRoomTag(roomTag);
+
+        for (HashTag tag : tags) {
+            log.info(tag.getRoomTag());
         }
+
         HashMap<String, Object> result = new HashMap<>();
         return result;
     }

@@ -29,29 +29,12 @@ public class ElasticsearchConfig extends ElasticsearchConfiguration {
     @Value("${spring.elasticsearch.uris}")
     private String[] esHost;
 
-    @Value("classpath:http_ca.crt")
-    private Resource elasticsearchCert;
-
-    @Bean
-    public SSLContext sslContext() throws Exception {
-        // Load the trust store
-        KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
-        try (InputStream trustStoreInputStream = elasticsearchCert.getInputStream()) {
-            keyStore.load(trustStoreInputStream, null);  // No password
-        }
-        TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-        tmf.init(keyStore);
-        SSLContext sslContext = SSLContext.getInstance("TLS");
-        sslContext.init(null, tmf.getTrustManagers(), null);
-        return sslContext;
-    }
 
     @Override
     public ClientConfiguration clientConfiguration() {
         try {
             return ClientConfiguration.builder()
                     .connectedTo(esHost)
-                    .usingSsl(sslContext())  // Use the SSLContext with the loaded CA certificate
                     .withBasicAuth(username, password)
                     .build();
         } catch (Exception e) {

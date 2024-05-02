@@ -55,6 +55,7 @@ public class MultiController {
 
     @GetMapping("/test/elk")
     public ResponseEntity<?> elkTest(){
+        log.info("test");
         roomService.findByRoomTag("싸피");
         return new ResponseEntity<>(HttpStatus.OK);
     }
