@@ -36,7 +36,9 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry){
-        registry.addEndpoint("/Multi/ws/*").setAllowedOrigins("*").withSockJS();
+        registry.addEndpoint("/Multi/ws").setAllowedOrigins("https://k10a704.p.ssafy.io",
+                        "k10a704.p.ssafy.io","http://localhost:8080")
+                .withSockJS();
         // withSockJs() 함수를 통해 ws, wss로 socket을 연결하는 것이 아닌 http, https로 socket을 연결하도록 바꾸어줌
     }
 
