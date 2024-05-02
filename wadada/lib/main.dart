@@ -1,6 +1,9 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_connect/connect.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:kakao_flutter_sdk_common/kakao_flutter_sdk_common.dart';
 // import 'package:wadada/common/component/myRecords.dart';
@@ -14,22 +17,21 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await dotenv.load(fileName: 'assets/env/.env');
-  
-  String nativeAppKey = dotenv.env['NATIVE_APP_KEY'] ?? "기본값"; 
+
+  String nativeAppKey = dotenv.env['NATIVE_APP_KEY'] ?? "기본값";
   String javaScriptAppKey = dotenv.env['JAVASCRIPT_APP_KEY'] ?? "기본값";
-  
 
   // runApp() 호출 전 Flutter SDK 초기화
   KakaoSdk.init(
-      nativeAppKey: nativeAppKey,
-      javaScriptAppKey: javaScriptAppKey,
+    nativeAppKey: nativeAppKey,
+    javaScriptAppKey: javaScriptAppKey,
   );
 
   HttpOverrides.global = MyHttpOverrides();
 
   runApp(const MyApp());
+  Get.put<GetConnect>(GetConnect());
 }
-
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -45,12 +47,11 @@ class MyApp extends StatelessWidget {
   }
 }
 
-
- class MyHttpOverrides extends HttpOverrides{
+class MyHttpOverrides extends HttpOverrides {
   @override
-  HttpClient createHttpClient(SecurityContext? context){
+  HttpClient createHttpClient(SecurityContext? context) {
     return super.createHttpClient(context)
-      ..badCertificateCallback = (X509Certificate cert, String host, int port)=> true;
-
+      ..badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
   }
 }
