@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wadada/screens/singleoptionpage/single_free_option.dart';
+import 'package:wadada/common/component/logout.dart';
 import 'package:wadada/screens/singlemainpage/component/select_mode.dart';
 import 'package:wadada/screens/singlemainpage/component/single_record.dart';
 
@@ -89,6 +90,8 @@ class SingleMain extends StatelessWidget{
                     );
                   },
                 ),
+                SizedBox(height: 30,),
+                LogoutButton(),
               ],
           ),
         ),
