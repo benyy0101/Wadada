@@ -50,6 +50,9 @@ public class MemberService {
                 return new MemberDuplicationVaildResponseDto(true);
             }
         }
-        throw new RestApiException(CommonErrorCode.WRONG_REQUEST, "중복 검사할 값이 주어지지 않았습니다");
+        else {
+            throw new RestApiException(CommonErrorCode.WRONG_REQUEST, "중복 검사할 값이 주어지지 않았습니다");
+        }
+        return new MemberDuplicationVaildResponseDto(false);
     }
 }
