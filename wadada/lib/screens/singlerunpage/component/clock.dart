@@ -12,8 +12,10 @@ class Clock extends StatefulWidget{
 
 class ClockState extends State<Clock> {
   Duration _elapsed = Duration.zero;
+  ValueNotifier<Duration> endTimeNotifier = ValueNotifier(Duration.zero);
   Duration get elapsed => _elapsed;
   bool _isRunning = false;
+  
   List<String> savetimes = [];
   late Timer _timer;
 
@@ -47,9 +49,18 @@ class ClockState extends State<Clock> {
         _timer = Timer.periodic(Duration(milliseconds: 100), _onTick);
       }
   }
+  
+  void setRunning(bool isRunning) {
+    print('setRunning called with: $isRunning');
+    setState(() {
+      _isRunning = isRunning;
+    });
+    print('_isRunning state is now: $_isRunning');
+  }
 
   @override
   void dispose() {
+    print('Clock dispose called');
     _timer.cancel();
     super.dispose();
   }

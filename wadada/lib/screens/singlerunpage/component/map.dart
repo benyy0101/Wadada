@@ -7,16 +7,24 @@ import 'package:wadada/common/const/colors.dart';
 class MyMap extends StatefulWidget{
   // const SingleFreeRun({super.key, required this.time, required this.dist});
   final String appKey;
+  LatLng? startLocation;
+  LatLng? endLocation;
+  List<LatLng> coordinates = [];
+
+  List<LatLng> getCoordinates() {
+    return coordinates;
+  }
+
   ValueNotifier<double> totalDistanceNotifier = ValueNotifier<double>(0.0);
   ValueNotifier<double> speedNotifier = ValueNotifier<double>(0.0);
   ValueNotifier<double> paceNotifier = ValueNotifier<double>(0.0);
+  ValueNotifier<LatLng?> startLocationNotifier = ValueNotifier<LatLng?>(null);
+  ValueNotifier<LatLng?> endLocationNotifier = ValueNotifier<LatLng?>(null);
 
   MyMap({super.key, required this.appKey});
 
   void _updateTotalDistance(double distance) {
     totalDistanceNotifier.value += distance;
-    // print(totalDistanceNotifier.value);
-    // print('업데이트');
   }
 
   @override
@@ -80,6 +88,13 @@ class _MyMapState extends State<MyMap> {
           previousLongitude = currentLongitude;
           currentLatitude = position.latitude;
           currentLongitude = position.longitude;
+          
+          if (widget.startLocation == null) {
+            widget.startLocation = LatLng(currentLatitude!, currentLongitude!);
+            widget.startLocationNotifier.value = widget.startLocation;
+          }
+
+          widget.endLocation = LatLng(currentLatitude!, currentLongitude!);
 
           if (previousLatitude != null && previousLongitude != null) {
             double distance = Geolocator.distanceBetween(
@@ -105,12 +120,31 @@ class _MyMapState extends State<MyMap> {
           }
           previousTime = DateTime.now();
 
+          void updateLocation(double latitude, double longitude) {
+            widget.coordinates.add(LatLng(currentLatitude!, currentLongitude!));
+          }
+
+          updateLocation(currentLatitude!, currentLongitude!);
+          print(widget.coordinates);
+
           if (mapController != null) {
             LatLng newCenter = LatLng(currentLatitude!, currentLongitude!);
             mapController!.setCenter(newCenter);
             Polyline existingPolyline = polylines.first;
             existingPolyline.points?.add(newCenter);
           }
+
+          // markers.removeWhere((marker) => marker.markerId == 'currentlocation');
+
+          // markers.add(Marker(
+          //   markerId: 'currentlocation',
+          //   latLng: LatLng(currentLatitude!, currentLongitude!),
+          //   width: 40,
+          //   height: 40,
+          //   markerImageSrc:
+          //     'https://github.com/jjeong41/t/assets/103355863/608f452a-c1d4-4784-b989-7e8cfdf4a236',
+          //   zIndex: 10,
+          // ));
 
           setState(() {});
         });
@@ -143,7 +177,7 @@ class _MyMapState extends State<MyMap> {
           mapController = controller;
 
           markers.add(Marker(
-            markerId: UniqueKey().toString(),
+            markerId: 'start',
             latLng: LatLng(currentLatitude!, currentLongitude!),
             width: 50,
             height: 54,
@@ -151,8 +185,7 @@ class _MyMapState extends State<MyMap> {
             offsetY: 44,
             markerImageSrc:
               // 'https://w7.pngwing.com/pngs/96/889/png-transparent-marker-map-interesting-places-the-location-on-the-map-the-location-of-the-thumbnail.png',
-              'https://github.com/jinddobaegi/algo/assets/103355863/323a6acf-5b7b-4cf0-8b79-0807fd6080aa',
-              // 'assets/images/shoes.png',
+              'https://github.com/jjeong41/t/assets/103355863/955c2700-e829-426d-a4a0-4806d3f5c085',
           ));
 
           polylines.add(
@@ -160,7 +193,7 @@ class _MyMapState extends State<MyMap> {
               polylineId: 'polyline1',
               points: [],
               strokeColor: Color(0xff386DFF),
-              strokeOpacity: 1,
+              strokeOpacity: 0.5,
               strokeWidth: 10,
               strokeStyle: StrokeStyle.solid,
             ),

@@ -6,9 +6,12 @@ import 'package:wadada/screens/mainpage/layout.dart';
 //import 'package:wadada/common/pages/mainpage.dart';
 // import 'package:wadada/screens/mypage/layout.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:wadada/screens/multimainpage/multimainpage.dart';
 import 'package:wadada/screens/singlemainpage/single_main.dart';
+import 'dart:io';
 
 void main() async {
+  HttpOverrides.global = NoCheckCertificateHttpOverrides();
   WidgetsFlutterBinding.ensureInitialized();
 
   await dotenv.load(fileName: 'assets/env/.env');
@@ -27,6 +30,13 @@ void main() async {
   runApp(const MyApp());
 }
 
+class NoCheckCertificateHttpOverrides extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext? context) {
+    return super.createHttpClient(context)
+      ..badCertificateCallback = (X509Certificate cert, String host, int port) => true;
+  }
+}
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
