@@ -10,8 +10,8 @@ import 'package:wadada/screens/singlerunpage/component/time_bar.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 import 'package:dio/dio.dart';
 
-import 'dart:convert'; // JSON 인코딩 및 디코딩을 위한 import
-import 'package:http/http.dart' as http; // HTTP 클라이언트 import
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 
 class SingleFreeRun extends StatefulWidget{
@@ -127,15 +127,14 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
     final formattedElapsedTime = formatElapsedTime(elapsedTime);
     print(formattedElapsedTime);
 
-    // 수집한 데이터
     final requestBody = jsonEncode({
-        "singleRecordSeq": recordSeq, // recordSeq를 저장해야 합니다.
+        "singleRecordSeq": recordSeq,
         "recordImage": 'image_url_here',
         "recordDist": formattedDistance,
-        "recordTime": formattedElapsedTime, // 이거 이상하게 넘어감
+        "recordTime": formattedElapsedTime,
         "recordStartLocation": "POINT(${startLocation?.latitude} ${startLocation?.longitude})",
         "recordEndLocation": "POINT(${endLocation?.latitude} ${endLocation?.longitude})",
-        // "recordSpeed": "[{\"time\": 0, \"speed\": 15}, {\"time\": 1800, \"speed\": 10}]", 이거 형식 맞춰서 보내보기 speednotifier 받아오는 동시에 clock 통해 현재 시간 받아서 어디 배열에 저장해야할듯
+        // "recordSpeed": "[{\"time\": 0, \"speed\": 15}, {\"time\": 1800, \"speed\": 10}]",
         // "recordPace": "{\"pace\": \"5:00\"}",
         "recordHeartbeat": "{\"unit\": \"bpm\", \"average\": 150}",
         // "recordMeanSpeed": myMap.speedNotifier.value,
@@ -175,13 +174,21 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
         _clockKey.currentState!.setRunning(false);
 
         List<LatLng> coordinates = myMap.getCoordinates();
+
+        final formattedElapsedTime = formatElapsedTime(elapsedTime);
         
         _sendRecordToServer();
 
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => SingleResult(elapsedTime: elapsedTime, coordinates: coordinates,),
+            builder: (context) => SingleResult(
+                elapsedTime: elapsedTime,
+                coordinates: coordinates,
+                startLocation: coordinates.first,
+                endLocation: coordinates.last,
+                totaldist: formattedElapsedTime,
+            ),
           ),
         );
     }

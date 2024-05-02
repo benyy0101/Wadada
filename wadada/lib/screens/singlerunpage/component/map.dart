@@ -125,7 +125,6 @@ class _MyMapState extends State<MyMap> {
           }
 
           updateLocation(currentLatitude!, currentLongitude!);
-          print(widget.coordinates);
 
           if (mapController != null) {
             LatLng newCenter = LatLng(currentLatitude!, currentLongitude!);
