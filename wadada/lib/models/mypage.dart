@@ -264,14 +264,10 @@ class RankMarathon extends Rank {
 
   RankMarathon({
     required this.rank,
-    required String name,
-    required String metric,
-    required String profileImage,
-  }) : super(
-          name: name,
-          metric: metric,
-          profileImage: profileImage,
-        );
+    required super.name,
+    required super.metric,
+    required super.profileImage,
+  });
 
   factory RankMarathon.fromJson(Map<String, dynamic> json) {
     return RankMarathon(
