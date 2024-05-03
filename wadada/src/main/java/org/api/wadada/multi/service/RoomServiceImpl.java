@@ -9,17 +9,24 @@ import org.api.wadada.multi.dto.req.CreateRoomReq;
 import org.api.wadada.multi.dto.res.AttendRoomRes;
 import org.api.wadada.multi.dto.res.LeaveRoomRes;
 import org.api.wadada.multi.dto.res.RoomMemberRes;
+import org.api.wadada.multi.dto.res.RoomRes;
+import org.api.wadada.multi.entity.HashTag;
 import org.api.wadada.multi.entity.Member;
 import org.api.wadada.multi.entity.Room;
 import org.api.wadada.multi.exception.CreateRoomException;
 import org.api.wadada.multi.exception.NotFoundMemberException;
+import org.api.wadada.multi.repository.HashTagElasticsearchRepository;
 import org.api.wadada.multi.repository.MemberRepository;
 import org.api.wadada.multi.repository.RoomRepository;
+import org.springframework.data.elasticsearch.annotations.Document;
+import org.springframework.data.elasticsearch.core.SearchHit;
+import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -29,6 +36,7 @@ public class RoomServiceImpl implements RoomService{
 
     private final RoomRepository roomRepository;
     private final MemberRepository memberRepository;
+    private final HashTagElasticsearchRepository elasticsearchRepository;
     private final RoomManager roomManager = new RoomManager();
 
     @Override
@@ -59,7 +67,8 @@ public class RoomServiceImpl implements RoomService{
         RoomDto roomDto = new RoomDto();
         roomDto.addMember(RoomMemberRes.of(true,member));
         List<RoomMemberRes> memberResList = roomDto.getMemberList();
-
+        roomDto.setRoomSeq(savedRoom.getRoomSeq());
+        roomDto.setRoomMode(createRoomReq.getRoomMode());
         int idx = roomManager.addRoom(savedRoom.getRoomSeq(),roomDto);
 
         HashMap<Integer, List<RoomMemberRes>> resultMap = new HashMap<>();
@@ -128,6 +137,39 @@ public class RoomServiceImpl implements RoomService{
         resultMap.put(roomIdx, memberResList);
         return resultMap;
 
+    }
+
+    @Override
+    public List<RoomRes> getRoomList(int mode) {
+        List<RoomDto> activeRooms = roomManager.getAllRooms();
+        List<Integer> activeSeqList = activeRooms.stream().filter(roomDto -> roomDto.getRoomMode()==mode).map(
+                RoomDto::getRoomSeq).toList();
+
+        HashMap<Integer,Integer> roomIdxMap = new HashMap<>();
+        for(RoomDto roomDto:activeRooms){
+            roomIdxMap.put(roomDto.getRoomSeq(),roomDto.getRoomIdx());
+        }
+
+        List<RoomRes> RoomResList = roomRepository.findAllById(activeSeqList).stream().map(
+                room -> {
+                    // Create RoomRes with the found RoomDto
+                    return RoomRes.of(roomIdxMap.get(room.getRoomSeq()), room);
+                }
+        ).toList();
+        log.info("같은 방 찾기");
+        return RoomResList;
+    }
+
+    @Override
+    public HashMap<String, Object> findByRoomTag(String roomTag) {
+        List<HashTag> tags = elasticsearchRepository.findByRoomTag(roomTag);
+
+        for (HashTag tag : tags) {
+            log.info(tag.getRoomTag());
+        }
+
+        HashMap<String, Object> result = new HashMap<>();
+        return result;
     }
 }
 // 방 타이틀,
