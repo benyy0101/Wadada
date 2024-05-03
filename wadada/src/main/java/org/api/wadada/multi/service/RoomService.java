@@ -24,7 +24,7 @@ public interface RoomService {
 
     HashMap<Integer, List<RoomMemberRes>> changeReady(int roomIdx,Principal principal);
 
-//    List<RoomRes> getRoomList(int mode);
+    List<RoomRes> getRoomList(int mode);
 
     HashMap<String, Object> findByRoomTag(String roomTag);
 }

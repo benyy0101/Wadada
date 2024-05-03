@@ -139,24 +139,26 @@ public class RoomServiceImpl implements RoomService{
 
     }
 
-//    @Override
-//    public List<RoomRes> getRoomList(int mode) {
-//        List<RoomDto> activeRooms = roomManager.getAllRooms();
-//        List<Integer> activeSeqList = activeRooms.stream().filter(roomDto -> roomDto.getRoomMode()==mode).map(
-//                RoomDto::getRoomSeq).toList();
-//
-//        List<RoomRes> RoomResList = roomRepository.findAllById(activeSeqList).stream().map(
-//                room -> {
-//                    RoomDto correspondingRoomDto = activeSeqList.stream()
-//                            .filter(dto -> dto.equals(room.getRoomSeq()))
-//                            .findFirst()
-//                            .orElse(null);
-//                    // Create RoomRes with the found RoomDto
-//                    return RoomRes.of(correspondingRoomDto.getRoomIdx(), room);
-//                }
-//        ).toList();
-//        return RoomResList;
-//    }
+    @Override
+    public List<RoomRes> getRoomList(int mode) {
+        List<RoomDto> activeRooms = roomManager.getAllRooms();
+        List<Integer> activeSeqList = activeRooms.stream().filter(roomDto -> roomDto.getRoomMode()==mode).map(
+                RoomDto::getRoomSeq).toList();
+
+        HashMap<Integer,Integer> roomIdxMap = new HashMap<>();
+        for(RoomDto roomDto:activeRooms){
+            roomIdxMap.put(roomDto.getRoomSeq(),roomDto.getRoomIdx());
+        }
+
+        List<RoomRes> RoomResList = roomRepository.findAllById(activeSeqList).stream().map(
+                room -> {
+                    // Create RoomRes with the found RoomDto
+                    return RoomRes.of(roomIdxMap.get(room.getRoomSeq()), room);
+                }
+        ).toList();
+        log.info("같은 방 찾기");
+        return RoomResList;
+    }
 
     @Override
     public HashMap<String, Object> findByRoomTag(String roomTag) {

@@ -48,6 +48,9 @@ public class ChannelInboundInterceptor  implements ChannelInterceptor {
                 log.info(authentication.getPrincipal().toString());
                 accessor.setUser(authentication);
             }
+            else {
+                log.info("인증 실패");
+            }
         }
         if (StompCommand.SUBSCRIBE.equals(command)) {
             Principal principal = accessor.getUser();
