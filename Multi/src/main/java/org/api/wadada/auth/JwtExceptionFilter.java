@@ -37,6 +37,7 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
             chain.doFilter(req, res);
         } catch (ExpiredJwtException e){
             log.info("expired jwt token, redirect to auth/reissue");
+            res.setHeader("Access-Control-Allow-Origin", "*");
             try {
                 RestTemplate restTemplate = new RestTemplate();
                 String reissueUrl = "https://k10a704.p.ssafy.io/Wadada/auth/reissue";
