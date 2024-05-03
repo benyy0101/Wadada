@@ -27,18 +27,21 @@ class MypageAPI {
     return response;
   }
 
-  Future<Response<dynamic>> getSingleDetail(RecordRequest req) async {
-    final response = await _dio.post('single', data: req);
+  Future<Response<dynamic>> getSingleDetail(int req) async {
+    await setAuth();
+    final response = await _dio.get('single/${req}');
     return response;
   }
 
-  Future<Response<dynamic>> getMultiDetail(RecordRequest req) async {
-    final response = await _dio.post('multi', data: req);
+  Future<Response<dynamic>> getMultiDetail(int req) async {
+    await setAuth();
+    final response = await _dio.get('multi/${req}');
     return response;
   }
 
-  Future<Response<dynamic>> getMarathonDetail(RecordRequest req) async {
-    final response = await _dio.post('marathon', data: req);
+  Future<Response<dynamic>> getMarathonDetail(int req) async {
+    await setAuth();
+    final response = await _dio.get('marathon/${req}');
     return response;
   }
 }

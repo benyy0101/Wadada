@@ -7,6 +7,7 @@ import 'package:wadada/controller/mypageController.dart';
 import 'package:wadada/models/mypage.dart';
 import 'package:wadada/provider/mypageProvider.dart';
 import 'package:wadada/repository/mypageRepo.dart';
+import 'package:wadada/screens/mypage/myRecords.dart';
 
 class RecordList extends StatelessWidget {
   RecordList({super.key});
@@ -92,20 +93,36 @@ class ListTileWidget extends StatelessWidget {
             title: Text(simple.recordType),
             subtitle: Row(
               children: [
-                Text(simple.recordType),
+                Text(typeConverter(simple.recordType)),
                 SizedBox(
                   width: 20.0,
                 ),
-                Text(simple.recordDist.toString()),
+                Text(simple.recordDist.toString() + " km"),
               ],
             ),
             trailing: IconButton(
               onPressed: () {
-                print("HIHIHIHIHI");
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => MyRecords(
+                              recordSeq: simple.recordSeq,
+                              recordType: simple.recordType,
+                            )));
               },
               icon: const Icon(Icons.arrow_forward_ios_rounded),
             ));
       }).toList(),
     );
+  }
+}
+
+String typeConverter(String target) {
+  if (target == '1') {
+    return '싱글';
+  } else if (target == '2') {
+    return '멀티';
+  } else {
+    return '마라톤';
   }
 }

@@ -71,7 +71,7 @@ class MypageController extends GetxController {
   //mypage002
   void fetchSingleDetail(RecordRequest req) async {
     try {
-      singleDetail = await mypageRepository.getSingleDetail(req);
+      singleDetail = await mypageRepository.getSingleDetail(req.recordSeq);
     } catch (e) {
       print(e);
     }
@@ -80,18 +80,34 @@ class MypageController extends GetxController {
   //mypage003
   void fetchMultiDetail(RecordRequest req) async {
     try {
-      multiDetail = await mypageRepository.getMultiDetail(req);
+      multiDetail = await mypageRepository.getMultiDetail(req.recordSeq);
     } catch (e) {
       print(e);
     }
   }
 
   //mypage004
-  void fetchMarathonDetail(RecordRequest req) async {
+  void fetchMarathonDetail(String req) async {
     try {
-      marathonDetail = await mypageRepository.getMarathonDetail(req);
+      marathonDetail = await mypageRepository.getMarathonDetail(req.hashCode);
     } catch (e) {
       print(e);
+    }
+  }
+
+  fetchDetail(RecordRequest req) async {
+    try {
+      if (req.recordType == '1') {
+        singleDetail = await mypageRepository.getSingleDetail(req.recordSeq);
+      } else if (req.recordType == '2') {
+        multiDetail = await mypageRepository.getMultiDetail(req.recordSeq);
+      } else {
+        marathonDetail =
+            await mypageRepository.getMarathonDetail(req.recordSeq);
+      }
+    } catch (e) {
+      print(e);
+      rethrow;
     }
   }
 }

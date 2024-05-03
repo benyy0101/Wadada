@@ -5,9 +5,9 @@ import 'package:wadada/provider/mypageProvider.dart';
 //어떤 api가 있는지 정리
 abstract class AbstractMypageRepository {
   Future<MonthlyRecord> getMonthlyRecord(DateTime date);
-  Future<SingleDetail> getSingleDetail(RecordRequest req);
-  Future<MultiDetail> getMultiDetail(RecordRequest req);
-  Future<MarathonDetail> getMarathonDetail(RecordRequest req);
+  Future<SingleDetail> getSingleDetail(int req);
+  Future<MultiDetail> getMultiDetail(int req);
+  Future<MarathonDetail> getMarathonDetail(int req);
 }
 
 class MypageRepository implements AbstractMypageRepository {
@@ -18,7 +18,7 @@ class MypageRepository implements AbstractMypageRepository {
   });
 
   @override
-  Future<MarathonDetail> getMarathonDetail(RecordRequest req) async {
+  Future<MarathonDetail> getMarathonDetail(int req) async {
     try {
       Response res = await mypageAPI.getMarathonDetail(req);
       return MarathonDetail.fromJson(res.data);
@@ -41,7 +41,7 @@ class MypageRepository implements AbstractMypageRepository {
   }
 
   @override
-  Future<MultiDetail> getMultiDetail(RecordRequest req) async {
+  Future<MultiDetail> getMultiDetail(int req) async {
     try {
       Response res = await mypageAPI.getMultiDetail(req);
       return MultiDetail.fromJson(res.data);
@@ -52,7 +52,7 @@ class MypageRepository implements AbstractMypageRepository {
   }
 
   @override
-  Future<SingleDetail> getSingleDetail(RecordRequest req) async {
+  Future<SingleDetail> getSingleDetail(int req) async {
     try {
       Response res = await mypageAPI.getSingleDetail(req);
       return SingleDetail.fromJson(res.data);
