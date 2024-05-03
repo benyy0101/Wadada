@@ -22,4 +22,6 @@ public class SingleEndReq {
     private int recordMeanHeartbeat;
     private int recordMeanPace;
 
+    private int recordMode;
+
 }

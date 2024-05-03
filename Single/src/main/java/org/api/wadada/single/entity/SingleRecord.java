@@ -55,6 +55,9 @@ public class SingleRecord {
 
     private int singleRecordMeanSpeed;
 
+    private int singleRecordMode;
+    // 거리 1 속도2
+
     @CreatedDate
     @Column(name = "created_at",nullable = false)
     private LocalDateTime createdAt;
@@ -71,7 +74,7 @@ public class SingleRecord {
     public SingleRecord( Member member, Point singleRecordStart, Point singleRecordEnd, int singleRecordTime, int singleRecordDist,
                         String singleRecordImage, String singleRecordWay, String singleRecordPace, int singleRecordMeanPace,
                         String singleRecordHeartbeat, int singleRecordMeanHeartbeat, String singleRecordSpeed,
-                        int singleRecordMeanSpeed, int isDeleted) {
+                        int singleRecordMeanSpeed, int singleRecordMode, int isDeleted) {
         this.member = member;
         this.singleRecordStart = singleRecordStart;
         this.singleRecordEnd = singleRecordEnd;
@@ -85,6 +88,7 @@ public class SingleRecord {
         this.singleRecordMeanHeartbeat = singleRecordMeanHeartbeat;
         this.singleRecordSpeed = singleRecordSpeed;
         this.singleRecordMeanSpeed = singleRecordMeanSpeed;
+        this.singleRecordMode = singleRecordMode;
         this.isDeleted = isDeleted;
     }
 

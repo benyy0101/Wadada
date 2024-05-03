@@ -53,6 +53,7 @@ public class SingleRecordServiceImpl implements SingleRecordService {
         //저장위한 엔티티 build
         SingleRecord singleRecord = SingleRecord.builder()
                 .singleRecordStart(point)
+                .singleRecordMode(singleStartReq.getRecordMode())
                 .member(optional.get())
                 .build();
         SingleRecord savedRecord = singleRecordRepository.save(singleRecord);

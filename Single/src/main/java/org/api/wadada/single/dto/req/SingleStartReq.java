@@ -7,5 +7,6 @@ public class SingleStartReq {
 
     private int memberSeq;
     private String recordStartLocation;
+    private int recordMode;
 
 }

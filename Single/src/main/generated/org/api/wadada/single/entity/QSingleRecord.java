@@ -42,6 +42,8 @@ public class QSingleRecord extends EntityPathBase<SingleRecord> {
 
     public final NumberPath<Integer> singleRecordMeanSpeed = createNumber("singleRecordMeanSpeed", Integer.class);
 
+    public final NumberPath<Integer> singleRecordMode = createNumber("singleRecordMode", Integer.class);
+
     public final StringPath singleRecordPace = createString("singleRecordPace");
 
     public final NumberPath<Integer> singleRecordSeq = createNumber("singleRecordSeq", Integer.class);
