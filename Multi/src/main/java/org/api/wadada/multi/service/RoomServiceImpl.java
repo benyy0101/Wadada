@@ -81,6 +81,10 @@ public class RoomServiceImpl implements RoomService{
         // 해당 방에 참가시키고
         roomDto.addMember(RoomMemberRes.of(false,member));
         List<RoomMemberRes> memberResList = roomDto.getMemberList();
+        // 방의 모든 사용자 정보 출력
+        for(RoomMemberRes memberRes : memberResList) {
+            System.out.println(memberRes);
+        }
         // 해당 방 유저 정보들 반환
         HashMap<Integer, List<RoomMemberRes>> resultMap = new HashMap<>();
         resultMap.put(roomIdx, memberResList);
