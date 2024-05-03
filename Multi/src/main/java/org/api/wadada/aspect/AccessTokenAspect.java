@@ -6,6 +6,7 @@
     import org.aspectj.lang.annotation.Aspect;
     import org.springframework.http.ResponseEntity;
     import org.springframework.stereotype.Component;
+    import org.springframework.web.context.request.RequestAttributes;
     import org.springframework.web.context.request.RequestContextHolder;
     import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -18,21 +19,25 @@
             // 원래의 메서드를 실행합니다.
             Object proceed = joinPoint.proceed();
 
-            // 현재 HTTP 요청 객체를 가져옵니다.
-            HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-            String protocol = request.getScheme(); // "http" 또는 "https"
+            // 현재 요청 객체를 안전하게 가져옵니다.
+            RequestAttributes attributes = RequestContextHolder.getRequestAttributes();
 
-            if("https".equalsIgnoreCase(protocol) || "http".equalsIgnoreCase(protocol)) {
-                boolean isAccessTokenUpdated = checkAccessTokenUpdate(request);
+            if (attributes instanceof ServletRequestAttributes) {
+                HttpServletRequest request = ((ServletRequestAttributes) attributes).getRequest();
+                String protocol = request.getScheme(); // "http" 또는 "https"
 
-                if (isAccessTokenUpdated && proceed instanceof ResponseEntity) {
-                    // 업데이트된 액세스 토큰을 헤더에 추가하고 새로운 ResponseEntity를 반환합니다.
-                    ResponseEntity<?> originalResponse = (ResponseEntity<?>) proceed;
-                    return ResponseEntity.status(originalResponse.getStatusCode())
-                            .headers(originalResponse.getHeaders())
-                            .header("X-Access-Token-Updated", "true")
-                            .header("AccessToken-Updated", request.getAttribute("newAccessToken").toString())
-                            .body(originalResponse.getBody());
+                if ("https".equalsIgnoreCase(protocol) || "http".equalsIgnoreCase(protocol)) {
+                    boolean isAccessTokenUpdated = checkAccessTokenUpdate(request);
+
+                    if (isAccessTokenUpdated && proceed instanceof ResponseEntity) {
+                        // 업데이트된 액세스 토큰을 헤더에 추가하고 새로운 ResponseEntity를 반환합니다.
+                        ResponseEntity<?> originalResponse = (ResponseEntity<?>) proceed;
+                        return ResponseEntity.status(originalResponse.getStatusCode())
+                                .headers(originalResponse.getHeaders())
+                                .header("X-Access-Token-Updated", "true")
+                                .header("AccessToken-Updated", request.getAttribute("newAccessToken").toString())
+                                .body(originalResponse.getBody());
+                    }
                 }
             }
 
