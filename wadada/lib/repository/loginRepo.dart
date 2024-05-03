@@ -62,6 +62,8 @@ class LoginRepository implements AbstractLoginRepository {
       } else {
         token = await UserApi.instance.loginWithKakaoAccount();
       }
+      print("---------------------------");
+      print(token);
       Response res = await provider.kakaoLogin(token.accessToken);
       return LoginDto.fromJson(res.data);
     } catch (error) {

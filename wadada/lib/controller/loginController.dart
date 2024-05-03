@@ -16,7 +16,11 @@ class LoginController extends GetxController {
   Future<void> login() async {
     try {
       loginInfo = await loginRepository.loginToServer();
-      storage.write(key: 'accessToken', value: loginInfo.jwtToken.accessToken);
+      storage.write(
+          key: 'accessToken',
+          value: loginInfo.jwtToken.grantType +
+              " " +
+              loginInfo.jwtToken.accessToken);
     } catch (e) {
       print(e);
       rethrow;

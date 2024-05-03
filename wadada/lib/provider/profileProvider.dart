@@ -1,42 +1,39 @@
 import 'dart:convert';
 
+import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:get/get_connect/connect.dart';
 import 'package:wadada/models/profile.dart';
 
-class ProfileProvider extends GetConnect {
-  @override
-  void onInit() async {
-    httpClient.baseUrl = 'https://k10a704.p.ssafy.io/Wadada/profile';
-    httpClient.defaultContentType = 'application/json';
-    httpClient.timeout = const Duration(seconds: 10);
-    final _storage = const FlutterSecureStorage();
-    final token = await _storage.read(key: 'accessToken');
-    httpClient.addRequestModifier<dynamic>((request) {
-      request.headers['Authorization'] = 'Bearer ${token}';
-      return request;
-    });
+class ProfileProvider {
+  late Dio _dio;
+  final storage = FlutterSecureStorage();
+
+  ProfileProvider() {
+    _dio = Dio();
+    _dio.options.baseUrl = 'https://k10a704.p.ssafy.io/Wadada/profile';
+    _dio.options.headers['Content-Type'] = 'application/json';
+    _dio.options.headers['Authorization'] = storage.read(key: 'accessToken');
   }
 
-  Future<Response> profileDelete(String code) async {
-    final response = await delete(
+  Future<Response<dynamic>> profileDelete(String code) async {
+    final response = await _dio.delete(
       'profile',
     );
     return response;
   }
 
-  Future<Response> profilePatch(Profile profile) async {
-    final response = await patch('profile', profile);
+  Future<Response<dynamic>> profilePatch(Profile profile) async {
+    final response = await _dio.patch('profile', data: profile);
     return response;
   }
 
-  Future<Response> profileGet(Profile profile) async {
-    final response = await get('profile');
+  Future<Response<dynamic>> profileGet(Profile profile) async {
+    final response = await _dio.get('profile');
     return response;
   }
 
   Future<Response> nickNameValidate(String nickName) async {
-    final response = await post('profile', nickName);
+    final response = await _dio.post('profile', data: nickName);
     return response;
   }
 }

@@ -85,7 +85,7 @@ class _MyPageLayoutState extends State<MyPageLayout>
                 height: 100,
                 child: TabBarView(
                   controller: _tabController,
-                  children: const [
+                  children: [
                     RecordList(),
                     avatarWidget(),
                     Text("3"),

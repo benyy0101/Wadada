@@ -1,35 +1,44 @@
-import 'package:get/get.dart';
+import 'package:dio/dio.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:intl/intl.dart';
 import 'package:wadada/models/mypage.dart';
 
 const serverUrl = "";
 
-class MypageAPI extends GetConnect {
-  @override
-  void onInit() {
-    httpClient.baseUrl = 'https://your-api-url.com';
-    httpClient.defaultContentType = 'application/json';
-    httpClient.timeout = const Duration(seconds: 10);
+class MypageAPI {
+  late Dio _dio;
+  final storage = FlutterSecureStorage();
+
+  MypageAPI() {
+    _dio = Dio();
+    _dio.options.baseUrl = 'https://k10a704.p.ssafy.io/Wadada/record/';
+    _dio.options.headers['Content-Type'] = 'application/json';
   }
 
-  Future<Response> getMonthlyRecord(DateTime date) async {
+  Future<void> setAuth() async {
+    _dio.options.headers['Authorization'] =
+        await storage.read(key: 'accessToken');
+  }
+
+  Future<Response<dynamic>> getMonthlyRecord(DateTime date) async {
+    await setAuth();
     String formattedDate = DateFormat('yyyy-MM').format(date);
-    final response = await get('record/$formattedDate');
+    final response = await _dio.get('${formattedDate}');
     return response;
   }
 
-  Future<Response> getSingleDetail(RecordRequest req) async {
-    final response = await post('record/single', req);
+  Future<Response<dynamic>> getSingleDetail(RecordRequest req) async {
+    final response = await _dio.post('single', data: req);
     return response;
   }
 
-  Future<Response> getMultiDetail(RecordRequest req) async {
-    final response = await post('record/multi', req);
+  Future<Response<dynamic>> getMultiDetail(RecordRequest req) async {
+    final response = await _dio.post('multi', data: req);
     return response;
   }
 
-  Future<Response> getMarathonDetail(RecordRequest req) async {
-    final response = await post('users/marathon', req);
+  Future<Response<dynamic>> getMarathonDetail(RecordRequest req) async {
+    final response = await _dio.post('marathon', data: req);
     return response;
   }
 }

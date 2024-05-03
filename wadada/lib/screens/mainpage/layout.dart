@@ -8,6 +8,7 @@ import 'package:wadada/common/const/colors.dart';
 import 'package:wadada/controller/loginController.dart';
 import 'package:wadada/provider/loginProvider.dart';
 import 'package:wadada/repository/loginRepo.dart';
+import 'package:wadada/screens/mypage/layout.dart';
 import 'package:wadada/screens/singlemainpage/single_main.dart';
 
 import 'package:get/get.dart';
@@ -84,7 +85,7 @@ class KakaoLoginButton extends StatelessWidget {
           onTap: () => {
             controller.login().then((value) {
               Navigator.pushReplacement(context,
-                  MaterialPageRoute(builder: (context) => SingleMain()));
+                  MaterialPageRoute(builder: (context) => MyPageLayout()));
             })
           },
           child: Container(
