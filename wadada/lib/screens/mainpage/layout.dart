@@ -81,7 +81,12 @@ class KakaoLoginButton extends StatelessWidget {
     return GetBuilder<LoginController>(
       builder: (LoginController controller) {
         return GestureDetector(
-          onTap: () => controller.login(),
+          onTap: () => {
+            controller.login().then((value) {
+              Navigator.pushReplacement(context,
+                  MaterialPageRoute(builder: (context) => SingleMain()));
+            })
+          },
           child: Container(
             decoration: const BoxDecoration(
               boxShadow: [

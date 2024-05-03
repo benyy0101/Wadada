@@ -1,4 +1,4 @@
-import 'package:get/get.dart';
+import 'package:dio/dio.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:wadada/provider/loginProvider.dart';
 import 'package:wadada/util/serializable.dart';
@@ -9,23 +9,31 @@ abstract class AbstractLoginRepository {
 }
 
 class LoginDto {
-  final String kakaoId;
-  final String kakaoNickname;
-  final String kakaoEmail;
+  final String? kakao_id;
+  final String? kakao_nickname;
+  final String? kakao_email;
   final Jwt jwtToken;
 
   LoginDto(
-      {required this.kakaoId,
-      required this.kakaoNickname,
-      required this.kakaoEmail,
+      {required this.kakao_id,
+      required this.kakao_nickname,
+      required this.kakao_email,
       required this.jwtToken});
 
   factory LoginDto.fromJson(Map<String, dynamic> json) {
     return LoginDto(
-        kakaoId: json['kakaoId'],
-        kakaoNickname: json['kakaoNickname'],
-        kakaoEmail: json['kakaoEmail'],
-        jwtToken: json['jwtToken']);
+      kakao_id:
+          json['kakao_id'] != null ? json['kakao_id'] as String : "temp_id",
+      kakao_nickname: json['kakao_nickname'] != null
+          ? json['kakao_nickname'] as String
+          : "temp_nickname",
+      kakao_email: json['kakao_email'] != null
+          ? json['kakao_email'] as String
+          : "temp_email",
+      jwtToken: json['jwtToken'] != null
+          ? Jwt.fromJson(json['jwtToken'] as Map<String, dynamic>)
+          : Jwt(grantType: "temp_grantType", accessToken: "temp_accessToken"),
+    );
   }
 }
 
@@ -34,19 +42,17 @@ class Jwt {
   final String accessToken;
 
   Jwt({required this.grantType, required this.accessToken});
+
+  factory Jwt.fromJson(Map<String, dynamic> json) {
+    return Jwt(grantType: json['grantType'], accessToken: json['accessToken']);
+  }
 }
 
-class LoginRepository extends GetxService implements AbstractLoginRepository {
+class LoginRepository implements AbstractLoginRepository {
   final LoginProvider provider;
 
   LoginRepository({required this.provider});
-  
-  @override
-  void onInit() {
-    super.onInit();
-  }
 
-  @override
   Future<LoginDto> loginToServer() async {
     try {
       OAuthToken token;
@@ -57,7 +63,7 @@ class LoginRepository extends GetxService implements AbstractLoginRepository {
         token = await UserApi.instance.loginWithKakaoAccount();
       }
       Response res = await provider.kakaoLogin(token.accessToken);
-      return LoginDto.fromJson(res.body);
+      return LoginDto.fromJson(res.data);
     } catch (error) {
       print('로그인 실패 $error');
       rethrow;

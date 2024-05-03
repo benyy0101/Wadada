@@ -30,7 +30,7 @@ void main() async {
   HttpOverrides.global = MyHttpOverrides();
 
   runApp(const MyApp());
-  Get.put<GetConnect>(GetConnect());
+  //Get.put<GetConnect>(GetConnect());
 }
 
 class MyApp extends StatelessWidget {
