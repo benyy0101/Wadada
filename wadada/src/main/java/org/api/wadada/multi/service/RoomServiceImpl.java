@@ -9,6 +9,7 @@ import org.api.wadada.multi.dto.req.CreateRoomReq;
 import org.api.wadada.multi.dto.res.AttendRoomRes;
 import org.api.wadada.multi.dto.res.LeaveRoomRes;
 import org.api.wadada.multi.dto.res.RoomMemberRes;
+import org.api.wadada.multi.dto.res.RoomRes;
 import org.api.wadada.multi.entity.HashTag;
 import org.api.wadada.multi.entity.Member;
 import org.api.wadada.multi.entity.Room;
@@ -25,6 +26,7 @@ import org.springframework.stereotype.Service;
 import java.security.Principal;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -65,7 +67,8 @@ public class RoomServiceImpl implements RoomService{
         RoomDto roomDto = new RoomDto();
         roomDto.addMember(RoomMemberRes.of(true,member));
         List<RoomMemberRes> memberResList = roomDto.getMemberList();
-
+        roomDto.setRoomSeq(savedRoom.getRoomSeq());
+        roomDto.setRoomMode(createRoomReq.getRoomMode());
         int idx = roomManager.addRoom(savedRoom.getRoomSeq(),roomDto);
 
         HashMap<Integer, List<RoomMemberRes>> resultMap = new HashMap<>();
@@ -135,6 +138,25 @@ public class RoomServiceImpl implements RoomService{
         return resultMap;
 
     }
+
+//    @Override
+//    public List<RoomRes> getRoomList(int mode) {
+//        List<RoomDto> activeRooms = roomManager.getAllRooms();
+//        List<Integer> activeSeqList = activeRooms.stream().filter(roomDto -> roomDto.getRoomMode()==mode).map(
+//                RoomDto::getRoomSeq).toList();
+//
+//        List<RoomRes> RoomResList = roomRepository.findAllById(activeSeqList).stream().map(
+//                room -> {
+//                    RoomDto correspondingRoomDto = activeSeqList.stream()
+//                            .filter(dto -> dto.equals(room.getRoomSeq()))
+//                            .findFirst()
+//                            .orElse(null);
+//                    // Create RoomRes with the found RoomDto
+//                    return RoomRes.of(correspondingRoomDto.getRoomIdx(), room);
+//                }
+//        ).toList();
+//        return RoomResList;
+//    }
 
     @Override
     public HashMap<String, Object> findByRoomTag(String roomTag) {

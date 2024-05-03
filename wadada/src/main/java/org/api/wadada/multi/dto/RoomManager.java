@@ -32,6 +32,7 @@ public class RoomManager {
         if (emptyIndex.isPresent()) {
             roomSeqList[emptyIndex.get()] = roomSeq;
             log.info("메모리 방 리스트      "+ Arrays.toString(roomSeqList));
+            room.setRoomIdx(emptyIndex.get());
             rooms.set(emptyIndex.get(), room);
             return emptyIndex.get();
         } else {

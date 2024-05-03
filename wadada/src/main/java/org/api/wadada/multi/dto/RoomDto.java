@@ -1,6 +1,8 @@
 package org.api.wadada.multi.dto;
 
 import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 import org.api.wadada.multi.dto.res.RoomMemberRes;
 
 import java.util.ArrayList;
@@ -8,10 +10,19 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 // 방 안에 멤버 관리
-
+@Getter
 public class RoomDto{
 
     private final ConcurrentHashMap<String, RoomMemberRes> members;
+
+    @Setter
+    private int roomSeq;
+
+    @Setter
+    private int roomMode;
+
+    @Setter
+    private int roomIdx;
 
     public RoomDto() {
         this.members = new ConcurrentHashMap<>();
@@ -45,6 +56,5 @@ public class RoomDto{
         }
         return new ArrayList<>(this.members.values());
     }
-
 
 }

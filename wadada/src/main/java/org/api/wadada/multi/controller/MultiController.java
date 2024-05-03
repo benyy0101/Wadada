@@ -53,6 +53,12 @@ public class MultiController {
         return new ResponseEntity<>(roomService.changeReady(roomIdx,principal),HttpStatus.OK);
     }
 
+//    @GetMapping("/{mode}")
+//    public ResponseEntity<?> getRoomList(@PathVariable int mode){
+//
+//
+//    }
+
     @GetMapping("/test/elk")
     public ResponseEntity<?> elkTest(){
         log.info("test");
