@@ -1,4 +1,4 @@
-package com.example.wadada
+package com.ssafy.wadada
 
 import io.flutter.embedding.android.FlutterActivity
 

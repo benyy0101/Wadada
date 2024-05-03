@@ -41,10 +41,11 @@ dependencies:
   kakao_flutter_sdk_common: ^1.9.1+2
   dio: ^5.4.3+1
   flutter_dotenv: ^5.1.0
+  kakao_map_plugin: ^0.3.0
+  geolocator: ^11.0.0
   http: ^1.2.1
   flutter_secure_storage: ^9.0.0
   flutter_launcher_icons: ^0.13.1
-  http: ^1.2.1
 
 flutter_launcher_icons:
   android: "launcher_icon"

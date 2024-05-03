@@ -1,32 +1,56 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:wadada/screens/singleoptionpage/component/select_dist_option.dart';
 import 'package:wadada/screens/singleoptionpage/component/select_time_option.dart';
 import 'package:wadada/screens/singlerunpage/single_free_run.dart';
 
-class SingleFreeMode extends StatefulWidget{
-  const SingleFreeMode({super.key});
+class SingleOption extends StatefulWidget{
+  final bool isDistMode;
+  const SingleOption({super.key, required this.isDistMode});
 
   @override
   SingleFreeModeState createState() => SingleFreeModeState();
 }
 
-class SingleFreeModeState extends State<SingleFreeMode> {
+class SingleFreeModeState extends State<SingleOption> {
   SelectDistOptionState? distOptionState;
   SelectTimeOptionState? timeOptionState;
 
   void clickstart() {
-    if (timeOptionState?.errorText != null) {
-      // ScaffoldMessenger.of(context).showSnackBar(
-      //   SnackBar(
-      //     content: Text(timeOptionState?.errorText ?? '오류 발생'),
-      //   ),
-      // );
-      return;
+    SelectTimeOptionState? selectedTimeOptionState;
+    SelectDistOptionState? selectedDistOptionState;
+
+    if (widget.isDistMode) {
+        selectedDistOptionState = distOptionState;
+    } else {
+        selectedTimeOptionState = timeOptionState;
     }
 
-    double time = timeOptionState?.time ?? 0.0;
-    // double dist = distOptionState?.dist ?? 0.0;
-    Navigator.push(context, MaterialPageRoute(builder: (context) => SingleFreeRun(time:time)));
+    if (selectedTimeOptionState != null) {
+      if (selectedTimeOptionState.isError == true) {
+          ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                  content: Text(selectedTimeOptionState.errorText ?? '오류 발생'),
+              ),
+          );
+          return;
+      }
+      double time = selectedTimeOptionState.time ?? 0.0;
+      String appKey = dotenv.env['APP_KEY'] ?? '';
+      Navigator.push(context, MaterialPageRoute(builder: (context) => SingleFreeRun(dist: 0, time: time, appKey: appKey)));
+    } else if (selectedDistOptionState != null) {
+      if (selectedDistOptionState.isError == true) {
+          ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                  content: Text(selectedDistOptionState.errorText ?? '오류 발생'),
+              ),
+          );
+          return;
+      }
+      double dist = selectedDistOptionState.dist ?? 0.0;
+      String appKey = dotenv.env['APP_KEY'] ?? '';
+      Navigator.push(context, MaterialPageRoute(builder: (context) => SingleFreeRun(dist: dist, time: 0, appKey: appKey)));
+    }
   }
 
   @override
@@ -59,46 +83,69 @@ class SingleFreeModeState extends State<SingleFreeMode> {
               SizedBox(
                 height: 40,
               ),
-              Container(
-                child:Column(
+              // Container(
+              //   child:Column(
+              //     crossAxisAlignment: CrossAxisAlignment.start,
+              //     children: [
+              //       Text('거리 설정',
+              //         style: TextStyle(
+              //           color: Colors.black54,
+              //           fontSize: 15,
+              //         )
+              //       ),
+              //       SizedBox(height:10),
+              //       SelectDistOption(
+              //         option: '거리',
+              //         optionstr: '(km)',
+              //         onStateUpdated: (state) {
+              //           setState(() {
+              //               distOptionState = state;
+              //           });
+              //         },
+              //       ),
+              //     ],
+              //   ),
+              // ),
+              if (widget.isDistMode) // 거리 모드
+                Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('거리 설정',
-                      style: TextStyle(
-                        color: Colors.black54,
-                        fontSize: 15,
-                      )
+                    Text(
+                      '거리 설정',
+                      style: TextStyle(color: Colors.black54, fontSize: 15),
                     ),
-                    SizedBox(height:10),
+                    SizedBox(height: 10),
                     SelectDistOption(
                       option: '거리',
                       optionstr: '(km)',
                       onStateUpdated: (state) {
                         setState(() {
-                            distOptionState = state;
-                        });
-                      },
-                    ),
-                    SizedBox(height:40),
-                    Text('시간 설정',
-                      style: TextStyle(
-                        color: Colors.black54,
-                        fontSize: 15,
-                      )
-                    ),
-                    SizedBox(height:10),
-                    SelectTimeOption(
-                      option: '시간',
-                      optionstr: '(분)',
-                      onStateUpdated: (state) {
-                        setState(() {
-                            timeOptionState = state;
+                          distOptionState = state;
                         });
                       },
                     ),
                   ],
                 ),
-              ),
+              if (!widget.isDistMode) // 시간 모드
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '시간 설정',
+                      style: TextStyle(color: Colors.black54, fontSize: 15),
+                    ),
+                    SizedBox(height: 10),
+                    SelectTimeOption(
+                      option: '시간',
+                      optionstr: '(분)',
+                      onStateUpdated: (state) {
+                        setState(() {
+                          timeOptionState = state;
+                        });
+                      },
+                    ),
+                  ],
+                ),
               SizedBox(height: 80),
               Row(
                 children: [
