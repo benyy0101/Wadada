@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.api.wadada.common.BaseEntity;
+import org.locationtech.jts.geom.Point;
 
 import java.util.ArrayList;
 
@@ -37,9 +38,7 @@ public class Room extends BaseEntity {
 
     private String roomTarget;
 
-    private double roomTargetLatitude;
-
-    private double roomTargetLongitude;
+    private Point roomTargetPoint;
 
     @Column(nullable = false)
     private int roomMaker;
@@ -48,7 +47,7 @@ public class Room extends BaseEntity {
 //    private List<MultiRecord> multiRecordList = new ArrayList<>();
 
     @Builder
-    public Room(String roomTitle,int roomPeople, int roomMode, String roomTag,int roomSecret, int roomDist, int roomTime, String roomTarget, double roomTargetLatitude, double roomTargetLongitude, int roomMaker) {
+    public Room(String roomTitle,int roomPeople, int roomMode, String roomTag,int roomSecret, int roomDist, int roomTime, String roomTarget, Point roomTargetPoint, int roomMaker) {
         this.roomTitle = roomTitle;
         this.roomPeople = roomPeople;
         this.roomMode = roomMode;
@@ -57,8 +56,7 @@ public class Room extends BaseEntity {
         this.roomDist = roomDist;
         this.roomTime = roomTime;
         this.roomTarget = roomTarget;
-        this.roomTargetLatitude = roomTargetLatitude;
-        this.roomTargetLongitude = roomTargetLongitude;
+        this.roomTargetPoint = roomTargetPoint;
         this.roomMaker = roomMaker;
     }
 }

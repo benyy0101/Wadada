@@ -30,21 +30,21 @@ public class RoomDto{
 
     public void addMember(RoomMemberRes member) {
         if (members.containsKey(member.getMemberId())) {
-            throw new IllegalStateException("Member already exists.");
+            throw new IllegalStateException("방에 해당 멤버가 존재합니다");
         }
         members.put(member.getMemberId(), member);
     }
 
     public void removeMember(String memberId) {
         if (!members.containsKey(memberId)) {
-            throw new IllegalStateException("Member does not exist.");
+            throw new IllegalStateException("방에 삭제할 멤버가 존재하지 않습니다");
         }
         members.remove(memberId);
     }
 
     public void changeReady(String memberId) {
         if (!members.containsKey(memberId)) {
-            throw new IllegalStateException("Member does not exist.");
+            throw new IllegalStateException("방에 변경할 멤버가 존재하지 않습니다");
         }
         RoomMemberRes member = members.get(memberId);
         member.changeReady();

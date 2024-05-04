@@ -13,16 +13,19 @@ import org.api.wadada.multi.dto.res.RoomRes;
 import org.api.wadada.multi.entity.HashTag;
 import org.api.wadada.multi.entity.Member;
 import org.api.wadada.multi.entity.Room;
+import org.api.wadada.multi.entity.RoomDocument;
 import org.api.wadada.multi.exception.CreateRoomException;
 import org.api.wadada.multi.exception.NotFoundMemberException;
 import org.api.wadada.multi.repository.HashTagElasticsearchRepository;
 import org.api.wadada.multi.repository.MemberRepository;
+import org.api.wadada.multi.repository.RoomDocumentRepository;
 import org.api.wadada.multi.repository.RoomRepository;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.security.Principal;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -37,6 +40,7 @@ public class RoomServiceImpl implements RoomService{
     private final RoomRepository roomRepository;
     private final MemberRepository memberRepository;
     private final HashTagElasticsearchRepository elasticsearchRepository;
+    private final RoomDocumentRepository roomDocumentRepository;
     private final RoomManager roomManager = new RoomManager();
 
     @Override
@@ -150,26 +154,43 @@ public class RoomServiceImpl implements RoomService{
             roomIdxMap.put(roomDto.getRoomSeq(),roomDto.getRoomIdx());
         }
 
-        List<RoomRes> RoomResList = roomRepository.findAllById(activeSeqList).stream().map(
-                room -> {
-                    // Create RoomRes with the found RoomDto
-                    return RoomRes.of(roomIdxMap.get(room.getRoomSeq()), room);
-                }
+        List<RoomRes> roomResList = roomRepository.findAllById(activeSeqList).stream().map(
+                room -> RoomRes.of(roomIdxMap.get(room.getRoomSeq()), room)
         ).toList();
         log.info("같은 방 찾기");
-        return RoomResList;
+        return roomResList;
     }
 
+    // 해시태그 방 검색
     @Override
-    public HashMap<String, Object> findByRoomTag(String roomTag) {
-        List<HashTag> tags = elasticsearchRepository.findByRoomTag(roomTag);
-
-        for (HashTag tag : tags) {
-            log.info(tag.getRoomTag());
+    public List<RoomRes> findByRoomTag(String roomTag) throws IOException {
+        // 레포지토리에서 검색
+        List<RoomDocument> roomDocuments = roomDocumentRepository.findByRoomTag(roomTag);
+        for (RoomDocument document : roomDocuments) {
+            log.info(document.getRoomTag());
+        }
+        // 현재 활성화된 룸 정보 가져오고
+        HashMap<Integer, Integer> roomInfo = new HashMap<>();
+        List<RoomDto> activeRooms = roomManager.getAllRooms();
+        for(RoomDto room: activeRooms){
+            roomInfo.put(room.getRoomSeq(),room.getRoomIdx());
         }
 
-        HashMap<String, Object> result = new HashMap<>();
-        return result;
+        //거르는 작업(로그 스태시가 1분 주기라 삭제 반영 안된 정보 거르기)
+        roomDocuments = roomDocuments.stream()
+                .filter(roomDocument -> activeRooms.stream()
+                        .anyMatch(room -> room.getRoomSeq() == roomDocument.getRoomSeq()))
+                .toList();
+
+
+        // index와 정보를 response로
+        List<RoomRes> roomResList = roomDocuments.stream().map(
+                roomDocument -> {
+                    return RoomRes.of(roomInfo.get(roomDocument.getRoomSeq()),roomDocument);
+                }
+        ).collect(Collectors.toList());
+
+        return roomResList;
     }
 }
 // 방 타이틀,

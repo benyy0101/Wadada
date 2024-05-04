@@ -17,8 +17,8 @@ import java.util.Optional;
 public class RoomManager {
 
     private static final int MAX_ROOMS = 10;
-    private List<RoomDto> rooms;
-    private int[] roomSeqList = new int[10];
+    private final List<RoomDto> rooms;
+    private final int[] roomSeqList = new int[10];
 
     public RoomManager() {
         this.rooms = new ArrayList<>(MAX_ROOMS);

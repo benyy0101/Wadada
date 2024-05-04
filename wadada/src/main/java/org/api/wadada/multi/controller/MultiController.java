@@ -14,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.socket.messaging.SessionConnectEvent;
 
+import java.io.IOException;
 import java.security.Principal;
 
 
@@ -58,11 +59,10 @@ public class MultiController {
         return new ResponseEntity<>(roomService.getRoomList(mode),HttpStatus.OK);
     }
 
-    @GetMapping("/test/elk")
-    public ResponseEntity<?> elkTest(){
+    @GetMapping("/tag/{tag}")
+    public ResponseEntity<?> elkTest(@PathVariable String tag) throws IOException {
         log.info("test");
-        roomService.findByRoomTag("싸피");
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(roomService.findByRoomTag(tag),HttpStatus.OK);
     }
 
 

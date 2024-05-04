@@ -10,6 +10,7 @@ import org.api.wadada.multi.dto.res.RoomRes;
 import org.api.wadada.multi.repository.RoomRepository;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
@@ -26,5 +27,5 @@ public interface RoomService {
 
     List<RoomRes> getRoomList(int mode);
 
-    HashMap<String, Object> findByRoomTag(String roomTag);
+    List<RoomRes> findByRoomTag(String roomTag) throws IOException;
 }
