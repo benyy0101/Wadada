@@ -36,13 +36,18 @@ public class RoomManager {
             rooms.set(emptyIndex.get(), room);
             return emptyIndex.get();
         } else {
-            throw new Exception("Cannot add more rooms, all slots are full.");
+            throw new Exception("방이 가득 차서 생성 불가");
         }
     }
 
     public void removeRoom(int index) {
         if (index < 0 || index >= MAX_ROOMS) {
-            throw new IndexOutOfBoundsException("Invalid room index.");
+            throw new IndexOutOfBoundsException("잘못된 방 인덱스");
+        }
+        RoomDto room = rooms.get(index);
+        // 해당 방 멤버 모두 삭제
+        if(room != null){
+            room.removeAllMembers();
         }
         rooms.set(index, null);
     }

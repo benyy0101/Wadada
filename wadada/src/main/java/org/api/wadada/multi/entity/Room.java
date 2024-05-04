@@ -59,4 +59,5 @@ public class Room extends BaseEntity {
         this.roomTargetPoint = roomTargetPoint;
         this.roomMaker = roomMaker;
     }
+
 }

@@ -3,6 +3,7 @@ package org.api.wadada.multi.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.api.wadada.common.BaseEntity;
 import org.api.wadada.multi.dto.RoomDto;
 import org.api.wadada.multi.dto.RoomManager;
 import org.api.wadada.multi.dto.req.CreateRoomReq;
@@ -14,8 +15,10 @@ import org.api.wadada.multi.entity.HashTag;
 import org.api.wadada.multi.entity.Member;
 import org.api.wadada.multi.entity.Room;
 import org.api.wadada.multi.entity.RoomDocument;
+import org.api.wadada.multi.exception.CanNotJoinRoomException;
 import org.api.wadada.multi.exception.CreateRoomException;
 import org.api.wadada.multi.exception.NotFoundMemberException;
+import org.api.wadada.multi.exception.NotFoundRoomException;
 import org.api.wadada.multi.repository.HashTagElasticsearchRepository;
 import org.api.wadada.multi.repository.MemberRepository;
 import org.api.wadada.multi.repository.RoomDocumentRepository;
@@ -91,6 +94,16 @@ public class RoomServiceImpl implements RoomService{
 
         // index에 맞는방 찾고
         RoomDto roomDto = roomManager.getAllRooms().get(roomIdx);
+        int roomSeq = roomDto.getRoomSeq();
+        Optional<Room> room = roomRepository.findById(roomSeq);
+        if(room.isEmpty()){
+            throw new NotFoundRoomException("참가할 방이 없습니다");
+        }
+        // 방이 꽉찬 경우
+        if(room.get().getRoomPeople() == roomDto.getMemberList().size()){
+            throw new CanNotJoinRoomException("방이 가득 찼습니다");
+        }
+
         // 해당 방에 참가시키고
         roomDto.addMember(RoomMemberRes.of(false,member));
         List<RoomMemberRes> memberResList = roomDto.getMemberList();
@@ -142,7 +155,7 @@ public class RoomServiceImpl implements RoomService{
         return resultMap;
 
     }
-
+    // 모드별 방 검색
     @Override
     public List<RoomRes> getRoomList(int mode) {
         List<RoomDto> activeRooms = roomManager.getAllRooms();
@@ -192,5 +205,16 @@ public class RoomServiceImpl implements RoomService{
 
         return roomResList;
     }
+
+    // 게임시작
+    @Override
+    public void startGame(int roomIdx) {
+        // 해당 방 멤버 삭제하고 비우기
+        roomManager.removeRoom(roomIdx);
+        // db에 삭제 요청 날리기
+        RoomDto roomDto = roomManager.getAllRooms().get(roomIdx);
+        int roomSeq = roomDto.getRoomSeq();
+        Optional<Room> room = roomRepository.findById(roomSeq);
+        room.ifPresent(BaseEntity::deleteSoftly);
+    }
 }
-// 방 타이틀,

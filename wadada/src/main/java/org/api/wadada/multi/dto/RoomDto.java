@@ -57,4 +57,8 @@ public class RoomDto{
         return new ArrayList<>(this.members.values());
     }
 
+    public void removeAllMembers() {
+        members.clear();
+    }
+
 }

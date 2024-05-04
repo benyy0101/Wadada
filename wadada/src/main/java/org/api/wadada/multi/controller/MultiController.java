@@ -55,14 +55,21 @@ public class MultiController {
     }
 
     @GetMapping("/{mode}")
-    public ResponseEntity<?> getRoomList(@PathVariable int mode){
+    public ResponseEntity<?> getModeRoomList(@PathVariable int mode){
         return new ResponseEntity<>(roomService.getRoomList(mode),HttpStatus.OK);
     }
 
     @GetMapping("/tag/{tag}")
-    public ResponseEntity<?> elkTest(@PathVariable String tag) throws IOException {
+    public ResponseEntity<?> getTagRoomList(@PathVariable String tag) throws IOException {
         log.info("test");
         return new ResponseEntity<>(roomService.findByRoomTag(tag),HttpStatus.OK);
+    }
+
+    @MessageMapping("/start/game/{roomIdx}")
+    @SendTo("/sub/attend/{roomIdx}")
+    public ResponseEntity<String> startGame(@DestinationVariable int roomIdx){
+        roomService.startGame(roomIdx);
+        return new ResponseEntity<>("Game Start",HttpStatus.OK);
     }
 
 
