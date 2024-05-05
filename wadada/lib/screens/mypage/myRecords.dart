@@ -15,6 +15,8 @@ class MyRecords extends StatelessWidget {
     temp(16, 110)
   ];
 
+  MyRecords({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,7 +27,7 @@ class MyRecords extends StatelessWidget {
         body: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(
+            SizedBox(
               width: MediaQuery.of(context).size.width * 0.9,
               child: ListView(
                 shrinkWrap: true,
@@ -175,7 +177,7 @@ class TypeContainer extends StatelessWidget {
 class ChartContainer extends StatelessWidget {
   final List<temp> data;
   final String title;
-  ChartContainer({super.key, required this.data, required this.title});
+  const ChartContainer({super.key, required this.data, required this.title});
   @override
   Widget build(BuildContext context) {
     return Expanded(
@@ -201,6 +203,7 @@ class ChartContainer extends StatelessWidget {
               LineChart<temp>(
                 chartData: data,
                 metrics: 'hz',
+                graphType: 'speed',
               )
             ],
           )

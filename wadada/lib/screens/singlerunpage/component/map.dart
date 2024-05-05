@@ -21,6 +21,17 @@ class MyMap extends StatefulWidget{
   ValueNotifier<LatLng?> startLocationNotifier = ValueNotifier<LatLng?>(null);
   ValueNotifier<LatLng?> endLocationNotifier = ValueNotifier<LatLng?>(null);
 
+  List<Map<String, double>> distanceSpeed = [];
+  List<Map<String, double>> distancePace = [];
+
+  List<Map<String, double>> getdistanceSpeed() {
+    return distanceSpeed;
+  }
+
+  List<Map<String, double>> getdistancePace() {
+    return distancePace;
+  }
+
   MyMap({super.key, required this.appKey});
 
   void _updateTotalDistance(double distance) {
@@ -107,16 +118,29 @@ class _MyMapState extends State<MyMap> {
             totalDistance += distance;
             Duration timeDiff = DateTime.now().difference(previousTime!);
             double totalTime = DateTime.now().difference(startTime).inSeconds.toDouble();
-            
-            // 속도
-            double currentSpeed = distance / timeDiff.inSeconds;
-            widget.speedNotifier.value = currentSpeed;
+            // double totalDistanceKm = totalDistance / 1000;
+            // double roundedTotalDistanceKm = double.parse(totalDistanceKm.toStringAsFixed(2));
 
-            // 페이스
+            // 속도 (m/s)
+            double currentSpeed = distance / timeDiff.inSeconds;
+            widget.speedNotifier.value = currentSpeed * 3.6;
+            // double roundedSpeed = double.parse(currentSpeed.toStringAsFixed(2));
+
+            // 페이스(s/km)
             double paceInSecondsPerKm = totalTime / (totalDistance / 1000);
             widget.paceNotifier.value = paceInSecondsPerKm;
 
             widget._updateTotalDistance(distance);
+
+            widget.distanceSpeed.add({
+                "dist": totalDistance,
+                "speed": currentSpeed,
+            });
+
+            widget.distancePace.add({
+                "dist": totalDistance,
+                "pace": paceInSecondsPerKm,
+            });
           }
           previousTime = DateTime.now();
 

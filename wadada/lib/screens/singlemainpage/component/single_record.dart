@@ -32,27 +32,42 @@ class _SingleRecordState extends State<SingleRecord>{
         options: Options(headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
-          'authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNDUyNzIxNzM3IiwiYXV0aCI6IlJPTEVfU09DSUFMIiwiZXhwIjoxNzE0NjgxNTkwfQ.zvrnuEckvfBuhc7kjMDf6HYHTt8RpJIUOifcc6o1Fk8',
+          'authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNDUyNzIxNzM3IiwiYXV0aCI6IlJPTEVfU09DSUFMIiwiZXhwIjoxNzE0ODgzODg1fQ.7nS18Nv6vBsmIIzOh03-_RYS1UHcXDLygj9PUwDN1Vo',
         }),
       );
 
       if (response.statusCode == 200) {
-            // 성공적으로 응답을 받았을 때
-            final data = response.data as Map<String, dynamic>;
-            print('통신 성공');
-            return data;
-        } else if (response.statusCode == 204) {
-            // 204 상태 코드 (No Content)
-            print('204');
-            return {};
-        } else {
-            print('서버 요청 실패: ${response.statusCode}');
-            return {};
+        final data = response.data as Map<String, dynamic>;
+        print('통신 성공');
+        return data;
+      } else if (response.statusCode == 204) {
+        print('204');
+        return {};
+      } else {
+        print('서버 요청 실패: ${response.statusCode}');
+        return {};
       }
     } catch (e) {
       print('요청 처리 중 에러 발생: $e');
       return {};
     }
+  }
+
+  String formatDuration(int seconds) {
+  Duration duration = Duration(seconds: seconds);
+  int hours = duration.inHours;
+  int minutes = duration.inMinutes.remainder(60);
+  int secs = duration.inSeconds.remainder(60);
+  
+  return '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${secs.toString().padLeft(2, '0')}';
+  }
+
+  // 초를 mm:ss 형식으로 변환하는 함수
+  String formatPace(int seconds) {
+    int minutes = seconds ~/ 60;
+    int secs = seconds % 60;
+    
+    return '${minutes.toString()}' "'${secs.toString().padLeft(2, '0')}\"";
   }
 
   @override
@@ -96,8 +111,23 @@ class _SingleRecordState extends State<SingleRecord>{
           final recordTime = data['recordTime'];
           final recordDist = data['recordDist'];
           final recordSpeed = data['recordSpeed'];
-          final recordPace = data['recordPace'];
+          final recordPace = data['recordPace'] as double;
           final recordHeartbeat = data['recordHeartbeat'];
+
+          print(recordDist);
+          print(recordPace);
+
+          double changeDist = recordDist / 1000;
+          String formattedChangeDist = changeDist.toStringAsFixed(2);
+
+          // 초를 hh:mm:ss로 변환
+          String formattedTime = formatDuration(recordTime);
+
+          // double recordPace를 int로 변환한다
+          int recordPaceInt = recordPace.toInt();
+
+          // int recordPace를 mm:ss 형식으로 변환
+          String formattedPace = formatPace(recordPaceInt);
 
           print(recordTime);
 
@@ -132,7 +162,7 @@ class _SingleRecordState extends State<SingleRecord>{
                               )
                             ),
                             SizedBox(height: 10),
-                            Text('$recordDist km',
+                            Text('$formattedChangeDist km',
                               style: TextStyle(
                                 color: GREEN_COLOR,
                                 fontSize: 30,
@@ -153,7 +183,7 @@ class _SingleRecordState extends State<SingleRecord>{
                               )
                             ),
                             SizedBox(height: 10),
-                            Text('$recordTime',
+                            Text(formattedTime,
                               style: TextStyle(
                                 color: GREEN_COLOR,
                                 fontSize: 30,
@@ -179,7 +209,7 @@ class _SingleRecordState extends State<SingleRecord>{
                               )
                             ),
                             SizedBox(height: 10),
-                            Text('$recordPace km/h',
+                            Text(formattedPace,
                               style: TextStyle(
                                 color: GREEN_COLOR,
                                 fontSize: 30,

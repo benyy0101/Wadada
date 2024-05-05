@@ -4,7 +4,8 @@ import 'package:wadada/common/const/colors.dart';
 
 class Clock extends StatefulWidget{
   final double time;
-  const Clock({super.key, required this.time});
+  final ValueNotifier<Duration> elapsedTimeNotifier;
+  const Clock({Key? key, required this.time, required this.elapsedTimeNotifier}) : super(key: key);
 
   @override
   State<Clock> createState() => ClockState();
@@ -12,6 +13,7 @@ class Clock extends StatefulWidget{
 
 class ClockState extends State<Clock> {
   Duration _elapsed = Duration.zero;
+  ValueNotifier<Duration> elapsedTimeNotifier = ValueNotifier<Duration>(Duration.zero);
   ValueNotifier<Duration> endTimeNotifier = ValueNotifier(Duration.zero);
   Duration get elapsed => _elapsed;
   bool _isRunning = false;
@@ -58,6 +60,14 @@ class ClockState extends State<Clock> {
     print('_isRunning state is now: $_isRunning');
   }
 
+  double getElapsedSeconds() {
+    if (widget.time > 0) {
+      return (widget.time * 60) - _elapsed.inSeconds.toDouble();
+    } else {
+      return _elapsed.inSeconds.toDouble();
+    }
+  }
+
   @override
   void dispose() {
     print('Clock dispose called');
@@ -69,6 +79,7 @@ class ClockState extends State<Clock> {
     if (_isRunning) {
       setState(() {
         _elapsed += Duration(milliseconds: 100);
+        elapsedTimeNotifier.value = _elapsed;
       });
     }
   }
