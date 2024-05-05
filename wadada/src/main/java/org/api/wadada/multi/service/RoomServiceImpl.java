@@ -30,6 +30,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.security.Principal;
+import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -70,7 +71,25 @@ public class RoomServiceImpl implements RoomService{
                 .roomTitle(roomTitle)
                 .roomMaker(member.getMemberSeq())
                 .build();
+
+
         Room savedRoom = roomRepository.save(room);
+
+        RoomDocument document = RoomDocument.builder()
+                .roomSeq(savedRoom.getRoomSeq())
+                .roomDist(savedRoom.getRoomDist())
+                .roomTime(savedRoom.getRoomTime())
+                .roomMode((byte) savedRoom.getRoomMode())
+                .roomTag(savedRoom.getRoomTag())
+                .roomSecret(savedRoom.getRoomSecret())
+                .roomPeople((byte) savedRoom.getRoomPeople())
+                .roomTitle(savedRoom.getRoomTitle())
+                .roomMaker(savedRoom.getRoomMaker())
+                .isDeleted(false)
+                .updatedAt(new Date())
+                .build();
+
+        roomDocumentRepository.save(document);
         RoomDto roomDto = new RoomDto();
         roomDto.addMember(RoomMemberRes.of(true,member));
         List<RoomMemberRes> memberResList = roomDto.getMemberList();
@@ -125,7 +144,23 @@ public class RoomServiceImpl implements RoomService{
         // index에 맞는방 찾고
         RoomDto roomDto = roomManager.getAllRooms().get(roomIdx);
         // 해당 방에 멤버 삭제시키고
-        roomDto.removeMember(member.getMemberId());
+        boolean isManager = roomDto.removeMember(member.getMemberId());
+
+        //방장이면 방 터트리기
+        if(isManager){
+            // 해당 방 멤버 삭제하고 비우기
+            roomManager.removeRoom(roomIdx);
+            // db에 삭제 요청 날리기
+            int roomSeq = roomDto.getRoomSeq();
+            Optional<Room> room = roomRepository.findById(roomSeq);
+            room.ifPresent(r -> {
+                r.deleteSoftly();
+                roomRepository.save(r);
+            });
+            HashMap<Integer, List<RoomMemberRes>> resultMap = new HashMap<>();
+            resultMap.put(roomIdx, new ArrayList<>());
+            return resultMap;
+        }
 
         List<RoomMemberRes> memberResList = roomDto.getMemberList();
         // 해당 방 유저 정보들 반환
@@ -215,6 +250,9 @@ public class RoomServiceImpl implements RoomService{
         RoomDto roomDto = roomManager.getAllRooms().get(roomIdx);
         int roomSeq = roomDto.getRoomSeq();
         Optional<Room> room = roomRepository.findById(roomSeq);
-        room.ifPresent(BaseEntity::deleteSoftly);
+        room.ifPresent(r -> {
+            r.deleteSoftly();
+            roomRepository.save(r);
+        });
     }
 }

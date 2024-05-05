@@ -35,11 +35,15 @@ public class RoomDto{
         members.put(member.getMemberId(), member);
     }
 
-    public void removeMember(String memberId) {
+    public boolean removeMember(String memberId) {
         if (!members.containsKey(memberId)) {
             throw new IllegalStateException("방에 삭제할 멤버가 존재하지 않습니다");
         }
+        if(members.get(memberId).isManager()){
+            return true;
+        }
         members.remove(memberId);
+        return false;
     }
 
     public void changeReady(String memberId) {
