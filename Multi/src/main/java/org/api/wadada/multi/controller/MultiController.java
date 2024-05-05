@@ -1,8 +1,11 @@
 package org.api.wadada.multi.controller;
 
+import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.api.wadada.multi.dto.req.CreateRoomReq;
+import org.api.wadada.multi.dto.req.GameStartReq;
+import org.api.wadada.multi.dto.res.GameStartRes;
 import org.api.wadada.multi.service.RoomService;
 import org.springframework.context.event.EventListener;
 import org.springframework.http.HttpStatus;
@@ -53,5 +56,12 @@ public class MultiController {
         return new ResponseEntity<>(roomService.changeReady(roomIdx,principal),HttpStatus.OK);
     }
 
+
+    // Game 관련 Logic
+    @PostMapping("/start")
+    public ResponseEntity<GameStartRes> saveStartMulti(Principal principal, @RequestBody GameStartReq gameStartReq){
+
+        return ResponseEntity.ok().build();
+    }
 
 }
