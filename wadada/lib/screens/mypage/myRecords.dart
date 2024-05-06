@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:wadada/common/component/lineChart.dart';
 import 'package:wadada/common/const/colors.dart';
+import 'package:wadada/controller/mypageController.dart';
+import 'package:wadada/models/mypage.dart';
+import 'package:wadada/provider/mypageProvider.dart';
+import 'package:wadada/repository/mypageRepo.dart';
 
 class temp extends chartData {
   temp(super.distance, super.numerics);
@@ -15,8 +21,15 @@ class MyRecords extends StatelessWidget {
     temp(16, 110)
   ];
 
+  MyRecords({super.key, required this.recordSeq, required this.recordType});
+  final int recordSeq;
+  final String recordType;
+
   @override
   Widget build(BuildContext context) {
+    Get.put(MypageController(
+        mypageRepository: MypageRepository(mypageAPI: MypageAPI())));
+
     return Scaffold(
         appBar: AppBar(
           title: Text('나의 기록'),
@@ -26,54 +39,60 @@ class MyRecords extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              width: MediaQuery.of(context).size.width * 0.9,
-              child: ListView(
-                shrinkWrap: true,
-                children: <Widget>[
-                  SizedBox(
-                    height: 40,
-                  ),
-                  SimpleContainer(title: '날짜', content: '2024-01-01'),
-                  SizedBox(
-                    height: 40,
-                  ),
-                  SimpleContainer(title: '이동거리', content: '1.23 km'),
-                  SizedBox(
-                    height: 40,
-                  ),
-                  TypeContainer(title: '게임 종류', content: '거리 모드', type: '멀티'),
-                  SizedBox(
-                    height: 40,
-                  ),
-                  SimpleContainer(title: '소요 시간', content: '추후 반영 예정'),
-                  SizedBox(
-                    height: 40,
-                  ),
-                  RouteContainer(
-                    title: '나의 경로',
-                    content: Image.asset(
-                      'assets/images/temp_map.png',
-                      width: MediaQuery.of(context).size.width * 0.9,
-                    ),
-                  ),
-                  ChartContainer(
-                    title: '페이스',
-                    data: chartData,
-                  ),
-                  ChartContainer(
-                    title: '속도',
-                    data: chartData,
-                  ),
-                  ChartContainer(
-                    title: '심박수',
-                    data: chartData,
-                  ),
-                  SizedBox(
-                    height: 80,
-                  )
-                ],
-              ),
-            )
+                width: MediaQuery.of(context).size.width * 0.9,
+                child: GetBuilder<MypageController>(
+                    builder: (MypageController mypagecontroller) {
+                  RecordRequest req = RecordRequest(
+                      recordSeq: recordSeq, recordType: recordType);
+                  mypagecontroller.fetchDetail(req);
+                  return ListView(
+                    shrinkWrap: true,
+                    children: <Widget>[
+                      SizedBox(
+                        height: 40,
+                      ),
+                      SimpleContainer(title: '날짜', content: '2024-01-01'),
+                      SizedBox(
+                        height: 40,
+                      ),
+                      SimpleContainer(title: '이동거리', content: '1.23 km'),
+                      SizedBox(
+                        height: 40,
+                      ),
+                      TypeContainer(
+                          title: '게임 종류', content: '거리 모드', type: '멀티'),
+                      SizedBox(
+                        height: 40,
+                      ),
+                      SimpleContainer(title: '소요 시간', content: '추후 반영 예정'),
+                      SizedBox(
+                        height: 40,
+                      ),
+                      RouteContainer(
+                        title: '나의 경로',
+                        content: Image.asset(
+                          'assets/images/temp_map.png',
+                          width: MediaQuery.of(context).size.width * 0.9,
+                        ),
+                      ),
+                      ChartContainer(
+                        title: '페이스',
+                        data: chartData,
+                      ),
+                      ChartContainer(
+                        title: '속도',
+                        data: chartData,
+                      ),
+                      ChartContainer(
+                        title: '심박수',
+                        data: chartData,
+                      ),
+                      SizedBox(
+                        height: 80,
+                      )
+                    ],
+                  );
+                }))
           ],
         ));
   }
