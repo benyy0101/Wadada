@@ -43,7 +43,6 @@ class MultiProvider {
   Future<Response<dynamic>> multiRoomCreate(MultiRoom room) async {
     await setAuth();
     final response = await _dio.post('/create', data: room.toJson());
-    print(response);
     return response;
   }
 

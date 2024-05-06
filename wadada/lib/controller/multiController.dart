@@ -19,21 +19,11 @@ class MultiController extends GetxController {
 
   void creatMultiRoom(MultiRoom roomInfo) async {
     try {
-      int roomIdx = await repo.createRoom(roomInfo);
-      info = RoomInfo(
-        roomPeople: roomInfo.roomPeople,
-        roomDist: roomInfo.roomDist,
-        roomMode: roomInfo.roomMode,
-        roomSecret: roomInfo.roomSecret,
-        roomTag: roomInfo.roomTag,
-        roomTime: roomInfo.roomTime,
-        roomTitle: roomInfo.roomTitle,
-        roomIdx: roomIdx,
-      );
+      info = await repo.createRoom(roomInfo);
     } catch (e) {
       print("방이 생성되지 않았습니다. 다시 시도해 주세요");
       print(e);
-      rethrow;
+    rethrow;
     }
   }
 }

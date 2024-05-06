@@ -1,9 +1,10 @@
 import 'package:wadada/models/multiroom.dart';
 import 'package:wadada/provider/multiProvider.dart';
 import 'package:dio/src/response.dart';
+import 'package:wadada/screens/multimainpage/component/room.dart';
 
 abstract class AbstractMultiRepository {
-  Future<int> createRoom(MultiRoom roomInfo);
+  Future<RoomInfo> createRoom(MultiRoom roomInfo);
 }
 
 class MultiRepository extends AbstractMultiRepository {
@@ -14,10 +15,21 @@ class MultiRepository extends AbstractMultiRepository {
   });
 
   @override
-  Future<int> createRoom(MultiRoom roomInfo) async {
+  Future<RoomInfo> createRoom(MultiRoom roomInfo) async {
     try {
       Response res = await provider.multiRoomCreate(roomInfo);
-      return res.data['roomIdx'];
+      int roomIdx = int.parse(res.data.keys.first);
+      RoomInfo info = RoomInfo(
+        roomIdx: roomIdx,
+        roomPeople: roomInfo.roomPeople,
+        roomDist: roomInfo.roomDist,
+        roomMode: roomInfo.roomMode,
+        roomSecret: roomInfo.roomSecret,
+        roomTag: roomInfo.roomTag,
+        roomTime: roomInfo.roomTime,
+        roomTitle: roomInfo.roomTitle,
+      );
+      return info;
     } catch (e) {
       print(e);
       rethrow;

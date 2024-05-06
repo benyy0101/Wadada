@@ -58,7 +58,7 @@ class TestButton extends StatelessWidget {
         onPressed: () {
           try {
             controller.creatMultiRoom(test);
-            print(controller.info.roomIdx);
+
             // 로그아웃 성공 시 처
           } catch (error) {
             // 로그아웃 실패 시 처리
@@ -72,7 +72,7 @@ class TestButton extends StatelessWidget {
                 RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(18.0),
                     side: BorderSide(color: GREEN_COLOR)))),
-        child: Text('테스트 슈웃'),
+        child: Text(controller.info.roomIdx.toString()),
       );
     });
   }
