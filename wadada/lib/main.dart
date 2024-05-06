@@ -4,11 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:kakao_flutter_sdk_common/kakao_flutter_sdk_common.dart';
 import 'package:wadada/common/component/tabbars.dart';
-// import 'package:wadada/common/component/myRecords.dart';
 import 'package:wadada/screens/mainpage/layout.dart';
-//import 'package:wadada/common/pages/mainpage.dart';
-// import 'package:wadada/screens/mypage/layout.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:wadada/screens/multimainpage/multi_main.dart';
 import 'package:wadada/screens/mypage/layout.dart';
 
 void main() async {
@@ -41,8 +39,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
-      home: MainPageLayout(),
-      // home: MyPageLayout(),
+      // home: MainPageLayout(),
+      home: MultiMain(),
     );
   }
 }
