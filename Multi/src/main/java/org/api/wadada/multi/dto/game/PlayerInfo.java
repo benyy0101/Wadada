@@ -1,2 +1,4 @@
-package org.api.wadada.multi.dto;public class PlayerInfo {
+package org.api.wadada.multi.dto.game;
+
+public class PlayerInfo {
 }

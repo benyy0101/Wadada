@@ -1,35 +1,34 @@
 package org.api.wadada.util;
 
-import java.util.concurrent.CountDownLatch;
+import org.api.wadada.multi.dto.game.PlayerInfo;
+import org.springframework.stereotype.Component;
 
-class GameSession {
-    private final String id;
-    private final CountDownLatch latch;
-    private volatile boolean gameStarted = false;
+import java.util.Map;
+import java.util.concurrent.*;
 
-    public GameSession(String id, int playerCount) {
-        this.id = id;
-        this.latch = new CountDownLatch(playerCount);
+@Component
+public class GameSessionManager {
+
+    private final Map<String, GameSession> sessions = new ConcurrentHashMap<>();
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+
+    public void registerPlayer(String gameSessionId, PlayerInfo playerInfo) {
+        GameSession session = sessions.computeIfAbsent(gameSessionId, k -> createNewSession(gameSessionId));
+        session.registerPlayer(playerInfo);
     }
 
-    public void registerPlayer(PlayerInfo playerInfo) {
-        // 플레이어 등록 로직
-        latch.countDown();
-        if (latch.getCount() == 0) {
-            startGame();
-        }
+    private GameSession createNewSession(String gameSessionId) {
+        GameSession newSession = new GameSession(gameSessionId, 6); // 여기서 6은 최대 참가자 수입니다.
+        Runnable timeoutTask = () -> {
+            if (!newSession.isGameStarted()) {
+                newSession.startGame();
+            }
+        };
+        scheduler.schedule(timeoutTask, 30, TimeUnit.SECONDS);
+        return newSession;
     }
 
-    public synchronized void startGame() {
-        if (!gameStarted) {
-            gameStarted = true;
-            // 게임 시작 로직
-        }
-    }
-
-    public boolean isGameStarted() {
-        return gameStarted;
-    }
-
-    // PlayerInfo 클래스는 플레이어 정보를 저장하는 클래스로 상황에 맞게 구현
+    // GameSession 클래스와 PlayerInfo 클래스는 상황에 맞게 구현
 }
+
+

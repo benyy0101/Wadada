@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.geolatte.geom.Point;
+import org.locationtech.jts.geom.Point;
 
 @AllArgsConstructor
 @NoArgsConstructor

@@ -5,10 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 
 // 전체 방 관리
@@ -17,13 +14,16 @@ import java.util.Optional;
 public class RoomManager {
 
     private static final int MAX_ROOMS = 10;
-    private List<RoomDto> rooms;
-    private int[] roomSeqList = new int[10];
+    private final List<RoomDto> rooms;
+    private final List<Map<String,Integer>> playrooms;
+    private final int[] roomSeqList = new int[10];
 
     public RoomManager() {
         this.rooms = new ArrayList<>(MAX_ROOMS);
+        this.playrooms = new ArrayList<>(MAX_ROOMS);
         for (int i = 0; i < MAX_ROOMS; i++) {
             rooms.add(null);
+            playrooms.add(new HashMap<>());
         }
     }
 
@@ -32,16 +32,22 @@ public class RoomManager {
         if (emptyIndex.isPresent()) {
             roomSeqList[emptyIndex.get()] = roomSeq;
             log.info("메모리 방 리스트      "+ Arrays.toString(roomSeqList));
+            room.setRoomIdx(emptyIndex.get());
             rooms.set(emptyIndex.get(), room);
             return emptyIndex.get();
         } else {
-            throw new Exception("Cannot add more rooms, all slots are full.");
+            throw new Exception("방이 가득 차서 생성 불가");
         }
     }
 
     public void removeRoom(int index) {
         if (index < 0 || index >= MAX_ROOMS) {
-            throw new IndexOutOfBoundsException("Invalid room index.");
+            throw new IndexOutOfBoundsException("잘못된 방 인덱스");
+        }
+        RoomDto room = rooms.get(index);
+        // 해당 방 멤버 모두 삭제
+        if(room != null){
+            room.removeAllMembers();
         }
         rooms.set(index, null);
     }
