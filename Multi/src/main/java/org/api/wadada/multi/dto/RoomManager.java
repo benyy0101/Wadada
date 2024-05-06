@@ -16,9 +16,9 @@ import java.util.Optional;
 @Slf4j
 public class RoomManager {
 
-    private static final int MAX_ROOMS = 10;
+    private static final int MAX_ROOMS = 40;
     private List<RoomDto> rooms;
-    private int[] roomSeqList = new int[10];
+    private int[] roomSeqList = new int[40];
 
     public RoomManager() {
         this.rooms = new ArrayList<>(MAX_ROOMS);
