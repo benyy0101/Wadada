@@ -60,8 +60,8 @@ public class MultiController {
     }
 
     @GetMapping("/tag/{tag}")
-    public ResponseEntity<?> getTagRoomList(@PathVariable String tag) throws IOException {
-        log.info("test");
+    public ResponseEntity<?> getTagRoomList(@PathVariable String tag) throws Exception {
+        log.info(tag);
         return new ResponseEntity<>(roomService.findByRoomTag(tag),HttpStatus.OK);
     }
 

@@ -27,7 +27,7 @@ public interface RoomService {
 
     List<RoomRes> getRoomList(int mode);
 
-    List<RoomRes> findByRoomTag(String roomTag) throws IOException;
+    List<RoomRes> findByRoomTag(String roomTag) throws Exception;
 
     void startGame(int roomIdx);
 }

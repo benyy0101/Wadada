@@ -3,15 +3,11 @@ package org.api.wadada.multi.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.api.wadada.common.BaseEntity;
 import org.api.wadada.multi.dto.RoomDto;
 import org.api.wadada.multi.dto.RoomManager;
 import org.api.wadada.multi.dto.req.CreateRoomReq;
-import org.api.wadada.multi.dto.res.AttendRoomRes;
-import org.api.wadada.multi.dto.res.LeaveRoomRes;
 import org.api.wadada.multi.dto.res.RoomMemberRes;
 import org.api.wadada.multi.dto.res.RoomRes;
-import org.api.wadada.multi.entity.HashTag;
 import org.api.wadada.multi.entity.Member;
 import org.api.wadada.multi.entity.Room;
 import org.api.wadada.multi.entity.RoomDocument;
@@ -19,20 +15,11 @@ import org.api.wadada.multi.exception.CanNotJoinRoomException;
 import org.api.wadada.multi.exception.CreateRoomException;
 import org.api.wadada.multi.exception.NotFoundMemberException;
 import org.api.wadada.multi.exception.NotFoundRoomException;
-import org.api.wadada.multi.repository.HashTagElasticsearchRepository;
-import org.api.wadada.multi.repository.MemberRepository;
-import org.api.wadada.multi.repository.RoomDocumentRepository;
-import org.api.wadada.multi.repository.RoomRepository;
-import org.springframework.data.elasticsearch.annotations.Document;
-import org.springframework.data.elasticsearch.core.SearchHit;
-import org.springframework.data.elasticsearch.core.SearchHits;
+import org.api.wadada.multi.repository.*;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.security.Principal;
-import java.time.Instant;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 @Service
@@ -45,6 +32,7 @@ public class RoomServiceImpl implements RoomService{
     private final MemberRepository memberRepository;
     private final HashTagElasticsearchRepository elasticsearchRepository;
     private final RoomDocumentRepository roomDocumentRepository;
+    private final CustomRoomRepository customRoomRepository;
     private final RoomManager roomManager = new RoomManager();
 
     @Override
@@ -211,9 +199,11 @@ public class RoomServiceImpl implements RoomService{
 
     // 해시태그 방 검색
     @Override
-    public List<RoomRes> findByRoomTag(String roomTag) throws IOException {
+    public List<RoomRes> findByRoomTag(String roomTag) throws Exception {
+        String[] tagList = roomTag.split(" ");
+
         // 레포지토리에서 검색
-        List<RoomDocument> roomDocuments = roomDocumentRepository.findByRoomTag(roomTag);
+        List<RoomDocument> roomDocuments = customRoomRepository.findByRoomTags(tagList);
         for (RoomDocument document : roomDocuments) {
             log.info(document.getRoomTag());
         }
