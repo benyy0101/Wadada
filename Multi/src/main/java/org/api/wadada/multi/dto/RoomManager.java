@@ -13,10 +13,10 @@ import java.util.*;
 @Slf4j
 public class RoomManager {
 
-    private static final int MAX_ROOMS = 10;
     private final List<RoomDto> rooms;
     private final List<Map<String,Integer>> playrooms;
-    private final int[] roomSeqList = new int[10];
+    private static final int MAX_ROOMS = 40;
+    private int[] roomSeqList = new int[40];
 
     public RoomManager() {
         this.rooms = new ArrayList<>(MAX_ROOMS);
