@@ -5,10 +5,13 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.api.wadada.app.mypage.controller.dto.RecordListDto;
 import org.api.wadada.app.mypage.service.MyPageService;
+import org.api.wadada.image.S3UploadService;
 import org.api.wadada.util.MemberUtil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
@@ -18,6 +21,7 @@ import java.time.format.DateTimeFormatter;
 @AllArgsConstructor
 public class MyPageController {
     private final MyPageService myPageService;
+    private final S3UploadService s3UploadService;
     @GetMapping("/{date}")
     public ResponseEntity<RecordListDto> getMonthlyRecords(@Valid @PathVariable("date") String date){
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM");
@@ -47,4 +51,12 @@ public class MyPageController {
         return ResponseEntity.ok(myPageService.getMarathonRecord(memberSeq,MarathonRecord));
 
     }
+    @PostMapping("/image")
+    public ResponseEntity<String> createProfileImage(@RequestPart MultipartFile profileImageFile) throws IOException {
+        String uploadedImageUrl = s3UploadService.saveFile(profileImageFile, "profiles/");
+        return ResponseEntity.ok(uploadedImageUrl);
+    }
+
+
+
 }
