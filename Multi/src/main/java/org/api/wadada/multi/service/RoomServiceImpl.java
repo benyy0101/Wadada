@@ -260,17 +260,6 @@ public class RoomServiceImpl implements RoomService{
     }
 
     // 게임시작
-    @Override
-    public HashMap<String, Object> findByRoomTag(String roomTag) {
-        List<HashTag> tags = elasticsearchRepository.findByRoomTag(roomTag);
-
-        for (HashTag tag : tags) {
-            log.info(tag.getRoomTag());
-        }
-
-        HashMap<String, Object> result = new HashMap<>();
-        return result;
-    }
 
     // 게임시작
 //    @Override
