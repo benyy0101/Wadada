@@ -9,50 +9,66 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 
 class StompProvider {
   late StompClient client;
-  late String serverUrl = "";
-  late String accessToken = "";
-
-  void makeEnv() async {
-    await dotenv.load(fileName: 'assets/env/.env');
-    serverUrl = dotenv.env['SERVER_URL'] ?? "";
-    final storage = FlutterSecureStorage();
-    storage.read(key: 'accessToken');
-  }
-
-  StompProvider() {
-    makeEnv();
+  late DotEnv env;
+  final int roomIdx;
+  StompProvider({required this.roomIdx}) {
     client = StompClient(
       config: StompConfig.sockJS(
-        url: serverUrl,
-        onConnect: onConnect, // Pass the onConnect method as a callback here
+        url: 'https://k10a704.p.ssafy.io/Multi/ws',
+        onConnect: (StompFrame frame) {
+          client.subscribe(
+            destination: '/sub/attend/$roomIdx',
+            headers: {
+              'Authorization':
+                  'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNDYzNDMxNDUzIiwiYXV0aCI6IlJPTEVfU09DSUFMIiwiZXhwIjoxNzE1NDA1MzkzfQ.dmjUkVX1sFe9EpYhT3SGO3uC7q1dLIoddBvzhoOSisM'
+            },
+            callback: (frame) {
+              //print(frame.body);
+              print(jsonDecode(frame.body!)['body']);
+
+              //List<dynamic> result = jsonDecode(frame.body!);
+            },
+          );
+        }, // Pass the onConnect method as a callback here
         webSocketConnectHeaders: {
           "transports": ["websocket"],
-          'Authorization': accessToken
+          'Authorization':
+              'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNDYzNDMxNDUzIiwiYXV0aCI6IlJPTEVfU09DSUFMIiwiZXhwIjoxNzE1NDA1MzkzfQ.dmjUkVX1sFe9EpYhT3SGO3uC7q1dLIoddBvzhoOSisM'
         },
-        stompConnectHeaders: {'Authorization': accessToken},
+        stompConnectHeaders: {
+          'Authorization':
+              'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNDYzNDMxNDUzIiwiYXV0aCI6IlJPTEVfU09DSUFMIiwiZXhwIjoxNzE1NDA1MzkzfQ.dmjUkVX1sFe9EpYhT3SGO3uC7q1dLIoddBvzhoOSisM'
+        },
         onWebSocketError: (dynamic error) => print(error.toString()),
       ),
     );
     client.activate();
   }
 
-  void onConnect(StompFrame frame) {
-    client.subscribe(
-      destination: '/sub/attend/1',
-      headers: {'Authorization': accessToken},
-      callback: (frame) {
-        print(frame.body);
-        List<dynamic> result = jsonDecode(frame.body!);
-        if (!result.isEmpty) {
-          for (var item in result) {
-            print(item.toString()); // Access properties of each item as needed
-          }
-        }
-      },
-    );
+  // void onConnect(StompFrame frame) {
+  //   client.subscribe(
+  //     destination: '/sub/attend/0',
+  //     headers: {
+  //       'Authorization':
+  //           'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNDYzNDMxNDUzIiwiYXV0aCI6IlJPTEVfU09DSUFMIiwiZXhwIjoxNzE1NDA1MzkzfQ.dmjUkVX1sFe9EpYhT3SGO3uC7q1dLIoddBvzhoOSisM'
+  //     },
+  //     callback: (frame) {
+  //       print(frame.body);
+  //       //List<dynamic> result = jsonDecode(frame.body!);
+  //       //print(result);
+  //     },
+  //   );
+  // }
+
+  void attend(int roomIdx) {
+    client.send(destination: '/pub/attend/$roomIdx');
   }
 
-  void send() {
-    client.send(destination: '/pub/in/3');
+  void out(int roomIdx) {
+    client.send(destination: '/pub/out/$roomIdx');
+  }
+
+  void disconnect() {
+    client.deactivate();
   }
 }
