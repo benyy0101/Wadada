@@ -52,7 +52,7 @@ public class MemberController {
         return ResponseEntity.ok(memberService.getMemberDetail(memberId));
     }
 
-    @GetMapping("{nickname}")
+    @GetMapping("/{nickname}")
     public ResponseEntity<MemberDuplicationVaildResponseDto> duplicationValidate(@Valid @PathVariable("nickname") String memberNickName){
         return ResponseEntity.ok(memberService.duplicationValid(memberNickName));
     }

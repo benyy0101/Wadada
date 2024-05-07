@@ -1,5 +1,4 @@
-package org.api.wadada.service;
-
+package org.api.wadada.image;
 
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3;

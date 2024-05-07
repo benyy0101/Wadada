@@ -14,6 +14,8 @@ public class LoginResponseDto {
     private String memberId;
     @JsonProperty("kakao_nickname")
     private String nickname;
+    @JsonProperty("kakao_email")
+    private String email;
     @JsonProperty("jwtToken")
     private JwtToken jwtToken;
 }

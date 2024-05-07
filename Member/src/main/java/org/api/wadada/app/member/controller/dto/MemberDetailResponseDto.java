@@ -1,14 +1,12 @@
 package org.api.wadada.app.member.controller.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 @Builder
 @Getter
 @NoArgsConstructor
+@ToString
 public class MemberDetailResponseDto {
     public MemberDetailResponseDto(String memberNickname, LocalDate memberBirthday, String memberGender, String memberMainEmail, String memberProfileImage, int memberLevel, Byte memberExp) {
         this.memberNickname = memberNickname;

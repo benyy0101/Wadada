@@ -18,6 +18,8 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -34,7 +36,8 @@ public class OAuthController {
     private long refreshTokenValidityInSeconds;
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponseDto> kakaoLogin(@RequestBody LoginReqeustDto req){
+    public ResponseEntity<LoginResponseDto> kakaoLogin(@RequestBody LoginReqeustDto req) throws IOException {
+        System.out.println(req.getCode());
         LoginResponseDto res = oAuthService.kakaoOAuthLogin(req.getCode());
         HttpHeaders headers = getHeadersWithCookie(res);
         return new ResponseEntity<>(res, headers, HttpStatus.OK);
@@ -47,9 +50,14 @@ public class OAuthController {
 
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals("refreshToken")){
-                String encryptedRefreshToken = URLDecoder.decode(cookie.getValue(), StandardCharsets.UTF_8);
-                String newAccessToken = oAuthService.reissueAccessToken(encryptedRefreshToken);
-                return ResponseEntity.ok(newAccessToken);
+                try {
+                    String encryptedRefreshToken = URLDecoder.decode(cookie.getValue(), StandardCharsets.UTF_8);
+                    System.out.println(encryptedRefreshToken);
+                    String newAccessToken = oAuthService.reissueAccessToken(encryptedRefreshToken);
+                    return ResponseEntity.ok(newAccessToken);
+                }catch (Exception e){
+                    throw new RestApiException(CommonErrorCode.WRONG_REQUEST,"Refresh 토큰이 만료 혹은 잘못되었습니다 재로그인해주세요.");
+                }
             }
         }
         return new ResponseEntity<String>("필요한 쿠키가 존재하지 않습니다", HttpStatus.BAD_REQUEST);
@@ -66,7 +74,7 @@ public class OAuthController {
         try {
             // refreshToken 값을 URL 인코딩 적용
             String encodedRefreshToken = URLEncoder.encode(res.getJwtToken().deleteRefreshToken(),StandardCharsets.UTF_8);
-
+            System.out.println(encodedRefreshToken);
             ResponseCookie cookie = ResponseCookie.from("refreshToken", encodedRefreshToken)
                     .maxAge(refreshTokenValidityInSeconds)
                     .path("/")

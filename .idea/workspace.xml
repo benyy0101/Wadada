@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="f13e00e2-6d2c-467d-a85b-7ee4c31a52c7" name="Changes" comment="" />
+    <list default="true" id="f13e00e2-6d2c-467d-a85b-7ee4c31a52c7" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Member/src/main/java/org/api/wadada/app/member/controller/MemberController.java" beforeDir="false" afterPath="$PROJECT_DIR$/Member/src/main/java/org/api/wadada/app/member/controller/MemberController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Member/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/Member/src/main/resources/application.yml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -25,8 +29,9 @@
   "keyToString": {
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "98__BE__Member__mypage",
+    "git-widget-placeholder": "102__Infra__Member__Dev",
     "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/HJ/Member/Member",
     "nodejs_package_manager_path": "npm",
     "vue.rearranger.settings.migration": "true"
   }
@@ -41,6 +46,8 @@
       <updated>1714087779924</updated>
       <workItem from="1714087781146" duration="4000" />
       <workItem from="1714347069751" duration="72000" />
+      <workItem from="1714612195022" duration="6000" />
+      <workItem from="1714622849136" duration="76000" />
     </task>
     <servers />
   </component>
