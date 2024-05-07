@@ -1,17 +1,17 @@
 package org.api.wadada.multi.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.api.wadada.common.BaseEntity;
-import org.geolatte.geom.Point;
 
 import java.util.ArrayList;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Builder
-@AllArgsConstructor
 public class Room extends BaseEntity {
 
     @Id
@@ -37,7 +37,9 @@ public class Room extends BaseEntity {
 
     private String roomTarget;
 
-    private Point roomTargetPoint;
+    private double roomTargetLatitude;
+
+    private double roomTargetLongitude;
 
     @Column(nullable = false)
     private int roomMaker;
@@ -45,5 +47,18 @@ public class Room extends BaseEntity {
 //    @OneToMany(fetch = FetchType.LAZY)
 //    private List<MultiRecord> multiRecordList = new ArrayList<>();
 
-
+    @Builder
+    public Room(String roomTitle,int roomPeople, int roomMode, String roomTag,int roomSecret, int roomDist, int roomTime, String roomTarget, double roomTargetLatitude, double roomTargetLongitude, int roomMaker) {
+        this.roomTitle = roomTitle;
+        this.roomPeople = roomPeople;
+        this.roomMode = roomMode;
+        this.roomTag = roomTag;
+        this.roomSecret = roomSecret;
+        this.roomDist = roomDist;
+        this.roomTime = roomTime;
+        this.roomTarget = roomTarget;
+        this.roomTargetLatitude = roomTargetLatitude;
+        this.roomTargetLongitude = roomTargetLongitude;
+        this.roomMaker = roomMaker;
+    }
 }

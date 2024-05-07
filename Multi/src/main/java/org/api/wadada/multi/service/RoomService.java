@@ -14,6 +14,7 @@ import org.api.wadada.multi.repository.RoomRepository;
 import org.locationtech.jts.io.ParseException;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
@@ -33,5 +34,7 @@ public interface RoomService {
 
     List<RoomRes> getRoomList(int mode);
 
-    HashMap<String, Object> findByRoomTag(String roomTag);
+    List<RoomRes> findByRoomTag(String roomTag) throws Exception;
+
+    void startGame(int roomIdx);
 }

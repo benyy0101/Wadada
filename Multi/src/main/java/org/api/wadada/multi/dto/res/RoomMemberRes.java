@@ -16,7 +16,7 @@ public class RoomMemberRes {
     private String memberGender;
     private String memberProfileImage;
     private int memberLevel;
-    private boolean memberReady = false;
+    private boolean memberReady;
 
     public void changeReady(){
         this.memberReady = !this.memberReady;
@@ -28,6 +28,7 @@ public class RoomMemberRes {
                 .memberNickname(member.getMemberNickName())
                 .memberId(member.getMemberId())
                 .memberGender(member.getMemberGender())
+                .memberReady(false)
                 .memberProfileImage(member.getMemberProfileImage())
                 .memberLevel(member.getMemberLevel())
                 .build();

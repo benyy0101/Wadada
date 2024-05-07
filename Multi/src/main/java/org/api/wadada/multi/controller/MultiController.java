@@ -62,8 +62,21 @@ public class MultiController {
         return new ResponseEntity<>(roomService.changeReady(roomIdx,principal),HttpStatus.OK);
     }
 
-
-
+//    @MessageMapping("/start/game/{roomIdx}")
+//    @SendTo("/sub/attend/{roomIdx}")
+//    public ResponseEntity<String> startGame(@DestinationVariable int roomIdx){
+//        roomService.startGame(roomIdx);
+//        return new ResponseEntity<>("Game Start",HttpStatus.OK);
+//    }
+    @GetMapping("/tag/{tag}")
+    public ResponseEntity<?> getTagRoomList(@PathVariable String tag) throws Exception {
+        log.info(tag);
+        return new ResponseEntity<>(roomService.findByRoomTag(tag),HttpStatus.OK);
+    }
+    @GetMapping("/{mode}")
+    public ResponseEntity<?> getModeRoomList(@PathVariable int mode){
+        return new ResponseEntity<>(roomService.getRoomList(mode),HttpStatus.OK);
+    }
     // Game Logic
 
 

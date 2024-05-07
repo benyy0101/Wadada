@@ -14,10 +14,11 @@ import org.api.wadada.multi.dto.res.AttendRoomRes;
 import org.api.wadada.multi.dto.res.LeaveRoomRes;
 import org.api.wadada.multi.dto.res.RoomMemberRes;
 import org.api.wadada.multi.dto.res.RoomRes;
-import org.api.wadada.multi.entity.HashTag;
 import org.api.wadada.multi.entity.Member;
 import org.api.wadada.multi.entity.MultiRecord;
 import org.api.wadada.multi.entity.Room;
+import org.api.wadada.multi.entity.RoomDocument;
+import org.api.wadada.multi.exception.CanNotJoinRoomException;
 import org.api.wadada.multi.exception.CreateRoomException;
 import org.api.wadada.multi.exception.NotFoundMemberException;
 import org.api.wadada.multi.repository.HashTagElasticsearchRepository;
@@ -30,6 +31,8 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
+import org.api.wadada.multi.exception.NotFoundRoomException;
+import org.api.wadada.multi.repository.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -48,6 +51,8 @@ public class RoomServiceImpl implements RoomService{
     private final RoomRepository roomRepository;
     private final MemberRepository memberRepository;
     private final HashTagElasticsearchRepository elasticsearchRepository;
+    private final RoomDocumentRepository roomDocumentRepository;
+    private final CustomRoomRepository customRoomRepository;
     private final RoomManager roomManager = new RoomManager();
 
 
@@ -82,7 +87,25 @@ public class RoomServiceImpl implements RoomService{
                 .roomTitle(roomTitle)
                 .roomMaker(member.getMemberSeq())
                 .build();
+
+
         Room savedRoom = roomRepository.save(room);
+
+        RoomDocument document = RoomDocument.builder()
+                .roomSeq(savedRoom.getRoomSeq())
+                .roomDist(savedRoom.getRoomDist())
+                .roomTime(savedRoom.getRoomTime())
+                .roomMode((byte) savedRoom.getRoomMode())
+                .roomTag(savedRoom.getRoomTag())
+                .roomSecret(savedRoom.getRoomSecret())
+                .roomPeople((byte) savedRoom.getRoomPeople())
+                .roomTitle(savedRoom.getRoomTitle())
+                .roomMaker(savedRoom.getRoomMaker())
+                .isDeleted(false)
+                .updatedAt(new Date())
+                .build();
+
+        roomDocumentRepository.save(document);
         RoomDto roomDto = new RoomDto();
         roomDto.addMember(RoomMemberRes.of(true,member));
         List<RoomMemberRes> memberResList = roomDto.getMemberList();
@@ -106,10 +129,19 @@ public class RoomServiceImpl implements RoomService{
 
         // index에 맞는방 찾고
         RoomDto roomDto = roomManager.getAllRooms().get(roomIdx);
+        int roomSeq = roomDto.getRoomSeq();
+        Optional<Room> room = roomRepository.findById(roomSeq);
+        if(room.isEmpty()){
+            throw new NotFoundRoomException("참가할 방이 없습니다");
+        }
+        // 방이 꽉찬 경우
+        if(room.get().getRoomPeople() == roomDto.getMemberList().size()){
+            throw new CanNotJoinRoomException("방이 가득 찼습니다");
+        }
+
         // 해당 방에 참가시키고
         roomDto.addMember(RoomMemberRes.of(false,member));
         List<RoomMemberRes> memberResList = roomDto.getMemberList();
-
         // 해당 방 유저 정보들 반환
         HashMap<Integer, List<RoomMemberRes>> resultMap = new HashMap<>();
         resultMap.put(roomIdx, memberResList);
@@ -128,7 +160,23 @@ public class RoomServiceImpl implements RoomService{
         // index에 맞는방 찾고
         RoomDto roomDto = roomManager.getAllRooms().get(roomIdx);
         // 해당 방에 멤버 삭제시키고
-        roomDto.removeMember(member.getMemberId());
+        boolean isManager = roomDto.removeMember(member.getMemberId());
+
+        //방장이면 방 터트리기
+        if(isManager){
+            // 해당 방 멤버 삭제하고 비우기
+            roomManager.removeRoom(roomIdx);
+            // db에 삭제 요청 날리기
+            int roomSeq = roomDto.getRoomSeq();
+            Optional<Room> room = roomRepository.findById(roomSeq);
+            room.ifPresent(r -> {
+                r.deleteSoftly();
+                roomRepository.save(r);
+            });
+            HashMap<Integer, List<RoomMemberRes>> resultMap = new HashMap<>();
+            resultMap.put(roomIdx, new ArrayList<>());
+            return resultMap;
+        }
 
         List<RoomMemberRes> memberResList = roomDto.getMemberList();
         // 해당 방 유저 정보들 반환
@@ -158,7 +206,7 @@ public class RoomServiceImpl implements RoomService{
         return resultMap;
 
     }
-
+    // 모드별 방 검색
     @Override
     public List<RoomRes> getRoomList(int mode) {
         List<RoomDto> activeRooms = roomManager.getAllRooms();
@@ -170,16 +218,48 @@ public class RoomServiceImpl implements RoomService{
             roomIdxMap.put(roomDto.getRoomSeq(),roomDto.getRoomIdx());
         }
 
-        List<RoomRes> RoomResList = roomRepository.findAllById(activeSeqList).stream().map(
-                room -> {
-                    // Create RoomRes with the found RoomDto
-                    return RoomRes.of(roomIdxMap.get(room.getRoomSeq()), room);
-                }
+        List<RoomRes> roomResList = roomRepository.findAllById(activeSeqList).stream().map(
+                room -> RoomRes.of(roomIdxMap.get(room.getRoomSeq()), room)
         ).toList();
         log.info("같은 방 찾기");
-        return RoomResList;
+        return roomResList;
     }
 
+    // 해시태그 방 검색
+    @Override
+    public List<RoomRes> findByRoomTag(String roomTag) throws Exception {
+        String[] tagList = roomTag.split(" ");
+
+        // 레포지토리에서 검색
+        List<RoomDocument> roomDocuments = customRoomRepository.findByRoomTags(tagList);
+        for (RoomDocument document : roomDocuments) {
+            log.info(document.getRoomTag());
+        }
+        // 현재 활성화된 룸 정보 가져오고
+        HashMap<Integer, Integer> roomInfo = new HashMap<>();
+        List<RoomDto> activeRooms = roomManager.getAllRooms();
+        for(RoomDto room: activeRooms){
+            roomInfo.put(room.getRoomSeq(),room.getRoomIdx());
+        }
+
+        //거르는 작업(로그 스태시가 1분 주기라 삭제 반영 안된 정보 거르기)
+        roomDocuments = roomDocuments.stream()
+                .filter(roomDocument -> activeRooms.stream()
+                        .anyMatch(room -> room.getRoomSeq() == roomDocument.getRoomSeq()))
+                .toList();
+
+
+        // index와 정보를 response로
+        List<RoomRes> roomResList = roomDocuments.stream().map(
+                roomDocument -> {
+                    return RoomRes.of(roomInfo.get(roomDocument.getRoomSeq()),roomDocument);
+                }
+        ).collect(Collectors.toList());
+
+        return roomResList;
+    }
+
+    // 게임시작
     @Override
     public HashMap<String, Object> findByRoomTag(String roomTag) {
         List<HashTag> tags = elasticsearchRepository.findByRoomTag(roomTag);
