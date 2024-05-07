@@ -259,6 +259,11 @@ public class RoomServiceImpl implements RoomService{
         return roomResList;
     }
 
+    @Override
+    public Point getFlagPoint() {
+        return null;
+    }
+
     // 게임시작
 
     // 게임시작
