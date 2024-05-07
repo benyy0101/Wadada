@@ -1,16 +1,15 @@
 package org.api.wadada.multi.entity;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.api.wadada.common.BaseEntity;
+import org.locationtech.jts.geom.Point;
 
 import java.util.ArrayList;
 
 @Entity
 @Getter
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Room extends BaseEntity {
 
@@ -37,9 +36,8 @@ public class Room extends BaseEntity {
 
     private String roomTarget;
 
-    private double roomTargetLatitude;
+    private Point roomTargetPoint;
 
-    private double roomTargetLongitude;
 
     @Column(nullable = false)
     private int roomMaker;
@@ -48,7 +46,7 @@ public class Room extends BaseEntity {
 //    private List<MultiRecord> multiRecordList = new ArrayList<>();
 
     @Builder
-    public Room(String roomTitle,int roomPeople, int roomMode, String roomTag,int roomSecret, int roomDist, int roomTime, String roomTarget, double roomTargetLatitude, double roomTargetLongitude, int roomMaker) {
+    public Room(String roomTitle,int roomPeople, int roomMode, String roomTag,int roomSecret, int roomDist, int roomTime, String roomTarget, double roomTargetLatitude, double roomTargetLongitude, int roomMaker,Point roomTargetPoint) {
         this.roomTitle = roomTitle;
         this.roomPeople = roomPeople;
         this.roomMode = roomMode;
@@ -57,8 +55,7 @@ public class Room extends BaseEntity {
         this.roomDist = roomDist;
         this.roomTime = roomTime;
         this.roomTarget = roomTarget;
-        this.roomTargetLatitude = roomTargetLatitude;
-        this.roomTargetLongitude = roomTargetLongitude;
         this.roomMaker = roomMaker;
+        this.roomTargetPoint = roomTargetPoint;
     }
 }
