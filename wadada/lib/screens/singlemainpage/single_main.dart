@@ -50,7 +50,7 @@ class SingleMain extends StatelessWidget {
             SizedBox(
               height: 10,
             ),
-            SingleRecord(),
+            // SingleRecord(),
             SizedBox(
               height: 30,
             ),

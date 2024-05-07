@@ -6,6 +6,7 @@ import 'package:wadada/common/const/colors.dart';
 import 'package:wadada/controller/multiController.dart';
 import 'package:wadada/models/multiroom.dart';
 import 'package:wadada/provider/multiProvider.dart';
+import 'package:wadada/provider/stompProvider.dart';
 import 'package:wadada/repository/multiRepo.dart';
 import 'package:wadada/screens/mainpage/layout.dart';
 
@@ -54,11 +55,19 @@ class TestButton extends StatelessWidget {
           roomTag: '#싸피',
           roomTime: 3,
           roomTitle: 'test');
+      StompProvider provider = StompProvider();
       return ElevatedButton(
         onPressed: () {
           try {
-            controller.creatMultiRoom(test);
-
+            provider.send();
+            //controller.creatMultiRoom(test);
+            // provider.client.activate();
+            // provider.client.subscribe(
+            //     destination: '/pub/attend/1',
+            //     callback: (frame) {
+            //       // Received a frame for this subscription
+            //       print(frame.body);
+            //     });
             // 로그아웃 성공 시 처
           } catch (error) {
             // 로그아웃 실패 시 처리

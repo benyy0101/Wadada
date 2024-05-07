@@ -15,6 +15,7 @@ class MultiProvider {
     _dio.options.baseUrl = 'https://k10a704.p.ssafy.io/Multi';
     _dio.options.headers['Content-Type'] = 'application/json';
     _dio.options.headers['Authorization'] = storage.read(key: 'accessToken');
+    print(_dio.options.headers['Authorization']);
   }
 
   Future<void> setAuth() async {
