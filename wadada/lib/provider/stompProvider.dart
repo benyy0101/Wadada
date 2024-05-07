@@ -4,13 +4,18 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:stomp_dart_client/stomp_dart_client.dart';
+import 'package:wadada/models/stomp.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
-class StompProvider {
+class StompProvider extends GetxController {
   late StompClient client;
   late DotEnv env;
   final int roomIdx;
+  late List<CurrentMember> members = [];
+  bool isStart = false;
+
   StompProvider({required this.roomIdx}) {
     client = StompClient(
       config: StompConfig.sockJS(
@@ -23,10 +28,37 @@ class StompProvider {
                   'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNDYzNDMxNDUzIiwiYXV0aCI6IlJPTEVfU09DSUFMIiwiZXhwIjoxNzE1NDA1MzkzfQ.dmjUkVX1sFe9EpYhT3SGO3uC7q1dLIoddBvzhoOSisM'
             },
             callback: (frame) {
-              //print(frame.body);
-              print(jsonDecode(frame.body!)['body']);
+              try {
+                //에러메세지: 해당방에 입장해 있거나, 이미 나간 방일때
+                Map<String, dynamic> res = jsonDecode(frame.body!);
+                if (res['body'].runtimeType == String &&
+                    res['statusCodeValue'] != 200) {
+                  throw Exception(jsonDecode(frame.body!)['body']);
+                }
 
-              //List<dynamic> result = jsonDecode(frame.body!);
+                //게임 스타트
+                if (res['body'].runtimeType == String &&
+                    res['statusCodeValue'] == 200) {
+                  setGameStart();
+                  return;
+                }
+                //Null값 처리
+                if (res['body'][roomIdx.toString()] == null) {
+                  throw Exception("해당 방의 정보가 없습니다.");
+                }
+
+                //참가자 list화
+                List<dynamic> membersJson = res['body'][roomIdx.toString()];
+                if (membersJson.isNotEmpty) {
+                  members = membersJson.map((item) {
+                    // Create a CurrentMember object from each JSON item
+                    return CurrentMember.fromJson(item);
+                  }).toList();
+                }
+              } catch (e) {
+                print(e);
+                rethrow;
+              }
             },
           );
         }, // Pass the onConnect method as a callback here
@@ -45,27 +77,20 @@ class StompProvider {
     client.activate();
   }
 
-  // void onConnect(StompFrame frame) {
-  //   client.subscribe(
-  //     destination: '/sub/attend/0',
-  //     headers: {
-  //       'Authorization':
-  //           'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNDYzNDMxNDUzIiwiYXV0aCI6IlJPTEVfU09DSUFMIiwiZXhwIjoxNzE1NDA1MzkzfQ.dmjUkVX1sFe9EpYhT3SGO3uC7q1dLIoddBvzhoOSisM'
-  //     },
-  //     callback: (frame) {
-  //       print(frame.body);
-  //       //List<dynamic> result = jsonDecode(frame.body!);
-  //       //print(result);
-  //     },
-  //   );
-  // }
-
   void attend(int roomIdx) {
     client.send(destination: '/pub/attend/$roomIdx');
   }
 
   void out(int roomIdx) {
     client.send(destination: '/pub/out/$roomIdx');
+  }
+
+  void ready(int roomIdx) {
+    client.send(destination: '/pub/change/ready/$roomIdx');
+  }
+
+  void setGameStart() {
+    isStart = !isStart;
   }
 
   void disconnect() {
