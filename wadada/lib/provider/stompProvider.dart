@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:get/get.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:stomp_dart_client/stomp_dart_client.dart';
 import 'package:wadada/models/stomp.dart';
@@ -11,15 +12,16 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 
 class StompProvider extends GetxController {
   late StompClient client;
-  late DotEnv env;
   final int roomIdx;
+  late String accessToken;
+  late String serverUrl;
   late List<CurrentMember> members = [];
   bool isStart = false;
 
   StompProvider({required this.roomIdx}) {
     client = StompClient(
       config: StompConfig.sockJS(
-        url: 'https://k10a704.p.ssafy.io/Multi/ws',
+        url: dotenv.env['STOMP_URL']!,
         onConnect: (StompFrame frame) {
           client.subscribe(
             destination: '/sub/attend/$roomIdx',
@@ -75,6 +77,13 @@ class StompProvider extends GetxController {
       ),
     );
     client.activate();
+  }
+
+  Future<void> _init() async {
+    await dotenv.load(fileName: 'assets/env/.env');
+    final storage = FlutterSecureStorage();
+    serverUrl = dotenv.env['SERVER_URL'] ?? "";
+    accessToken = storage.read(key: 'accessToken') as String;
   }
 
   void attend(int roomIdx) {
