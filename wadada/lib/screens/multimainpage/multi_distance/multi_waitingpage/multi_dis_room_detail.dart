@@ -14,21 +14,6 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
 
   bool isButtonPressed = false;
 
-  int countdown = 5; // 카운트다운 시작 숫자
-
-  void startCountdown() {
-    Timer.periodic(Duration(seconds: 1), (timer) {
-      if (countdown <= 0) {
-        timer.cancel(); // 타이머 종료
-      } else {
-        setState(() {
-          countdown--;
-        });
-      }
-    });
-  }
-  
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -74,6 +59,14 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                 decoration: BoxDecoration(
                   color: OATMEAL_COLOR,
                   borderRadius: BorderRadius.circular(10),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Colors.black12,
+                      spreadRadius: 1,
+                      blurRadius: 5,
+                      offset: Offset(1, 2),
+                    ),
+                  ],
                 ),
                 child: Padding(
                   padding: const EdgeInsets.all(30.0),
@@ -176,6 +169,14 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                 decoration: BoxDecoration(
                   color: OATMEAL_COLOR,
                   borderRadius: BorderRadius.circular(10),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Colors.black12,
+                      spreadRadius: 1,
+                      blurRadius: 5,
+                      offset: Offset(1, 2),
+                    ),
+                  ],
                 ),
                 child: Padding(
                   padding: const EdgeInsets.all(30),
@@ -277,19 +278,27 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             TextButton(
-                              onPressed: () async {
+                              onPressed: () {
+                                if (!isButtonPressed) {
+                                  setState(() {
+                                    isButtonPressed = true;
+                                  });
+                                }
+
                                 // 진행할 페이지
                               },
                               style: TextButton.styleFrom(
                                 foregroundColor: Colors.white,
-                                backgroundColor: GREEN_COLOR, 
+                                backgroundColor: isButtonPressed ?  Colors.grey[400] : GREEN_COLOR, 
                                 padding: EdgeInsets.only(left: 120, right: 120, top: 10, bottom: 10),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                               ),
-                              child: Text('준비완료', style: TextStyle(fontSize: 18),), 
+                              child: Text('준비완료'
+                              , style: TextStyle(fontSize: 18),), 
                             ),
+                           
 
                             SizedBox(height: 10), 
 
