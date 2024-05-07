@@ -277,7 +277,7 @@ public class RoomServiceImpl implements RoomService{
 //    }
 
 
-    public void gstartGame(int roomIdx) {
+    public void startGame(int roomIdx) {
 
         // 해당 방 멤버 삭제하고 비우기
         roomManager.removeRoom(roomIdx);

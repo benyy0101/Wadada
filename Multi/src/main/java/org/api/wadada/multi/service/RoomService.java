@@ -36,5 +36,4 @@ public interface RoomService {
 
     List<RoomRes> findByRoomTag(String roomTag) throws Exception;
 
-    void startGame(int roomIdx);
 }
