@@ -72,6 +72,8 @@ public class MultiController {
             return new ResponseEntity<>("참가할 방이 없습니다.",HttpStatus.NOT_ACCEPTABLE);
         }catch(CanNotJoinRoomException e3){
             return new ResponseEntity<>("방이 가득찼습니다.",HttpStatus.NOT_ACCEPTABLE);
+        }catch (IllegalStateException e4){
+            return new ResponseEntity<>("방에 해당 멤버가 존재합니다",HttpStatus.NOT_ACCEPTABLE);
         }
     }
 
@@ -83,6 +85,8 @@ public class MultiController {
             return new ResponseEntity<>(result,HttpStatus.OK);
         }catch (NotFoundMemberException e1){
             return new ResponseEntity<>("없는 멤버 정보입니다.",HttpStatus.NOT_ACCEPTABLE);
+        }catch (Exception e2){
+            return new ResponseEntity<>(e2,HttpStatus.NOT_ACCEPTABLE);
         }
     }
 
@@ -95,6 +99,8 @@ public class MultiController {
         }
         catch (NotFoundMemberException e1){
             return new ResponseEntity<>("없는 멤버 정보입니다.",HttpStatus.NOT_ACCEPTABLE);
+        }catch (Exception e2){
+            return new ResponseEntity<>(e2,HttpStatus.NOT_ACCEPTABLE);
         }
     }
 
