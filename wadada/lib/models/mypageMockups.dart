@@ -9,27 +9,27 @@ List<SimpleRecord> list = [
   SimpleRecord(
       recordCreatedAt: DateTime(2024, 1, 1),
       recordType: '멀티',
-      recordDist: 3.2,
+      recordDist: 3,
       recordSeq: 31),
   SimpleRecord(
       recordCreatedAt: DateTime(2024, 1, 1),
       recordType: '멀티',
-      recordDist: 3.2,
+      recordDist: 3,
       recordSeq: 32),
   SimpleRecord(
       recordCreatedAt: DateTime(2024, 1, 1),
       recordType: '멀티',
-      recordDist: 3.2,
+      recordDist: 3,
       recordSeq: 33),
   SimpleRecord(
       recordCreatedAt: DateTime(2024, 1, 2),
       recordType: '멀티',
-      recordDist: 3.2,
+      recordDist: 3,
       recordSeq: 34),
   SimpleRecord(
       recordCreatedAt: DateTime(2024, 1, 3),
       recordType: '멀티',
-      recordDist: 3.2,
+      recordDist: 3,
       recordSeq: 35),
 ];
 
