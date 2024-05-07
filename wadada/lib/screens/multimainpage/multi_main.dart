@@ -39,7 +39,7 @@ class MultiMain extends StatelessWidget {
                 ),
               SizedBox(height: 30,),
               MultiSelectMode(
-                  icon: 'assets/images/clock.png', 
+                  icon: 'assets/images/clock_2.png', 
                   name: '시간모드', 
                   des: '목표한 거리만큼 달려보세요.',
                   btn: '28',

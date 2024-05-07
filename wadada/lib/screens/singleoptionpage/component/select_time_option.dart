@@ -22,26 +22,28 @@ class SelectTimeOptionState extends State<SelectTimeOption> {
   int selectnum = 0;
   final TextEditingController controller = TextEditingController(text: "0");
   String? errorText;
+  bool isError = false;
 
   void updateErrorText() {
     final value = controller.text;
-    // if (value.startsWith('0') && value.length > 1 || value.isEmpty || int.tryParse(value) == null) {
-    if (value.startsWith('0') && value.length > 1) {
-      errorText = '정수 값을 입력하세요.';
+
+    if (value.startsWith('0') && value.length > 1 || value.isEmpty || int.tryParse(value) == null || int.tryParse(value) == 0) {
+        errorText = '정수 값을 입력하세요.';
+        isError = true;
     } else if (double.tryParse(value) != null && double.parse(value) > 1440.0) {
         errorText = '24시간 이내의 값만 입력하세요.';
+        isError = true;
     } else {
-      errorText = null;
+        errorText = null;
+        isError = false;
     }
-
-    // else if (double.parse(value) > 1440.0) {
-    //   errorText = '24시간 이내의 시간만 입력할 수 있습니다.';
-    // } 
 
     setState(() {});
     time = double.tryParse(value) ?? 0.0;
+
     if (widget.onStateUpdated != null) {
       widget.onStateUpdated!(this);
+      print('onStateUpdated called: isError = $isError');
     }
   }
 

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:wadada/common/const/colors.dart';
-import 'package:wadada/screens/singleoptionpage/single_free_option.dart';
 
 class SelectMode extends StatelessWidget{
   final String icon, name, des, btn;
+  final VoidCallback onTapAction;
   
   const SelectMode({
     super.key,
@@ -11,13 +11,14 @@ class SelectMode extends StatelessWidget{
     required this.name,
     required this.des,
     required this.btn,
+    required this.onTapAction,
   });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => SingleFreeMode()));
+        onTapAction();
       },
       child: Container(
         decoration: BoxDecoration(

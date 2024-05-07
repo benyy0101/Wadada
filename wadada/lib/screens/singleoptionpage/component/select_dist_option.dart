@@ -22,14 +22,17 @@ class SelectDistOptionState extends State<SelectDistOption> {
   int selectnum = 0;
   final TextEditingController controller = TextEditingController(text: "0");
   String? errorText;
+  bool isError = false;
 
   void updateErrorText() {
     final value = controller.text;
-    // if (value.startsWith('0') && value.length > 1 || value.isEmpty || int.tryParse(value) == null) {
-    if (value.startsWith('0') && value.length > 1) {
-      errorText = '정수 값을 입력하세요.';
+    // int? intValue = int.tryParse(value);
+    if (value.startsWith('0') && value.length > 1 || value.isEmpty || int.tryParse(value) == null || int.tryParse(value) == 0) {
+        errorText = '정수 값을 입력하세요.';
+        isError = true;
     } else {
-      errorText = null;
+        errorText = null;
+        isError = false;
     }
 
     setState(() {});

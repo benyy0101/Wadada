@@ -5,10 +5,9 @@ import 'package:wadada/repository/mypageRepo.dart';
 
 class MypageController extends GetxController {
   final MypageRepository mypageRepository;
-  final Rx<MonthlyRecord> _records =
-      Rx<MonthlyRecord>(MonthlyRecord(monthlyRecord: []));
+  MonthlyRecord records = MonthlyRecord(monthlyRecord: []);
   // Rx 타입으로 변경
-  final Rx<SingleDetail> _singleDetail = Rx<SingleDetail>(SingleDetail(
+  SingleDetail singleDetail = SingleDetail(
       recordType: '',
       recordRank: -1,
       recordImage: '',
@@ -22,8 +21,8 @@ class MypageController extends GetxController {
       recordCreatedAt: DateTime.now(),
       recordMeanSpeed: -1,
       recordMeanPace: -1,
-      recordMeanHeartbeat: -1));
-  final Rx<MultiDetail> _multiDetail = Rx<MultiDetail>(MultiDetail(
+      recordMeanHeartbeat: -1);
+  MultiDetail multiDetail = MultiDetail(
       rankings: [],
       recordType: '',
       recordRank: -1,
@@ -38,8 +37,8 @@ class MypageController extends GetxController {
       recordCreatedAt: DateTime.now(),
       recordMeanSpeed: -1,
       recordMeanPace: -1,
-      recordMeanHeartbeat: -1));
-  final Rx<MarathonDetail> _marathonDetail = Rx<MarathonDetail>(MarathonDetail(
+      recordMeanHeartbeat: -1);
+  MarathonDetail marathonDetail = MarathonDetail(
       rankings: [],
       recordType: '',
       recordRank: -1,
@@ -54,22 +53,16 @@ class MypageController extends GetxController {
       recordCreatedAt: DateTime.now(),
       recordMeanSpeed: -1,
       recordMeanPace: -1,
-      recordMeanHeartbeat: -1));
+      recordMeanHeartbeat: -1);
 
   MypageController({
     required this.mypageRepository,
   });
 
-  @override
-  void onInit() {
-    super.onInit();
-    fetchMonthlyRecords();
-  }
-
   //mypage001
   void fetchMonthlyRecords() async {
     try {
-      _records.value = await mypageRepository.getMonthlyRecord(DateTime.now());
+      records = await mypageRepository.getMonthlyRecord(DateTime.now());
     } catch (e) {
       print(e);
     }
@@ -78,7 +71,7 @@ class MypageController extends GetxController {
   //mypage002
   void fetchSingleDetail(RecordRequest req) async {
     try {
-      _singleDetail.value = await mypageRepository.getSingleDetail(req);
+      singleDetail = await mypageRepository.getSingleDetail(req.recordSeq);
     } catch (e) {
       print(e);
     }
@@ -87,18 +80,34 @@ class MypageController extends GetxController {
   //mypage003
   void fetchMultiDetail(RecordRequest req) async {
     try {
-      _multiDetail.value = await mypageRepository.getMultiDetail(req);
+      multiDetail = await mypageRepository.getMultiDetail(req.recordSeq);
     } catch (e) {
       print(e);
     }
   }
 
   //mypage004
-  void fetchMarathonDetail(RecordRequest req) async {
+  void fetchMarathonDetail(String req) async {
     try {
-      _marathonDetail.value = await mypageRepository.getMarathonDetail(req);
+      marathonDetail = await mypageRepository.getMarathonDetail(req.hashCode);
     } catch (e) {
       print(e);
+    }
+  }
+
+  fetchDetail(RecordRequest req) async {
+    try {
+      if (req.recordType == '1') {
+        singleDetail = await mypageRepository.getSingleDetail(req.recordSeq);
+      } else if (req.recordType == '2') {
+        multiDetail = await mypageRepository.getMultiDetail(req.recordSeq);
+      } else {
+        marathonDetail =
+            await mypageRepository.getMarathonDetail(req.recordSeq);
+      }
+    } catch (e) {
+      print(e);
+      rethrow;
     }
   }
 }

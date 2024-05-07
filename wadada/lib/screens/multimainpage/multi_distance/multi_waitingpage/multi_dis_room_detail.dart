@@ -79,39 +79,41 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                   padding: const EdgeInsets.all(30.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
+                    children: [
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Icon(Icons.info_outline, color: DARK_GREEN_COLOR),
+                        children: const [
+                          Icon(Icons.info_outline, color: DARK_GREEN_COLOR, size: 30),
                           SizedBox(width: 10),
-                          Text('방 정보', style: TextStyle(fontSize: 20, color: DARK_GREEN_COLOR, fontWeight: FontWeight.bold)),
+                          Text('방 정보', style: TextStyle(fontSize: 25, color: DARK_GREEN_COLOR, fontWeight: FontWeight.bold)),
                         ],
                       ),
                       Divider(),
                       SizedBox(height: 10),
                       Row(
-                        children: [
+                        children: const [
                           // 첫 번째 컬럼
                           Column(
                             children: [
-                              Icon(Icons.location_on, color: DARK_GREEN_COLOR),
+                              SizedBox(height: 10),
+                              Icon(Icons.location_on, color: DARK_GREEN_COLOR, size: 30,),
                               SizedBox(height: 20),
-                              Icon(Icons.people, color: DARK_GREEN_COLOR),
+                              Icon(Icons.people, color: DARK_GREEN_COLOR, size: 30,),
                               SizedBox(height: 20),
-                              Icon(Icons.lock, color: DARK_GREEN_COLOR),
+                              Icon(Icons.lock, color: DARK_GREEN_COLOR, size: 30,),
                             ],
                           ),
-                          SizedBox(width: 10),
+                          SizedBox(width: 15),
                           // 두 번째 컬럼
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('거리'),
+                              SizedBox(height: 5),
+                              Text('거리', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: DARK_GREEN_COLOR),),
                               SizedBox(height: 20),
-                              Text('참여 인원'),
+                              Text('참여 인원', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: DARK_GREEN_COLOR),),
                               SizedBox(height: 20),
-                              Text('비밀방'),
+                              Text('비밀방', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: DARK_GREEN_COLOR),),
                             ],
                           ),
                           SizedBox(width: 40), // 컬럼 사이의 간격
@@ -119,11 +121,12 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('10km'),
+                              SizedBox(height: 5),
+                              Text('10km', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: DARK_GREEN_COLOR),),
                               SizedBox(height: 20),
-                              Text('1/3'),
+                              Text('1/3', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: DARK_GREEN_COLOR)),
                               SizedBox(height: 20),
-                              Text(''),
+                              Text('', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: DARK_GREEN_COLOR)),
                             ],
                           ),
                         ],
@@ -132,33 +135,33 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                       SizedBox(height: 20),
 
 
-                    // Row(
-                    //   children: [
-                    //     Container(
-                    //       padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    //       decoration: BoxDecoration(
-                    //         color: Colors.green,
-                    //         borderRadius: BorderRadius.circular(20),
-                    //       ),
-                    //       child: Text(
-                    //         '#직장인',
-                    //         style: TextStyle(fontSize: 12, color: Colors.white),
-                    //       ),
-                    //     ),
+                    Row(
+                      children: [
+                        Container(
+                          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: DARK_GREEN_COLOR,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            '#직장인',
+                            style: TextStyle(fontSize: 18, color: Colors.white),
+                          ),
+                        ),
+                        SizedBox(width: 10),
+                        Container(
+                          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: DARK_GREEN_COLOR,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            '#저녁런닝',
+                            style: TextStyle(fontSize: 18, color: Colors.white),
+                          ),
+                        ),
 
-                    // ],),
-                      
-
-                    // Text('#직장인', 
-                    // style: TextStyle(
-                    //   fontSize: 12, 
-                    //   color: Colors.white,
-                    //   backgroundColor: DARK_GREEN_COLOR
-                    //   )
-                    // )
-
-
-
+                    ],),
 
                     ],
                   ),
@@ -182,25 +185,25 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: const [
-                          Icon(Icons.flag, color: DARK_GREEN_COLOR),
+                          Icon(Icons.flag, color: DARK_GREEN_COLOR, size: 40,),
                           SizedBox(width: 10),
-                          Text('참가자', style: TextStyle(fontSize: 20, color: DARK_GREEN_COLOR, fontWeight: FontWeight.bold)),
+                          Text('참가자', style: TextStyle(fontSize: 25, color: DARK_GREEN_COLOR, fontWeight: FontWeight.bold)),
                         ],
                       ),
-                      SizedBox(height: 40),
+                      SizedBox(height: 30),
 
 
                       Row(
-                        children: const [
+                        children: [
                           Padding(
                             padding: EdgeInsets.symmetric(horizontal: 10.0), // 첫 번째 Column에 대한 양옆 padding
                             child: Column(
-                              children: [
-                                Icon(Icons.person_add_alt_1, color: DARK_GREEN_COLOR),
+                              children: const [
+                                Icon(Icons.person_add_alt_1, color: DARK_GREEN_COLOR, size: 30),
                                 SizedBox(height: 20),
-                                Icon(Icons.person, color: DARK_GREEN_COLOR),
+                                Icon(Icons.person, color: DARK_GREEN_COLOR, size: 30),
                                 SizedBox(height: 20),
-                                Icon(Icons.person, color: DARK_GREEN_COLOR),
+                                Icon(Icons.person, color: DARK_GREEN_COLOR, size: 30),
                               ],
                             ),
                           ),
@@ -209,12 +212,12 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                             padding: EdgeInsets.symmetric(horizontal: 10.0), // 두 번째 Column에 대한 양옆 padding
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('스펀지밥', style: TextStyle(fontSize: 15, color: DARK_GREEN_COLOR, fontWeight: FontWeight.bold),),
+                              children: const [
+                                Text('스펀지밥', style: TextStyle(fontSize: 20, color: DARK_GREEN_COLOR, fontWeight: FontWeight.bold),),
                                 SizedBox(height: 20),
-                                Text('아린시치', style: TextStyle(fontSize: 15, color: DARK_GREEN_COLOR, fontWeight: FontWeight.bold),),
+                                Text('아린시치', style: TextStyle(fontSize: 20, color: DARK_GREEN_COLOR, fontWeight: FontWeight.bold),),
                                 SizedBox(height: 20),
-                                Text('커피보이', style: TextStyle(fontSize: 15, color: DARK_GREEN_COLOR, fontWeight: FontWeight.bold),),
+                                Text('커피보이', style: TextStyle(fontSize: 20, color: DARK_GREEN_COLOR, fontWeight: FontWeight.bold),),
                               ],
                             ),
                           ),
@@ -224,90 +227,96 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('준비중', style: TextStyle(fontSize: 15, color: DARK_GREEN_COLOR),),
+                                Container(
+                                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                  decoration: BoxDecoration(
+                                    color: DARK_GREEN_COLOR,
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Text(
+                                    '준비중',
+                                    style: TextStyle(fontSize: 15, color: Colors.white),
+                                  ),
+                                ),
                                 SizedBox(height: 20),
-                                Text('준비완료', style: TextStyle(fontSize: 15, color: GRAY_400),),
+                                Container(
+                                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                  decoration: BoxDecoration(
+                                    color: GRAY_400,
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Text(
+                                    '준비완료',
+                                    style: TextStyle(fontSize: 15, color: Colors.white),
+                                  ),
+                                ),
                                 SizedBox(height: 20),
-                                Text('준비완료', style: TextStyle(fontSize: 15, color: GRAY_400),),
+                                Container(
+                                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                  decoration: BoxDecoration(
+                                    color: GRAY_400,
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Text(
+                                    '준비완료',
+                                    style: TextStyle(fontSize: 15, color: Colors.white),
+                                  ),
+                                ),
                               ],
                             ),
                           ),
                         ],
                       ),
                       
-                      SizedBox(height: 40),
+                      SizedBox(height: 30),
 
 
-                      TextButton(
-                        onPressed: () async {
-                          setState(() {
-                            isButtonPressed = true;
-                          });
+                      Center(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min, 
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            TextButton(
+                              onPressed: () async {
+                                // 진행할 페이지
+                              },
+                              style: TextButton.styleFrom(
+                                foregroundColor: Colors.white,
+                                backgroundColor: GREEN_COLOR, 
+                                padding: EdgeInsets.only(left: 120, right: 120, top: 10, bottom: 10),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                              child: Text('준비완료', style: TextStyle(fontSize: 18),), 
+                            ),
 
-                          showDialog(
-                            context: context,
-                            barrierDismissible: false,
-                            builder: (BuildContext context) {
-                              startCountdown();
-                              return AlertDialog(
-                                  backgroundColor: Colors.transparent, 
-                                  content: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Text(
-                                        '달리기를 시작합니다!',
-                                        style: TextStyle(fontSize: 25, color: Colors.white),
-                                      ),
-                                      SizedBox(height: 20), // 문구와 카운트다운 사이의 간격
-                                      Text(
-                                        countdown > 0 ? '$countdown' : '', // 카운트다운 값이 0보다 클 때만 숫자 표시
-                                        style: TextStyle(fontSize: 50, color: Colors.white),
-                                      ),
-                                    ],
-                                  ),
-                                
-                              );
-                            }
-                          );
+                            SizedBox(height: 10), 
 
-                          await Future.delayed(Duration(seconds: 5)); 
-                          Navigator.pop(context);
-                          // 진행으로 라우팅
-                          // Navigator.push(context, MaterialPageRoute(builder: (context) => ))
-                        },
-                         style: TextButton.styleFrom(
-                          foregroundColor: Colors.white,
-                          backgroundColor: isButtonPressed ? Colors.grey[400] : GREEN_COLOR,
-                          padding: EdgeInsets.symmetric(horizontal: 130, vertical: 12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                        child: Text('준비완료'), 
-                      ),
-
-                      const SizedBox(height: 10),
-
-                      TextButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        style: TextButton.styleFrom(
-                          foregroundColor: Colors.white,
-                          backgroundColor: GRAY_400,
-                          padding: EdgeInsets.symmetric(horizontal: 110, vertical: 10),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: const [
-                            Icon(Icons.exit_to_app),
-                            Text("  방 나가기 "),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              style: TextButton.styleFrom(
+                                foregroundColor: Colors.white,
+                                backgroundColor: Colors.grey[400], // GRAY_400 대신 실제 색상 값을 사용하세요.
+                                padding: EdgeInsets.only(left: 100, right: 95, top: 10, bottom: 10),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: const [
+                                  Icon(Icons.exit_to_app),
+                                  Text("  방 나가기 ", style: TextStyle(fontSize: 18)),
+                                ],
+                              ),
+                            ),
                           ],
                         ),
                       ),
+
                     ],
                   ),
                 ),
