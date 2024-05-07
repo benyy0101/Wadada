@@ -43,9 +43,7 @@ public class QRoom extends EntityPathBase<Room> {
 
     public final StringPath roomTarget = createString("roomTarget");
 
-    public final NumberPath<Double> roomTargetLatitude = createNumber("roomTargetLatitude", Double.class);
-
-    public final NumberPath<Double> roomTargetLongitude = createNumber("roomTargetLongitude", Double.class);
+    public final SimplePath<org.geolatte.geom.Point> roomTargetPoint = createSimple("roomTargetPoint", org.geolatte.geom.Point.class);
 
     public final NumberPath<Integer> roomTime = createNumber("roomTime", Integer.class);
 

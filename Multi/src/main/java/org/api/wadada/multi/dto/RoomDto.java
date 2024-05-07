@@ -24,10 +24,6 @@ public class RoomDto{
     @Setter
     private int roomIdx;
 
-    private int roomMaxPeople;
-
-    private int roomCurPeople;
-
     public RoomDto() {
         this.members = new ConcurrentHashMap<>();
     }
