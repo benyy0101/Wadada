@@ -9,6 +9,11 @@ import org.api.wadada.multi.dto.req.GameStartReq;
 import org.api.wadada.multi.dto.res.GameEndRes;
 import org.api.wadada.multi.dto.res.GameResultRes;
 import org.api.wadada.multi.dto.res.GameStartRes;
+import org.api.wadada.multi.dto.res.RoomMemberRes;
+import org.api.wadada.multi.exception.CanNotJoinRoomException;
+import org.api.wadada.multi.exception.CreateRoomException;
+import org.api.wadada.multi.exception.NotFoundMemberException;
+import org.api.wadada.multi.exception.NotFoundRoomException;
 import org.api.wadada.multi.service.MultiRecordService;
 import org.api.wadada.multi.service.RoomService;
 import org.locationtech.jts.io.ParseException;
@@ -24,6 +29,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.socket.messaging.SessionConnectEvent;
 
 import java.security.Principal;
+import java.util.HashMap;
+import java.util.List;
 
 
 @Slf4j
@@ -41,25 +48,54 @@ public class MultiController {
 
     @PostMapping("/create")
     public ResponseEntity<?> createRoom(@RequestBody CreateRoomReq createRoomReq, Principal principal) throws Exception {
-        return new ResponseEntity<>(roomService.createRoom(createRoomReq,principal),HttpStatus.OK);
+        try{
+            HashMap<Integer, List<RoomMemberRes>> result = roomService.createRoom(createRoomReq,principal);
+            return new ResponseEntity<>(result,HttpStatus.OK);
+        }catch (NotFoundMemberException e1){
+            return new ResponseEntity<>("없는 멤버 정보입니다.",HttpStatus.NOT_ACCEPTABLE);
+        }catch (CreateRoomException e2){
+            return new ResponseEntity<>("최대 방 초과입니다.",HttpStatus.NOT_ACCEPTABLE);
+        }
+
     }
 
     @MessageMapping("/attend/{roomIdx}")
     @SendTo("/sub/attend/{roomIdx}")
     public ResponseEntity<?> attendRoom(@DestinationVariable int roomIdx, Principal principal){
-        return new ResponseEntity<>(roomService.attendRoom(roomIdx,principal),HttpStatus.OK);
+        try{
+            HashMap<Integer, List<RoomMemberRes>> result = roomService.attendRoom(roomIdx,principal);
+            return new ResponseEntity<>(result,HttpStatus.OK);
+
+        }catch (NotFoundMemberException e1){
+            return new ResponseEntity<>("없는 멤버 정보입니다.",HttpStatus.NOT_ACCEPTABLE);
+        }catch (NotFoundRoomException e2){
+            return new ResponseEntity<>("참가할 방이 없습니다.",HttpStatus.NOT_ACCEPTABLE);
+        }catch(CanNotJoinRoomException e3){
+            return new ResponseEntity<>("방이 가득찼습니다.",HttpStatus.NOT_ACCEPTABLE);
+        }
     }
 
     @MessageMapping("/out/{roomIdx}")
     @SendTo("/sub/attend/{roomIdx}")
     public ResponseEntity<?> leaveRoom(@DestinationVariable int roomIdx, Principal principal){
-        return new ResponseEntity<>(roomService.leaveRoom(roomIdx,principal),HttpStatus.OK);
+        try{
+            HashMap<Integer, List<RoomMemberRes>> result = roomService.leaveRoom(roomIdx,principal);
+            return new ResponseEntity<>(result,HttpStatus.OK);
+        }catch (NotFoundMemberException e1){
+            return new ResponseEntity<>("없는 멤버 정보입니다.",HttpStatus.NOT_ACCEPTABLE);
+        }
     }
 
     @MessageMapping("/change/ready/{roomIdx}")
     @SendTo("/sub/attend/{roomIdx}")
     public ResponseEntity<?> changeReady(@DestinationVariable int roomIdx, Principal principal){
-        return new ResponseEntity<>(roomService.changeReady(roomIdx,principal),HttpStatus.OK);
+        try {
+            HashMap<Integer, List<RoomMemberRes>> result = roomService.changeReady(roomIdx, principal);
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        }
+        catch (NotFoundMemberException e1){
+            return new ResponseEntity<>("없는 멤버 정보입니다.",HttpStatus.NOT_ACCEPTABLE);
+        }
     }
 
 //    @MessageMapping("/start/game/{roomIdx}")
