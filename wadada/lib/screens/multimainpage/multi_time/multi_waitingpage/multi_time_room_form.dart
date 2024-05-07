@@ -1,20 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:wadada/common/const/colors.dart';
 import 'package:wadada/controller/multiController.dart';
+import 'package:wadada/models/multiroom.dart';
 import 'package:wadada/provider/multiProvider.dart';
 import 'package:wadada/repository/multiRepo.dart';
-import 'package:wadada/screens/multimainpage/multi_distance/multi_waitingpage/multi_dis_waitroom.dart';
 import 'package:wadada/screens/multimainpage/multi_distance/multi_waitingpage/options/multi_select_dist_option.dart';
 import 'package:wadada/screens/singleoptionpage/component/select_dist_option.dart';
 
-class MultiDistanceRoomForm extends StatefulWidget{
-  const MultiDistanceRoomForm({super.key});
+class MultiTimeRoomForm extends StatefulWidget{
+  const MultiTimeRoomForm({super.key});
 
   @override
-  MultiDistanceRoomFormState createState() => MultiDistanceRoomFormState();
+  MultiTimeRoomFormState createState() => MultiTimeRoomFormState();
 }
 
-class MultiDistanceRoomFormState extends State<MultiDistanceRoomForm> {
+class MultiTimeRoomFormState extends State<MultiTimeRoomForm> {
   SelectDistOptionState? distOptionState;
   // 각 입력 필드를 위한 TextEditingController 인스턴스 생성
   final participantController = TextEditingController();
@@ -36,18 +37,17 @@ class MultiDistanceRoomFormState extends State<MultiDistanceRoomForm> {
   Widget build(BuildContext context) {
     Get.put(MultiController(repo: MultiRepository(provider: MultiProvider())));
     return GetBuilder<MultiController>(builder: (MultiController controller) {
-
-      // MultiRoom test = MultiRoom(
-      //   roomPeople: 3,
-      //   roomDist: 2,
-      //   roomMode: 1,
-      //   roomSecret: 1111,
-      //   roomTag: '#싸피',
-      //   roomTime: 3,
-      //   roomTitle: 'test');
+      MultiRoom test = MultiRoom(
+        roomPeople: 3,
+        roomDist: 2,
+        roomMode: 1,
+        roomSecret: 1111,
+        roomTag: '#싸피',
+        roomTime: 3,
+        roomTitle: 'test');
       return Scaffold(
         appBar: AppBar(
-          title: const Text('거리모드 - 멀티', style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
+          title: const Text('시간모드 - 멀티', style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
           backgroundColor: Colors.white,
           elevation: 0,
           centerTitle: true,
@@ -126,22 +126,11 @@ class MultiDistanceRoomFormState extends State<MultiDistanceRoomForm> {
                     Expanded(
                       child: GestureDetector(
                         onTap: () {
-                          print("!!!!!!!!!!!!!!!!!     try전");
-                            print(controller.info.toJson());
                           // 방 생성 로직
                           try {
-                            print("!!!!!!!!!!!!!!!!!    try");
-                            print(controller.info.toJson());
-                            // controller.creatMultiRoom(controller.info);
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => MultiDisWait()),
-                            );
-
+                            controller.creatMultiRoom(test);
                           } catch (error) {
-                            print("!!!!!!!!!!!!!!!!!    catch");
-                            print(controller.info);
-                            print('방생성 실패: $error');
+                            print('로그아웃 실패: $error');
                           }
                         },
                         child: Container(

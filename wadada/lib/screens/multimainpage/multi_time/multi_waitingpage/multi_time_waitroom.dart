@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:wadada/common/const/colors.dart';
-import 'package:wadada/screens/multimainpage/multi_distance/multi_waitingpage/multi_dis_room_detail.dart';
-import 'package:wadada/screens/multimainpage/multi_distance/multi_waitingpage/multi_dis_roomcard.dart';
 import 'package:wadada/screens/multimainpage/multi_distance/multi_waitingpage/multi_dist_room_form.dart';
+import 'package:wadada/screens/multimainpage/multi_time/multi_waitingpage/multi_time_room_detail.dart';
+import 'package:wadada/screens/multimainpage/multi_time/multi_waitingpage/multi_time_roomcard.dart';
 
-class MultiDisWait extends StatelessWidget {
-  const MultiDisWait({super.key});
+class MultiTimeWait extends StatelessWidget {
+  const MultiTimeWait({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('거리모드 - 멀티', style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
+        title: const Text('시간모드 - 멀티', style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),),
         backgroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
@@ -96,26 +96,24 @@ class MultiDisWait extends StatelessWidget {
               ),
 
               const SizedBox(height: 20),
-              // RoomInfoCard(),
               GestureDetector(
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => MultiRoomDetail()),
+                    MaterialPageRoute(builder: (context) => MultiTimeRoomDetail()),
                   );
                 },
-                child: RoomInfoCard(),
+                child: TimeRoomInfoCard(),
               ),
               const SizedBox(height: 30),
-              // RoomInfoCard(),
               GestureDetector(
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => MultiRoomDetail()),
+                    MaterialPageRoute(builder: (context) => MultiTimeRoomDetail()),
                   );
                 },
-                child: RoomInfoCard(),
+                child: TimeRoomInfoCard(),
               ),
             ],
           ),

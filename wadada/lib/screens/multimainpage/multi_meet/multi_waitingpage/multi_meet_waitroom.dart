@@ -4,14 +4,14 @@ import 'package:wadada/screens/multimainpage/multi_distance/multi_waitingpage/mu
 import 'package:wadada/screens/multimainpage/multi_distance/multi_waitingpage/multi_dis_roomcard.dart';
 import 'package:wadada/screens/multimainpage/multi_distance/multi_waitingpage/multi_dist_room_form.dart';
 
-class MultiDisWait extends StatelessWidget {
-  const MultiDisWait({super.key});
+class MultiMeetWait extends StatelessWidget {
+  const MultiMeetWait({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('거리모드 - 멀티', style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
+        title: const Text('만남모드 - 멀티', style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),),
         backgroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,

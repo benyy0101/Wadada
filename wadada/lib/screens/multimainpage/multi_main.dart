@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:wadada/screens/multimainpage/multi_meet/multi_waitingpage/multi_meet_waitroom.dart';
+import 'package:wadada/screens/multimainpage/multi_time/multi_waitingpage/multi_time_waitroom.dart';
 import 'package:wadada/screens/multimainpage/widget/multi_select_mode.dart';
-import 'package:wadada/screens/multimainpage/multi_distance/multi_waitingpage/multi_dist_room_form.dart';
 import 'package:wadada/screens/multimainpage/multi_distance/multi_waitingpage/multi_dis_waitroom.dart';
 
 
@@ -33,7 +34,7 @@ class MultiMain extends StatelessWidget {
                   onTapAction: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => MultiWait()),
+                      MaterialPageRoute(builder: (context) => MultiDisWait()),
                     );
                   },
                 ),
@@ -46,7 +47,7 @@ class MultiMain extends StatelessWidget {
                   onTapAction: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => MultiWait()),
+                      MaterialPageRoute(builder: (context) => MultiTimeWait()),
                     );
                   },
                 ),
@@ -59,7 +60,7 @@ class MultiMain extends StatelessWidget {
                   onTapAction: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) =>MultiWait()),
+                      MaterialPageRoute(builder: (context) =>MultiMeetWait()),
                     );
                   },
                 ),
