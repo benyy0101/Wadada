@@ -1,6 +1,9 @@
 package org.api.wadada.multi.service;
 
 import lombok.AllArgsConstructor;
+import org.api.wadada.multi.dto.GameRoomDto;
+import org.api.wadada.multi.dto.GameRoomManager;
+import org.api.wadada.multi.dto.RoomManager;
 import org.api.wadada.multi.dto.req.GameEndReq;
 import org.api.wadada.multi.dto.req.GameStartReq;
 import org.api.wadada.multi.dto.res.GameEndRes;
@@ -10,7 +13,9 @@ import org.api.wadada.multi.entity.Member;
 import org.api.wadada.multi.entity.MultiRecord;
 import org.api.wadada.multi.repository.MemberRepository;
 import org.api.wadada.multi.repository.MultiRecordRepository;
+import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.io.WKTReader;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -22,8 +27,9 @@ import java.util.Optional;
 public class MultiRecordServiceImpl implements MultiRecordService {
     private final MultiRecordRepository multiRecordRepository;
     private final MemberRepository memberRepository;
-
-    public GameStartRes saveStartMulti(Principal principal, GameStartReq gameStartReq){
+    private final RoomManager roomManager;
+    private final GameRoomManager gameRoomManager;
+    public GameStartRes saveStartMulti(Principal principal, GameStartReq gameStartReq) throws ParseException {
         // 멤버 조회
         Optional<Member> optional = memberRepository.getMemberByMemberId(principal.getName());
         if(optional.isEmpty()){
@@ -32,11 +38,18 @@ public class MultiRecordServiceImpl implements MultiRecordService {
 
 //        PointToStringConverter converter = new PointToStringConverter();
 //        Point startLocationPoint = converter.convertToEntityAttribute(gameStartReq.getRecordStartLocation());
+        WKTReader reader = new WKTReader();
+        Point point = (Point) reader.read("POINT (1 1)");
 
-        MultiRecord multiRecord = MultiRecord.builder().multiRecordStart(gameStartReq.getRecordStartLocation())
+        MultiRecord multiRecord = MultiRecord.builder().multiRecordStart(point)
                 .memberSeq(optional.get().getMemberSeq())
+                .roomSeq(gameStartReq.getRoomSeq())
                 .multiRecordPeople(gameStartReq.getRecordPeople()).build();
+        //roomManager.getAllRooms().get(gameStartReq.getRoomIdx()).getRoomSeq()
 
+        System.out.println(gameStartReq.getRoomSeq());
+        GameRoomDto gameRoomDto = gameRoomManager.getAllRooms().get(gameStartReq.getRoomSeq());
+        gameRoomDto.setCurPeople(gameRoomDto.getCurPeople()+1);
         multiRecordRepository.save(multiRecord);
 
 
@@ -51,7 +64,7 @@ public class MultiRecordServiceImpl implements MultiRecordService {
             throw new NullPointerException("멤버를 찾을 수 없습니다");
         }
 
-        Optional<MultiRecord> optional = multiRecordRepository.findByMemberId(optionalMember.get().getMemberSeq());
+        Optional<MultiRecord> optional = multiRecordRepository.findByMemberIdandRoomSeq(optionalMember.get().getMemberSeq(),gameEndReq.getRoomIdx());
         if(optional.isEmpty()){
             throw new NullPointerException("기록을 찾을 수 없습니다");
         }
@@ -83,8 +96,10 @@ public class MultiRecordServiceImpl implements MultiRecordService {
         MultiRecord multiRecord = optional.get();
 
         return new GameResultRes(multiRecord.getMultiRecordRank(),multiRecord.getMultiRecordPace(),multiRecord.getMultiRecordImage()
-        ,multiRecord.getMultiRecordDist(),multiRecord.getMultiRecordTime(),multiRecord.getMultiRecordStart(),multiRecord.getMultiRecordEnd(),
+        ,multiRecord.getMultiRecordDist(),multiRecord.getMultiRecordTime(),multiRecord.getMultiRecordStart().toString(),multiRecord.getMultiRecordEnd().toString(),
                 multiRecord.getMultiRecordSpeed(),multiRecord.getMultiRecordHeartbeat(),multiRecord.getMultiRecordMeanSpeed(),multiRecord.getMultiRecordMeanPace()
         ,multiRecord.getMultiRecordMeanHeartbeat());
     }
+
+
 }

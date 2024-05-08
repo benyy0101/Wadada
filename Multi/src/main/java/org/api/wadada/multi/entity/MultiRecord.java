@@ -2,6 +2,7 @@ package org.api.wadada.multi.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.api.wadada.common.BaseEntity;
 import org.locationtech.jts.geom.Point;
 
 import java.time.LocalDateTime;
@@ -11,7 +12,7 @@ import java.time.LocalDateTime;
 @Builder
 @Entity
 @Table(name = "multi_record")
-public class MultiRecord {
+public class MultiRecord extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,10 +25,10 @@ public class MultiRecord {
     @Column(name = "member_seq", nullable = false)
     private Integer memberSeq;
 
-    @Column(name = "multi_record_start", nullable = false, columnDefinition = "Point")
+    @Column(name = "multi_record_start", nullable = false)
     private Point multiRecordStart;
 
-    @Column(name = "multi_record_end", columnDefinition = "Point")
+    @Column(name = "multi_record_end")
     private Point multiRecordEnd;
 
     @Column(name = "multi_record_time", columnDefinition = "int default 0")
@@ -58,15 +59,6 @@ public class MultiRecord {
     @Column(name = "multi_record_people")
     private Integer multiRecordPeople;
 
-    @Column(name = "created_at", nullable = false)
-    private LocalDateTime createdAt;
-
-    @Column(name = "is_deleted", nullable = false)
-    private Boolean isDeleted;
-
-    @Column(name = "updated_at", nullable = false)
-    private LocalDateTime updatedAt;
-
     @Column(name = "multi_record_mean_pace")
     private Integer multiRecordMeanPace;
 
@@ -75,10 +67,6 @@ public class MultiRecord {
 
     @Column(name = "multi_record_mean_heartbeat")
     private Integer multiRecordMeanHeartbeat;
-
-    //추가사항 모드
-    @Column(name = "multi_record_mode")
-    private String recordMode;
 
     public void updateEnd(Point multiRecordEnd, Integer multiRecordTime,Integer multiRecordDist,String multiRecordImage,Integer multiRecordRank,
                           String multiRecordWay,String multiRecordPace, String multiRecordSpeed,String multiRecordHeartbeat){

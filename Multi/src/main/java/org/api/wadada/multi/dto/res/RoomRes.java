@@ -10,7 +10,7 @@ import org.api.wadada.multi.entity.RoomDocument;
 public class RoomRes {
 
     private int roomIdx;
-
+    
     private String roomTitle;
 
     private int roomPeople;

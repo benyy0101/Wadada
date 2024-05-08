@@ -87,8 +87,6 @@ public class MultiController {
         // 게임 시작 정보 메시지 생성 (API 요청 URL 포함)
 
         String message = GameMessage.GAME_START_INFO_REQUEST.toJson();
-        // 해당 방의 모든 사용자에게 메시지 전송
-        //messagingTemplate.convertAndSend("/sub/attend/" + roomIdx, message);
         roomService.startGame(roomIdx);
         return new ResponseEntity<>(message,HttpStatus.OK);
     }

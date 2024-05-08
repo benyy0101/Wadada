@@ -1,45 +1,36 @@
 package org.api.wadada.multi.service;
 
-import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.api.wadada.multi.dto.GameRoomDto;
+import org.api.wadada.multi.dto.GameRoomManager;
 import org.api.wadada.multi.dto.RoomDto;
 import org.api.wadada.multi.dto.RoomManager;
 import org.api.wadada.multi.dto.game.GameMessage;
 import org.api.wadada.multi.dto.req.CreateRoomReq;
-import org.api.wadada.multi.dto.req.GameEndReq;
-import org.api.wadada.multi.dto.req.GameStartReq;
-import org.api.wadada.multi.dto.res.*;
-import org.api.wadada.multi.dto.res.AttendRoomRes;
-import org.api.wadada.multi.dto.res.LeaveRoomRes;
+import org.api.wadada.multi.dto.res.CreateRoomRes;
 import org.api.wadada.multi.dto.res.RoomMemberRes;
 import org.api.wadada.multi.dto.res.RoomRes;
 import org.api.wadada.multi.entity.Member;
-import org.api.wadada.multi.entity.MultiRecord;
 import org.api.wadada.multi.entity.Room;
 import org.api.wadada.multi.entity.RoomDocument;
 import org.api.wadada.multi.exception.CanNotJoinRoomException;
 import org.api.wadada.multi.exception.CreateRoomException;
 import org.api.wadada.multi.exception.NotFoundMemberException;
-import org.api.wadada.multi.repository.HashTagElasticsearchRepository;
-import org.api.wadada.multi.repository.MemberRepository;
-import org.api.wadada.multi.repository.RoomRepository;
-import org.api.wadada.util.PointToStringConverter;
-import org.locationtech.jts.geom.Point;
-import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.data.elasticsearch.annotations.Document;
-import org.springframework.data.elasticsearch.core.SearchHit;
-import org.springframework.data.elasticsearch.core.SearchHits;
 import org.api.wadada.multi.exception.NotFoundRoomException;
 import org.api.wadada.multi.repository.*;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.transaction.annotation.Transactional;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.security.Principal;
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 @Service
@@ -47,24 +38,20 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Transactional
 public class RoomServiceImpl implements RoomService{
-
     private final RoomRepository roomRepository;
     private final MemberRepository memberRepository;
     private final HashTagElasticsearchRepository elasticsearchRepository;
     private final RoomDocumentRepository roomDocumentRepository;
     private final CustomRoomRepository customRoomRepository;
-    private final RoomManager roomManager = new RoomManager();
-
-
-
-
+    private final RoomManager roomManager;
+    private final GameRoomManager gameRoomManager;
     private final ConcurrentHashMap<Integer, CompletableFuture<Void>> gameStartFutures = new ConcurrentHashMap<>();
-    private final ConcurrentHashMap<Integer, Integer> roomPlayerCount = new ConcurrentHashMap<>();
-    private final ConcurrentHashMap<Integer, Integer> readyPlayerCount = new ConcurrentHashMap<>();
     private final SimpMessagingTemplate messagingTemplate;
     private ExecutorService executor = Executors.newCachedThreadPool();
+
+
     @Override
-    public HashMap<Integer, List<RoomMemberRes>> createRoom(CreateRoomReq createRoomReq, Principal principal) throws Exception {
+    public HashMap<Integer, CreateRoomRes> createRoom(CreateRoomReq createRoomReq, Principal principal) throws Exception {
         Optional<Member> optional = memberRepository.getMemberByMemberId(principal.getName());
         if(optional.isEmpty()){
             throw new NotFoundMemberException();
@@ -113,8 +100,8 @@ public class RoomServiceImpl implements RoomService{
         roomDto.setRoomMode(createRoomReq.getRoomMode());
         int idx = roomManager.addRoom(savedRoom.getRoomSeq(),roomDto);
 
-        HashMap<Integer, List<RoomMemberRes>> resultMap = new HashMap<>();
-        resultMap.put(idx, memberResList);
+        HashMap<Integer,CreateRoomRes> resultMap = new HashMap<>();
+        resultMap.put(idx, new CreateRoomRes(savedRoom.getRoomSeq(),memberResList));
         return resultMap;
     }
 
@@ -209,12 +196,12 @@ public class RoomServiceImpl implements RoomService{
     // 모드별 방 검색
     @Override
     public List<RoomRes> getRoomList(int mode) {
-        List<RoomDto> activeRooms = roomManager.getAllRooms();
-        List<Integer> activeSeqList = activeRooms.stream().filter(roomDto -> roomDto.getRoomMode()==mode).map(
+        Map<Integer,RoomDto> activeRooms = roomManager.getAllRooms();
+        List<Integer> activeSeqList = activeRooms.values().stream().filter(roomDto -> roomDto.getRoomMode()==mode).map(
                 RoomDto::getRoomSeq).toList();
 
         HashMap<Integer,Integer> roomIdxMap = new HashMap<>();
-        for(RoomDto roomDto:activeRooms){
+        for(RoomDto roomDto:activeRooms.values()){
             roomIdxMap.put(roomDto.getRoomSeq(),roomDto.getRoomIdx());
         }
 
@@ -237,14 +224,14 @@ public class RoomServiceImpl implements RoomService{
         }
         // 현재 활성화된 룸 정보 가져오고
         HashMap<Integer, Integer> roomInfo = new HashMap<>();
-        List<RoomDto> activeRooms = roomManager.getAllRooms();
-        for(RoomDto room: activeRooms){
-            roomInfo.put(room.getRoomSeq(),room.getRoomIdx());
+        Map<Integer,RoomDto> activeRooms = roomManager.getAllRooms();
+        for (Map.Entry<Integer, RoomDto> room : activeRooms.entrySet()) {
+            roomInfo.put(room.getValue().getRoomSeq(),room.getValue().getRoomIdx());
         }
 
         //거르는 작업(로그 스태시가 1분 주기라 삭제 반영 안된 정보 거르기)
         roomDocuments = roomDocuments.stream()
-                .filter(roomDocument -> activeRooms.stream()
+                .filter(roomDocument -> activeRooms.values().stream()
                         .anyMatch(room -> room.getRoomSeq() == roomDocument.getRoomSeq()))
                 .toList();
 
@@ -259,62 +246,75 @@ public class RoomServiceImpl implements RoomService{
         return roomResList;
     }
 
-    // 게임시작
 
-    // 게임시작
-//    @Override
-//    public void startGame(int roomIdx) {
-//        // 해당 방 멤버 삭제하고 비우기
-//        roomManager.removeRoom(roomIdx);
-//        // db에 삭제 요청 날리기
-//        RoomDto roomDto = roomManager.getAllRooms().get(roomIdx);
-//        int roomSeq = roomDto.getRoomSeq();
-//        Optional<Room> room = roomRepository.findById(roomSeq);
-//        room.ifPresent(r -> {
-//            r.deleteSoftly();
-//            roomRepository.save(r);
-//        });
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     public void startGame(int roomIdx) {
+        RoomDto curRoom = roomManager.getAllRooms().get(roomIdx);
+        GameRoomDto curGame = GameRoomDto.builder().roomIdx(roomIdx)
+                .curPeople(0)
+                .MaxPeople(curRoom.getMemberCount())
+                .roomSeq(curRoom.getRoomSeq()).build();
 
-        // 해당 방 멤버 삭제하고 비우기
         roomManager.removeRoom(roomIdx);
-        // db에 삭제 요청 날리기
-        RoomDto roomDto = roomManager.getAllRooms().get(roomIdx);
-        int roomSeq = roomDto.getRoomSeq();
+        int roomSeq = curRoom.getRoomSeq();
+        log.info("Member count: {}", curRoom.getMemberCount());
         Optional<Room> room = roomRepository.findById(roomSeq);
         room.ifPresent(r -> {
             r.deleteSoftly();
             roomRepository.save(r);
         });
 
+        try {
+            gameRoomManager.addRoom(curRoom.getRoomSeq(), curGame);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
-        RoomDto curRoom = roomManager.getAllRooms().get(roomIdx);
-        int totalPlayers = curRoom.getMemberCount();
-
-        // 플레이어 수 설정
-        roomPlayerCount.put(roomIdx, totalPlayers);
-        readyPlayerCount.put(roomIdx, 0);
-
-        CompletableFuture<Void> gameStartFuture = CompletableFuture.runAsync(() -> {
+        curGame.addUpdateListener(game -> CompletableFuture.runAsync(() -> {
             try {
-                // 30초 대기 또는 모든 플레이어가 준비되면 실행
                 CompletableFuture.anyOf(
-                        //모든사람이 들어왔으면 시작
                         CompletableFuture.runAsync(() -> {
-                            synchronized (readyPlayerCount) {
-                                while (!readyPlayerCount.get(roomIdx).equals(roomPlayerCount.get(roomIdx))) {
+                            synchronized (curGame) {
+                                log.info("Current people: {}", curGame.getMemberCount());
+                                if (curGame.getMemberCount() != curGame.getMaxPeople()){
                                     try {
-                                        readyPlayerCount.wait();
+                                        curGame.wait();
                                     } catch (InterruptedException e) {
                                         Thread.currentThread().interrupt();
                                     }
                                 }
                             }
                         }, executor),
-                        //or 30초지나면 시작
                         CompletableFuture.runAsync(() -> {
                             try {
                                 TimeUnit.SECONDS.sleep(30);
@@ -324,27 +324,10 @@ public class RoomServiceImpl implements RoomService{
                         }, executor)
                 ).get();
                 String message = GameMessage.GAME_START.toJson();
-                // 게임 시작 메시지 전송
-                messagingTemplate.convertAndSend("/sub/attend/" + roomIdx, message);
+                messagingTemplate.convertAndSend("/sub/attend/" + curGame.getRoomIdx(), message);
             } catch (InterruptedException | ExecutionException e) {
                 Thread.currentThread().interrupt();
             }
-        }, executor);
-
-        gameStartFutures.put(roomIdx, gameStartFuture);
+        }, executor));
     }
-
-    public void playerReady(int roomIdx) {
-        // 준비된 플레이어 수 증가
-        synchronized (readyPlayerCount) {
-            if (readyPlayerCount.containsKey(roomIdx)) {
-                readyPlayerCount.computeIfPresent(roomIdx, (key, val) -> val + 1);
-                if (readyPlayerCount.get(roomIdx).equals(roomPlayerCount.get(roomIdx))) {
-                    readyPlayerCount.notifyAll();
-                }
-            }
-        }
-    }
-
 }
-// 방 타이틀,

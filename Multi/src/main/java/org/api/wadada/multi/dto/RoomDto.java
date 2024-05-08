@@ -68,8 +68,5 @@ public class RoomDto{
         members.clear();
     }
 
-    public void removeAllMembers() {
-        members.clear();
-    }
 
 }
