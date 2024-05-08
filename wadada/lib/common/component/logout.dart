@@ -55,11 +55,12 @@ class TestButton extends StatelessWidget {
           roomTag: '#싸피',
           roomTime: 3,
           roomTitle: 'test');
-      StompProvider provider = StompProvider();
+      StompProvider provider = StompProvider(roomIdx: 0);
       return ElevatedButton(
         onPressed: () {
           try {
-            provider.send();
+            provider.attend(0);
+            provider.out(0);
             //controller.creatMultiRoom(test);
             // provider.client.activate();
             // provider.client.subscribe(
