@@ -9,6 +9,7 @@ import org.apache.commons.math3.optim.nonlinear.scalar.GoalType;
 import org.apache.commons.math3.optim.nonlinear.scalar.ObjectiveFunction;
 import org.apache.commons.math3.optim.nonlinear.scalar.noderiv.NelderMeadSimplex;
 import org.apache.commons.math3.optim.nonlinear.scalar.noderiv.SimplexOptimizer;
+import org.api.wadada.multi.dto.LatLng;
 import org.api.wadada.multi.dto.RoomDto;
 import org.api.wadada.multi.dto.RoomManager;
 import org.api.wadada.multi.dto.game.GameMessage;
@@ -63,13 +64,14 @@ public class RoomServiceImpl implements RoomService{
     private final RoomManager roomManager = new RoomManager();
 
 
-
-
     private final ConcurrentHashMap<Integer, CompletableFuture<Void>> gameStartFutures = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<Integer, Integer> roomPlayerCount = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<Integer, Integer> readyPlayerCount = new ConcurrentHashMap<>();
     private final SimpMessagingTemplate messagingTemplate;
     private ExecutorService executor = Executors.newCachedThreadPool();
+
+    private final ConcurrentHashMap<Integer, CompletableFuture<Void>> flagFutures = new ConcurrentHashMap<>();
+
     @Override
     public HashMap<Integer, List<RoomMemberRes>> createRoom(CreateRoomReq createRoomReq, Principal principal) throws Exception {
         Optional<Member> optional = memberRepository.getMemberByMemberId(principal.getName());
@@ -269,12 +271,43 @@ public class RoomServiceImpl implements RoomService{
     }
 
     @Override
-    public void getFlagPoint() {
-        // 점수받는거를 비동기로 받아서 다 받으면 메세지 전송 똑같이 이벤트 리스너 추가해야함
-         return;
+    public void getFlagPoint(int roomIdx) {
+
+        RoomDto roomDto = roomManager.getAllRooms().get(roomIdx);
+
+        CompletableFuture<Void> flagOptimization = CompletableFuture.anyOf(
+                CompletableFuture.runAsync(() -> awaitAllMemberSend(roomDto), executor),
+                CompletableFuture.runAsync(this::waitSeconds, executor)
+        ).thenRun(() -> {  //하나라도 성공하면
+            FlagPointRes message = calculatePoint(roomDto.getRoomPoints());
+            messagingTemplate.convertAndSend("/sub/attend/" + roomIdx, message);
+            roomDto.getRoomPoints().clear();
+        });
+
+        flagFutures.put(roomIdx, flagOptimization);
     }
 
-    // 게임시작
+    //멤버 다 보낼 때 까지
+    private void awaitAllMemberSend(RoomDto roomDto) {
+        synchronized (roomDto.getRoomPoints()) {
+            while (roomDto.getRoomPoints().size() < roomDto.getMembers().size()) {
+                try {
+                    roomDto.getRoomPoints().wait();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    return;
+                }
+            }
+        }
+    }
+
+    private void waitSeconds() {
+        try {
+            TimeUnit.SECONDS.sleep(7);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
 
     // 게임시작
 //    @Override
@@ -362,7 +395,7 @@ public class RoomServiceImpl implements RoomService{
     }
 
 
-
+    //유저의 위치 정보를 저장(flag 할 때)
     public void saveUserPoint(UserPointReq userPointReq){
         // 방을 찾고
         RoomDto roomDto = roomManager.getAllRooms().get(userPointReq.getRoomIdx());
@@ -370,21 +403,27 @@ public class RoomServiceImpl implements RoomService{
             throw new RuntimeException("좌표 저장 중 index에 맞는 방을 못찾았습니다.");
         }
         // 방 point에 추가하기
-        roomDto.addPoint(new double[]{userPointReq.getLatitude(), userPointReq.getLongitude()});
-        for(double[] e:roomDto.getRoomPoints()){
-            log.info(Arrays.toString(e));
+        synchronized (roomDto.getRoomPoints()) {
+            roomDto.addPoint(userPointReq.getLatitude(), userPointReq.getLongitude());
+            if (roomDto.getRoomPoints().size() == roomDto.getMembers().size()) {
+                roomDto.getRoomPoints().notifyAll();
+            }
+        }
+
+        for(LatLng e:roomDto.getRoomPoints()){
+            log.info(e.toString());
         }
     }
 
-
-    public FlagPointRes calculatePoint(double[][] points){
+    // 최적값 계산
+    public FlagPointRes calculatePoint(List<LatLng> points){
 
         double sumX = 0, sumY = 0;
-        for (double[] p : points) {
-            sumX += p[0];
-            sumY += p[1];
+        for (LatLng p : points) {
+            sumX += p.getX();
+            sumY += p.getY();
         }
-        double[] startPoint = {sumX / points.length, sumY / points.length};
+        LatLng startPoint = new LatLng(sumX / points.size(), sumY / points.size());
 
         SimplexOptimizer optimizer = new SimplexOptimizer(1e-10, 1e-10);
         NelderMeadSimplex simplex = new NelderMeadSimplex(new double[] {0.01, 0.01});
@@ -392,18 +431,19 @@ public class RoomServiceImpl implements RoomService{
         ObjectiveFunction objFunction = new ObjectiveFunction(point -> {
             double variance = 0;
             double meanDistance = 0;
-            double[] distances = new double[points.length];
+            List<Double> distances = new ArrayList<>();
 
-            for (int i = 0; i < points.length; i++) {
-                distances[i] = Math.sqrt(Math.pow(point[0] - points[i][0], 2) + Math.pow(point[1] - points[i][1], 2));
-                meanDistance += distances[i];
+            for (LatLng p : points) {
+                double dist = startPoint.distanceTo(p);
+                distances.add(dist);
+                meanDistance += dist;
             }
-            meanDistance /= points.length;
+            meanDistance /= points.size();
 
             for (double dist : distances) {
                 variance += Math.pow(dist - meanDistance, 2);
             }
-            variance /= points.length;
+            variance /= points.size();
 
             return variance;
         });
@@ -413,7 +453,7 @@ public class RoomServiceImpl implements RoomService{
                 objFunction,
                 GoalType.MINIMIZE,
                 simplex,
-                new org.apache.commons.math3.optim.InitialGuess(startPoint)
+                new org.apache.commons.math3.optim.InitialGuess(new double[]{startPoint.getX(), startPoint.getY()})
         );
 
         return FlagPointRes.builder().latitude(result.getPoint()[0]).longitude(result.getPoint()[1]).build();

@@ -38,7 +38,7 @@ public interface RoomService {
 
     List<RoomRes> findByRoomTag(String roomTag) throws Exception;
 
-    void getFlagPoint();
+    void getFlagPoint(int roomIdx);
 
     void saveUserPoint(UserPointReq userPointReq);
 

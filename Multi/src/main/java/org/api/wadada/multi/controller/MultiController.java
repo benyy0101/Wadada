@@ -173,6 +173,7 @@ public class MultiController {
     @SendTo("/sub/attend/{roomIdx}")
     public ResponseEntity<?> getFlagPoint(@DestinationVariable int roomIdx){
         String message = "{\"message\": \"깃발요청\", \"action\": \"/Multi/flag\"}";
+        roomService.getFlagPoint(roomIdx);
         return new ResponseEntity<>(message,HttpStatus.OK);
     }
 
