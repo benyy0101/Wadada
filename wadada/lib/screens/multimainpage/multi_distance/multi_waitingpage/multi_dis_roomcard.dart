@@ -9,11 +9,6 @@ import 'package:wadada/repository/multiRepo.dart';
 
 // ignore: must_be_immutable
 class DisRoomInfoCard extends StatelessWidget {
-  late String titleselectstring = '';
-  late int distselectnum = 0;
-  late int peopleselectnum = 0;
-  late int passwordselectnum = 0;
-  late String hashtagselectstring = '';
 
   double? roomDist;
   double? roomPeople;

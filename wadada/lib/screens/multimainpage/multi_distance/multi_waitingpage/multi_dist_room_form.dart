@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:wadada/controller/multiController.dart';
 import 'package:wadada/provider/multiProvider.dart';
 import 'package:wadada/repository/multiRepo.dart';
-import 'package:wadada/screens/multimainpage/multi_distance/multi_waitingpage/multi_dis_waitroom.dart';
+import 'package:wadada/screens/multimainpage/multi_distance/multi_waitingpage/multi_dis_room_detail.dart';
 import 'package:wadada/screens/multimainpage/multi_distance/multi_waitingpage/options/multi_select_dist_option.dart';
 
 class MultiDistanceRoomForm extends StatefulWidget {
@@ -97,14 +97,13 @@ class MultiDistanceRoomFormState extends State<MultiDistanceRoomForm> {
                         onTap: () {
                           // 방 생성 로직
                           try {
-                            
                             controller.creatMultiRoom(controller.multiroom);
                             print(controller.multiroom.toString());
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => MultiDisWait()),
-                            );
+                            // Navigator.push(
+                            //   context,
+                            //   MaterialPageRoute(
+                            //       builder: (context) =>  MultiRoomDetail(roomIdx: item.roomIdx, roomDist: , roomPeople: , roomSecret: , roomTag: , roomTitle: )),
+                            // );
                           } catch (error) {
                             print(error);
                             rethrow;

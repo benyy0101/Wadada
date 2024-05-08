@@ -23,6 +23,7 @@ class MultiController extends GetxController {
     roomTag: '', 
     roomTime: 1, 
     roomTitle: '의 방');
+    
   List<SimpleRoom> roomList = [];
   int recordSeq = -1;
 
@@ -56,6 +57,7 @@ class MultiController extends GetxController {
   void getMultiRoomsByMode(int mode) async {
     try {
       roomList = await repo.multiRoomGet(mode);
+      print(roomList.length);
       update();
     } catch (e) {
       print(e);

@@ -99,24 +99,16 @@ class MultiMeetWait extends StatelessWidget {
               // RoomInfoCard(),
               GestureDetector(
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => MultiRoomDetail()),
-                  );
+                  // Navigator.push(
+                  //   context,
+                  //   MaterialPageRoute(builder: (context) => MultiRoomDetail()),
+                  // );
                 },
                 // child: RoomInfoCard(),
               ),
               const SizedBox(height: 30),
               // RoomInfoCard(),
-              GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => MultiRoomDetail()),
-                  );
-                },
-                // child: RoomInfoCard(),
-              ),
+             
             ],
           ),
         ),
