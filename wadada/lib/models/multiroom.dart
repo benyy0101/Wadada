@@ -1,4 +1,6 @@
 import 'package:wadada/models/mypage.dart';
+import 'dart:math';
+
 import 'package:wadada/util/serializable.dart';
 
 class MultiRoom {
@@ -43,6 +45,11 @@ class MultiRoom {
       'roomTime': roomTime,
       'roomTitle': roomTitle,
     };
+
+  }
+  @override
+  String toString() {
+    return 'MultiRoom(roomPeople: $roomPeople, roomDist: $roomDist, roomMode: $roomMode, roomSecret: $roomSecret, roomTag: "$roomTag", roomTime: $roomTime, roomTitle: "$roomTitle")';
   }
 }
 
@@ -58,6 +65,11 @@ class RoomInfo extends MultiRoom {
       required super.roomTag,
       required super.roomTime,
       required super.roomTitle});
+
+  @override
+  String toString() {
+    return 'RoomInfo(roomIdx: $roomIdx, roomPeople: $roomPeople, roomDist: $roomDist, roomMode: $roomMode, roomSecret: $roomSecret, roomTag: $roomTag, roomTime: $roomTime, roomTitle: $roomTitle)';
+  }
 }
 
 class MultiRoomAttend implements Serializable {
@@ -237,3 +249,4 @@ class SimpleRoom {
     return 'SimpleRoom{ roomIdx: $roomIdx, roomTitle: $roomTitle, roomPeople: $roomPeople, roomTag: $roomTag, roomSecret: $roomSecret }';
   }
 }
+
