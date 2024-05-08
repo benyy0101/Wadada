@@ -81,12 +81,12 @@ class MultiRoomAttend implements Serializable {
 }
 
 class MultiRoomGameStart {
-  String recordMode;
+  int roomIdx;
   Point recordStartLocation;
   int recordPeople;
 
   MultiRoomGameStart(
-      {required this.recordMode,
+      {required this.roomIdx,
       required this.recordStartLocation,
       required this.recordPeople});
 }
@@ -103,9 +103,11 @@ class MultiRoomGameEnd {
   String recordHeartbeat; //json
   String recordPace; //json
   int recordRank;
+  int roomIdx;
 
   MultiRoomGameEnd(
-      {required this.recordMode,
+      {required this.roomIdx,
+      required this.recordMode,
       required this.recordImage,
       required this.recordDist,
       required this.recordTime,

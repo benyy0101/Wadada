@@ -47,6 +47,7 @@ class MultiProvider {
     return response;
   }
 
+  //DEAD END
   Future<Response<dynamic>> multiRoomAttend(String roomSeq) async {
     await setAuth();
     final response = await _dio.get(
@@ -55,6 +56,7 @@ class MultiProvider {
     return response;
   }
 
+  //MULTI-006
   Future<Response<dynamic>> multiRoomGameStart(
       MultiRoomGameStart startInfo) async {
     await setAuth();
@@ -62,6 +64,7 @@ class MultiProvider {
     return response;
   }
 
+  //MULTI-007
   Future<Response<dynamic>> multiRoomGameEnd(MultiRoomGameEnd endInfo) async {
     await setAuth();
     final response = await _dio.patch('/result', data: endInfo);
