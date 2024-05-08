@@ -8,17 +8,16 @@ import 'package:wadada/repository/multiRepo.dart';
 
 import '../../../../../provider/multiProvider.dart';
 
-class MultiSelectDistOption extends StatefulWidget{
+class MultiSelectDistOption extends StatefulWidget {
   final String option_dis, optionstr_dis; //거리
   final String option_people, optionstr_people; //참여인원
-  final String option_password;  // 비번
+  final String option_password; // 비번
   final String option_hash; // 해시태그
 
-  final Function(MultiSelectDistOptionState)? onStatedistUpdated;
-  final Function(MultiSelectDistOptionState)? onStatepeopleUpdated;
-  final Function(MultiSelectDistOptionState)? onStatepasswordUpdated;
-  final Function(MultiSelectDistOptionState)? onStatehashtagUpdated;
-
+  // final Function(MultiSelectDistOptionState)? onStatedistUpdated;
+  // final Function(MultiSelectDistOptionState)? onStatepeopleUpdated;
+  // final Function(MultiSelectDistOptionState)? onStatepasswordUpdated;
+  // final Function(MultiSelectDistOptionState)? onStatehashtagUpdated;
 
   const MultiSelectDistOption({
     super.key,
@@ -28,10 +27,10 @@ class MultiSelectDistOption extends StatefulWidget{
     required this.optionstr_people,
     required this.option_password,
     required this.option_hash,
-    this.onStatedistUpdated,
-    this.onStatepeopleUpdated,
-    this.onStatepasswordUpdated,
-    this.onStatehashtagUpdated,
+    // this.onStatedistUpdated,
+    // this.onStatepeopleUpdated,
+    // this.onStatepasswordUpdated,
+    // this.onStatehashtagUpdated,
   });
 
   @override
@@ -50,17 +49,15 @@ class MultiSelectDistOptionState extends State<MultiSelectDistOption> {
   double? roomSecret;
   double? roomTag;
 
-   @override
+  @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     _distanceToField = MediaQuery.of(context).size.width;
   }
 
-
   bool isPasswordMode = true;
   String passwordErrorText = '비밀번호 4자리를 입력하세요.';
 
-  
   // 각 필드 입력을 위한 컨트롤러 생성
   final TextEditingController distController = TextEditingController();
   final TextEditingController peopleController = TextEditingController();
@@ -79,7 +76,6 @@ class MultiSelectDistOptionState extends State<MultiSelectDistOption> {
     _stringTagController = StringTagController();
   }
 
-
   @override
   void dispose() {
     // 컨트롤러들을 dispose 해주기
@@ -91,9 +87,9 @@ class MultiSelectDistOptionState extends State<MultiSelectDistOption> {
     super.dispose();
   }
 
-  static const List<String> _pickLanguage = <String>[
-  
-  ];
+  // static const List<String> _pickLanguage = <String>[
+
+  // ];
 
   // 거리 에러 텍스트
   void distupdateErrorText() {
@@ -107,9 +103,9 @@ class MultiSelectDistOptionState extends State<MultiSelectDistOption> {
 
     setState(() {});
     dist = double.tryParse(value) ?? 0.0;
-    if (widget.onStatedistUpdated != null) {
-      widget.onStatedistUpdated!(this);
-    }
+    // if (widget.onStatedistUpdated != null) {
+    //   widget.onStatedistUpdated!(this);
+    // }
   }
 
   // 참여인원 에러 텍스트
@@ -124,9 +120,9 @@ class MultiSelectDistOptionState extends State<MultiSelectDistOption> {
 
     setState(() {});
     dist = double.tryParse(value) ?? 0.0;
-    if (widget.onStatepeopleUpdated != null) {
-      widget.onStatepeopleUpdated!(this);
-    }
+    // if (widget.onStatepeopleUpdated != null) {
+    //   widget.onStatepeopleUpdated!(this);
+    // }
   }
 
   // 비밀번호 에러 텍스트
@@ -141,66 +137,61 @@ class MultiSelectDistOptionState extends State<MultiSelectDistOption> {
 
     setState(() {});
     dist = double.tryParse(value) ?? 0.0;
-    if (widget.onStatepeopleUpdated != null) {
-      widget.onStatepeopleUpdated!(this);
-    }
+    // if (widget.onStatepeopleUpdated != null) {
+    //   widget.onStatepeopleUpdated!(this);
+    // }
   }
-
 
   // 해시태그 에러 텍스트
   void hashtagupdateErrorText() {
     final value = passwordController.text;
     // if (value.startsWith('0') && value.length > 1 || value.isEmpty || int.tryParse(value) == null) {
     if (value.startsWith('0') && value.length > 1) {
-      passworderrorText = '방을 소개할 단어를 입력하고 쉼표(,)를 적으면 입력되고, 최대 3개의 해시태그를 등록할 수 있어요.';
+      passworderrorText =
+          '방을 소개할 단어를 입력하고 쉼표(,)를 적으면 입력되고, 최대 3개의 해시태그를 등록할 수 있어요.';
     } else {
       passworderrorText = null;
     }
 
     setState(() {});
     dist = double.tryParse(value) ?? 0.0;
-    if (widget.onStatepeopleUpdated != null) {
-      widget.onStatepeopleUpdated!(this);
-    }
+    // if (widget.onStatepeopleUpdated != null) {
+    //   widget.onStatepeopleUpdated!(this);
+    // }
   }
 
-
-
-
   String concatenateTags(List<String> tags) {
-  // 태그 리스트를 하나의 문자열로 합칩니다. 각 태그 앞에 '#'을 붙이고, 모든 태그를 연결합니다.
-  return tags.map((tag) => '#$tag').join();
-}
-
+    // 태그 리스트를 하나의 문자열로 합칩니다. 각 태그 앞에 '#'을 붙이고, 모든 태그를 연결합니다.
+    return tags.map((tag) => '#$tag').join();
+  }
 
   @override
   Widget build(BuildContext context) {
     Get.put(MultiController(repo: MultiRepository(provider: MultiProvider())));
     return GetBuilder<MultiController>(builder: (MultiController controller) {
-      return
-        Container(
-          decoration: BoxDecoration(
-            color: Color(0xffF6F4E9),
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: const [
-              BoxShadow(
-                color: Colors.black12,
-                spreadRadius: 2,
-                blurRadius: 5,
-                offset: Offset(1, 2),
-              ),
-            ],
-          ),
-          width: 400,
-          child: Padding(
-            padding: const EdgeInsets.only(left: 40, right: 40, top: 50, bottom: 70),
+      return Container(
+        decoration: BoxDecoration(
+          color: Color(0xffF6F4E9),
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: const [
+            BoxShadow(
+              color: Colors.black12,
+              spreadRadius: 2,
+              blurRadius: 5,
+              offset: Offset(1, 2),
+            ),
+          ],
+        ),
+        width: 400,
+        child: Padding(
+            padding:
+                const EdgeInsets.only(left: 40, right: 40, top: 50, bottom: 70),
             child: SingleChildScrollView(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-
-                  // 거리 
+                  // 거리
                   Text(
                     widget.option_dis,
                     style: const TextStyle(
@@ -240,29 +231,27 @@ class MultiSelectDistOptionState extends State<MultiSelectDistOption> {
                             ),
                             filled: true,
                             fillColor: Colors.white,
-                            contentPadding: EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+                            contentPadding: EdgeInsets.symmetric(
+                                vertical: 15, horizontal: 15),
                             errorText: disterrorText,
                           ),
-
                           controller: distController,
                           onChanged: (value) {
                             setState(() {
-                                distselectnum = int.tryParse(value) ?? 0;
-                                controller.setRoomDist(distselectnum);
-                                distupdateErrorText();
+                              distselectnum = int.tryParse(value) ?? 0;
+                              controller.info.roomDist = distselectnum;
+                              print(controller.info.roomDist);
+                              distupdateErrorText();
                             });
                           },
                         ),
                       ),
                       SizedBox(width: 10),
-                      Text(
-                        widget.optionstr_dis,
-                        style: TextStyle(
-                          color: DARK_GREEN_COLOR,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold
-                        )
-                      )
+                      Text(widget.optionstr_dis,
+                          style: TextStyle(
+                              color: DARK_GREEN_COLOR,
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold))
                     ],
                   ),
 
@@ -308,29 +297,27 @@ class MultiSelectDistOptionState extends State<MultiSelectDistOption> {
                             ),
                             filled: true,
                             fillColor: Colors.white,
-                            contentPadding: EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+                            contentPadding: EdgeInsets.symmetric(
+                                vertical: 15, horizontal: 15),
                             errorText: peopleerrorText,
                           ),
-
                           controller: peopleController,
                           onChanged: (value) {
                             setState(() {
                               peopleselectnum = int.tryParse(value) ?? 0;
-                                controller.info.roomPeople = peopleselectnum;
-                                peopleupdateErrorText();
+                              controller.info.roomPeople = peopleselectnum;
+                              print(controller.info.roomPeople);
+                              peopleupdateErrorText();
                             });
                           },
                         ),
                       ),
                       SizedBox(width: 10),
-                      Text(
-                        widget.optionstr_people,
-                        style: TextStyle(
-                          color: DARK_GREEN_COLOR,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold
-                        )
-                      )
+                      Text(widget.optionstr_people,
+                          style: TextStyle(
+                              color: DARK_GREEN_COLOR,
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold))
                     ],
                   ),
 
@@ -346,7 +333,9 @@ class MultiSelectDistOptionState extends State<MultiSelectDistOption> {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      SizedBox(width: 10,),
+                      SizedBox(
+                        width: 10,
+                      ),
                       Switch(
                         value: isPasswordMode,
                         onChanged: (value) {
@@ -354,9 +343,9 @@ class MultiSelectDistOptionState extends State<MultiSelectDistOption> {
                             isPasswordMode = value;
                           });
                         },
-                        activeColor: DARK_GREEN_COLOR, 
+                        activeColor: DARK_GREEN_COLOR,
                         activeTrackColor: GREEN_COLOR,
-                        inactiveThumbColor: Colors.black, 
+                        inactiveThumbColor: Colors.black,
                         inactiveTrackColor: Colors.grey,
                       ),
                     ],
@@ -397,7 +386,8 @@ class MultiSelectDistOptionState extends State<MultiSelectDistOption> {
                               ),
                               filled: true,
                               fillColor: Colors.white,
-                              contentPadding: EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+                              contentPadding: EdgeInsets.symmetric(
+                                  vertical: 15, horizontal: 15),
                               errorText: passwordErrorText,
                             ),
                             controller: passwordController,
@@ -405,8 +395,8 @@ class MultiSelectDistOptionState extends State<MultiSelectDistOption> {
                               setState(() {
                                 int passwordValue = int.tryParse(value) ?? 0;
                                 controller.info.roomSecret = passwordValue;
+                                print(controller.info.roomSecret);
                                 passwordupdateErrorText();
-                                
                               });
                             },
                           ),
@@ -454,11 +444,10 @@ class MultiSelectDistOptionState extends State<MultiSelectDistOption> {
                               ),
                             ),
                             enabledBorder: const OutlineInputBorder(
-                              borderSide: BorderSide(
-                                color: OATMEAL_COLOR,
-                                width: 3.0,
-                              )
-                            ),
+                                borderSide: BorderSide(
+                              color: OATMEAL_COLOR,
+                              width: 3.0,
+                            )),
                             focusedBorder: const OutlineInputBorder(
                               borderSide: BorderSide(
                                 color: Color.fromARGB(255, 74, 137, 92),
@@ -470,23 +459,26 @@ class MultiSelectDistOptionState extends State<MultiSelectDistOption> {
                               color: Color.fromARGB(255, 167, 167, 167),
                             ),
                             errorText: inputFieldValues.error,
-                            prefixIconConstraints:
-                                BoxConstraints(maxWidth: _distanceToField * 0.75),
+                            prefixIconConstraints: BoxConstraints(
+                                maxWidth: _distanceToField * 0.75),
                             prefixIcon: inputFieldValues.tags.isNotEmpty
                                 ? SingleChildScrollView(
-                                    controller: inputFieldValues.tagScrollController,
+                                    controller:
+                                        inputFieldValues.tagScrollController,
                                     scrollDirection: Axis.horizontal,
                                     child: Row(
-                                        children:
-                                            inputFieldValues.tags.map((String tag) {
+                                        children: inputFieldValues.tags
+                                            .map((String tag) {
                                       return Container(
                                         decoration: BoxDecoration(
                                           borderRadius: BorderRadius.all(
                                             Radius.circular(20.0),
                                           ),
-                                          color: Color.fromARGB(255, 74, 137, 92),
+                                          color:
+                                              Color.fromARGB(255, 74, 137, 92),
                                         ),
-                                        margin: const EdgeInsets.only(right: 10.0),
+                                        margin:
+                                            const EdgeInsets.only(right: 10.0),
                                         padding: const EdgeInsets.symmetric(
                                             horizontal: 10.0, vertical: 4.0),
                                         child: Row(
@@ -512,7 +504,8 @@ class MultiSelectDistOptionState extends State<MultiSelectDistOption> {
                                                     255, 233, 233, 233),
                                               ),
                                               onTap: () {
-                                                inputFieldValues.onTagRemoved(tag);
+                                                inputFieldValues
+                                                    .onTagRemoved(tag);
                                               },
                                             )
                                           ],
@@ -525,7 +518,8 @@ class MultiSelectDistOptionState extends State<MultiSelectDistOption> {
                           onChanged: inputFieldValues.onTagChanged,
                           // onSubmitted: inputFieldValues.onTagSubmitted,
                           onSubmitted: (String tag) {
-                            String concatenatedTags = concatenateTags(_stringTagController.getTags!);
+                            String concatenatedTags =
+                                concatenateTags(_stringTagController.getTags!);
 
                             print(concatenatedTags);
                           },
@@ -549,10 +543,8 @@ class MultiSelectDistOptionState extends State<MultiSelectDistOption> {
                   // ),
                 ],
               ),
-            )
-          ),
+            )),
       );
-    }
-  );
+    });
   }
 }

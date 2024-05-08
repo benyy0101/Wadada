@@ -4,13 +4,13 @@ import 'dart:math';
 import 'package:wadada/util/serializable.dart';
 
 class MultiRoom {
-  late final int roomPeople;
-  late final int roomDist;
-  late final int roomMode;
-  late final int? roomSecret;
-  final String roomTag;
-  final int roomTime;
-  final String roomTitle;
+  int roomPeople;
+  int roomDist;
+  int roomMode;
+  int? roomSecret;
+  String roomTag;
+  int roomTime;
+  String roomTitle;
 
   MultiRoom(
       {required this.roomPeople,
@@ -63,11 +63,11 @@ class RoomInfo extends MultiRoom {
 }
 
 class MultiRoomAttend implements Serializable {
-  final String memberNickname;
-  final String memberGender; //F/M
-  final String memberProfileImage;
-  final int memberLevel;
-  final String memberId;
+  String memberNickname;
+  String memberGender; //F/M
+  String memberProfileImage;
+  int memberLevel;
+  String memberId;
 
   MultiRoomAttend(
       {required this.memberNickname,
@@ -94,17 +94,17 @@ class MultiRoomGameStart {
 }
 
 class MultiRoomGameEnd {
-  final String recordMode;
-  final String recordImage;
-  final double recordDist;
-  final Duration recordTime;
-  final Point recordStartLocation;
-  final Point recordEndLocation;
-  final String recordWay; //json
-  final String recordSpeed; // json
-  final String recordHeartbeat; //json
-  final String recordPace; //json
-  final int recordRank;
+  String recordMode;
+  String recordImage;
+  double recordDist;
+  Duration recordTime;
+  Point recordStartLocation;
+  Point recordEndLocation;
+  String recordWay; //json
+  String recordSpeed; // json
+  String recordHeartbeat; //json
+  String recordPace; //json
+  int recordRank;
 
   MultiRoomGameEnd(
       {required this.recordMode,
@@ -121,13 +121,13 @@ class MultiRoomGameEnd {
 }
 
 class MemberInGame {
-  final String memberNickname;
-  final String memberId;
-  final String memberGender;
-  final String memberProfileImage;
-  final int memberLevel;
-  final bool memberReady;
-  final bool manager;
+  String memberNickname;
+  String memberId;
+  String memberGender;
+  String memberProfileImage;
+  int memberLevel;
+  bool memberReady;
+  bool manager;
 
   MemberInGame(
       {required this.memberNickname,
@@ -138,4 +138,3 @@ class MemberInGame {
       required this.memberReady,
       required this.manager});
 }
-

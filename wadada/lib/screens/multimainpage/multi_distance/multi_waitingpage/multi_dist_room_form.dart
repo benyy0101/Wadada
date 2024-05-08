@@ -5,9 +5,8 @@ import 'package:wadada/provider/multiProvider.dart';
 import 'package:wadada/repository/multiRepo.dart';
 import 'package:wadada/screens/multimainpage/multi_distance/multi_waitingpage/multi_dis_waitroom.dart';
 import 'package:wadada/screens/multimainpage/multi_distance/multi_waitingpage/options/multi_select_dist_option.dart';
-import 'package:wadada/screens/singleoptionpage/component/select_dist_option.dart';
 
-class MultiDistanceRoomForm extends StatefulWidget{
+class MultiDistanceRoomForm extends StatefulWidget {
   const MultiDistanceRoomForm({super.key});
 
   @override
@@ -15,7 +14,6 @@ class MultiDistanceRoomForm extends StatefulWidget{
 }
 
 class MultiDistanceRoomFormState extends State<MultiDistanceRoomForm> {
-  SelectDistOptionState? distOptionState;
   // 각 입력 필드를 위한 TextEditingController 인스턴스 생성
   final participantController = TextEditingController();
   final passwordController = TextEditingController();
@@ -30,13 +28,10 @@ class MultiDistanceRoomFormState extends State<MultiDistanceRoomForm> {
     super.dispose();
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     Get.put(MultiController(repo: MultiRepository(provider: MultiProvider())));
     return GetBuilder<MultiController>(builder: (MultiController controller) {
-
       // MultiRoom test = MultiRoom(
       //   roomPeople: 3,
       //   roomDist: 2,
@@ -47,13 +42,15 @@ class MultiDistanceRoomFormState extends State<MultiDistanceRoomForm> {
       //   roomTitle: 'test');
       return Scaffold(
         appBar: AppBar(
-          title: const Text('거리모드 - 멀티', style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
+          title: const Text('거리모드 - 멀티',
+              style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
           backgroundColor: Colors.white,
           elevation: 0,
           centerTitle: true,
         ),
         backgroundColor: Colors.white,
-        body: SingleChildScrollView( // 여기에 SingleChildScrollView 추가
+        body: SingleChildScrollView(
+          // 여기에 SingleChildScrollView 추가
           child: Container(
             padding: EdgeInsets.only(left: 30, right: 30),
             child: Column(
@@ -70,26 +67,26 @@ class MultiDistanceRoomFormState extends State<MultiDistanceRoomForm> {
                         optionstr_people: '(명)',
                         option_password: '비밀 번호',
                         option_hash: '해시태그',
-                        onStatedistUpdated: (state) {
-                          setState(() {
-                            distOptionState = state as SelectDistOptionState?;
-                          });
-                        },
-                        onStatepeopleUpdated: (state) {
-                          setState(() {
-                            distOptionState = state as SelectDistOptionState?;
-                          });
-                        },
-                        onStatepasswordUpdated: (state) {
-                          setState(() {
-                            distOptionState = state as SelectDistOptionState?;
-                          });
-                        },
-                        onStatehashtagUpdated: (state) {
-                          setState(() {
-                            distOptionState = state as SelectDistOptionState?;
-                          });
-                        },
+                        // onStatedistUpdated: (state) {
+                        //   setState(() {
+                        //     distOptionState = state as SelectDistOptionState?;
+                        //   });
+                        // },
+                        // onStatepeopleUpdated: (state) {
+                        //   setState(() {
+                        //     distOptionState = state as SelectDistOptionState?;
+                        //   });
+                        // },
+                        // onStatepasswordUpdated: (state) {
+                        //   setState(() {
+                        //     distOptionState = state as SelectDistOptionState?;
+                        //   });
+                        // },
+                        // onStatehashtagUpdated: (state) {
+                        //   setState(() {
+                        //     distOptionState = state as SelectDistOptionState?;
+                        //   });
+                        // },
                       )
                     ],
                   ),
@@ -126,22 +123,17 @@ class MultiDistanceRoomFormState extends State<MultiDistanceRoomForm> {
                     Expanded(
                       child: GestureDetector(
                         onTap: () {
-                          print("!!!!!!!!!!!!!!!!!     try전");
-                            print(controller.info.toJson());
                           // 방 생성 로직
                           try {
-                            print("!!!!!!!!!!!!!!!!!    try");
-                            print(controller.info.toJson());
                             // controller.creatMultiRoom(controller.info);
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (context) => MultiDisWait()),
+                              MaterialPageRoute(
+                                  builder: (context) => MultiDisWait()),
                             );
-
                           } catch (error) {
-                            print("!!!!!!!!!!!!!!!!!    catch");
-                            print(controller.info);
-                            print('방생성 실패: $error');
+                            print(error);
+                            rethrow;
                           }
                         },
                         child: Container(
@@ -169,7 +161,6 @@ class MultiDistanceRoomFormState extends State<MultiDistanceRoomForm> {
           ),
         ),
       );
-
     });
   }
 }

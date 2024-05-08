@@ -8,7 +8,7 @@ import 'package:wadada/repository/multiRepo.dart';
 import 'package:wadada/screens/multimainpage/multi_distance/multi_waitingpage/options/multi_select_dist_option.dart';
 import 'package:wadada/screens/singleoptionpage/component/select_dist_option.dart';
 
-class MultiTimeRoomForm extends StatefulWidget{
+class MultiTimeRoomForm extends StatefulWidget {
   const MultiTimeRoomForm({super.key});
 
   @override
@@ -31,29 +31,29 @@ class MultiTimeRoomFormState extends State<MultiTimeRoomForm> {
     super.dispose();
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     Get.put(MultiController(repo: MultiRepository(provider: MultiProvider())));
     return GetBuilder<MultiController>(builder: (MultiController controller) {
       MultiRoom test = MultiRoom(
-        roomPeople: 3,
-        roomDist: 2,
-        roomMode: 1,
-        roomSecret: 1111,
-        roomTag: '#싸피',
-        roomTime: 3,
-        roomTitle: 'test');
+          roomPeople: 3,
+          roomDist: 2,
+          roomMode: 1,
+          roomSecret: 1111,
+          roomTag: '#싸피',
+          roomTime: 3,
+          roomTitle: 'test');
       return Scaffold(
         appBar: AppBar(
-          title: const Text('시간모드 - 멀티', style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
+          title: const Text('시간모드 - 멀티',
+              style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
           backgroundColor: Colors.white,
           elevation: 0,
           centerTitle: true,
         ),
         backgroundColor: Colors.white,
-        body: SingleChildScrollView( // 여기에 SingleChildScrollView 추가
+        body: SingleChildScrollView(
+          // 여기에 SingleChildScrollView 추가
           child: Container(
             padding: EdgeInsets.only(left: 30, right: 30),
             child: Column(
@@ -70,26 +70,26 @@ class MultiTimeRoomFormState extends State<MultiTimeRoomForm> {
                         optionstr_people: '(명)',
                         option_password: '비밀 번호',
                         option_hash: '해시태그',
-                        onStatedistUpdated: (state) {
-                          setState(() {
-                            distOptionState = state as SelectDistOptionState?;
-                          });
-                        },
-                        onStatepeopleUpdated: (state) {
-                          setState(() {
-                            distOptionState = state as SelectDistOptionState?;
-                          });
-                        },
-                        onStatepasswordUpdated: (state) {
-                          setState(() {
-                            distOptionState = state as SelectDistOptionState?;
-                          });
-                        },
-                        onStatehashtagUpdated: (state) {
-                          setState(() {
-                            distOptionState = state as SelectDistOptionState?;
-                          });
-                        },
+                        // onStatedistUpdated: (state) {
+                        //   setState(() {
+                        //     distOptionState = state as SelectDistOptionState?;
+                        //   });
+                        // },
+                        // onStatepeopleUpdated: (state) {
+                        //   setState(() {
+                        //     distOptionState = state as SelectDistOptionState?;
+                        //   });
+                        // },
+                        // onStatepasswordUpdated: (state) {
+                        //   setState(() {
+                        //     distOptionState = state as SelectDistOptionState?;
+                        //   });
+                        // },
+                        // onStatehashtagUpdated: (state) {
+                        //   setState(() {
+                        //     distOptionState = state as SelectDistOptionState?;
+                        //   });
+                        // },
                       )
                     ],
                   ),
@@ -158,7 +158,6 @@ class MultiTimeRoomFormState extends State<MultiTimeRoomForm> {
           ),
         ),
       );
-
     });
   }
 }

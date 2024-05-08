@@ -29,7 +29,6 @@ class MultiController extends GetxController {
   }
 
   void setRoomDist(int target){
-    print("+++++++++++++++++++++");
     info.roomDist = target;
     print(info.roomDist);
     update();
