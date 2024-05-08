@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:intl/intl.dart';
@@ -42,6 +44,14 @@ class MypageAPI {
   Future<Response<dynamic>> getMarathonDetail(int req) async {
     await setAuth();
     final response = await _dio.get('marathon/${req}');
+    return response;
+  }
+
+  Future<Response> imageUpload(File file) async {
+    await setAuth();
+    _dio.options.headers['Content-Type'] = 'multipart/form-data';
+
+    final response = await _dio.post('image', data:{"profileImageFile": file});
     return response;
   }
 }
