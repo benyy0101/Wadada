@@ -33,6 +33,10 @@ class Point {
         'x': x,
         'y': y,
       };
+  @override
+  String toString() {
+    return 'Point(x: $x, y: $y)';
+  }
 }
 
 class RecordRequest implements Serializable {

@@ -5,6 +5,7 @@ import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:wadada/common/const/colors.dart';
 import 'package:wadada/controller/multiController.dart';
 import 'package:wadada/models/multiroom.dart';
+import 'package:wadada/models/mypage.dart';
 import 'package:wadada/provider/multiProvider.dart';
 import 'package:wadada/provider/stompProvider.dart';
 import 'package:wadada/repository/multiRepo.dart';
@@ -59,17 +60,9 @@ class TestButton extends StatelessWidget {
       return ElevatedButton(
         onPressed: () {
           try {
-            provider.attend(0);
-            provider.out(0);
-            //controller.creatMultiRoom(test);
-            // provider.client.activate();
-            // provider.client.subscribe(
-            //     destination: '/pub/attend/1',
-            //     callback: (frame) {
-            //       // Received a frame for this subscription
-            //       print(frame.body);
-            //     });
-            // 로그아웃 성공 시 처
+            //controller.getMultiRoomsByMode(1);
+            controller.sendStartLocation(Point(0, 0), 3, 3);
+            //print(controller.roomList.toString());
           } catch (error) {
             // 로그아웃 실패 시 처리
             print('로그아웃 실패: $error');
