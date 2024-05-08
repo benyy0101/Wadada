@@ -2,13 +2,13 @@ import 'package:wadada/models/mypage.dart';
 import 'package:wadada/util/serializable.dart';
 
 class MultiRoom {
-  final int roomPeople;
-  final int roomDist;
-  final int roomMode;
-  final int? roomSecret;
-  final String roomTag;
-  final int roomTime;
-  final String roomTitle;
+  int roomPeople;
+  int roomDist;
+  int roomMode;
+  int? roomSecret;
+  String roomTag;
+  int roomTime;
+  String roomTitle;
 
   MultiRoom(
       {required this.roomPeople,
@@ -61,11 +61,11 @@ class RoomInfo extends MultiRoom {
 }
 
 class MultiRoomAttend implements Serializable {
-  final String memberNickname;
-  final String memberGender; //F/M
-  final String memberProfileImage;
-  final int memberLevel;
-  final String memberId;
+  String memberNickname;
+  String memberGender; //F/M
+  String memberProfileImage;
+  int memberLevel;
+  String memberId;
 
   MultiRoomAttend(
       {required this.memberNickname,
@@ -81,9 +81,9 @@ class MultiRoomAttend implements Serializable {
 }
 
 class MultiRoomGameStart {
-  final String recordMode;
-  final Point recordStartLocation;
-  final int recordPeople;
+  String recordMode;
+  Point recordStartLocation;
+  int recordPeople;
 
   MultiRoomGameStart(
       {required this.recordMode,
@@ -92,17 +92,17 @@ class MultiRoomGameStart {
 }
 
 class MultiRoomGameEnd {
-  final String recordMode;
-  final String recordImage;
-  final double recordDist;
-  final Duration recordTime;
-  final Point recordStartLocation;
-  final Point recordEndLocation;
-  final String recordWay; //json
-  final String recordSpeed; // json
-  final String recordHeartbeat; //json
-  final String recordPace; //json
-  final int recordRank;
+  String recordMode;
+  String recordImage;
+  double recordDist;
+  Duration recordTime;
+  Point recordStartLocation;
+  Point recordEndLocation;
+  String recordWay; //json
+  String recordSpeed; // json
+  String recordHeartbeat; //json
+  String recordPace; //json
+  int recordRank;
 
   MultiRoomGameEnd(
       {required this.recordMode,
@@ -119,13 +119,13 @@ class MultiRoomGameEnd {
 }
 
 class MemberInGame {
-  final String memberNickname;
-  final String memberId;
-  final String memberGender;
-  final String memberProfileImage;
-  final int memberLevel;
-  final bool memberReady;
-  final bool manager;
+  String memberNickname;
+  String memberId;
+  String memberGender;
+  String memberProfileImage;
+  int memberLevel;
+  bool memberReady;
+  bool manager;
 
   MemberInGame(
       {required this.memberNickname,
@@ -135,4 +135,42 @@ class MemberInGame {
       required this.memberLevel,
       required this.memberReady,
       required this.manager});
+}
+
+class SimpleRoom {
+  int roomIdx;
+  String roomTitle;
+  int roomPeople;
+  String roomTag;
+  int roomSecret;
+
+  SimpleRoom({
+    required this.roomIdx,
+    required this.roomTitle,
+    required this.roomPeople,
+    required this.roomSecret,
+    required this.roomTag,
+  });
+
+  // Convert SimpleRoom object to a Map
+  Map<String, dynamic> toJson() {
+    return {
+      'roomIdx': roomIdx,
+      'roomTitle': roomTitle,
+      'roomPeople': roomPeople,
+      'roomTag': roomTag,
+      'roomSecret': roomSecret,
+    };
+  }
+
+  // Create SimpleRoom object from JSON map
+  factory SimpleRoom.fromJson(Map<String, dynamic> json) {
+    return SimpleRoom(
+      roomIdx: json['roomIdx'] as int,
+      roomTitle: json['roomTitle'] as String,
+      roomPeople: json['roomPeople'] as int,
+      roomTag: json['roomTag'] as String,
+      roomSecret: json['roomSecret'] as int,
+    );
+  }
 }

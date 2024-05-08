@@ -35,4 +35,18 @@ class MultiRepository extends AbstractMultiRepository {
       rethrow;
     }
   }
+
+  Future<List<SimpleRoom>> multiRoomGet(int mode) async {
+    try {
+      Response res = await provider.multiRoomGet(mode.toString());
+      List<SimpleRoom> resSerialized = [];
+      res.data.forEach((item) {
+        resSerialized.add(SimpleRoom.fromJson(item));
+      });
+      return resSerialized;
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
+  }
 }

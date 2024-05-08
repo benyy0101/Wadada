@@ -15,6 +15,8 @@ class MultiController extends GetxController {
       roomTime: -1,
       roomTitle: '');
 
+  List<SimpleRoom> roomList = [];
+
   MultiController({required this.repo});
 
   void creatMultiRoom(MultiRoom roomInfo) async {
@@ -23,6 +25,16 @@ class MultiController extends GetxController {
       update();
     } catch (e) {
       print("방이 생성되지 않았습니다. 다시 시도해 주세요");
+      print(e);
+      rethrow;
+    }
+  }
+
+  void getMultiRoomsByMode(int mode) async {
+    try {
+      roomList = await repo.multiRoomGet(mode);
+      update();
+    } catch (e) {
       print(e);
       rethrow;
     }
