@@ -66,7 +66,6 @@ public class RoomManager {
                 activeRooms.put(room.getRoomIdx(),room);
             }
         }
-        System.out.println(activeRooms.size());
         return activeRooms;
     }
 

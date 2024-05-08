@@ -47,9 +47,10 @@ public class MultiRecordServiceImpl implements MultiRecordService {
                 .multiRecordPeople(gameStartReq.getRecordPeople()).build();
         //roomManager.getAllRooms().get(gameStartReq.getRoomIdx()).getRoomSeq()
 
-        System.out.println(gameStartReq.getRoomSeq());
         GameRoomDto gameRoomDto = gameRoomManager.getAllRooms().get(gameStartReq.getRoomSeq());
-        gameRoomDto.setCurPeople(gameRoomDto.getCurPeople()+1);
+        synchronized (gameRoomDto) {
+            gameRoomDto.setCurPeople(gameRoomDto.getCurPeople() + 1);
+        }
         multiRecordRepository.save(multiRecord);
 
 

@@ -21,7 +21,8 @@ public class GameRoomDto {
     private int roomSeq;
     @Setter
     private int curPeople;
-    private List<GameUpdateListener> listeners = new ArrayList<>();
+    @Setter
+    private List<GameUpdateListener> listeners;
 
     private ConcurrentMap<String,PlayerInfo> playerInfo;
 
@@ -50,7 +51,8 @@ public class GameRoomDto {
         return new ArrayList<>(this.playerInfo.values());
     }
     public int getMemberCount(){
-        return this.playerInfo.size();
+        return this.curPeople;
+
     }
 
     public void removeAllMembers() {

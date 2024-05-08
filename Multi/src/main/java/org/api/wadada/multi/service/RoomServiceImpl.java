@@ -31,6 +31,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 @Service
@@ -247,52 +248,28 @@ public class RoomServiceImpl implements RoomService{
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    public void startGame(int roomIdx) {
-        RoomDto curRoom = roomManager.getAllRooms().get(roomIdx);
-        GameRoomDto curGame = GameRoomDto.builder().roomIdx(roomIdx)
-                .curPeople(0)
-                .MaxPeople(curRoom.getMemberCount())
-                .roomSeq(curRoom.getRoomSeq()).build();
-
+    public void removeRoom(int roomSeq, int roomIdx){
         roomManager.removeRoom(roomIdx);
-        int roomSeq = curRoom.getRoomSeq();
-        log.info("Member count: {}", curRoom.getMemberCount());
         Optional<Room> room = roomRepository.findById(roomSeq);
         room.ifPresent(r -> {
             r.deleteSoftly();
             roomRepository.save(r);
         });
+    }
+
+
+
+    public void startGame(int roomIdx) {
+        RoomDto curRoom = roomManager.getAllRooms().get(roomIdx);
+        GameRoomDto curGame = GameRoomDto.builder()
+                .roomIdx(roomIdx)
+                .curPeople(0)
+                .MaxPeople(curRoom.getMemberCount())
+                .roomSeq(curRoom.getRoomSeq()).build();
+
+        removeRoom(curRoom.getRoomSeq(),curRoom.getRoomIdx());
+
+        //연결 끊었다가 새로하는 로직
 
         try {
             gameRoomManager.addRoom(curRoom.getRoomSeq(), curGame);
@@ -301,30 +278,40 @@ public class RoomServiceImpl implements RoomService{
         }
 
         curGame.addUpdateListener(game -> CompletableFuture.runAsync(() -> {
+            AtomicBoolean messageSent = new AtomicBoolean(false); // 상태 변수
             try {
                 CompletableFuture.anyOf(
                         CompletableFuture.runAsync(() -> {
                             synchronized (curGame) {
                                 log.info("Current people: {}", curGame.getMemberCount());
-                                if (curGame.getMemberCount() != curGame.getMaxPeople()){
+                                System.out.println(curGame.getRoomIdx()+" "+roomIdx);
+                                while (curGame.getMemberCount() != curGame.getMaxPeople()) {
                                     try {
-                                        curGame.wait();
+                                        curGame.wait(); // 멤버 수 변화를 기다림
                                     } catch (InterruptedException e) {
                                         Thread.currentThread().interrupt();
                                     }
+                                }
+                                if(messageSent.compareAndSet(false, true)) {
+                                    String message = GameMessage.GAME_START.toJson();
+                                    System.out.println(message + " " + curGame.getRoomIdx());
+                                    messagingTemplate.convertAndSend("/sub/attend/" + curGame.getRoomIdx(), message);
                                 }
                             }
                         }, executor),
                         CompletableFuture.runAsync(() -> {
                             try {
-                                TimeUnit.SECONDS.sleep(30);
+                                TimeUnit.SECONDS.sleep(30); // 30초 동안 대기
+                                if(messageSent.compareAndSet(false, true)) {
+                                    String message = GameMessage.GAME_START.toJson();
+                                    System.out.println(message + " " + curGame.getRoomIdx());
+//                                    messagingTemplate.convertAndSend("/sub/attend/" + curGame.getRoomIdx(), message);
+                                }
                             } catch (InterruptedException e) {
                                 Thread.currentThread().interrupt();
                             }
                         }, executor)
-                ).get();
-                String message = GameMessage.GAME_START.toJson();
-                messagingTemplate.convertAndSend("/sub/attend/" + curGame.getRoomIdx(), message);
+                ).get(); // 둘 중 하나가 완료되면 진행
             } catch (InterruptedException | ExecutionException e) {
                 Thread.currentThread().interrupt();
             }

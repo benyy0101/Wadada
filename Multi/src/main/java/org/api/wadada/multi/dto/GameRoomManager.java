@@ -1,6 +1,7 @@
 package org.api.wadada.multi.dto;
 
 import lombok.extern.slf4j.Slf4j;
+import org.api.wadada.multi.dto.game.GameUpdateListener;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -19,18 +20,18 @@ public class GameRoomManager {
 
     public GameRoomManager() {
         this.playrooms = new ArrayList<>(MAX_ROOMS);
+
         for (int i = 0; i < MAX_ROOMS; i++) {
             playrooms.add(null);
         }
     }
 
     public int addRoom(int roomSeq,GameRoomDto room) throws Exception {
+
 //        roomSeqTable.put(room.getRoomIdx(),roomSeq);
         Optional<Integer> emptyIndex = getEmptyIndex();
         if (emptyIndex.isPresent()) {
-            roomSeqList[emptyIndex.get()] = roomSeq;
-            log.info("게임 메모리 방 리스트      "+ Arrays.toString(roomSeqList));
-            room.setRoomIdx(emptyIndex.get());
+            room.setListeners(new ArrayList<>());
             playrooms.set(emptyIndex.get(), room);
             return emptyIndex.get();
         } else {
@@ -61,7 +62,6 @@ public class GameRoomManager {
 
     public Map<Integer,GameRoomDto> getAllRooms() {
         Map<Integer,GameRoomDto> activeRooms = new HashMap<>();
-        System.out.println(playrooms.size());
         for (GameRoomDto room : playrooms) {
             if (room != null) {
                 activeRooms.put(room.getRoomSeq(),room);
