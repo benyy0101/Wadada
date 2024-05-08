@@ -5,7 +5,7 @@ class MultiRoom {
   final int roomPeople;
   final int roomDist;
   final int roomMode;
-  final int roomSecret;
+  final int? roomSecret;
   final String roomTag;
   final int roomTime;
   final String roomTitle;
@@ -14,10 +14,50 @@ class MultiRoom {
       {required this.roomPeople,
       required this.roomDist,
       required this.roomMode,
-      required this.roomSecret,
+      this.roomSecret,
       required this.roomTag,
       required this.roomTime,
       required this.roomTitle});
+
+  // Deserialize JSON to MultiRoom object
+  factory MultiRoom.fromJson(Map<String, dynamic> json) {
+    return MultiRoom(
+      roomPeople: json['roomPeople'] as int,
+      roomDist: json['roomDist'] as int,
+      roomMode: json['roomMode'] as int,
+      roomSecret: json['roomSecret'] as int,
+      roomTag: json['roomTag'] as String,
+      roomTime: json['roomTime'] as int,
+      roomTitle: json['roomTitle'] as String,
+    );
+  }
+
+  // Serialize MultiRoom object to JSON
+  Map<String, dynamic> toJson() {
+    return {
+      'roomPeople': roomPeople,
+      'roomDist': roomDist,
+      'roomMode': roomMode,
+      'roomSecret': roomSecret,
+      'roomTag': roomTag,
+      'roomTime': roomTime,
+      'roomTitle': roomTitle,
+    };
+  }
+}
+
+class RoomInfo extends MultiRoom {
+  final int roomIdx;
+
+  RoomInfo(
+      {required this.roomIdx,
+      required super.roomPeople,
+      required super.roomDist,
+      required super.roomMode,
+      required super.roomSecret,
+      required super.roomTag,
+      required super.roomTime,
+      required super.roomTitle});
 }
 
 class MultiRoomAttend implements Serializable {
@@ -76,4 +116,23 @@ class MultiRoomGameEnd {
       required this.recordHeartbeat,
       required this.recordPace,
       required this.recordRank});
+}
+
+class MemberInGame {
+  final String memberNickname;
+  final String memberId;
+  final String memberGender;
+  final String memberProfileImage;
+  final int memberLevel;
+  final bool memberReady;
+  final bool manager;
+
+  MemberInGame(
+      {required this.memberNickname,
+      required this.memberId,
+      required this.memberGender,
+      required this.memberProfileImage,
+      required this.memberLevel,
+      required this.memberReady,
+      required this.manager});
 }

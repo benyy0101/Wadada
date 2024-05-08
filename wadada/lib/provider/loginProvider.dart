@@ -14,8 +14,6 @@ class LoginProvider {
   Future<Response<dynamic>> kakaoLogin(String code) async {
     try {
       final response = await _dio.post('/login', data: {'code': code});
-      print("------------------------------------");
-      print(response.data);
       return response;
     } catch (e) {
       print(e);
