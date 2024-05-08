@@ -13,6 +13,7 @@ import 'package:wadada/screens/mainpage/layout.dart';
 import 'package:wadada/screens/mypage/layout.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:wadada/screens/multimainpage/multimainpage.dart';
+import 'package:wadada/screens/newprofilepage/layout.dart';
 import 'package:wadada/screens/singlemainpage/single_main.dart';
 import 'dart:io';
 import 'package:wadada/screens/mypage/layout.dart';
@@ -54,7 +55,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Widget homeWidget;
-    homeWidget = SingleMain();
+    homeWidget = NewProfileLayout();
     // if (storage.read(key: 'accessToken') != null) {
     //   homeWidget = MyPageLayout();
     // } else {

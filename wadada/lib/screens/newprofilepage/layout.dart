@@ -42,6 +42,7 @@ class _NewProfileState extends State<NewProfileLayout> {
             const SizedBox(height: 110),
 
             // 프로필 동그라미
+            
             CircleAvatar(
               radius: 100,
               backgroundImage: _image != null ? MemoryImage(_image!) : const NetworkImage("https://www.studiopeople.kr/common/img/default_profile.png") as ImageProvider,
