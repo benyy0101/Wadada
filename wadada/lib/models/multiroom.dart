@@ -89,6 +89,24 @@ class MultiRoomGameStart {
       {required this.roomIdx,
       required this.recordStartLocation,
       required this.recordPeople});
+
+  factory MultiRoomGameStart.fromJson(Map<String, dynamic> json) {
+    return MultiRoomGameStart(
+      roomIdx: json['roomIdx'] as int,
+      recordStartLocation: Point.fromJson(json['recordStartLocation']),
+      recordPeople: json['recordPeople'] as int,
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        'roomIdx': roomIdx,
+        'recordStartLocation': recordStartLocation.toJson(),
+        'recordPeople': recordPeople,
+      };
+  @override
+  String toString() {
+    return 'MultiRoomGameStart(roomIdx: $roomIdx, recordStartLocation: $recordStartLocation, recordPeople: $recordPeople)';
+  }
 }
 
 class MultiRoomGameEnd {
@@ -98,26 +116,64 @@ class MultiRoomGameEnd {
   Duration recordTime;
   Point recordStartLocation;
   Point recordEndLocation;
-  String recordWay; //json
-  String recordSpeed; // json
-  String recordHeartbeat; //json
-  String recordPace; //json
+  String recordWay; // JSON
+  String recordSpeed; // JSON
+  String recordHeartbeat; // JSON
+  String recordPace; // JSON
   int recordRank;
   int roomIdx;
 
-  MultiRoomGameEnd(
-      {required this.roomIdx,
-      required this.recordMode,
-      required this.recordImage,
-      required this.recordDist,
-      required this.recordTime,
-      required this.recordStartLocation,
-      required this.recordEndLocation,
-      required this.recordWay,
-      required this.recordSpeed,
-      required this.recordHeartbeat,
-      required this.recordPace,
-      required this.recordRank});
+  MultiRoomGameEnd({
+    required this.roomIdx,
+    required this.recordMode,
+    required this.recordImage,
+    required this.recordDist,
+    required this.recordTime,
+    required this.recordStartLocation,
+    required this.recordEndLocation,
+    required this.recordWay,
+    required this.recordSpeed,
+    required this.recordHeartbeat,
+    required this.recordPace,
+    required this.recordRank,
+  });
+
+  factory MultiRoomGameEnd.fromJson(Map<String, dynamic> json) {
+    return MultiRoomGameEnd(
+      roomIdx: json['roomIdx'] as int,
+      recordMode: json['recordMode'] as String,
+      recordImage: json['recordImage'] as String,
+      recordDist: json['recordDist'] as double,
+      recordTime: Duration(milliseconds: json['recordTime'] as int),
+      recordStartLocation: Point.fromJson(json['recordStartLocation']),
+      recordEndLocation: Point.fromJson(json['recordEndLocation']),
+      recordWay: json['recordWay'] as String,
+      recordSpeed: json['recordSpeed'] as String,
+      recordHeartbeat: json['recordHeartbeat'] as String,
+      recordPace: json['recordPace'] as String,
+      recordRank: json['recordRank'] as int,
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        'roomIdx': roomIdx,
+        'recordMode': recordMode,
+        'recordImage': recordImage,
+        'recordDist': recordDist,
+        'recordTime': recordTime.inMilliseconds,
+        'recordStartLocation': recordStartLocation.toJson(),
+        'recordEndLocation': recordEndLocation.toJson(),
+        'recordWay': recordWay,
+        'recordSpeed': recordSpeed,
+        'recordHeartbeat': recordHeartbeat,
+        'recordPace': recordPace,
+        'recordRank': recordRank,
+      };
+
+  @override
+  String toString() {
+    return 'MultiRoomGameEnd(roomIdx: $roomIdx, recordMode: $recordMode, recordImage: $recordImage, recordDist: $recordDist, recordTime: $recordTime, recordStartLocation: $recordStartLocation, recordEndLocation: $recordEndLocation, recordWay: $recordWay, recordSpeed: $recordSpeed, recordHeartbeat: $recordHeartbeat, recordPace: $recordPace, recordRank: $recordRank)';
+  }
 }
 
 class MemberInGame {
@@ -143,7 +199,7 @@ class SimpleRoom {
   int roomIdx;
   String roomTitle;
   int roomPeople;
-  String roomTag;
+  String? roomTag;
   int roomSecret;
 
   SimpleRoom({
@@ -171,8 +227,13 @@ class SimpleRoom {
       roomIdx: json['roomIdx'] as int,
       roomTitle: json['roomTitle'] as String,
       roomPeople: json['roomPeople'] as int,
-      roomTag: json['roomTag'] as String,
-      roomSecret: json['roomSecret'] as int,
+      roomTag: json['roomTag'] ?? "",
+      roomSecret: json['roomSecret'] ?? -1,
     );
+  }
+
+  @override
+  String toString() {
+    return 'SimpleRoom{ roomIdx: $roomIdx, roomTitle: $roomTitle, roomPeople: $roomPeople, roomTag: $roomTag, roomSecret: $roomSecret }';
   }
 }

@@ -23,6 +23,7 @@ class MultiRepository extends AbstractMultiRepository {
       res.data.forEach((item) {
         resSerialized.add(SimpleRoom.fromJson(item));
       });
+      print(resSerialized);
       return resSerialized;
     } catch (e) {
       print(e);
@@ -73,6 +74,8 @@ class MultiRepository extends AbstractMultiRepository {
     MultiRoomGameStart start = MultiRoomGameStart(
         roomIdx: roomIdx, recordStartLocation: point, recordPeople: people);
     try {
+      print("--------------------");
+      print(start);
       Response res = await provider.multiRoomGameStart(start);
       return res.data;
     } catch (e) {
