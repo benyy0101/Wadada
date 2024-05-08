@@ -20,6 +20,8 @@ class MultiProvider {
   Future<void> setAuth() async {
     _dio.options.headers['Authorization'] =
         await storage.read(key: 'accessToken');
+    // _dio.options.headers['Authorization'] = 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNDYzNDMxNDUzIiwiYXV0aCI6IlJPTEVfU09DSUFMIiwiZXhwIjoxNzE1NDA1MzkzfQ.dmjUkVX1sFe9EpYhT3SGO3uC7q1dLIoddBvzhoOSisM';
+
 
     print(_dio.options.headers['Authorization']);
   }
@@ -42,6 +44,7 @@ class MultiProvider {
 
   Future<Response<dynamic>> multiRoomCreate(MultiRoom room) async {
     await setAuth();
+    print(_dio.options.headers['Authorization']);
     final response = await _dio.post('/create', data: room.toJson());
     return response;
   }

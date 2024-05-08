@@ -45,6 +45,11 @@ class MultiRoom {
       'roomTime': roomTime,
       'roomTitle': roomTitle,
     };
+
+  }
+  @override
+  String toString() {
+    return 'MultiRoom(roomPeople: $roomPeople, roomDist: $roomDist, roomMode: $roomMode, roomSecret: $roomSecret, roomTag: "$roomTag", roomTime: $roomTime, roomTitle: "$roomTitle")';
   }
 }
 
@@ -60,6 +65,11 @@ class RoomInfo extends MultiRoom {
       required super.roomTag,
       required super.roomTime,
       required super.roomTitle});
+
+  @override
+  String toString() {
+    return 'RoomInfo(roomIdx: $roomIdx, roomPeople: $roomPeople, roomDist: $roomDist, roomMode: $roomMode, roomSecret: $roomSecret, roomTag: $roomTag, roomTime: $roomTime, roomTitle: $roomTitle)';
+  }
 }
 
 class MultiRoomAttend implements Serializable {

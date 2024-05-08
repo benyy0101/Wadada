@@ -32,14 +32,6 @@ class MultiDistanceRoomFormState extends State<MultiDistanceRoomForm> {
   Widget build(BuildContext context) {
     Get.put(MultiController(repo: MultiRepository(provider: MultiProvider())));
     return GetBuilder<MultiController>(builder: (MultiController controller) {
-      // MultiRoom test = MultiRoom(
-      //   roomPeople: 3,
-      //   roomDist: 2,
-      //   roomMode: 1,
-      //   roomSecret: 1111,
-      //   roomTag: '#싸피',
-      //   roomTime: 3,
-      //   roomTitle: 'test');
       return Scaffold(
         appBar: AppBar(
           title: const Text('거리모드 - 멀티',
@@ -58,8 +50,8 @@ class MultiDistanceRoomFormState extends State<MultiDistanceRoomForm> {
                 Container(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 10),
+                    children: const [
+                      SizedBox(height: 10),
                       MultiSelectDistOption(
                         option_dis: '거리',
                         optionstr_dis: '(km)',
@@ -67,26 +59,6 @@ class MultiDistanceRoomFormState extends State<MultiDistanceRoomForm> {
                         optionstr_people: '(명)',
                         option_password: '비밀 번호',
                         option_hash: '해시태그',
-                        // onStatedistUpdated: (state) {
-                        //   setState(() {
-                        //     distOptionState = state as SelectDistOptionState?;
-                        //   });
-                        // },
-                        // onStatepeopleUpdated: (state) {
-                        //   setState(() {
-                        //     distOptionState = state as SelectDistOptionState?;
-                        //   });
-                        // },
-                        // onStatepasswordUpdated: (state) {
-                        //   setState(() {
-                        //     distOptionState = state as SelectDistOptionState?;
-                        //   });
-                        // },
-                        // onStatehashtagUpdated: (state) {
-                        //   setState(() {
-                        //     distOptionState = state as SelectDistOptionState?;
-                        //   });
-                        // },
                       )
                     ],
                   ),
@@ -125,7 +97,9 @@ class MultiDistanceRoomFormState extends State<MultiDistanceRoomForm> {
                         onTap: () {
                           // 방 생성 로직
                           try {
-                            // controller.creatMultiRoom(controller.info);
+                            
+                            controller.creatMultiRoom(controller.multiroom);
+                            print(controller.multiroom.toString());
                             Navigator.push(
                               context,
                               MaterialPageRoute(

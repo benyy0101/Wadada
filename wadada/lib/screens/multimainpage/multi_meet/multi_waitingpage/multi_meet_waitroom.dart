@@ -104,7 +104,7 @@ class MultiMeetWait extends StatelessWidget {
                     MaterialPageRoute(builder: (context) => MultiRoomDetail()),
                   );
                 },
-                child: RoomInfoCard(),
+                // child: RoomInfoCard(),
               ),
               const SizedBox(height: 30),
               // RoomInfoCard(),
@@ -115,7 +115,7 @@ class MultiMeetWait extends StatelessWidget {
                     MaterialPageRoute(builder: (context) => MultiRoomDetail()),
                   );
                 },
-                child: RoomInfoCard(),
+                // child: RoomInfoCard(),
               ),
             ],
           ),

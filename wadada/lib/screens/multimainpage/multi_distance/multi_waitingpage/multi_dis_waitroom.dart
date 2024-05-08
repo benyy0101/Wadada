@@ -96,7 +96,6 @@ class MultiDisWait extends StatelessWidget {
               ),
 
               const SizedBox(height: 20),
-              // RoomInfoCard(),
               GestureDetector(
                 onTap: () {
                   Navigator.push(
@@ -104,19 +103,13 @@ class MultiDisWait extends StatelessWidget {
                     MaterialPageRoute(builder: (context) => MultiRoomDetail()),
                   );
                 },
-                child: RoomInfoCard(),
+                child: DisRoomInfoCard(),
               ),
               const SizedBox(height: 30),
-              // RoomInfoCard(),
-              GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => MultiRoomDetail()),
-                  );
-                },
-                child: RoomInfoCard(),
-              ),
+              
+
+
+
             ],
           ),
         ),
