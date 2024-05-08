@@ -4,7 +4,8 @@ import 'package:wadada/common/const/colors.dart';
 
 class Clock extends StatefulWidget{
   final double time;
-  const Clock({super.key, required this.time});
+  final ValueNotifier<Duration> elapsedTimeNotifier;
+  const Clock({super.key, required this.time, required this.elapsedTimeNotifier});
 
   @override
   State<Clock> createState() => ClockState();
@@ -12,6 +13,7 @@ class Clock extends StatefulWidget{
 
 class ClockState extends State<Clock> {
   Duration _elapsed = Duration.zero;
+  ValueNotifier<Duration> elapsedTimeNotifier = ValueNotifier<Duration>(Duration.zero);
   ValueNotifier<Duration> endTimeNotifier = ValueNotifier(Duration.zero);
   Duration get elapsed => _elapsed;
   bool _isRunning = false;
@@ -26,8 +28,6 @@ class ClockState extends State<Clock> {
     // 넘어온 값 0 이상이면 타이머
     if (widget.time > 0) {
       int timerDurationInSeconds = (widget.time * 60).round();
-      
-      _isRunning = true;
       _elapsed = Duration(seconds: timerDurationInSeconds);
       
       _timer = Timer.periodic(Duration(milliseconds: 100), (timer) {
@@ -45,10 +45,15 @@ class ClockState extends State<Clock> {
       });
     } else {
         // 넘어온 값 0이면 스톱워치
-        _isRunning = true;
         _timer = Timer.periodic(Duration(milliseconds: 100), _onTick);
       }
   }
+
+   void start() {
+      setState(() {
+          _isRunning = true;
+      });
+    }
   
   void setRunning(bool isRunning) {
     print('setRunning called with: $isRunning');
@@ -56,6 +61,14 @@ class ClockState extends State<Clock> {
       _isRunning = isRunning;
     });
     print('_isRunning state is now: $_isRunning');
+  }
+
+  double getElapsedSeconds() {
+    if (widget.time > 0) {
+      return (widget.time * 60) - _elapsed.inSeconds.toDouble();
+    } else {
+      return _elapsed.inSeconds.toDouble();
+    }
   }
 
   @override
@@ -67,9 +80,24 @@ class ClockState extends State<Clock> {
 
   void _onTick(Timer timer) {
     if (_isRunning) {
+      // setState(() {
+      //   _elapsed += Duration(milliseconds: 100);
+      //   elapsedTimeNotifier.value = _elapsed;
+      // });
+
       setState(() {
-        _elapsed += Duration(milliseconds: 100);
-      });
+                if (widget.time > 0) {
+                    _elapsed -= Duration(milliseconds: 100);
+                    if (_elapsed <= Duration.zero) {
+                        _isRunning = false;
+                        _elapsed = Duration.zero;
+                        _timer.cancel();
+                    }
+                } else {
+                    _elapsed += Duration(milliseconds: 100);
+                }
+                widget.elapsedTimeNotifier.value = _elapsed;
+            });
     }
   }
 

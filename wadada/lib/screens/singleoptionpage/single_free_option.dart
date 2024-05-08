@@ -3,6 +3,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:wadada/screens/singleoptionpage/component/select_dist_option.dart';
 import 'package:wadada/screens/singleoptionpage/component/select_time_option.dart';
 import 'package:wadada/screens/singlerunpage/single_free_run.dart';
+import 'package:geolocator/geolocator.dart';
 
 class SingleOption extends StatefulWidget{
   final bool isDistMode;
@@ -16,7 +17,9 @@ class SingleFreeModeState extends State<SingleOption> {
   SelectDistOptionState? distOptionState;
   SelectTimeOptionState? timeOptionState;
 
-  void clickstart() {
+  void clickstart() async {
+    FocusScope.of(context).unfocus();
+
     SelectTimeOptionState? selectedTimeOptionState;
     SelectDistOptionState? selectedDistOptionState;
 
@@ -26,30 +29,75 @@ class SingleFreeModeState extends State<SingleOption> {
         selectedTimeOptionState = timeOptionState;
     }
 
-    if (selectedTimeOptionState != null) {
-      if (selectedTimeOptionState.isError == true) {
+    bool hasError = false;
+    if (selectedTimeOptionState != null && selectedTimeOptionState.isError) {
+      hasError = true;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(selectedTimeOptionState.errorText ?? '오류 발생'),
+        ),
+      );
+    } else if (selectedDistOptionState != null && selectedDistOptionState.isError) {
+      hasError = true;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(selectedDistOptionState.errorText ?? '오류 발생'),
+        ),
+      );
+    }
+
+    if (!hasError) {
+        bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+        if (!serviceEnabled) {
           ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                  content: Text(selectedTimeOptionState.errorText ?? '오류 발생'),
-              ),
+            SnackBar(
+                content: Text('위치 서비스가 비활성화되어 있습니다.'),
+            ),
           );
           return;
-      }
-      double time = selectedTimeOptionState.time ?? 0.0;
-      String appKey = dotenv.env['APP_KEY'] ?? '';
-      Navigator.push(context, MaterialPageRoute(builder: (context) => SingleFreeRun(dist: 0, time: time, appKey: appKey)));
-    } else if (selectedDistOptionState != null) {
-      if (selectedDistOptionState.isError == true) {
-          ScaffoldMessenger.of(context).showSnackBar(
+        }
+
+        LocationPermission permission = await Geolocator.checkPermission();
+        if (permission == LocationPermission.denied) {
+          permission = await Geolocator.requestPermission();
+          if (permission == LocationPermission.denied) {
+            ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                  content: Text(selectedDistOptionState.errorText ?? '오류 발생'),
+                content: Text('위치 권한을 허용해주세요.'),
               ),
+            );
+            return;
+          }
+        }
+
+        if (permission == LocationPermission.deniedForever) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('위치 권한을 허용해주세요.'),
+            ),
           );
           return;
-      }
-      double dist = selectedDistOptionState.dist ?? 0.0;
-      String appKey = dotenv.env['APP_KEY'] ?? '';
-      Navigator.push(context, MaterialPageRoute(builder: (context) => SingleFreeRun(dist: dist, time: 0, appKey: appKey)));
+        }
+
+        if (selectedTimeOptionState != null) {
+            double time = selectedTimeOptionState.time ?? 0.0;
+            String appKey = dotenv.env['APP_KEY'] ?? '';
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => SingleFreeRun(dist: 0, time: time, appKey: appKey),
+              ),
+            );
+        } else if (selectedDistOptionState != null) {
+            double dist = selectedDistOptionState.dist ?? 0.0;
+            String appKey = dotenv.env['APP_KEY'] ?? '';
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => SingleFreeRun(dist: dist, time: 0, appKey: appKey),
+              ),
+            );
+        }
     }
   }
 
@@ -83,36 +131,13 @@ class SingleFreeModeState extends State<SingleOption> {
               SizedBox(
                 height: 40,
               ),
-              // Container(
-              //   child:Column(
-              //     crossAxisAlignment: CrossAxisAlignment.start,
-              //     children: [
-              //       Text('거리 설정',
-              //         style: TextStyle(
-              //           color: Colors.black54,
-              //           fontSize: 15,
-              //         )
-              //       ),
-              //       SizedBox(height:10),
-              //       SelectDistOption(
-              //         option: '거리',
-              //         optionstr: '(km)',
-              //         onStateUpdated: (state) {
-              //           setState(() {
-              //               distOptionState = state;
-              //           });
-              //         },
-              //       ),
-              //     ],
-              //   ),
-              // ),
               if (widget.isDistMode) // 거리 모드
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       '거리 설정',
-                      style: TextStyle(color: Colors.black54, fontSize: 15),
+                      style: TextStyle(color: Colors.black54, fontSize: 19),
                     ),
                     SizedBox(height: 10),
                     SelectDistOption(
@@ -132,7 +157,7 @@ class SingleFreeModeState extends State<SingleOption> {
                   children: [
                     Text(
                       '시간 설정',
-                      style: TextStyle(color: Colors.black54, fontSize: 15),
+                      style: TextStyle(color: Colors.black54, fontSize: 19),
                     ),
                     SizedBox(height: 10),
                     SelectTimeOption(

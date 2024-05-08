@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 // import 'package:flutter/rendering.dart';
 import 'package:wadada/common/const/colors.dart';
@@ -18,7 +19,6 @@ class SingleFreeRun extends StatefulWidget{
   final double time;
   final double dist;
   final String appKey;
-  // const SingleFreeRun({super.key, required this.time, required this.dist});
   const SingleFreeRun({super.key, required this.time, required this.dist, required this.appKey});
   
   @override
@@ -26,9 +26,15 @@ class SingleFreeRun extends StatefulWidget{
 }
 
 class _SingleFreeRunState extends State<SingleFreeRun> {
+  bool isLoading = true;
+  int countdown = 5;
+  Timer? countdownTimer;
+  bool showCountdown = false;
   int? recordSeq;
   double totalDistance = 0.0;
   String formattedDistance = '0.00';
+  // ValueNotifier<double> elapsedTimeNotifier = ValueNotifier<double>(0.0);
+  ValueNotifier<Duration> elapsedTimeNotifier = ValueNotifier<Duration>(Duration.zero);
   final GlobalKey<ClockState> _clockKey = GlobalKey<ClockState>();
   late Clock clock;
 
@@ -38,27 +44,65 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
   void initState() {
     super.initState();
 
+    startTimers();
+
     myMap = MyMap(appKey: widget.appKey);
 
     myMap.startLocationNotifier.addListener(() {
-      if (myMap.startLocation != null) {
-          sendLocationToServer();
+      if (myMap.startLocationNotifier.value != null) {
+        sendLocationToServer();
+        // setState(() {
+        //     isLoading = false;
+        // });
       }
     });
 
-    clock = Clock(key: _clockKey, time: widget.time);
+    clock = Clock(key: _clockKey, time: widget.time, elapsedTimeNotifier: elapsedTimeNotifier,);
     _subscribeToTotalDistance();
     // sendLocationToServer();
+  }
+
+  void startTimers() {
+    Timer(Duration(seconds: 3), () {
+      setState(() {
+        showCountdown = true;
+      });
+      startCountdown();
+    });
+  }
+
+  void startCountdown() {
+    countdownTimer = Timer.periodic(Duration(seconds: 1), (timer) {
+      setState(() {
+        countdown--;
+        if (countdown <= 0) {
+          timer.cancel();
+          isLoading = false;
+
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            _clockKey.currentState?.start();
+        });
+        }
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    countdownTimer?.cancel();
+    super.dispose();
   }
 
   Future<void> sendLocationToServer() async {
     final startLocation = myMap.startLocation;
     final dio = Dio();
+    int recordMode = widget.time > 0 ? 2 : 1;
         
     if (startLocation != null) {
       final url = Uri.parse('https://k10a704.p.ssafy.io/Single/start');
 
       final requestBody = jsonEncode({
+        "recordMode": recordMode,
         "recordStartLocation": "POINT(${startLocation.latitude} ${startLocation.longitude})"
       });
       
@@ -69,7 +113,7 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
           options: Options(headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
-            'authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNDUyNzIxNzM3IiwiYXV0aCI6IlJPTEVfU09DSUFMIiwiZXhwIjoxNzE0NjgxNTkwfQ.zvrnuEckvfBuhc7kjMDf6HYHTt8RpJIUOifcc6o1Fk8',
+            'authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNDYzNDMxNDUzIiwiYXV0aCI6IlJPTEVfU09DSUFMIiwiZXhwIjoxNzE1NDA1MzkzfQ.dmjUkVX1sFe9EpYhT3SGO3uC7q1dLIoddBvzhoOSisM',
           }),
         );
         
@@ -122,62 +166,132 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
     final endLocation = myMap.endLocation;
     final url = Uri.parse('https://k10a704.p.ssafy.io/Single/result');
     final dio = Dio();
+
+    int recordMode = widget.time > 0 ? 2 : 1;
     
-    final elapsedTime = _clockKey.currentState?.elapsed ?? Duration.zero;
-    final formattedElapsedTime = formatElapsedTime(elapsedTime);
+    // final elapsedTime = _clockKey.currentState?.elapsed ?? Duration.zero;
+    // final formattedElapsedTime = formatElapsedTime(elapsedTime);
+    // print(formattedElapsedTime);
+    double elapsedSeconds = _clockKey.currentState!.getElapsedSeconds();
+    int intelapsedseconds = elapsedSeconds.toInt();
+    print('초 시간? $intelapsedseconds');
+    Duration elapsedTime = Duration(seconds: elapsedSeconds.round());
+    String formattedElapsedTime = formatElapsedTime(elapsedTime);
     print(formattedElapsedTime);
 
+    List<LatLng> coordinates = myMap.getCoordinates();
+    List<Map<String, double>> distanceSpeed = myMap.getdistanceSpeed();
+    List<Map<String, double>> distancePace = myMap.getdistancePace();
+
+    // 평균 속도 계산
+    double calculateAverageSpeed(List<Map<String, double>> distanceSpeed) {
+        double totalSpeed = 0.0;
+        for (Map<String, double> entry in distanceSpeed) {
+            totalSpeed += entry['speed'] ?? 0.0;
+        }
+        double averageSpeed = totalSpeed / distanceSpeed.length;
+        return averageSpeed;
+    }
+
+    // 평균 페이스 계산
+    double calculateAveragePace(List<Map<String, double>> distancePace) {
+        double totalPace = 0.0;
+        for (Map<String, double> entry in distancePace) {
+            totalPace += entry['pace'] ?? 0.0;
+        }
+        double averagePace = totalPace / distancePace.length;
+        return averagePace;
+    }
+
+  // // 초 단위의 페이스를 km/h로 변환
+  // double convertPaceToKmPerHour(double paceInSecondsPerKm) {
+  //     if (paceInSecondsPerKm == 0) return 0.0; // 0으로 나누는 오류 방지
+  //     return 3600 / paceInSecondsPerKm;
+  // }
+
+  double averageSpeed = calculateAverageSpeed(distanceSpeed);
+  double averagePaceInSecondsPerKm = calculateAveragePace(distancePace);
+  // double averagePaceInKmPerHour = convertPaceToKmPerHour(averagePaceInSecondsPerKm);
+
+  print('km 거리 $formattedDistance');
+  print('km 평균 속도 $averageSpeed');
+  print('km 평균 페이스 $averagePaceInSecondsPerKm');
+
+  averageSpeed = double.parse(averageSpeed.toStringAsFixed(2)) * 1000;
+  // averagePaceInSecondsPerKm = double.parse(averagePaceInSecondsPerKm.toStringAsFixed(2)) * 1000;
+  // double formattedDistanceInMeters = double.parse(formattedDistance) * 1000;
+
+  int intaveragespeed = averageSpeed.toInt();
+  int intaveragepaceinkmperhour = averagePaceInSecondsPerKm.toInt();
+  // int intformatteddistanceinmeters = formattedDistanceInMeters.toInt();
+
+  // print('평균 속도 $intaveragespeed');
+  // print('평균 페이스 $intaveragepaceinkmperhour');
+  // print('총 거리 $totalDistance');
+
     final requestBody = jsonEncode({
+        "recordMode": recordMode,
         "singleRecordSeq": recordSeq,
-        "recordImage": 'image_url_here',
-        "recordDist": formattedDistance,
-        "recordTime": formattedElapsedTime,
+        "recordImage": 'https://github.com/jjeong41/t/assets/103355863/4e6d205d-694e-458c-b992-8ea7c27b85b1',
+        "recordDist": totalDistance, // int
+        "recordTime": intelapsedseconds, // int
         "recordStartLocation": "POINT(${startLocation?.latitude} ${startLocation?.longitude})",
         "recordEndLocation": "POINT(${endLocation?.latitude} ${endLocation?.longitude})",
-        // "recordSpeed": "[{\"time\": 0, \"speed\": 15}, {\"time\": 1800, \"speed\": 10}]",
-        // "recordPace": "{\"pace\": \"5:00\"}",
-        "recordHeartbeat": "{\"unit\": \"bpm\", \"average\": 150}",
-        // "recordMeanSpeed": myMap.speedNotifier.value,
-        // "recordMeanPace": myMap.paceNotifier.value, 
+        "recordWay": jsonEncode(coordinates),
+        "recordSpeed": jsonEncode(distanceSpeed),
+        "recordPace": jsonEncode(distancePace),
+        "recordHeartbeat": jsonEncode(distancePace),
+        "recordMeanSpeed": intaveragespeed, // int
+        "recordMeanPace": intaveragepaceinkmperhour, // int
+        "recordMeanHeartbeat": 0 // int
     });
 
-    // try {
-    //   final response = await dio.post(
-    //     url.toString(),
-    //     data: requestBody,
-    //     options: Options(headers: {
-    //       'Content-Type': 'application/json',
-    //       'Accept': 'application/json',
-    //       'authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNDUyNzIxNzM3IiwiYXV0aCI6IlJPTEVfU09DSUFMIiwiZXhwIjoxNzE0ODkwMjQ1fQ.GABjqHm8MXBSgzv3ckROkNu3HeEyUrwrcQhsY-zWPSA',
-    //     }),
-    //   );
+    try {
+      final response = await dio.post(
+        url.toString(),
+        data: requestBody,
+        options: Options(headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNDYzNDMxNDUzIiwiYXV0aCI6IlJPTEVfU09DSUFMIiwiZXhwIjoxNzE1NDA1MzkzfQ.dmjUkVX1sFe9EpYhT3SGO3uC7q1dLIoddBvzhoOSisM',
+        }),
+      );
 
-    //   if (response.statusCode == 200) {
-    //     // 서버 응답 성공 처리
-    //     // final responseData = jsonDecode(response.data);
-    //     print('responseData type: ${response.data.runtimeType}');
-    //     // recordSeq = responseData['recordSeq'] as int;
-    //     // recordSeq = response.data;
-    //     print('서버 요청 성공 - 결과 저장');
-    //   } else {
-    //     print('서버 요청 실패: ${response.statusCode}');
-    //   }
-    // } catch (e) {
-    //   print('요청 처리 중 에러 발생: $e');
-    // }
+      if (response.statusCode == 200) {
+        // 서버 응답 성공 처리
+        // final responseData = jsonDecode(response.data);
+        print('responseData type: ${response.data.runtimeType}');
+        // recordSeq = responseData['recordSeq'] as int;
+        // recordSeq = response.data;
+        print('서버 요청 성공 - 결과 저장');
+      } else {
+        print('서버 요청 실패: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('요청 처리 중 에러 발생: $e');
+    }
     print(jsonDecode(requestBody));
   }
 
   void _handleEndButtonPress(BuildContext context) {
     if (_clockKey.currentState != null) {
-        Duration elapsedTime = _clockKey.currentState!.elapsed;
+        // Duration elapsedTime = _clockKey.currentState!.elapsed;
+        double elapsedSeconds = _clockKey.currentState!.getElapsedSeconds();
         _clockKey.currentState!.setRunning(false);
 
         List<LatLng> coordinates = myMap.getCoordinates();
+        List<Map<String, double>> distanceSpeed = myMap.getdistanceSpeed();
+        List<Map<String, double>> distancePace = myMap.getdistancePace();
 
-        final formattedElapsedTime = formatElapsedTime(elapsedTime);
+        Duration elapsedTime = Duration(seconds: elapsedSeconds.round());
+        String formattedElapsedTime = formatElapsedTime(elapsedTime);
+
+        // final formattedElapsedTime = formatElapsedTime(elapsedTime);
         
         _sendRecordToServer();
+
+        print('스피드 - $distanceSpeed');
+        print('페이스 - $distancePace');
 
         Navigator.push(
           context,
@@ -187,7 +301,9 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
                 coordinates: coordinates,
                 startLocation: coordinates.first,
                 endLocation: coordinates.last,
-                totaldist: formattedElapsedTime,
+                totaldist: formattedDistance,
+                distanceSpeed: distanceSpeed,
+                distancePace: distancePace,
             ),
           ),
         );
@@ -224,7 +340,7 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
               Text('중간에 종료하는 경우\n현재까지의 기록으로 분석이 이루어집니다.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: 18,
+                  fontSize: 19,
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -257,7 +373,7 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             color: Colors.white,
-                            fontSize: 18,
+                            fontSize: 19,
                             fontWeight: FontWeight.bold,
                           )
                         )
@@ -284,7 +400,7 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             color: Colors.white,
-                            fontSize: 18,
+                            fontSize: 19,
                             fontWeight: FontWeight.bold,
                           )
                         )
@@ -309,21 +425,42 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
         progressBar = DistBar(dist: widget.dist, formattedDistance: double.parse(formattedDistance));
     } else if (widget.time > 0) {
         // progressBar = TimeBar(initialTime: widget.time);
-        Duration elapsedTime = _clockKey.currentState?.elapsed ?? Duration.zero;
-        double elapsedTimeInSeconds = elapsedTime.inSeconds.toDouble();
-        double remainingTimeInSeconds = widget.time - elapsedTimeInSeconds;
-        double progressPercentage = 1.0 - (remainingTimeInSeconds / widget.time);
-        progressBar = TimeBar(initialTime: widget.time, elapsedTime: elapsedTimeInSeconds);
+        double elapsedSeconds = _clockKey.currentState?.getElapsedSeconds() ?? 0.0;
+        double elapsedTimeInSeconds = elapsedSeconds;
+        // Duration elapsedTime = Duration(seconds: elapsedSeconds.round());
+        // Duration elapsedTime = _clockKey.currentState?.elapsed ?? Duration.zero;
+        // double elapsedTimeInSeconds = elapsedTime.inSeconds.toDouble();
+
+        // progressBar = ValueListenableBuilder<Duration>(
+        //     valueListenable: elapsedTimeNotifier,
+        //     builder: (context, elapsedDuration, _) {
+        //         // Convert Duration to double
+        //         double elapsedTimeInSeconds = elapsedDuration.inSeconds.toDouble();
+                
+        //         // Pass the elapsed time in seconds to TimeBar
+        //         return TimeBar(
+        //             initialTime: widget.time,
+        //             elapsedTime: elapsedTimeInSeconds,
+        //         );
+        //     },
+        // );
     }
 
-    Clock clockWidget = Clock(key: _clockKey, time: widget.time);
+    // Duration elapsedDuration = Duration(seconds: elapsedTimeNotifier.value.round());
+
+    Clock clockWidget = Clock(
+        key: _clockKey,
+        time: widget.time,
+        elapsedTimeNotifier: elapsedTimeNotifier,
+    );
 
     // double totalDistance = myMap.getTotalDistance();
     // String formattedDistance = totalDistance.toStringAsFixed(2);
 
     return Scaffold(
         backgroundColor: Colors.white,
-        body:
+        body: Stack(
+            children: [
           Container(
             padding: EdgeInsets.only(left: 30, right: 30),
             child: Column(
@@ -342,8 +479,8 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
                   children: [
                     Text('나의 경로',
                       style: TextStyle(
-                        color: Colors.black54,
-                        fontSize: 15,
+                        color: GRAY_500,
+                        fontSize: 19,
                       )
                     ),
                     SizedBox(height: 10),
@@ -353,65 +490,65 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
                 SizedBox(height: 35),
                 // 이동거리, 현재 페이스
                     // formattedDistance = totalDistance.toStringAsFixed(2);
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('이동거리',
-                              style: TextStyle(
-                                  color: Colors.black54,
-                                  fontSize: 15,
-                              )
-                            ),
-                            SizedBox(height: 5),
-                            ValueListenableBuilder<double>(
-                              valueListenable: myMap.totalDistanceNotifier,
-                              builder: (context, totalDistance, _) {
-                                // double distanceInKm = totalDistance / 1000.0;
-                                // formattedDistance = distanceInKm.toStringAsFixed(2);
-                                return Text('$formattedDistance km',
-                                  style: TextStyle(
-                                    color: GREEN_COLOR,
-                                    fontSize: 30,
-                                    fontWeight: FontWeight.w700,
-                                  )
-                                );
-                              }
-                            ),
-                          ],
-                        ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('이동거리',
+                            style: TextStyle(
+                                color: GRAY_500,
+                                fontSize: 19,
+                            )
+                          ),
+                          SizedBox(height: 5),
+                          ValueListenableBuilder<double>(
+                            valueListenable: myMap.totalDistanceNotifier,
+                            builder: (context, totalDistance, _) {
+                              // double distanceInKm = totalDistance / 1000.0;
+                              // formattedDistance = distanceInKm.toStringAsFixed(2);
+                              return Text('$formattedDistance km',
+                                style: TextStyle(
+                                  color: GREEN_COLOR,
+                                  fontSize: 30,
+                                  fontWeight: FontWeight.w700,
+                                )
+                              );
+                            }
+                          ),
+                        ],
                       ),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('현재 페이스',
-                              style: TextStyle(
-                                  color: Colors.black54,
-                                  fontSize: 15,
-                              )
-                            ),
-                            SizedBox(height: 5),
-                            ValueListenableBuilder<double>(
-                              valueListenable: myMap.paceNotifier,
-                              builder: (context, pace, _) {
-                                String formattedPace = formatPace(pace);
-                                return Text(formattedPace,
-                                  style: TextStyle(
-                                    color: GREEN_COLOR,
-                                    fontSize: 30,
-                                    fontWeight: FontWeight.w700,
-                                  )
-                                );
-                              }
-                            ),
-                          ],
-                        ),
-                        ),
-                      ],
                     ),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('현재 페이스',
+                            style: TextStyle(
+                                color: GRAY_500,
+                                fontSize: 19,
+                            )
+                          ),
+                          SizedBox(height: 5),
+                          ValueListenableBuilder<double>(
+                            valueListenable: myMap.paceNotifier,
+                            builder: (context, pace, _) {
+                              String formattedPace = formatPace(pace);
+                              return Text(formattedPace,
+                                style: TextStyle(
+                                  color: GREEN_COLOR,
+                                  fontSize: 30,
+                                  fontWeight: FontWeight.w700,
+                                )
+                              );
+                            }
+                          ),
+                        ],
+                      ),
+                      ),
+                    ],
+                  ),
                 SizedBox(height: 30),
                 // 소요 시간
                 Column(
@@ -419,8 +556,8 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
                   children: [
                     Text(widget.time == 0? '소요 시간' : '남은 시간',
                       style: TextStyle(
-                        color: Colors.black54,
-                        fontSize: 15,
+                        color: GRAY_500,
+                        fontSize: 19,
                       )
                     ),
                     SizedBox(height: 10),
@@ -435,8 +572,8 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
                   children: [
                     Text('현재 속도',
                       style: TextStyle(
-                        color: Colors.black54,
-                        fontSize: 15,
+                        color: GRAY_500,
+                        fontSize: 19,
                       )
                     ),
                     SizedBox(height: 5),
@@ -454,7 +591,7 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
                     ),
                   ],
                 ),
-                SizedBox(height: 40),
+                SizedBox(height: 50),
                 // 종료 버튼
                 GestureDetector(
                   onTap: () {
@@ -474,7 +611,7 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: 17,
+                          fontSize: 19,
                           fontWeight: FontWeight.bold,
                         )
                       )
@@ -484,6 +621,54 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
               ],
             ),
           ),
+
+          // if (isLoading)
+          //   Positioned.fill(
+          //       child: Container(
+          //           // color: Colors.white.withOpacity(0.7),
+          //           color: OATMEAL_COLOR,
+          //           child: Center(
+          //               child: CircularProgressIndicator(),
+          //           ),
+          //       ),
+          //   ),
+
+          if (isLoading)
+            Positioned.fill(
+              child: Container(
+                color: OATMEAL_COLOR,
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        '잠시 후에\n달리기를 시작합니다.',
+                        style: TextStyle(
+                          color: const Color.fromARGB(255, 59, 59, 59),
+                          fontSize: 27,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      if (showCountdown)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 16),
+                          child: Text(
+                            countdown > 0 ? countdown.toString() : '',
+                            style: TextStyle(
+                              color: GREEN_COLOR,
+                              fontSize: 150,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ]
+        )
       );
+    }
   }
-}

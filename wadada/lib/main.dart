@@ -12,12 +12,12 @@ import 'package:wadada/screens/mainpage/layout.dart';
 //import 'package:wadada/common/pages/mainpage.dart';
 import 'package:wadada/screens/mypage/layout.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:wadada/screens/multimainpage/multimainpage.dart';
 import 'package:wadada/screens/singlemainpage/single_main.dart';
 import 'dart:io';
 import 'package:wadada/screens/mypage/layout.dart';
 
 void main() async {
+  
   HttpOverrides.global = NoCheckCertificateHttpOverrides();
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -25,9 +25,6 @@ void main() async {
 
   String nativeAppKey = dotenv.env['NATIVE_APP_KEY'] ?? "기본값";
   String javaScriptAppKey = dotenv.env['JAVASCRIPT_APP_KEY'] ?? "기본값";
-
-  final appKey = dotenv.env['APP_KEY'] ?? '';
-
   // runApp() 호출 전 Flutter SDK 초기화
   KakaoSdk.init(
     nativeAppKey: nativeAppKey,
@@ -51,12 +48,12 @@ class NoCheckCertificateHttpOverrides extends HttpOverrides {
 class MyApp extends StatelessWidget {
   final storage = FlutterSecureStorage();
 
-  MyApp({Key? key});
+  MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    Widget homeWidget;
-    homeWidget = SingleMain();
+    // Widget homeWidget;
+    // homeWidget = SingleMain();
     // if (storage.read(key: 'accessToken') != null) {
     //   homeWidget = MyPageLayout();
     // } else {
@@ -65,7 +62,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
-      home: homeWidget,
+      home: SingleMain()
     );
   }
 }
