@@ -14,31 +14,6 @@ Duration _parseTimeOfDay(String timeString) {
   );
 }
 
-class Point {
-  final double x;
-  final double y;
-
-  Point(this.x, this.y);
-
-  // JSON을 Dart 객체로 변환하는 팩토리 생성자
-  factory Point.fromJson(Map<String, dynamic> json) {
-    return Point(
-      json['x'] as double,
-      json['y'] as double,
-    );
-  }
-
-  // Dart 객체를 JSON으로 변환하는 메소드
-  Map<String, dynamic> toJson() => {
-        'x': x,
-        'y': y,
-      };
-  @override
-  String toString() {
-    return 'Point(x: $x, y: $y)';
-  }
-}
-
 class RecordRequest implements Serializable {
   final int recordSeq;
   final String recordType;
@@ -98,11 +73,11 @@ class SingleDetail {
   final String recordImage;
   final double recordDist;
   final Duration recordTime;
-  final Point recordStartLocation;
-  final Point recordEndLocation;
-  final List<Point> recordSpeed;
-  final List<Point> recordHeartbeat;
-  final List<Point> recordPace;
+  final String recordStartLocation;
+  final String recordEndLocation;
+  final List<Map<String, dynamic>> recordSpeed;
+  final List<Map<String, dynamic>> recordHeartbeat;
+  final List<Map<String, dynamic>> recordPace;
   final DateTime recordCreatedAt;
   final double recordMeanSpeed;
   final double recordMeanPace;
@@ -126,52 +101,84 @@ class SingleDetail {
   });
 
   factory SingleDetail.fromJson(Map<String, dynamic> json) {
-    var speedList =
-        (json['recordSpeed'] as List).map((i) => Point.fromJson(i)).toList();
-    var heartbeatList = (json['recordHeartbeat'] as List)
-        .map((i) => Point.fromJson(i))
-        .toList();
-    var paceList =
-        (json['recordPace'] as List).map((i) => Point.fromJson(i)).toList();
-
     return SingleDetail(
-      recordType: json['recordType'],
-      recordRank: json['recordRank'],
-      recordImage: json['recordImage'],
-      recordDist: json['recordDist'],
-      recordTime: _parseTimeOfDay(json['recordTime']),
-      recordStartLocation: Point.fromJson(json['recordStartLocation']),
-      recordEndLocation: Point.fromJson(json['recordEndLocation']),
-      recordSpeed: speedList,
-      recordHeartbeat: heartbeatList,
-      recordPace: paceList,
-      recordCreatedAt: DateTime.parse(json['recordCreatedAt']),
-      recordMeanSpeed: json['recordMeanSpeed'],
-      recordMeanPace: json['recordMeanPace'],
-      recordMeanHeartbeat: json['recordMeanHeartbeat'],
+      recordType: json['recordType'] as String,
+      recordRank: json['recordRank'] as int,
+      recordImage: json['recordImage'] as String,
+      recordDist: json['recordDist'] as double,
+      recordTime: _parseTimeOfDay(json['recordTime'] as String),
+      recordStartLocation: json['recordStartLocation'] as String,
+      recordEndLocation: json['recordEndLocation'] as String,
+      recordSpeed: List<Map<String, dynamic>>.from(json['recordSpeed'] as List),
+      recordHeartbeat:
+          List<Map<String, dynamic>>.from(json['recordHeartbeat'] as List),
+      recordPace: List<Map<String, dynamic>>.from(json['recordPace'] as List),
+      recordCreatedAt: DateTime.parse(json['recordCreatedAt'] as String),
+      recordMeanSpeed: json['recordMeanSpeed'] as double,
+      recordMeanPace: json['recordMeanPace'] as double,
+      recordMeanHeartbeat: json['recordMeanHeartbeat'] as double,
     );
+  }
+
+  Map<String, dynamic> toJson() => {
+        'recordType': recordType,
+        'recordRank': recordRank,
+        'recordImage': recordImage,
+        'recordDist': recordDist,
+        'recordTime': recordTime.inMilliseconds,
+        'recordStartLocation': recordStartLocation,
+        'recordEndLocation': recordEndLocation,
+        'recordSpeed': recordSpeed,
+        'recordHeartbeat': recordHeartbeat,
+        'recordPace': recordPace,
+        'recordCreatedAt': recordCreatedAt.toIso8601String(),
+        'recordMeanSpeed': recordMeanSpeed,
+        'recordMeanPace': recordMeanPace,
+        'recordMeanHeartbeat': recordMeanHeartbeat,
+      };
+
+  @override
+  String toString() {
+    return 'SingleDetail(recordType: $recordType, recordRank: $recordRank, recordImage: $recordImage, recordDist: $recordDist, recordTime: $recordTime, recordStartLocation: $recordStartLocation, recordEndLocation: $recordEndLocation, recordSpeed: $recordSpeed, recordHeartbeat: $recordHeartbeat, recordPace: $recordPace, recordCreatedAt: $recordCreatedAt, recordMeanSpeed: $recordMeanSpeed, recordMeanPace: $recordMeanPace, recordMeanHeartbeat: $recordMeanHeartbeat)';
   }
 }
 
 //MYPAGE-003
 class MultiDetail extends SingleDetail {
   final List<Rank> rankings;
-  MultiDetail(
-      {required this.rankings,
-      required super.recordType,
-      required super.recordRank,
-      required super.recordImage,
-      required super.recordDist,
-      required super.recordTime,
-      required super.recordStartLocation,
-      required super.recordEndLocation,
-      required super.recordSpeed,
-      required super.recordHeartbeat,
-      required super.recordPace,
-      required super.recordCreatedAt,
-      required super.recordMeanSpeed,
-      required super.recordMeanPace,
-      required super.recordMeanHeartbeat});
+
+  MultiDetail({
+    required this.rankings,
+    required String recordType,
+    required int recordRank,
+    required String recordImage,
+    required double recordDist,
+    required Duration recordTime,
+    required String recordStartLocation,
+    required String recordEndLocation,
+    required List<Map<String, dynamic>> recordSpeed,
+    required List<Map<String, dynamic>> recordHeartbeat,
+    required List<Map<String, dynamic>> recordPace,
+    required DateTime recordCreatedAt,
+    required double recordMeanSpeed,
+    required double recordMeanPace,
+    required double recordMeanHeartbeat,
+  }) : super(
+          recordType: recordType,
+          recordRank: recordRank,
+          recordImage: recordImage,
+          recordDist: recordDist,
+          recordTime: recordTime,
+          recordStartLocation: recordStartLocation,
+          recordEndLocation: recordEndLocation,
+          recordSpeed: recordSpeed,
+          recordHeartbeat: recordHeartbeat,
+          recordPace: recordPace,
+          recordCreatedAt: recordCreatedAt,
+          recordMeanSpeed: recordMeanSpeed,
+          recordMeanPace: recordMeanPace,
+          recordMeanHeartbeat: recordMeanHeartbeat,
+        );
 
   factory MultiDetail.fromJson(Map<String, dynamic> json) {
     List<Rank> rankings = (json['rankings'] as List)
@@ -180,23 +187,21 @@ class MultiDetail extends SingleDetail {
 
     return MultiDetail(
       rankings: rankings,
-      recordType: json['recordType'],
-      recordRank: json['recordRank'],
-      recordImage: json['recordImage'],
-      recordDist: json['recordDist'].toDouble(),
-      recordTime: _parseTimeOfDay(json['recordTime']),
-      recordStartLocation: Point.fromJson(json['recordStartLocation']),
-      recordEndLocation: Point.fromJson(json['recordEndLocation']),
-      recordSpeed:
-          List<Point>.from(json['recordSpeed'].map((x) => Point.fromJson(x))),
-      recordHeartbeat: List<Point>.from(
-          json['recordHeartbeat'].map((x) => Point.fromJson(x))),
-      recordPace:
-          List<Point>.from(json['recordPace'].map((x) => Point.fromJson(x))),
-      recordCreatedAt: DateTime.parse(json['recordCreatedAt']),
-      recordMeanSpeed: json['recordMeanSpeed'].toDouble(),
-      recordMeanPace: json['recordMeanPace'].toDouble(),
-      recordMeanHeartbeat: json['recordMeanHeartbeat'].toDouble(),
+      recordType: json['recordType'] as String,
+      recordRank: json['recordRank'] as int,
+      recordImage: json['recordImage'] as String,
+      recordDist: json['recordDist'] as double,
+      recordTime: _parseTimeOfDay(json['recordTime'] as String),
+      recordStartLocation: json['recordStartLocation'] as String,
+      recordEndLocation: json['recordEndLocation'] as String,
+      recordSpeed: (json['recordSpeed'] as List).cast<Map<String, dynamic>>(),
+      recordHeartbeat:
+          (json['recordHeartbeat'] as List).cast<Map<String, dynamic>>(),
+      recordPace: (json['recordPace'] as List).cast<Map<String, dynamic>>(),
+      recordCreatedAt: DateTime.parse(json['recordCreatedAt'] as String),
+      recordMeanSpeed: json['recordMeanSpeed'] as double,
+      recordMeanPace: json['recordMeanPace'] as double,
+      recordMeanHeartbeat: json['recordMeanHeartbeat'] as double,
     );
   }
 }
@@ -222,21 +227,36 @@ class MarathonDetail extends SingleDetail {
 
   MarathonDetail({
     required this.rankings,
-    required super.recordType,
-    required super.recordRank,
-    required super.recordImage,
-    required super.recordDist,
-    required super.recordTime,
-    required super.recordStartLocation,
-    required super.recordEndLocation,
-    required super.recordSpeed,
-    required super.recordHeartbeat,
-    required super.recordPace,
-    required super.recordCreatedAt,
-    required super.recordMeanSpeed,
-    required super.recordMeanPace,
-    required super.recordMeanHeartbeat,
-  });
+    required String recordType,
+    required int recordRank,
+    required String recordImage,
+    required double recordDist,
+    required Duration recordTime,
+    required String recordStartLocation,
+    required String recordEndLocation,
+    required List<Map<String, dynamic>> recordSpeed,
+    required List<Map<String, dynamic>> recordHeartbeat,
+    required List<Map<String, dynamic>> recordPace,
+    required DateTime recordCreatedAt,
+    required double recordMeanSpeed,
+    required double recordMeanPace,
+    required double recordMeanHeartbeat,
+  }) : super(
+          recordType: recordType,
+          recordRank: recordRank,
+          recordImage: recordImage,
+          recordDist: recordDist,
+          recordTime: recordTime,
+          recordStartLocation: recordStartLocation,
+          recordEndLocation: recordEndLocation,
+          recordSpeed: recordSpeed,
+          recordHeartbeat: recordHeartbeat,
+          recordPace: recordPace,
+          recordCreatedAt: recordCreatedAt,
+          recordMeanSpeed: recordMeanSpeed,
+          recordMeanPace: recordMeanPace,
+          recordMeanHeartbeat: recordMeanHeartbeat,
+        );
 
   factory MarathonDetail.fromJson(Map<String, dynamic> json) {
     var rankingsList = (json['rankings'] as List)
@@ -245,20 +265,21 @@ class MarathonDetail extends SingleDetail {
 
     return MarathonDetail(
       rankings: rankingsList,
-      recordType: json['recordType'],
-      recordRank: json['recordRank'],
-      recordImage: json['recordImage'],
-      recordDist: json['recordDist'].toDouble(),
-      recordTime: _parseTimeOfDay(json['recordTime']),
-      recordStartLocation: json['recordStartLocation'],
-      recordEndLocation: json['recordEndLocation'],
-      recordSpeed: json['recordSpeed'].toDouble(),
-      recordHeartbeat: json['recordHeartbeat'].toDouble(),
-      recordPace: json['recordPace'].toDouble(),
-      recordCreatedAt: DateTime.parse(json['recordCreatedAt']),
-      recordMeanSpeed: json['recordMeanSpeed'].toDouble(),
-      recordMeanPace: json['recordMeanPace'].toDouble(),
-      recordMeanHeartbeat: json['recordMeanHeartbeat'].toDouble(),
+      recordType: json['recordType'] as String,
+      recordRank: json['recordRank'] as int,
+      recordImage: json['recordImage'] as String,
+      recordDist: json['recordDist'] as double,
+      recordTime: _parseTimeOfDay(json['recordTime'] as String),
+      recordStartLocation: json['recordStartLocation'] as String,
+      recordEndLocation: json['recordEndLocation'] as String,
+      recordSpeed: (json['recordSpeed'] as List).cast<Map<String, dynamic>>(),
+      recordHeartbeat:
+          (json['recordHeartbeat'] as List).cast<Map<String, dynamic>>(),
+      recordPace: (json['recordPace'] as List).cast<Map<String, dynamic>>(),
+      recordCreatedAt: DateTime.parse(json['recordCreatedAt'] as String),
+      recordMeanSpeed: json['recordMeanSpeed'] as double,
+      recordMeanPace: json['recordMeanPace'] as double,
+      recordMeanHeartbeat: json['recordMeanHeartbeat'] as double,
     );
   }
 }
