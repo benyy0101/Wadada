@@ -11,17 +11,20 @@ class TimeBar extends StatefulWidget{
   const TimeBar({super.key, required this.initialTime, required this.elapsedTime});
 
   @override
-  State<TimeBar> createState() => ProgressBarState();
+  State<TimeBar> createState() => TimebarState();
 }
 
-class ProgressBarState extends State<TimeBar>{
+class TimebarState extends State<TimeBar>{
   @override
   Widget build(BuildContext context) {
     double percent = 0.0;
     // double percent = 0.15;
     if (widget.initialTime > 0) {
       double totalInitialTimeInSeconds = widget.initialTime * 60.0;
-      percent = (totalInitialTimeInSeconds - widget.elapsedTime) / totalInitialTimeInSeconds;
+      percent = widget.elapsedTime / totalInitialTimeInSeconds;
+      print('total $totalInitialTimeInSeconds');
+      print('소요 시간 ${widget.elapsedTime}');
+      // percent = (totalInitialTimeInSeconds - widget.elapsedTime) / totalInitialTimeInSeconds;
       percent = percent.clamp(0.0, 1.0); // 계산된 퍼센트를 0과 1 사이로 제한합니다.
     }
 

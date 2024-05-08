@@ -19,6 +19,7 @@ import 'dart:io';
 import 'package:wadada/screens/mypage/layout.dart';
 
 void main() async {
+  
   HttpOverrides.global = NoCheckCertificateHttpOverrides();
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -26,9 +27,6 @@ void main() async {
 
   String nativeAppKey = dotenv.env['NATIVE_APP_KEY'] ?? "기본값";
   String javaScriptAppKey = dotenv.env['JAVASCRIPT_APP_KEY'] ?? "기본값";
-
-  final appKey = dotenv.env['APP_KEY'] ?? '';
-
   // runApp() 호출 전 Flutter SDK 초기화
   KakaoSdk.init(
     nativeAppKey: nativeAppKey,
@@ -56,8 +54,8 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget homeWidget;
-    homeWidget = SingleMain();
+    // Widget homeWidget;
+    // homeWidget = SingleMain();
     // if (storage.read(key: 'accessToken') != null) {
     //   homeWidget = MyPageLayout();
     // } else {

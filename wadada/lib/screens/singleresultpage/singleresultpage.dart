@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
+import 'package:wadada/common/component/lineChart.dart';
 import 'package:wadada/common/const/colors.dart';
+import 'package:wadada/screens/singlemainpage/single_main.dart';
+// import 'package:fl_chart/fl_chart.dart';
 
 class SingleResult extends StatefulWidget {
   final Duration elapsedTime;
@@ -8,6 +11,8 @@ class SingleResult extends StatefulWidget {
   final LatLng? startLocation;
   final LatLng? endLocation;
   final String totaldist;
+  final List<Map<String, double>> distanceSpeed;
+  final List<Map<String, double>> distancePace;
 
   const SingleResult({
     super.key,
@@ -16,6 +21,8 @@ class SingleResult extends StatefulWidget {
     this.startLocation,
     this.endLocation,
     required this.totaldist,
+    required this.distanceSpeed,
+    required this.distancePace,
   });
 
   @override
@@ -29,7 +36,6 @@ class _SingleResultState extends State<SingleResult> {
 
   @override
   Widget build(BuildContext context) {
-    // Format time
     int hours = widget.elapsedTime.inHours % 24;
     int minutes = widget.elapsedTime.inMinutes % 60;
     int seconds = widget.elapsedTime.inSeconds % 60;
@@ -50,16 +56,99 @@ class _SingleResultState extends State<SingleResult> {
         ),
         centerTitle: true,
       ),
-      body: Container(
+      body: SingleChildScrollView(
         padding: EdgeInsets.symmetric(horizontal: 30),
         child: Column(
           children: [
             SizedBox(height: 15),
-            // Time and route section
             _buildTimeAndRouteSection(formattedHours, formattedMinutes, formattedSeconds),
             SizedBox(height: 40),
-            // Distance section
-            _buildDistanceSection(),
+            // _buildDistanceSection(),
+            SizedBox(
+              width: 400,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '이동 거리',
+                    style: TextStyle(
+                      color: GRAY_500,
+                      fontSize: 19,
+                    ),
+                    textAlign: TextAlign.left,
+                  ),
+                  SizedBox(height: 5),
+                  Text(
+                    '${widget.totaldist} km',
+                    style: TextStyle(
+                      color: GREEN_COLOR,
+                      fontSize: 30,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 30),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('속도 (km/h)',
+                  style: TextStyle(
+                    color: GRAY_500,
+                    fontSize: 19,
+                  ),
+                ),
+                SizedBox(height: 10),
+                _buildSpeedLineChart(),
+                  ]
+            ),
+            SizedBox(height: 30),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('페이스',
+                  style: TextStyle(
+                    color: GRAY_500,
+                    fontSize: 19,
+                  ),
+                ),
+                SizedBox(height: 10),
+                _buildPaceLineChart(),
+                  ]
+            ),
+            SizedBox(height: 40),
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => SingleMain(),
+                  ),
+                );
+              },
+              child: Container(
+                width:double.maxFinite,
+                decoration: BoxDecoration(
+                  color: GREEN_COLOR,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                    vertical: 15,
+                  ),
+                  child: Text('종료하기',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    )
+                  )
+                ),
+              ),
+            ),
+            SizedBox(height: 40),
           ],
         ),
       ),
@@ -70,12 +159,12 @@ class _SingleResultState extends State<SingleResult> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        SizedBox(height: 10),
         Text(
           '소요 시간',
           style: TextStyle(
             color: GRAY_500,
-            fontSize: 17,
-            fontWeight: FontWeight.bold,
+            fontSize: 19,
           ),
         ),
         SizedBox(height: 5),
@@ -85,8 +174,7 @@ class _SingleResultState extends State<SingleResult> {
           '나의 경로',
           style: TextStyle(
             color: GRAY_500,
-            fontSize: 17,
-            fontWeight: FontWeight.bold,
+            fontSize: 19,
           ),
         ),
         SizedBox(height: 5),
@@ -120,7 +208,7 @@ class _SingleResultState extends State<SingleResult> {
   Widget _buildKakaoMap() {
     return SizedBox(
       width: 400,
-      height: 230,
+      height: 250,
       child: KakaoMap(
         onMapCreated: (controller) {
           mapController = controller;
@@ -140,11 +228,9 @@ class _SingleResultState extends State<SingleResult> {
               Marker(
                 markerId: 'start',
                 latLng: widget.startLocation!,
-                width: 50,
+                width: 30,
                 height: 54,
-                offsetX: 15,
-                offsetY: 44,
-                markerImageSrc: 'https://github.com/jjeong41/t/assets/103355863/955c2700-e829-426d-a4a0-4806d3f5c085',
+                markerImageSrc: 'https://github.com/jjeong41/t/assets/103355863/4e6d205d-694e-458c-b992-8ea7c27b85b1',
               ),
             );
           }
@@ -154,11 +240,9 @@ class _SingleResultState extends State<SingleResult> {
               Marker(
                 markerId: 'end',
                 latLng: widget.endLocation!,
-                width: 50,
+                width: 30,
                 height: 54,
-                offsetX: 15,
-                offsetY: 44,
-                markerImageSrc: 'https://github.com/jjeong41/t/assets/103355863/955c2700-e829-426d-a4a0-4806d3f5c085',
+                markerImageSrc: 'https://github.com/jjeong41/t/assets/103355863/f52baea5-c46e-47ec-b541-80a0b081f6db',
               ),
             );
           }
@@ -181,8 +265,8 @@ class _SingleResultState extends State<SingleResult> {
           LatLng northEast = LatLng(maxLat, maxLng);
           
           List<LatLng> bounds = [
-              LatLng(minLat, minLng), // southwest
-              LatLng(maxLat, maxLng)  // northeast
+              LatLng(minLat, minLng),
+              LatLng(maxLat, maxLng)
           ];
           mapController?.fitBounds(bounds);
         },
@@ -190,34 +274,6 @@ class _SingleResultState extends State<SingleResult> {
         markers: markers.toList(),
         center: widget.startLocation ?? widget.coordinates[0],
       ),
-    );
-  }
-
-  }
-
-  Widget _buildDistanceSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: const [
-        Text(
-          '이동 거리',
-          style: TextStyle(
-            color: GRAY_500,
-            fontSize: 17,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        SizedBox(height: 5),
-        // Text(
-        //   '${totaldist} km',
-        //   style: TextStyle(
-        //     color: GRAY_500,
-        //     fontSize: 17,
-        //     fontWeight: FontWeight.bold,
-        //   ),
-        // ),
-        // Add content here for displaying distance
-      ],
     );
   }
 
@@ -249,3 +305,44 @@ class _SingleResultState extends State<SingleResult> {
       ),
     );
   }
+  
+  Widget _buildSpeedLineChart() {
+    List<chartData> myChartData = widget.distanceSpeed.map((data) {
+      return chartData(
+          // (data['dist']! * 1000).toInt(),
+          data['dist']! / 1000,
+          data['speed']! * 3.6
+      );
+    }).toList();
+
+    return LineChart<chartData>(
+        chartData: myChartData,
+        metrics: '',
+        graphType: 'speed',
+    );
+  }
+
+  double formatPaceAsDecimal(double paceInSecondsPerKm) {
+    int minutes = paceInSecondsPerKm ~/ 60;
+    double seconds = paceInSecondsPerKm % 60;
+
+    double paceInMinutesAndSeconds = minutes + (seconds / 60);
+    return paceInMinutesAndSeconds;
+}
+
+  Widget _buildPaceLineChart() {
+    List<chartData> myChartData = widget.distancePace.map((data) {
+        return chartData(
+            data['dist']! / 1000,
+            formatPaceAsDecimal(data['pace']!)
+        );
+    }).toList();
+
+    // LineChart 사용
+    return LineChart<chartData>(
+        chartData: myChartData,
+        metrics: 'km/h',
+        graphType: 'pace',
+    );
+  }
+}

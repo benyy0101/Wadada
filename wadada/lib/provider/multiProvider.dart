@@ -15,13 +15,12 @@ class MultiProvider {
     _dio.options.baseUrl = 'https://k10a704.p.ssafy.io/Multi';
     _dio.options.headers['Content-Type'] = 'application/json';
     _dio.options.headers['Authorization'] = storage.read(key: 'accessToken');
+    print(_dio.options.headers['Authorization']);
   }
 
   Future<void> setAuth() async {
     _dio.options.headers['Authorization'] =
         await storage.read(key: 'accessToken');
-    // _dio.options.headers['Authorization'] = 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNDYzNDMxNDUzIiwiYXV0aCI6IlJPTEVfU09DSUFMIiwiZXhwIjoxNzE1NDA1MzkzfQ.dmjUkVX1sFe9EpYhT3SGO3uC7q1dLIoddBvzhoOSisM';
-
 
     print(_dio.options.headers['Authorization']);
   }
@@ -49,24 +48,27 @@ class MultiProvider {
     return response;
   }
 
+  //DEAD END
   Future<Response<dynamic>> multiRoomAttend(String roomSeq) async {
-    setAuth();
+    await setAuth();
     final response = await _dio.get(
       '/attend/$roomSeq',
     );
     return response;
   }
 
+  //MULTI-006
   Future<Response<dynamic>> multiRoomGameStart(
       MultiRoomGameStart startInfo) async {
-    setAuth();
-    final response = await _dio.post('/start', data: startInfo);
+    await setAuth();
+    final response = await _dio.post('/start', data: startInfo.toJson());
     return response;
   }
 
+  //MULTI-007
   Future<Response<dynamic>> multiRoomGameEnd(MultiRoomGameEnd endInfo) async {
-    setAuth();
-    final response = await _dio.patch('/result', data: endInfo);
+    await setAuth();
+    final response = await _dio.patch('/result', data: endInfo.toJson());
     return response;
   }
 }
