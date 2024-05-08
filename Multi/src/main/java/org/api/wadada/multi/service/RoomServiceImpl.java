@@ -216,12 +216,13 @@ public class RoomServiceImpl implements RoomService{
     // 모드별 방 검색
     @Override
     public List<RoomRes> getRoomList(int mode) {
-        List<RoomDto> activeRooms = roomManager.getAllRooms();
-        List<Integer> activeSeqList = activeRooms.stream().filter(roomDto -> roomDto.getRoomMode()==mode).map(
+        Map<Integer,RoomDto> activeRooms = roomManager.getAllRooms();
+        List<Integer> activeSeqList = activeRooms.values().stream().filter(roomDto -> roomDto.getRoomMode()==mode).map(
                 RoomDto::getRoomSeq).toList();
 
+
         HashMap<Integer,Integer> roomIdxMap = new HashMap<>();
-        for(RoomDto roomDto:activeRooms){
+        for(RoomDto roomDto:activeRooms.values()){
             roomIdxMap.put(roomDto.getRoomSeq(),roomDto.getRoomIdx());
         }
 
@@ -244,14 +245,15 @@ public class RoomServiceImpl implements RoomService{
         }
         // 현재 활성화된 룸 정보 가져오고
         HashMap<Integer, Integer> roomInfo = new HashMap<>();
-        List<RoomDto> activeRooms = roomManager.getAllRooms();
-        for(RoomDto room: activeRooms){
-            roomInfo.put(room.getRoomSeq(),room.getRoomIdx());
+        Map<Integer,RoomDto> activeRooms = roomManager.getAllRooms();
+        for (Map.Entry<Integer, RoomDto> room : activeRooms.entrySet()) {
+            roomInfo.put(room.getValue().getRoomSeq(),room.getValue().getRoomIdx());
         }
+
 
         //거르는 작업(로그 스태시가 1분 주기라 삭제 반영 안된 정보 거르기)
         roomDocuments = roomDocuments.stream()
-                .filter(roomDocument -> activeRooms.stream()
+                .filter(roomDocument -> activeRooms.values().stream()
                         .anyMatch(room -> room.getRoomSeq() == roomDocument.getRoomSeq()))
                 .toList();
 
@@ -359,10 +361,19 @@ public class RoomServiceImpl implements RoomService{
         }
     }
 
-    public void saveUserPoint(Principal principal, UserPointReq userPointReq){
 
 
-
+    public void saveUserPoint(UserPointReq userPointReq){
+        // 방을 찾고
+        RoomDto roomDto = roomManager.getAllRooms().get(userPointReq.getRoomIdx());
+        if(roomDto == null){
+            throw new RuntimeException("좌표 저장 중 index에 맞는 방을 못찾았습니다.");
+        }
+        // 방 point에 추가하기
+        roomDto.addPoint(new double[]{userPointReq.getLatitude(), userPointReq.getLongitude()});
+        for(double[] e:roomDto.getRoomPoints()){
+            log.info(Arrays.toString(e));
+        }
     }
 
 

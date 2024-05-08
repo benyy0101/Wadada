@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentMap;
 
 
 // 전체 방 관리
@@ -14,16 +15,13 @@ import java.util.*;
 public class RoomManager {
 
     private final List<RoomDto> rooms;
-    private final List<Map<String,Integer>> playrooms;
     private static final int MAX_ROOMS = 40;
     private int[] roomSeqList = new int[40];
 
     public RoomManager() {
         this.rooms = new ArrayList<>(MAX_ROOMS);
-        this.playrooms = new ArrayList<>(MAX_ROOMS);
         for (int i = 0; i < MAX_ROOMS; i++) {
             rooms.add(null);
-            playrooms.add(new HashMap<>());
         }
     }
 
@@ -61,11 +59,11 @@ public class RoomManager {
         return Optional.empty();
     }
 
-    public List<RoomDto> getAllRooms() {
-        List<RoomDto> activeRooms = new ArrayList<>();
+    public Map<Integer,RoomDto> getAllRooms() {
+        Map<Integer,RoomDto> activeRooms = new HashMap<>();
         for (RoomDto room : rooms) {
             if (room != null) {
-                activeRooms.add(room);
+                activeRooms.put(room.getRoomIdx(),room);
             }
         }
         return activeRooms;

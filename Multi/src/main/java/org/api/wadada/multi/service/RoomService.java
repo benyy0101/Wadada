@@ -40,6 +40,6 @@ public interface RoomService {
 
     void getFlagPoint();
 
-    void saveUserPoint(Principal principal, UserPointReq userPointReq);
+    void saveUserPoint(UserPointReq userPointReq);
 
 }

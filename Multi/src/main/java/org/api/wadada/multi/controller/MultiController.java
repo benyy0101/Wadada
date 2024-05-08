@@ -177,10 +177,10 @@ public class MultiController {
     }
 
     @PostMapping("/flag")
-    public ResponseEntity<?> requestLocation(Principal principal, @RequestBody UserPointReq userPointReq){
+    public ResponseEntity<?> requestLocation(@RequestBody UserPointReq userPointReq){
 
         try {
-            roomService.saveUserPoint(principal,userPointReq);
+            roomService.saveUserPoint(userPointReq);
             return new ResponseEntity<>("좌표 저장에 성공했습니다",HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>("좌표 저장에 실패했습니다.",HttpStatus.NOT_ACCEPTABLE);
