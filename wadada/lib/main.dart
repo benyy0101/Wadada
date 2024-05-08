@@ -52,8 +52,8 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget homeWidget;
-    homeWidget = SingleMain();
+    // Widget homeWidget;
+    // homeWidget = SingleMain();
     // if (storage.read(key: 'accessToken') != null) {
     //   homeWidget = MyPageLayout();
     // } else {
@@ -62,7 +62,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
-      home: homeWidget,
+      home: SingleMain()
     );
   }
 }

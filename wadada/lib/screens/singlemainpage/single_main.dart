@@ -11,18 +11,18 @@ class SingleMain extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Container(
+      body: SingleChildScrollView(
         padding: EdgeInsets.only(left: 30, right: 30),
         child: Column(
           children: [
             SizedBox(
               height: 45,
             ),
-            Row(
+            Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: [
+              children: const [
                 Column(
-                  children: const [
+                  children: [
                     Text('싱글모드',
                         style: TextStyle(
                           color: Colors.black,
@@ -34,65 +34,7 @@ class SingleMain extends StatelessWidget {
                 SizedBox(
                   height: 40,
                 ),
-                Container(
-                  child:Row(
-                    children: const [
-                      Text('김태수님의 최근 기록',
-                        style: TextStyle(
-                          color: Colors.black54,
-                          fontSize: 19,
-                        )
-                      )
-                    ],
-                  ),
-                ),
-                SizedBox(height: 10,),
-                SingleRecord(),
-                SizedBox(height: 30,),
-                SelectMode(
-                  icon: 'assets/images/shoes.png', 
-                  name: '거리모드', 
-                  des: '목표한 거리만큼 달려보세요.',
-                  btn: '28',
-                  onTapAction: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => SingleOption(isDistMode: true)),
-                    );
-                  },
-                ),
-                SizedBox(height: 25,),
-                SelectMode(
-                  icon: 'assets/images/clock.png',
-                  name: '시간모드', 
-                  des: '목표한 시간만큼 달려보세요.',
-                  btn: '28',
-                  onTapAction: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => SingleOption(isDistMode: false)),
-                    );
-                  },
-                ),
-                SizedBox(height: 25,),
-                SelectMode(
-                  icon: 'assets/images/map.png', 
-                  name: '챌린지모드', 
-                  des: '코스를 뛰고, 기록에 도전하세요.',
-                  btn: '8',
-                  onTapAction: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => SingleOption(isDistMode: false)),
-                    );
-                  },
-                ),
-                SizedBox(height: 30,),
-                LogoutButton(),
               ],
-            ),
-            SizedBox(
-              height: 40,
             ),
             Container(
               child: Row(
@@ -108,7 +50,7 @@ class SingleMain extends StatelessWidget {
             SizedBox(
               height: 10,
             ),
-            // SingleRecord(),
+            SingleRecord(),
             SizedBox(
               height: 30,
             ),
