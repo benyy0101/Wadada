@@ -1,7 +1,7 @@
 import 'package:wadada/models/multiroom.dart';
 import 'package:wadada/provider/multiProvider.dart';
 import 'package:dio/src/response.dart';
-import 'package:wadada/screens/multimainpage/component/room.dart';
+// import 'package:wadada/screens/multimainpage/component/room.dart';
 
 abstract class AbstractMultiRepository {
   Future<RoomInfo> createRoom(MultiRoom roomInfo);

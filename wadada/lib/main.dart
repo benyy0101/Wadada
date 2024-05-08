@@ -12,7 +12,6 @@ import 'package:wadada/screens/mainpage/layout.dart';
 //import 'package:wadada/common/pages/mainpage.dart';
 import 'package:wadada/screens/mypage/layout.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:wadada/screens/multimainpage/multimainpage.dart';
 import 'package:wadada/screens/singlemainpage/single_main.dart';
 import 'dart:io';
 import 'package:wadada/screens/mypage/layout.dart';
@@ -49,12 +48,12 @@ class NoCheckCertificateHttpOverrides extends HttpOverrides {
 class MyApp extends StatelessWidget {
   final storage = FlutterSecureStorage();
 
-  MyApp({Key? key});
+  MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    Widget homeWidget;
-    homeWidget = SingleMain();
+    // Widget homeWidget;
+    // homeWidget = SingleMain();
     // if (storage.read(key: 'accessToken') != null) {
     //   homeWidget = MyPageLayout();
     // } else {
@@ -63,7 +62,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
-      home: homeWidget,
+      home: SingleMain()
     );
   }
 }
