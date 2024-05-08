@@ -3,12 +3,19 @@ package org.api.wadada.multi.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.math3.optim.MaxEval;
+import org.apache.commons.math3.optim.PointValuePair;
+import org.apache.commons.math3.optim.nonlinear.scalar.GoalType;
+import org.apache.commons.math3.optim.nonlinear.scalar.ObjectiveFunction;
+import org.apache.commons.math3.optim.nonlinear.scalar.noderiv.NelderMeadSimplex;
+import org.apache.commons.math3.optim.nonlinear.scalar.noderiv.SimplexOptimizer;
 import org.api.wadada.multi.dto.RoomDto;
 import org.api.wadada.multi.dto.RoomManager;
 import org.api.wadada.multi.dto.game.GameMessage;
 import org.api.wadada.multi.dto.req.CreateRoomReq;
 import org.api.wadada.multi.dto.req.GameEndReq;
 import org.api.wadada.multi.dto.req.GameStartReq;
+import org.api.wadada.multi.dto.req.UserPointReq;
 import org.api.wadada.multi.dto.res.*;
 import org.api.wadada.multi.dto.res.AttendRoomRes;
 import org.api.wadada.multi.dto.res.LeaveRoomRes;
@@ -260,8 +267,9 @@ public class RoomServiceImpl implements RoomService{
     }
 
     @Override
-    public Point getFlagPoint() {
-        return null;
+    public void getFlagPoint() {
+        // 점수받는거를 비동기로 받아서 다 받으면 메세지 전송 똑같이 이벤트 리스너 추가해야함
+         return;
     }
 
     // 게임시작
@@ -351,5 +359,56 @@ public class RoomServiceImpl implements RoomService{
         }
     }
 
+    public void saveUserPoint(Principal principal, UserPointReq userPointReq){
+
+
+
+    }
+
+
+    public FlagPointRes calculatePoint(double[][] points){
+
+        double sumX = 0, sumY = 0;
+        for (double[] p : points) {
+            sumX += p[0];
+            sumY += p[1];
+        }
+        double[] startPoint = {sumX / points.length, sumY / points.length};
+
+        SimplexOptimizer optimizer = new SimplexOptimizer(1e-10, 1e-10);
+        NelderMeadSimplex simplex = new NelderMeadSimplex(new double[] {0.01, 0.01});
+
+        ObjectiveFunction objFunction = new ObjectiveFunction(point -> {
+            double variance = 0;
+            double meanDistance = 0;
+            double[] distances = new double[points.length];
+
+            for (int i = 0; i < points.length; i++) {
+                distances[i] = Math.sqrt(Math.pow(point[0] - points[i][0], 2) + Math.pow(point[1] - points[i][1], 2));
+                meanDistance += distances[i];
+            }
+            meanDistance /= points.length;
+
+            for (double dist : distances) {
+                variance += Math.pow(dist - meanDistance, 2);
+            }
+            variance /= points.length;
+
+            return variance;
+        });
+
+        PointValuePair result = optimizer.optimize(
+                new MaxEval(10000),
+                objFunction,
+                GoalType.MINIMIZE,
+                simplex,
+                new org.apache.commons.math3.optim.InitialGuess(startPoint)
+        );
+
+        return FlagPointRes.builder().latitude(result.getPoint()[0]).longitude(result.getPoint()[1]).build();
+    }
+
+
+
 }
-// 방 타이틀,
+// 방 타이틀

@@ -3,6 +3,7 @@ package org.api.wadada.multi.service;
 import lombok.RequiredArgsConstructor;
 import org.api.wadada.multi.dto.RoomDto;
 import org.api.wadada.multi.dto.req.CreateRoomReq;
+import org.api.wadada.multi.dto.req.UserPointReq;
 import org.api.wadada.multi.dto.res.AttendRoomRes;
 import org.api.wadada.multi.dto.res.LeaveRoomRes;
 import org.api.wadada.multi.dto.res.RoomMemberRes;
@@ -37,6 +38,8 @@ public interface RoomService {
 
     List<RoomRes> findByRoomTag(String roomTag) throws Exception;
 
-    Point getFlagPoint();
+    void getFlagPoint();
+
+    void saveUserPoint(Principal principal, UserPointReq userPointReq);
 
 }

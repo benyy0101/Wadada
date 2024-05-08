@@ -6,6 +6,7 @@ import org.api.wadada.multi.dto.game.GameMessage;
 import org.api.wadada.multi.dto.req.CreateRoomReq;
 import org.api.wadada.multi.dto.req.GameEndReq;
 import org.api.wadada.multi.dto.req.GameStartReq;
+import org.api.wadada.multi.dto.req.UserPointReq;
 import org.api.wadada.multi.dto.res.GameEndRes;
 import org.api.wadada.multi.dto.res.GameResultRes;
 import org.api.wadada.multi.dto.res.GameStartRes;
@@ -167,6 +168,26 @@ public class MultiController {
             throw new RuntimeException(e);
         }
     }
+
+    @MessageMapping("/flag/{roomIdx}")
+    @SendTo("/sub/attend/{roomIdx}")
+    public ResponseEntity<?> getFlagPoint(@DestinationVariable int roomIdx){
+        String message = "{\"message\": \"깃발요청\", \"action\": \"/Multi/flag\"}";
+        return new ResponseEntity<>(message,HttpStatus.OK);
+    }
+
+    @PostMapping("/flag")
+    public ResponseEntity<?> requestLocation(Principal principal, @RequestBody UserPointReq userPointReq){
+
+        try {
+            roomService.saveUserPoint(principal,userPointReq);
+            return new ResponseEntity<>("좌표 저장에 성공했습니다",HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>("좌표 저장에 실패했습니다.",HttpStatus.NOT_ACCEPTABLE);
+        }
+    }
+
+
 
 
 }
