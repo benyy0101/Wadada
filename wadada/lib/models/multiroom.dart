@@ -82,27 +82,29 @@ class MultiRoomAttend implements Serializable {
 
 class MultiRoomGameStart {
   int roomIdx;
-  Point recordStartLocation;
+  String recordStartLocation;
   int recordPeople;
 
-  MultiRoomGameStart(
-      {required this.roomIdx,
-      required this.recordStartLocation,
-      required this.recordPeople});
+  MultiRoomGameStart({
+    required this.roomIdx,
+    required this.recordStartLocation,
+    required this.recordPeople,
+  });
 
   factory MultiRoomGameStart.fromJson(Map<String, dynamic> json) {
     return MultiRoomGameStart(
       roomIdx: json['roomIdx'] as int,
-      recordStartLocation: Point.fromJson(json['recordStartLocation']),
+      recordStartLocation: json['recordStartLocation'] as String,
       recordPeople: json['recordPeople'] as int,
     );
   }
 
   Map<String, dynamic> toJson() => {
         'roomIdx': roomIdx,
-        'recordStartLocation': recordStartLocation.toJson(),
+        'recordStartLocation': recordStartLocation,
         'recordPeople': recordPeople,
       };
+
   @override
   String toString() {
     return 'MultiRoomGameStart(roomIdx: $roomIdx, recordStartLocation: $recordStartLocation, recordPeople: $recordPeople)';
@@ -114,8 +116,8 @@ class MultiRoomGameEnd {
   String recordImage;
   double recordDist;
   Duration recordTime;
-  Point recordStartLocation;
-  Point recordEndLocation;
+  String recordStartLocation;
+  String recordEndLocation;
   String recordWay; // JSON
   String recordSpeed; // JSON
   String recordHeartbeat; // JSON
@@ -145,8 +147,8 @@ class MultiRoomGameEnd {
       recordImage: json['recordImage'] as String,
       recordDist: json['recordDist'] as double,
       recordTime: Duration(milliseconds: json['recordTime'] as int),
-      recordStartLocation: Point.fromJson(json['recordStartLocation']),
-      recordEndLocation: Point.fromJson(json['recordEndLocation']),
+      recordStartLocation: json['recordStartLocation'] as String,
+      recordEndLocation: json['recordEndLocation'] as String,
       recordWay: json['recordWay'] as String,
       recordSpeed: json['recordSpeed'] as String,
       recordHeartbeat: json['recordHeartbeat'] as String,
@@ -161,8 +163,8 @@ class MultiRoomGameEnd {
         'recordImage': recordImage,
         'recordDist': recordDist,
         'recordTime': recordTime.inMilliseconds,
-        'recordStartLocation': recordStartLocation.toJson(),
-        'recordEndLocation': recordEndLocation.toJson(),
+        'recordStartLocation': recordStartLocation,
+        'recordEndLocation': recordEndLocation,
         'recordWay': recordWay,
         'recordSpeed': recordSpeed,
         'recordHeartbeat': recordHeartbeat,
