@@ -55,6 +55,7 @@ class _MyMapState extends State<MyMap> {
 
   KakaoMapController? mapController;
   StreamSubscription<Position>? positionStream;
+  StreamSubscription<Position>? realTimePositionStream;
   Set<Polyline> polylines = {};
   Set<Marker> markers = {};
   // Set<PolyLine> polylines = {};
@@ -71,25 +72,26 @@ class _MyMapState extends State<MyMap> {
     startTime = DateTime.now();
 
     _startTrackingLocation();
+    _subscribeToRealTimeLocationUpdates();
   }
 
   Future<void> _startTrackingLocation() async {
-    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) throw Exception('Location services are disabled.');
+    // bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    // if (!serviceEnabled) throw Exception('Location services are disabled.');
 
-    LocationPermission permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) throw Exception('Location permissions are denied');
-    }
+    // LocationPermission permission = await Geolocator.checkPermission();
+    // if (permission == LocationPermission.denied) {
+    //   permission = await Geolocator.requestPermission();
+    //   if (permission == LocationPermission.denied) throw Exception('Location permissions are denied');
+    // }
 
-    if (permission == LocationPermission.deniedForever) {
-      throw Exception('Location permissions are permanently denied; we cannot request permissions.');
-    }
+    // if (permission == LocationPermission.deniedForever) {
+    //   throw Exception('Location permissions are permanently denied; we cannot request permissions.');
+    // }
 
     final locationSettings = LocationSettings(
       accuracy: LocationAccuracy.high,
-      distanceFilter: 1,
+      distanceFilter: 5,
     );
 
     positionStream = Geolocator.getPositionStream(locationSettings: locationSettings).listen((Position? position) {
@@ -173,11 +175,68 @@ class _MyMapState extends State<MyMap> {
         });
       }
     });
+
+    // positionStream = Geolocator.getPositionStream(locationSettings: realTimeLocationSettings).listen((Position? position) {
+    //   if (position != null) {
+    //     setState(() {
+    //       LatLng newLocation = LatLng(position.latitude, position.longitude);
+          
+    //       markers.removeWhere((marker) => marker.markerId == 'currentLocationMarker');
+          
+    //       markers.add(Marker(
+    //           markerId: 'currentLocationMarker',
+    //           latLng: newLocation,
+    //           width: 30,
+    //           height: 30,
+    //           markerImageSrc: 'https://github.com/jjeong41/t/assets/103355863/5ff2a217-8cbc-4e41-b6c2-0ff12103b40b',
+    //       ));
+          
+    //       mapController?.setCenter(newLocation);
+
+    //       setState(() {});
+    //   });
+    //   }
+    // });
   }
+
+  Future<void> _subscribeToRealTimeLocationUpdates() async {
+    final realTimeLocationSettings = LocationSettings(
+      accuracy: LocationAccuracy.high,
+      distanceFilter: 0,
+    );
+
+    realTimePositionStream = Geolocator.getPositionStream(
+      locationSettings: realTimeLocationSettings,
+    ).listen((Position? position) {
+      if (position != null) {
+        LatLng newLocation = LatLng(position.latitude, position.longitude);
+
+        _updateMapWithNewLocation(newLocation);
+      }
+    });
+  }
+
+  void _updateMapWithNewLocation(LatLng newLocation) {
+    markers.removeWhere((marker) => marker.markerId == 'currentLocationMarker');
+    
+    markers.add(Marker(
+        markerId: 'currentLocationMarker',
+        latLng: newLocation,
+        width: 30,
+        height: 30,
+        markerImageSrc: 'https://github.com/jjeong41/t/assets/103355863/5ff2a217-8cbc-4e41-b6c2-0ff12103b40b',
+    ));
+    
+    mapController?.setCenter(newLocation);
+    setState(() {});
+  }
+
+
 
   @override
   void dispose() {
     // 스트림 구독 해제
+    realTimePositionStream?.cancel();
     positionStream?.cancel();
     super.dispose();
   }
@@ -206,6 +265,18 @@ class _MyMapState extends State<MyMap> {
             height: 54,
             offsetX: 15,
             offsetY: 44,
+            markerImageSrc:
+              // 'https://w7.pngwing.com/pngs/96/889/png-transparent-marker-map-interesting-places-the-location-on-the-map-the-location-of-the-thumbnail.png',
+              'https://github.com/jjeong41/t/assets/103355863/955c2700-e829-426d-a4a0-4806d3f5c085',
+          ));
+
+          markers.add(Marker(
+            markerId: 'currentLocationMarker',
+            latLng: LatLng(currentLatitude!, currentLongitude!),
+            width: 30,
+            height: 30,
+            // offsetX: 15,
+            // offsetY: 44,
             markerImageSrc:
               // 'https://w7.pngwing.com/pngs/96/889/png-transparent-marker-map-interesting-places-the-location-on-the-map-the-location-of-the-thumbnail.png',
               'https://github.com/jjeong41/t/assets/103355863/955c2700-e829-426d-a4a0-4806d3f5c085',

@@ -43,7 +43,7 @@ class SingleMain extends StatelessWidget{
                       Text('김태수님의 최근 기록',
                         style: TextStyle(
                           color: Colors.black54,
-                          fontSize: 15,
+                          fontSize: 19,
                         )
                       )
                     ],

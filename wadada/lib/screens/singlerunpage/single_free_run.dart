@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 // import 'package:flutter/rendering.dart';
 import 'package:wadada/common/const/colors.dart';
@@ -18,7 +19,6 @@ class SingleFreeRun extends StatefulWidget{
   final double time;
   final double dist;
   final String appKey;
-  // const SingleFreeRun({super.key, required this.time, required this.dist});
   const SingleFreeRun({super.key, required this.time, required this.dist, required this.appKey});
   
   @override
@@ -26,6 +26,10 @@ class SingleFreeRun extends StatefulWidget{
 }
 
 class _SingleFreeRunState extends State<SingleFreeRun> {
+  bool isLoading = true;
+  int countdown = 5;
+  Timer? countdownTimer;
+  bool showCountdown = false;
   int? recordSeq;
   double totalDistance = 0.0;
   String formattedDistance = '0.00';
@@ -40,17 +44,53 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
   void initState() {
     super.initState();
 
+    startTimers();
+
     myMap = MyMap(appKey: widget.appKey);
 
     myMap.startLocationNotifier.addListener(() {
-      if (myMap.startLocation != null) {
-          sendLocationToServer();
+      if (myMap.startLocationNotifier.value != null) {
+        sendLocationToServer();
+        // setState(() {
+        //     isLoading = false;
+        // });
       }
     });
 
     clock = Clock(key: _clockKey, time: widget.time, elapsedTimeNotifier: elapsedTimeNotifier,);
     _subscribeToTotalDistance();
     // sendLocationToServer();
+  }
+
+  void startTimers() {
+    Timer(Duration(seconds: 3), () {
+      setState(() {
+        showCountdown = true;
+      });
+      startCountdown();
+    });
+  }
+
+  void startCountdown() {
+    countdownTimer = Timer.periodic(Duration(seconds: 1), (timer) {
+      setState(() {
+        countdown--;
+        if (countdown <= 0) {
+          timer.cancel();
+          isLoading = false;
+
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            _clockKey.currentState?.start();
+        });
+        }
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    countdownTimer?.cancel();
+    super.dispose();
   }
 
   Future<void> sendLocationToServer() async {
@@ -73,7 +113,7 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
           options: Options(headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
-            'authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNDUyNzIxNzM3IiwiYXV0aCI6IlJPTEVfU09DSUFMIiwiZXhwIjoxNzE0ODgzODg1fQ.7nS18Nv6vBsmIIzOh03-_RYS1UHcXDLygj9PUwDN1Vo',
+            'authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNDYzNDMxNDUzIiwiYXV0aCI6IlJPTEVfU09DSUFMIiwiZXhwIjoxNzE1NDA1MzkzfQ.dmjUkVX1sFe9EpYhT3SGO3uC7q1dLIoddBvzhoOSisM',
           }),
         );
         
@@ -213,7 +253,7 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
         options: Options(headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
-          'authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNDUyNzIxNzM3IiwiYXV0aCI6IlJPTEVfU09DSUFMIiwiZXhwIjoxNzE0ODgzODg1fQ.7nS18Nv6vBsmIIzOh03-_RYS1UHcXDLygj9PUwDN1Vo',
+          'authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNDYzNDMxNDUzIiwiYXV0aCI6IlJPTEVfU09DSUFMIiwiZXhwIjoxNzE1NDA1MzkzfQ.dmjUkVX1sFe9EpYhT3SGO3uC7q1dLIoddBvzhoOSisM',
         }),
       );
 
@@ -391,19 +431,19 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
         // Duration elapsedTime = _clockKey.currentState?.elapsed ?? Duration.zero;
         // double elapsedTimeInSeconds = elapsedTime.inSeconds.toDouble();
 
-        progressBar = ValueListenableBuilder<Duration>(
-            valueListenable: elapsedTimeNotifier,
-            builder: (context, elapsedDuration, _) {
-                // Convert Duration to double
-                double elapsedTimeInSeconds = elapsedDuration.inSeconds.toDouble();
+        // progressBar = ValueListenableBuilder<Duration>(
+        //     valueListenable: elapsedTimeNotifier,
+        //     builder: (context, elapsedDuration, _) {
+        //         // Convert Duration to double
+        //         double elapsedTimeInSeconds = elapsedDuration.inSeconds.toDouble();
                 
-                // Pass the elapsed time in seconds to TimeBar
-                return TimeBar(
-                    initialTime: widget.time,
-                    elapsedTime: elapsedTimeInSeconds,
-                );
-            },
-        );
+        //         // Pass the elapsed time in seconds to TimeBar
+        //         return TimeBar(
+        //             initialTime: widget.time,
+        //             elapsedTime: elapsedTimeInSeconds,
+        //         );
+        //     },
+        // );
     }
 
     // Duration elapsedDuration = Duration(seconds: elapsedTimeNotifier.value.round());
@@ -419,7 +459,8 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
 
     return Scaffold(
         backgroundColor: Colors.white,
-        body:
+        body: Stack(
+            children: [
           Container(
             padding: EdgeInsets.only(left: 30, right: 30),
             child: Column(
@@ -449,65 +490,65 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
                 SizedBox(height: 35),
                 // 이동거리, 현재 페이스
                     // formattedDistance = totalDistance.toStringAsFixed(2);
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('이동거리',
-                              style: TextStyle(
-                                  color: GRAY_500,
-                                  fontSize: 19,
-                              )
-                            ),
-                            SizedBox(height: 5),
-                            ValueListenableBuilder<double>(
-                              valueListenable: myMap.totalDistanceNotifier,
-                              builder: (context, totalDistance, _) {
-                                // double distanceInKm = totalDistance / 1000.0;
-                                // formattedDistance = distanceInKm.toStringAsFixed(2);
-                                return Text('$formattedDistance km',
-                                  style: TextStyle(
-                                    color: GREEN_COLOR,
-                                    fontSize: 30,
-                                    fontWeight: FontWeight.w700,
-                                  )
-                                );
-                              }
-                            ),
-                          ],
-                        ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('이동거리',
+                            style: TextStyle(
+                                color: GRAY_500,
+                                fontSize: 19,
+                            )
+                          ),
+                          SizedBox(height: 5),
+                          ValueListenableBuilder<double>(
+                            valueListenable: myMap.totalDistanceNotifier,
+                            builder: (context, totalDistance, _) {
+                              // double distanceInKm = totalDistance / 1000.0;
+                              // formattedDistance = distanceInKm.toStringAsFixed(2);
+                              return Text('$formattedDistance km',
+                                style: TextStyle(
+                                  color: GREEN_COLOR,
+                                  fontSize: 30,
+                                  fontWeight: FontWeight.w700,
+                                )
+                              );
+                            }
+                          ),
+                        ],
                       ),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('현재 페이스',
-                              style: TextStyle(
-                                  color: GRAY_500,
-                                  fontSize: 19,
-                              )
-                            ),
-                            SizedBox(height: 5),
-                            ValueListenableBuilder<double>(
-                              valueListenable: myMap.paceNotifier,
-                              builder: (context, pace, _) {
-                                String formattedPace = formatPace(pace);
-                                return Text(formattedPace,
-                                  style: TextStyle(
-                                    color: GREEN_COLOR,
-                                    fontSize: 30,
-                                    fontWeight: FontWeight.w700,
-                                  )
-                                );
-                              }
-                            ),
-                          ],
-                        ),
-                        ),
-                      ],
                     ),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('현재 페이스',
+                            style: TextStyle(
+                                color: GRAY_500,
+                                fontSize: 19,
+                            )
+                          ),
+                          SizedBox(height: 5),
+                          ValueListenableBuilder<double>(
+                            valueListenable: myMap.paceNotifier,
+                            builder: (context, pace, _) {
+                              String formattedPace = formatPace(pace);
+                              return Text(formattedPace,
+                                style: TextStyle(
+                                  color: GREEN_COLOR,
+                                  fontSize: 30,
+                                  fontWeight: FontWeight.w700,
+                                )
+                              );
+                            }
+                          ),
+                        ],
+                      ),
+                      ),
+                    ],
+                  ),
                 SizedBox(height: 30),
                 // 소요 시간
                 Column(
@@ -580,6 +621,54 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
               ],
             ),
           ),
+
+          // if (isLoading)
+          //   Positioned.fill(
+          //       child: Container(
+          //           // color: Colors.white.withOpacity(0.7),
+          //           color: OATMEAL_COLOR,
+          //           child: Center(
+          //               child: CircularProgressIndicator(),
+          //           ),
+          //       ),
+          //   ),
+
+          if (isLoading)
+            Positioned.fill(
+              child: Container(
+                color: OATMEAL_COLOR,
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        '잠시 후에\n달리기를 시작합니다.',
+                        style: TextStyle(
+                          color: const Color.fromARGB(255, 59, 59, 59),
+                          fontSize: 27,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      if (showCountdown)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 16),
+                          child: Text(
+                            countdown > 0 ? countdown.toString() : '',
+                            style: TextStyle(
+                              color: GREEN_COLOR,
+                              fontSize: 150,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ]
+        )
       );
+    }
   }
-}
