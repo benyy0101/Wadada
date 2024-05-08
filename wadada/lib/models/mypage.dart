@@ -67,7 +67,7 @@ class MonthlyRecord {
 class SimpleRecord {
   final int recordSeq;
   final String recordType;
-  final double recordDist;
+  final int recordDist;
   //언제 달렸는지 확인용
   final DateTime recordCreatedAt;
 
@@ -81,7 +81,7 @@ class SimpleRecord {
     return SimpleRecord(
       recordSeq: json['recordSeq'] as int,
       recordType: json['recordType'] as String,
-      recordDist: json['recordDist'] as double,
+      recordDist: json['recordDist'] as int,
       recordCreatedAt: DateTime.parse(json['recordCreatedAt'] as String),
     );
   }

@@ -1,39 +1,68 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:intl/intl.dart';
 import 'package:wadada/common/const/colors.dart';
+import 'package:wadada/controller/mypageController.dart';
+import 'package:wadada/models/mypage.dart';
+import 'package:wadada/provider/mypageProvider.dart';
+import 'package:wadada/repository/mypageRepo.dart';
+import 'package:wadada/screens/mypage/myRecords.dart';
 
 class RecordList extends StatelessWidget {
-  const RecordList({super.key});
+  RecordList({super.key});
 
   @override
   Widget build(BuildContext context) {
-    const list = ['2024-01-01', '2024-01-02', '2024-01-03'];
-    return Container(
-      padding: EdgeInsets.fromLTRB(30, 0, 30, 0),
-      child: ListView(
-        shrinkWrap: true,
-        children: list
-            .map((e) => Container(
-                margin: EdgeInsets.all(10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      e.toString(),
-                      style: TextStyle(color: GRAY_400),
-                    ),
-                    SizedBox(height: 10.0),
-                    RecordCard()
-                  ],
-                )))
-            .toList(),
-      ),
+    Get.put(MypageController(
+        mypageRepository: MypageRepository(mypageAPI: MypageAPI())));
+    return GetBuilder<MypageController>(
+      builder: (MypageController controller) {
+        controller.fetchMonthlyRecords();
+        final Map<String, List<SimpleRecord>> groupedRecords = {};
+
+        controller.records.monthlyRecord.forEach((record) {
+          final formattedDate =
+              DateFormat('yyyy-MM-dd').format(record.recordCreatedAt);
+          if (!groupedRecords.containsKey(formattedDate)) {
+            groupedRecords[formattedDate] = [record];
+          } else {
+            groupedRecords[formattedDate]!.add(record);
+          }
+        });
+
+        final sortedKeys = groupedRecords.keys.toList()
+          ..sort((a, b) => a.compareTo(b));
+
+        return Container(
+          padding: EdgeInsets.fromLTRB(30, 0, 30, 0),
+          child: ListView(
+            shrinkWrap: true,
+            children: sortedKeys
+                .map((key) => Container(
+                    margin: EdgeInsets.all(10),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          key.toString(),
+                          style: TextStyle(color: GRAY_400),
+                        ),
+                        SizedBox(height: 10.0),
+                        RecordCard(records: groupedRecords[key]!)
+                      ],
+                    )))
+                .toList(),
+          ),
+        );
+      },
     );
   }
 }
 
 class RecordCard extends StatelessWidget {
-  const RecordCard({super.key});
-
+  const RecordCard({super.key, required this.records});
+  final List<SimpleRecord> records;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -49,69 +78,51 @@ class RecordCard extends StatelessWidget {
             ),
           ],
         ),
-        child: ListTileWidget());
+        child: ListTileWidget(records: records));
   }
 }
 
 class ListTileWidget extends StatelessWidget {
-  const ListTileWidget({super.key});
-
+  const ListTileWidget({super.key, required this.records});
+  final List<SimpleRecord> records;
   @override
   Widget build(BuildContext context) {
     return Column(
-      children: [
-        ListTile(
-            title: const Text('자유 모드'),
-            subtitle: const Row(
+      children: records.map<Widget>((simple) {
+        return ListTile(
+            title: Text(simple.recordType),
+            subtitle: Row(
               children: [
-                Text('싱글'),
+                Text(typeConverter(simple.recordType)),
                 SizedBox(
                   width: 20.0,
                 ),
-                Text('2.1km'),
+                Text(simple.recordDist.toString() + " km"),
               ],
             ),
             trailing: IconButton(
               onPressed: () {
-                print("HIHIHIHIHI");
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => MyRecords(
+                              recordSeq: simple.recordSeq,
+                              recordType: simple.recordType,
+                            )));
               },
               icon: const Icon(Icons.arrow_forward_ios_rounded),
-            )),
-        ListTile(
-            title: const Text('자유 모드'),
-            subtitle: const Row(
-              children: [
-                Text('싱글'),
-                SizedBox(
-                  width: 20.0,
-                ),
-                Text('2.1km'),
-              ],
-            ),
-            trailing: IconButton(
-              onPressed: () {
-                print("HIHIHIHIHI");
-              },
-              icon: const Icon(Icons.arrow_forward_ios_rounded),
-            )),
-        ListTile(
-            title: const Text('자유 모드'),
-            subtitle: const Row(
-              children: [
-                Text('싱글'),
-                SizedBox(
-                  width: 20.0,
-                ),
-                Text('2.1km'),
-              ],
-            ),
-            trailing: IconButton(
-              onPressed: () {
-                print("HIHIHIHIHI");
-              },
-              icon: const Icon(Icons.arrow_forward_ios_rounded),
-            )),
-      ],
+            ));
+      }).toList(),
     );
+  }
+}
+
+String typeConverter(String target) {
+  if (target == '1') {
+    return '싱글';
+  } else if (target == '2') {
+    return '멀티';
+  } else {
+    return '마라톤';
   }
 }

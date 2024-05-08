@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
@@ -27,54 +28,64 @@ class MainPageLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: OATMEAL_COLOR,
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Image.asset('assets/images/logo_green.png'),
-          const SizedBox(
-            height: 20,
-          ),
-          const Row(
+      body: Container(
+        width: MediaQuery.of(context).size.width,
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              OATMEAL_COLOR,
+              OATMEAL_COLOR,
+            ]
+          )
+        ),
+        child: Center(
+          child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Column(
-                children: [
-                Text('혼자 달려',
-                  style: TextStyle(
-                    color: DARK_GREEN_COLOR,
-                    fontSize: 40,
-                    fontWeight: FontWeight.w800),
+            children: <Widget>[
+              const Text(
+                'Just Bring your Phone',
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 30,
+                  color: GREEN_COLOR,
+                ),
+              ),
 
-                  ),
-                Text('친구랑 달려',
-                  style: TextStyle(
-                    color: DARK_GREEN_COLOR,
-                    fontSize: 40,
-                    fontWeight: FontWeight.w800),
+              const SizedBox(height: 40),
 
-                  ),
-                Text('일단 달려',
-                  style: TextStyle(
-                    color: DARK_GREEN_COLOR,
-                    fontSize: 40,
-                    fontWeight: FontWeight.w800),
-                  ),
-                Text('와다다',
-                  style: TextStyle(
-                    color: DARK_GREEN_COLOR,
-                    fontSize: 40,
-                    fontWeight: FontWeight.w800),
-                  ),
-                ],
-              )
+              // Lottie.network(
+              //   'https://lottie.host/a2885500-601c-48ba-b6bc-28fd759bda31/0HzLMJCkqu.json',
+              //   width: 400, 
+              //   height: 400,
+              //   fit: BoxFit.fill,
+              // ),
+
+              Lottie.asset(
+                'assets/animations/start_animation.json',
+                width: 400, 
+                height: 400,
+                fit: BoxFit.fill,
+              ),
+
+              const SizedBox(height: 40),
+
+              const Text(
+                "LET's WDD",
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 40,
+                  color: GREEN_COLOR,
+                ),
+              ),
+              
+              const SizedBox(height: 50),
+
+              KakaoLoginButton(),
             ],
           ),
-          const SizedBox(
-            height: 50
-          ),
-          KakaoLoginButton(),
-        ],
+        )
       ),
     );
   }
@@ -89,16 +100,6 @@ class KakaoLoginButton extends StatelessWidget {
     return GestureDetector(
       onTap: () => signWithKakao(context),
       child: Container(
-        decoration: const BoxDecoration(
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black12,
-              spreadRadius: 2,
-              blurRadius: 5,
-              offset: Offset(1, 5),
-            ),
-          ],
-        ),
         child: Image.asset('assets/images/kakao_button.png'),
       ),
     );
