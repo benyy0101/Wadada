@@ -1,37 +1,38 @@
 package org.api.wadada.multi.dto;
 
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Bean;
+import org.api.wadada.multi.dto.game.GameUpdateListener;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-
-// 전체 방 관리
 @Service
 @Slf4j
-public class RoomManager {
 
-    private final List<RoomDto> rooms;
+public class GameRoomManager {
+
+    private final List<GameRoomDto> playrooms;
     private static final int MAX_ROOMS = 40;
     private int[] roomSeqList = new int[40];
+    private final ConcurrentMap<Integer,Integer> roomSeqTable = new ConcurrentHashMap<>();
 
-    public RoomManager() {
-        this.rooms = new ArrayList<>(MAX_ROOMS);
+    public GameRoomManager() {
+        this.playrooms = new ArrayList<>(MAX_ROOMS);
+
         for (int i = 0; i < MAX_ROOMS; i++) {
-            rooms.add(null);
+            playrooms.add(null);
         }
     }
 
-    public int addRoom(int roomSeq,RoomDto room) throws Exception {
+    public int addRoom(int roomSeq,GameRoomDto room) throws Exception {
+
+//        roomSeqTable.put(room.getRoomIdx(),roomSeq);
         Optional<Integer> emptyIndex = getEmptyIndex();
         if (emptyIndex.isPresent()) {
-            roomSeqList[emptyIndex.get()] = roomSeq;
-            log.info("메모리 방 리스트      "+ Arrays.toString(roomSeqList));
-            room.setRoomIdx(emptyIndex.get());
-            rooms.set(emptyIndex.get(), room);
+            room.setListeners(new ArrayList<>());
+            playrooms.set(emptyIndex.get(), room);
             return emptyIndex.get();
         } else {
             throw new Exception("방이 가득 차서 생성 불가");
@@ -42,28 +43,28 @@ public class RoomManager {
         if (index < 0 || index >= MAX_ROOMS) {
             throw new IndexOutOfBoundsException("잘못된 방 인덱스");
         }
-        RoomDto room = rooms.get(index);
+        GameRoomDto room = playrooms.get(index);
         // 해당 방 멤버 모두 삭제
         if(room != null){
             room.removeAllMembers();
         }
-        rooms.set(index, null);
+        playrooms.set(index, null);
     }
 
     public Optional<Integer> getEmptyIndex() {
         for (int i = 0; i < MAX_ROOMS; i++) {
-            if (rooms.get(i) == null) {
+            if (playrooms.get(i) == null) {
                 return Optional.of(i);
             }
         }
         return Optional.empty();
     }
 
-    public Map<Integer,RoomDto> getAllRooms() {
-        Map<Integer,RoomDto> activeRooms = new HashMap<>();
-        for (RoomDto room : rooms) {
+    public Map<Integer,GameRoomDto> getAllRooms() {
+        Map<Integer,GameRoomDto> activeRooms = new HashMap<>();
+        for (GameRoomDto room : playrooms) {
             if (room != null) {
-                activeRooms.put(room.getRoomIdx(),room);
+                activeRooms.put(room.getRoomSeq(),room);
             }
         }
         return activeRooms;
@@ -71,7 +72,7 @@ public class RoomManager {
 
     public int getRoomCount() {
         int count = 0;
-        for (RoomDto room : rooms) {
+        for (GameRoomDto room : playrooms) {
             if (room != null) {
                 count++;
             }
