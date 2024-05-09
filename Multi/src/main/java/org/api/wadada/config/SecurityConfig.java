@@ -37,10 +37,10 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
                         // 해당 API에 대해서는 모든 요청을 허가
-                        .requestMatchers("auth/login","auth/reissue","/ws/**", "/error").permitAll()
+                        .requestMatchers("auth/login","auth/reissue","/Multi/ws/**", "/error").permitAll()
                         // 이 밖에 모든 요청에 대해서 인증을 필요로 한다는 설정
                         .anyRequest().authenticated())
-                // 에러 핸들링1
+                // 에러 핸들링
                 .exceptionHandling(ex -> {
                     ex.authenticationEntryPoint(jwtAuthenticationEntryPoint)
                             .accessDeniedHandler(jwtAccessDeniedHandler);
