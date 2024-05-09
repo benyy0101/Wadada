@@ -46,7 +46,6 @@ class TestButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Get.put(MultiController(repo: MultiRepository(provider: MultiProvider())));
     return GetBuilder<MultiController>(builder: (MultiController controller) {
       MultiRoom test = MultiRoom(
           roomPeople: 3,

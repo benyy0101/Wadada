@@ -15,14 +15,11 @@ class MultiProvider {
     _dio.options.baseUrl = 'https://k10a704.p.ssafy.io/Multi';
     _dio.options.headers['Content-Type'] = 'application/json';
     _dio.options.headers['Authorization'] = storage.read(key: 'accessToken');
-    print(_dio.options.headers['Authorization']);
   }
 
   Future<void> setAuth() async {
     _dio.options.headers['Authorization'] =
         await storage.read(key: 'accessToken');
-
-    print(_dio.options.headers['Authorization']);
   }
 
   Future<Response<dynamic>> multiRoomGet(String mode) async {
@@ -43,7 +40,6 @@ class MultiProvider {
 
   Future<Response<dynamic>> multiRoomCreate(MultiRoom room) async {
     await setAuth();
-    print(_dio.options.headers['Authorization']);
     final response = await _dio.post('/create', data: room.toJson());
     return response;
   }
@@ -72,4 +68,3 @@ class MultiProvider {
     return response;
   }
 }
-

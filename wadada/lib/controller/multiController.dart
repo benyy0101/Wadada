@@ -1,3 +1,4 @@
+import 'package:get/get.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:wadada/models/multiroom.dart';
 import 'package:wadada/models/mypage.dart';
@@ -15,18 +16,16 @@ class MultiController extends GetxController {
       roomTime: -1,
       roomTitle: '');
 
-
   MultiRoom multiroom = MultiRoom(
-    roomPeople: 0, 
-    roomDist: 0, 
-    roomMode: 1, 
-    roomTag: '', 
-    roomTime: 1, 
-    roomTitle: '의 방');
-    
-  List<SimpleRoom> roomList = [];
-  int recordSeq = -1;
+      roomPeople: 0,
+      roomDist: 0,
+      roomMode: 1,
+      roomTag: '',
+      roomTime: 1,
+      roomTitle: '의 방');
 
+  RxList<SimpleRoom> roomList = <SimpleRoom>[].obs;
+  int recordSeq = -1;
   MultiRoomGameEnd gameEndInfo = MultiRoomGameEnd(
       roomIdx: -1,
       recordStartLocation: 'POINT(-1 -1)',
@@ -55,10 +54,14 @@ class MultiController extends GetxController {
   }
 
   void getMultiRoomsByMode(int mode) async {
+    print("call");
     try {
-      roomList = await repo.multiRoomGet(mode);
-      print(roomList.length);
-      update();
+      roomList = <SimpleRoom>[].obs;
+      List temp = await repo.multiRoomGet(mode);
+      temp.forEach((item) {
+        roomList.add(item);
+      });
+      print(roomList);
     } catch (e) {
       print(e);
       rethrow;

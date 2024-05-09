@@ -55,7 +55,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Widget homeWidget;
-    homeWidget = NewProfileLayout();
+    homeWidget = MultiMain();
     // Widget homeWidget;
     // homeWidget = SingleMain();
     // if (storage.read(key: 'accessToken') != null) {

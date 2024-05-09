@@ -24,7 +24,6 @@ class MultiRepository extends AbstractMultiRepository {
       res.data.forEach((item) {
         resSerialized.add(SimpleRoom.fromJson(item));
       });
-      print(resSerialized);
       return resSerialized;
     } catch (e) {
       print(e);
