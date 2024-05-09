@@ -20,7 +20,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.socket.messaging.SessionConnectEvent;
@@ -47,7 +46,7 @@ public class MultiController {
     public ResponseEntity<?> createRoom(@RequestBody CreateRoomReq createRoomReq, Principal principal) throws Exception {
         try{
 //            HashMap<Integer, CreateRoomRes> result = roomService.createRoom(createRoomReq,principal);
-            TempRes result = roomService.createRoom(createRoomReq,principal);
+            PostRoomRes result = roomService.createRoom(createRoomReq,principal);
             return new ResponseEntity<>(result,HttpStatus.OK);
         }catch (NotFoundMemberException e1){
             return new ResponseEntity<>("없는 멤버 정보입니다.",HttpStatus.NOT_ACCEPTABLE);

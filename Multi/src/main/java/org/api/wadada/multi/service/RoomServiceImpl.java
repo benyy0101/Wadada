@@ -6,10 +6,9 @@ import org.api.wadada.multi.dto.RoomDto;
 import org.api.wadada.multi.dto.RoomManager;
 import org.api.wadada.multi.dto.game.GameMessage;
 import org.api.wadada.multi.dto.req.CreateRoomReq;
-import org.api.wadada.multi.dto.res.CreateRoomRes;
 import org.api.wadada.multi.dto.res.RoomMemberRes;
 import org.api.wadada.multi.dto.res.RoomRes;
-import org.api.wadada.multi.dto.res.TempRes;
+import org.api.wadada.multi.dto.res.PostRoomRes;
 import org.api.wadada.multi.entity.Member;
 import org.api.wadada.multi.entity.Room;
 import org.api.wadada.multi.entity.RoomDocument;
@@ -31,9 +30,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Service
@@ -54,7 +50,7 @@ public class RoomServiceImpl implements RoomService {
 
     //
     @Override
-    public TempRes createRoom(CreateRoomReq createRoomReq, Principal principal) throws Exception {
+    public PostRoomRes createRoom(CreateRoomReq createRoomReq, Principal principal) throws Exception {
         Optional<Member> optional = memberRepository.getMemberByMemberId(principal.getName());
         if (optional.isEmpty()) {
             throw new NotFoundMemberException();
@@ -97,12 +93,10 @@ public class RoomServiceImpl implements RoomService {
 
         roomDocumentRepository.save(document);
         RoomDto roomDto = new RoomDto();
-        //roomDto.addMember(RoomMemberRes.of(true, member));
         roomDto.setRoomSeq(savedRoom.getRoomSeq());
         roomDto.setRoomMode(createRoomReq.getRoomMode());
         int idx = roomManager.addRoom(savedRoom.getRoomSeq(), roomDto);
-        //        return resultMap;
-        return TempRes.builder().roomIdx(idx).roomSeq(savedRoom.getRoomSeq()).build();
+        return PostRoomRes.builder().roomIdx(idx).roomSeq(savedRoom.getRoomSeq()).build();
     }
 
     @Override
