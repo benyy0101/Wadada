@@ -13,6 +13,7 @@ import org.api.wadada.multi.entity.Member;
 import org.api.wadada.multi.entity.MultiRecord;
 import org.api.wadada.multi.repository.MemberRepository;
 import org.api.wadada.multi.repository.MultiRecordRepository;
+import org.hibernate.annotations.Synchronize;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
@@ -45,12 +46,15 @@ public class MultiRecordServiceImpl implements MultiRecordService {
                 .memberSeq(optional.get().getMemberSeq())
                 .roomSeq(gameStartReq.getRoomSeq())
                 .multiRecordPeople(gameStartReq.getRecordPeople()).build();
-        //roomManager.getAllRooms().get(gameStartReq.getRoomIdx()).getRoomSeq()
 
+        System.out.println("gameRoomManager.getAllRooms().size() = " + gameRoomManager.getAllRooms().values());
         GameRoomDto gameRoomDto = gameRoomManager.getAllRooms().get(gameStartReq.getRoomSeq());
+        System.out.println("gameRoomDto = " + gameRoomDto.getRoomSeq());
         synchronized (gameRoomDto) {
             gameRoomDto.setCurPeople(gameRoomDto.getCurPeople() + 1);
         }
+
+
         multiRecordRepository.save(multiRecord);
 
 

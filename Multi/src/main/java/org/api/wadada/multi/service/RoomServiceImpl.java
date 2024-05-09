@@ -32,13 +32,14 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
 @Transactional
-public class RoomServiceImpl implements RoomService{
+public class RoomServiceImpl implements RoomService {
     private final RoomRepository roomRepository;
     private final MemberRepository memberRepository;
     private final HashTagElasticsearchRepository elasticsearchRepository;
@@ -54,13 +55,13 @@ public class RoomServiceImpl implements RoomService{
     @Override
     public HashMap<Integer, CreateRoomRes> createRoom(CreateRoomReq createRoomReq, Principal principal) throws Exception {
         Optional<Member> optional = memberRepository.getMemberByMemberId(principal.getName());
-        if(optional.isEmpty()){
+        if (optional.isEmpty()) {
             throw new NotFoundMemberException();
         }
         Member member = optional.get();
 
         Optional<Integer> optionalIndex = roomManager.getEmptyIndex();
-        if(optionalIndex.isEmpty()){
+        if (optionalIndex.isEmpty()) {
             // 방 못 만들어요
             throw new CreateRoomException();
         }
@@ -95,22 +96,22 @@ public class RoomServiceImpl implements RoomService{
 
         roomDocumentRepository.save(document);
         RoomDto roomDto = new RoomDto();
-        roomDto.addMember(RoomMemberRes.of(true,member));
+        roomDto.addMember(RoomMemberRes.of(true, member));
         List<RoomMemberRes> memberResList = roomDto.getMemberList();
         roomDto.setRoomSeq(savedRoom.getRoomSeq());
         roomDto.setRoomMode(createRoomReq.getRoomMode());
-        int idx = roomManager.addRoom(savedRoom.getRoomSeq(),roomDto);
+        int idx = roomManager.addRoom(savedRoom.getRoomSeq(), roomDto);
 
-        HashMap<Integer,CreateRoomRes> resultMap = new HashMap<>();
-        resultMap.put(idx, new CreateRoomRes(savedRoom.getRoomSeq(),memberResList));
+        HashMap<Integer, CreateRoomRes> resultMap = new HashMap<>();
+        resultMap.put(idx, new CreateRoomRes(savedRoom.getRoomSeq(), memberResList));
         return resultMap;
     }
 
     @Override
-    public HashMap<Integer, List<RoomMemberRes>> attendRoom(int roomIdx,Principal principal) {
+    public HashMap<Integer, List<RoomMemberRes>> attendRoom(int roomIdx, Principal principal) {
         Optional<Member> optional = memberRepository.getMemberByMemberId(principal.getName());
         Member member;
-        if(optional.isEmpty()) {
+        if (optional.isEmpty()) {
             throw new NotFoundMemberException();
         }
         member = optional.get();
@@ -119,16 +120,16 @@ public class RoomServiceImpl implements RoomService{
         RoomDto roomDto = roomManager.getAllRooms().get(roomIdx);
         int roomSeq = roomDto.getRoomSeq();
         Optional<Room> room = roomRepository.findById(roomSeq);
-        if(room.isEmpty()){
+        if (room.isEmpty()) {
             throw new NotFoundRoomException("참가할 방이 없습니다");
         }
         // 방이 꽉찬 경우
-        if(room.get().getRoomPeople() == roomDto.getMemberList().size()){
+        if (room.get().getRoomPeople() == roomDto.getMemberList().size()) {
             throw new CanNotJoinRoomException("방이 가득 찼습니다");
         }
 
         // 해당 방에 참가시키고
-        roomDto.addMember(RoomMemberRes.of(false,member));
+        roomDto.addMember(RoomMemberRes.of(false, member));
         List<RoomMemberRes> memberResList = roomDto.getMemberList();
         // 해당 방 유저 정보들 반환
         HashMap<Integer, List<RoomMemberRes>> resultMap = new HashMap<>();
@@ -137,10 +138,10 @@ public class RoomServiceImpl implements RoomService{
     }
 
     @Override
-    public HashMap<Integer, List<RoomMemberRes>> leaveRoom(int roomIdx,Principal principal) {
+    public HashMap<Integer, List<RoomMemberRes>> leaveRoom(int roomIdx, Principal principal) {
         Optional<Member> optional = memberRepository.getMemberByMemberId(principal.getName());
         Member member;
-        if(optional.isEmpty()) {
+        if (optional.isEmpty()) {
             throw new NotFoundMemberException();
         }
         member = optional.get();
@@ -151,7 +152,7 @@ public class RoomServiceImpl implements RoomService{
         boolean isManager = roomDto.removeMember(member.getMemberId());
 
         //방장이면 방 터트리기
-        if(isManager){
+        if (isManager) {
             // 해당 방 멤버 삭제하고 비우기
             roomManager.removeRoom(roomIdx);
             // db에 삭제 요청 날리기
@@ -177,7 +178,7 @@ public class RoomServiceImpl implements RoomService{
     public HashMap<Integer, List<RoomMemberRes>> changeReady(int roomIdx, Principal principal) {
         Optional<Member> optional = memberRepository.getMemberByMemberId(principal.getName());
         Member member;
-        if(optional.isEmpty()) {
+        if (optional.isEmpty()) {
             throw new NotFoundMemberException();
         }
         member = optional.get();
@@ -194,16 +195,17 @@ public class RoomServiceImpl implements RoomService{
         return resultMap;
 
     }
+
     // 모드별 방 검색
     @Override
     public List<RoomRes> getRoomList(int mode) {
-        Map<Integer,RoomDto> activeRooms = roomManager.getAllRooms();
-        List<Integer> activeSeqList = activeRooms.values().stream().filter(roomDto -> roomDto.getRoomMode()==mode).map(
+        Map<Integer, RoomDto> activeRooms = roomManager.getAllRooms();
+        List<Integer> activeSeqList = activeRooms.values().stream().filter(roomDto -> roomDto.getRoomMode() == mode).map(
                 RoomDto::getRoomSeq).toList();
 
-        HashMap<Integer,Integer> roomIdxMap = new HashMap<>();
-        for(RoomDto roomDto:activeRooms.values()){
-            roomIdxMap.put(roomDto.getRoomSeq(),roomDto.getRoomIdx());
+        HashMap<Integer, Integer> roomIdxMap = new HashMap<>();
+        for (RoomDto roomDto : activeRooms.values()) {
+            roomIdxMap.put(roomDto.getRoomSeq(), roomDto.getRoomIdx());
         }
 
         List<RoomRes> roomResList = roomRepository.findAllById(activeSeqList).stream().map(
@@ -225,9 +227,9 @@ public class RoomServiceImpl implements RoomService{
         }
         // 현재 활성화된 룸 정보 가져오고
         HashMap<Integer, Integer> roomInfo = new HashMap<>();
-        Map<Integer,RoomDto> activeRooms = roomManager.getAllRooms();
+        Map<Integer, RoomDto> activeRooms = roomManager.getAllRooms();
         for (Map.Entry<Integer, RoomDto> room : activeRooms.entrySet()) {
-            roomInfo.put(room.getValue().getRoomSeq(),room.getValue().getRoomIdx());
+            roomInfo.put(room.getValue().getRoomSeq(), room.getValue().getRoomIdx());
         }
 
         //거르는 작업(로그 스태시가 1분 주기라 삭제 반영 안된 정보 거르기)
@@ -240,7 +242,7 @@ public class RoomServiceImpl implements RoomService{
         // index와 정보를 response로
         List<RoomRes> roomResList = roomDocuments.stream().map(
                 roomDocument -> {
-                    return RoomRes.of(roomInfo.get(roomDocument.getRoomSeq()),roomDocument);
+                    return RoomRes.of(roomInfo.get(roomDocument.getRoomSeq()), roomDocument);
                 }
         ).collect(Collectors.toList());
 
@@ -248,7 +250,7 @@ public class RoomServiceImpl implements RoomService{
     }
 
 
-    public void removeRoom(int roomSeq, int roomIdx){
+    public void removeRoom(int roomSeq, int roomIdx) {
         roomManager.removeRoom(roomIdx);
         Optional<Room> room = roomRepository.findById(roomSeq);
         room.ifPresent(r -> {
@@ -256,7 +258,6 @@ public class RoomServiceImpl implements RoomService{
             roomRepository.save(r);
         });
     }
-
 
 
     public void startGame(int roomIdx) {
@@ -267,7 +268,7 @@ public class RoomServiceImpl implements RoomService{
                 .MaxPeople(curRoom.getMemberCount())
                 .roomSeq(curRoom.getRoomSeq()).build();
 
-        removeRoom(curRoom.getRoomSeq(),curRoom.getRoomIdx());
+        removeRoom(curRoom.getRoomSeq(), curRoom.getRoomIdx());
 
         //연결 끊었다가 새로하는 로직
 
@@ -277,44 +278,36 @@ public class RoomServiceImpl implements RoomService{
             throw new RuntimeException(e);
         }
 
-        curGame.addUpdateListener(game -> CompletableFuture.runAsync(() -> {
-            AtomicBoolean messageSent = new AtomicBoolean(false); // 상태 변수
-            try {
-                CompletableFuture.anyOf(
-                        CompletableFuture.runAsync(() -> {
-                            synchronized (curGame) {
-                                log.info("Current people: {}", curGame.getMemberCount());
-                                System.out.println(curGame.getRoomIdx()+" "+roomIdx);
-                                while (curGame.getMemberCount() != curGame.getMaxPeople()) {
-                                    try {
-                                        curGame.wait(); // 멤버 수 변화를 기다림
-                                    } catch (InterruptedException e) {
-                                        Thread.currentThread().interrupt();
-                                    }
-                                }
-                                if(messageSent.compareAndSet(false, true)) {
-                                    String message = GameMessage.GAME_START.toJson();
-                                    System.out.println(message + " " + curGame.getRoomIdx());
-                                    messagingTemplate.convertAndSend("/sub/attend/" + curGame.getRoomIdx(), message);
-                                }
-                            }
-                        }, executor),
-                        CompletableFuture.runAsync(() -> {
+        CompletableFuture<Void> tasks = CompletableFuture.anyOf(
+                //모든사람이 들어왔으면 시작
+                CompletableFuture.runAsync(() -> {
+                    synchronized (curGame) {
+                        while (curGame.getCurPeople() < curGame.getMaxPeople()) {
                             try {
-                                TimeUnit.SECONDS.sleep(30); // 30초 동안 대기
-                                if(messageSent.compareAndSet(false, true)) {
-                                    String message = GameMessage.GAME_START.toJson();
-                                    System.out.println(message + " " + curGame.getRoomIdx());
-//                                    messagingTemplate.convertAndSend("/sub/attend/" + curGame.getRoomIdx(), message);
-                                }
+                                curGame.wait();
                             } catch (InterruptedException e) {
                                 Thread.currentThread().interrupt();
                             }
-                        }, executor)
-                ).get(); // 둘 중 하나가 완료되면 진행
-            } catch (InterruptedException | ExecutionException e) {
-                Thread.currentThread().interrupt();
-            }
-        }, executor));
+                        }
+                    }
+                }, executor),
+                //or 30초지나면 시작
+                CompletableFuture.runAsync(() -> {
+                    try {
+                        TimeUnit.SECONDS.sleep(30);
+                    } catch (InterruptedException e)     {
+                        Thread.currentThread().interrupt();
+                    }
+                }, executor)
+        ).thenRun(() -> {
+            sendMessage(curGame);
+        });
+        gameStartFutures.put(curGame.getRoomSeq(),tasks);
+    }
+    private void sendMessage (GameRoomDto curGame){
+        String message = GameMessage.GAME_START.toJson();
+        System.out.println(message + " " + curGame.getRoomIdx());
+        messagingTemplate.convertAndSend("/sub/attend/" + curGame.getRoomIdx(), message);
     }
 }
+

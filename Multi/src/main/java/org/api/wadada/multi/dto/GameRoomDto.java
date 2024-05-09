@@ -3,11 +3,11 @@ package org.api.wadada.multi.dto;
 import lombok.*;
 import org.api.wadada.multi.dto.game.GameUpdateListener;
 import org.api.wadada.multi.dto.game.PlayerInfo;
-import org.api.wadada.multi.dto.res.RoomMemberRes;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Builder
 @AllArgsConstructor
@@ -21,6 +21,11 @@ public class GameRoomDto {
     private int roomSeq;
     @Setter
     private int curPeople;
+
+    // curPeople 값을 증가시키는 메서드
+
+
+    // curPeople 값을 가져오는 메서드
     @Setter
     private List<GameUpdateListener> listeners;
 
@@ -50,17 +55,21 @@ public class GameRoomDto {
         }
         return new ArrayList<>(this.playerInfo.values());
     }
-    public int getMemberCount(){
-        return this.curPeople;
-
+    public synchronized void increasedMember(){
+        this.curPeople++;
+        notifyAll();
     }
+    public int getMemberCount() {
+        return curPeople; // AtomicInteger의 get() 메서드를 사용하여 int 값을 반환
+    }
+
 
     public void removeAllMembers() {
         playerInfo.clear();
     }
     public void setCurPeople(int curPeople) {
         this.curPeople = curPeople;
-        notifyUpdateListeners();
+        notifyAll();
     }
 
     public void addUpdateListener(GameUpdateListener listener) {
