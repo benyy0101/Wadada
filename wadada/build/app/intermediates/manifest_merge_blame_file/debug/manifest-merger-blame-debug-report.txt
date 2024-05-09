@@ -1,0 +1,321 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.ssafy.wadada"
+4    android:versionCode="1"
+5    android:versionName="1.0.0" >
+6
+7    <uses-sdk
+8        android:minSdkVersion="21"
+9        android:targetSdkVersion="33" />
+10    <!--
+11         The INTERNET permission is required for development. Specifically,
+12         the Flutter tool needs it to communicate with the running application
+13         to allow setting breakpoints, to provide hot reload, etc.
+14    -->
+15    <uses-permission android:name="android.permission.INTERNET" />
+15-->C:\Users\SSAFY\Desktop\wadada_pjt\S10P31A704\wadada\android\app\src\main\AndroidManifest.xml:2:5-66
+15-->C:\Users\SSAFY\Desktop\wadada_pjt\S10P31A704\wadada\android\app\src\main\AndroidManifest.xml:2:22-64
+16    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+16-->C:\Users\SSAFY\Desktop\wadada_pjt\S10P31A704\wadada\android\app\src\main\AndroidManifest.xml:3:5-81
+16-->C:\Users\SSAFY\Desktop\wadada_pjt\S10P31A704\wadada\android\app\src\main\AndroidManifest.xml:3:22-78
+17    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+17-->C:\Users\SSAFY\Desktop\wadada_pjt\S10P31A704\wadada\android\app\src\main\AndroidManifest.xml:4:5-78
+17-->C:\Users\SSAFY\Desktop\wadada_pjt\S10P31A704\wadada\android\app\src\main\AndroidManifest.xml:4:22-76
+18    <!--
+19 Required to query activities that can process text, see:
+20         https://developer.android.com/training/package-visibility?hl=en and
+21         https://developer.android.com/reference/android/content/Intent#ACTION_PROCESS_TEXT.
+22
+23         In particular, this is used by the Flutter engine in io.flutter.plugin.text.ProcessTextPlugin.
+24    -->
+25    <queries>
+25-->C:\Users\SSAFY\Desktop\wadada_pjt\S10P31A704\wadada\android\app\src\main\AndroidManifest.xml:45:5-50:15
+26        <intent>
+26-->C:\Users\SSAFY\Desktop\wadada_pjt\S10P31A704\wadada\android\app\src\main\AndroidManifest.xml:46:9-49:18
+27            <action android:name="android.intent.action.PROCESS_TEXT" />
+27-->C:\Users\SSAFY\Desktop\wadada_pjt\S10P31A704\wadada\android\app\src\main\AndroidManifest.xml:47:13-72
+27-->C:\Users\SSAFY\Desktop\wadada_pjt\S10P31A704\wadada\android\app\src\main\AndroidManifest.xml:47:21-70
+28
+29            <data android:mimeType="text/plain" />
+29-->C:\Users\SSAFY\Desktop\wadada_pjt\S10P31A704\wadada\android\app\src\main\AndroidManifest.xml:48:13-50
+29-->C:\Users\SSAFY\Desktop\wadada_pjt\S10P31A704\wadada\android\app\src\main\AndroidManifest.xml:48:19-48
+30        </intent>
+31
+32        <package android:name="com.kakao.talk" />
+32-->[:kakao_flutter_sdk_common] C:\Users\SSAFY\Desktop\wadada_pjt\S10P31A704\wadada\build\kakao_flutter_sdk_common\intermediates\merged_manifest\debug\AndroidManifest.xml:10:9-50
+32-->[:kakao_flutter_sdk_common] C:\Users\SSAFY\Desktop\wadada_pjt\S10P31A704\wadada\build\kakao_flutter_sdk_common\intermediates\merged_manifest\debug\AndroidManifest.xml:10:18-47
+33        <package android:name="com.kakao.talk.alpha" />
+33-->[:kakao_flutter_sdk_common] C:\Users\SSAFY\Desktop\wadada_pjt\S10P31A704\wadada\build\kakao_flutter_sdk_common\intermediates\merged_manifest\debug\AndroidManifest.xml:11:9-56
+33-->[:kakao_flutter_sdk_common] C:\Users\SSAFY\Desktop\wadada_pjt\S10P31A704\wadada\build\kakao_flutter_sdk_common\intermediates\merged_manifest\debug\AndroidManifest.xml:11:18-53
+34        <package android:name="com.kakao.talk.sandbox" />
+34-->[:kakao_flutter_sdk_common] C:\Users\SSAFY\Desktop\wadada_pjt\S10P31A704\wadada\build\kakao_flutter_sdk_common\intermediates\merged_manifest\debug\AndroidManifest.xml:12:9-58
+34-->[:kakao_flutter_sdk_common] C:\Users\SSAFY\Desktop\wadada_pjt\S10P31A704\wadada\build\kakao_flutter_sdk_common\intermediates\merged_manifest\debug\AndroidManifest.xml:12:18-55
+35        <package android:name="com.kakao.onetalk" />
+35-->[:kakao_flutter_sdk_common] C:\Users\SSAFY\Desktop\wadada_pjt\S10P31A704\wadada\build\kakao_flutter_sdk_common\intermediates\merged_manifest\debug\AndroidManifest.xml:13:9-53
+35-->[:kakao_flutter_sdk_common] C:\Users\SSAFY\Desktop\wadada_pjt\S10P31A704\wadada\build\kakao_flutter_sdk_common\intermediates\merged_manifest\debug\AndroidManifest.xml:13:18-50
+36        <package android:name="com.locnall.KimGiSa" />
+36-->[:kakao_flutter_sdk_common] C:\Users\SSAFY\Desktop\wadada_pjt\S10P31A704\wadada\build\kakao_flutter_sdk_common\intermediates\merged_manifest\debug\AndroidManifest.xml:14:9-55
+36-->[:kakao_flutter_sdk_common] C:\Users\SSAFY\Desktop\wadada_pjt\S10P31A704\wadada\build\kakao_flutter_sdk_common\intermediates\merged_manifest\debug\AndroidManifest.xml:14:18-52
+37        <package android:name="com.lguplus.navi" />
+37-->[:kakao_flutter_sdk_common] C:\Users\SSAFY\Desktop\wadada_pjt\S10P31A704\wadada\build\kakao_flutter_sdk_common\intermediates\merged_manifest\debug\AndroidManifest.xml:15:9-52
+37-->[:kakao_flutter_sdk_common] C:\Users\SSAFY\Desktop\wadada_pjt\S10P31A704\wadada\build\kakao_flutter_sdk_common\intermediates\merged_manifest\debug\AndroidManifest.xml:15:18-49
+38
+39        <intent>
+39-->[:kakao_flutter_sdk_common] C:\Users\SSAFY\Desktop\wadada_pjt\S10P31A704\wadada\build\kakao_flutter_sdk_common\intermediates\merged_manifest\debug\AndroidManifest.xml:17:9-23:18
+40            <action android:name="android.intent.action.VIEW" />
+40-->[:kakao_flutter_sdk_common] C:\Users\SSAFY\Desktop\wadada_pjt\S10P31A704\wadada\build\kakao_flutter_sdk_common\intermediates\merged_manifest\debug\AndroidManifest.xml:18:13-65
+40-->[:kakao_flutter_sdk_common] C:\Users\SSAFY\Desktop\wadada_pjt\S10P31A704\wadada\build\kakao_flutter_sdk_common\intermediates\merged_manifest\debug\AndroidManifest.xml:18:21-62
+41
+42            <category android:name="android.intent.category.BROWSABLE" />
+42-->[:kakao_flutter_sdk_common] C:\Users\SSAFY\Desktop\wadada_pjt\S10P31A704\wadada\build\kakao_flutter_sdk_common\intermediates\merged_manifest\debug\AndroidManifest.xml:20:13-74
+42-->[:kakao_flutter_sdk_common] C:\Users\SSAFY\Desktop\wadada_pjt\S10P31A704\wadada\build\kakao_flutter_sdk_common\intermediates\merged_manifest\debug\AndroidManifest.xml:20:23-71
+43
+44            <data android:scheme="https" />
+44-->C:\Users\SSAFY\Desktop\wadada_pjt\S10P31A704\wadada\android\app\src\main\AndroidManifest.xml:48:13-50
+45        </intent>
+46    </queries>
+47
+48    <permission
+48-->[androidx.core:core:1.13.0-rc01] C:\Users\SSAFY\.gradle\caches\transforms-3\20cb6c56a01460f0a0e884fcc3631f59\transformed\core-1.13.0-rc01\AndroidManifest.xml:22:5-24:47
+49        android:name="com.ssafy.wadada.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+49-->[androidx.core:core:1.13.0-rc01] C:\Users\SSAFY\.gradle\caches\transforms-3\20cb6c56a01460f0a0e884fcc3631f59\transformed\core-1.13.0-rc01\AndroidManifest.xml:23:9-81
+50        android:protectionLevel="signature" />
+50-->[androidx.core:core:1.13.0-rc01] C:\Users\SSAFY\.gradle\caches\transforms-3\20cb6c56a01460f0a0e884fcc3631f59\transformed\core-1.13.0-rc01\AndroidManifest.xml:24:9-44
+51
+52    <uses-permission android:name="com.ssafy.wadada.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+52-->[androidx.core:core:1.13.0-rc01] C:\Users\SSAFY\.gradle\caches\transforms-3\20cb6c56a01460f0a0e884fcc3631f59\transformed\core-1.13.0-rc01\AndroidManifest.xml:26:5-97
+52-->[androidx.core:core:1.13.0-rc01] C:\Users\SSAFY\.gradle\caches\transforms-3\20cb6c56a01460f0a0e884fcc3631f59\transformed\core-1.13.0-rc01\AndroidManifest.xml:26:22-94
+53
+54    <application
+55        android:name="android.app.Application"
+56        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+56-->[androidx.core:core:1.13.0-rc01] C:\Users\SSAFY\.gradle\caches\transforms-3\20cb6c56a01460f0a0e884fcc3631f59\transformed\core-1.13.0-rc01\AndroidManifest.xml:28:18-86
+57        android:debuggable="true"
+58        android:enableOnBackInvokedCallback="true"
+59        android:icon="@mipmap/ic_launcher"
+60        android:label="wadada"
+61        android:usesCleartextTraffic="true" >
+62        <activity
+63            android:name="com.ssafy.wadada.MainActivity"
+64            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
+65            android:exported="true"
+66            android:hardwareAccelerated="true"
+67            android:launchMode="singleTop"
+68            android:theme="@style/LaunchTheme"
+69            android:windowSoftInputMode="adjustResize" >
+70
+71            <!--
+72                 Specifies an Android theme to apply to this Activity as soon as
+73                 the Android process has started. This theme is visible to the user
+74                 while the Flutter UI initializes. After that, this theme continues
+75                 to determine the Window background behind the Flutter UI.
+76            -->
+77            <meta-data
+78                android:name="io.flutter.embedding.android.NormalTheme"
+79                android:resource="@style/NormalTheme" />
+80
+81            <intent-filter>
+82                <action android:name="android.intent.action.MAIN" />
+83
+84                <category android:name="android.intent.category.LAUNCHER" />
+85            </intent-filter>
+86        </activity>
+87        <!--
+88             Don't delete the meta-data below.
+89             This is used by the Flutter tool to generate GeneratedPluginRegistrant.java
+90        -->
+91        <meta-data
+92            android:name="flutterEmbedding"
+93            android:value="2" />
+94
+95        <service
+95-->[:geolocator_android] C:\Users\SSAFY\Desktop\wadada_pjt\S10P31A704\wadada\build\geolocator_android\intermediates\merged_manifest\debug\AndroidManifest.xml:10:9-14:56
+96            android:name="com.baseflow.geolocator.GeolocatorLocationService"
+96-->[:geolocator_android] C:\Users\SSAFY\Desktop\wadada_pjt\S10P31A704\wadada\build\geolocator_android\intermediates\merged_manifest\debug\AndroidManifest.xml:11:13-77
+97            android:enabled="true"
+97-->[:geolocator_android] C:\Users\SSAFY\Desktop\wadada_pjt\S10P31A704\wadada\build\geolocator_android\intermediates\merged_manifest\debug\AndroidManifest.xml:12:13-35
+98            android:exported="false"
+98-->[:geolocator_android] C:\Users\SSAFY\Desktop\wadada_pjt\S10P31A704\wadada\build\geolocator_android\intermediates\merged_manifest\debug\AndroidManifest.xml:13:13-37
+99            android:foregroundServiceType="location" />
+99-->[:geolocator_android] C:\Users\SSAFY\Desktop\wadada_pjt\S10P31A704\wadada\build\geolocator_android\intermediates\merged_manifest\debug\AndroidManifest.xml:14:13-53
+100
+101        <provider
+101-->[:image_picker_android] C:\Users\SSAFY\Desktop\wadada_pjt\S10P31A704\wadada\build\image_picker_android\intermediates\merged_manifest\debug\AndroidManifest.xml:11:9-19:20
+102            android:name="io.flutter.plugins.imagepicker.ImagePickerFileProvider"
+102-->[:image_picker_android] C:\Users\SSAFY\Desktop\wadada_pjt\S10P31A704\wadada\build\image_picker_android\intermediates\merged_manifest\debug\AndroidManifest.xml:12:13-82
+103            android:authorities="com.ssafy.wadada.flutter.image_provider"
+103-->[:image_picker_android] C:\Users\SSAFY\Desktop\wadada_pjt\S10P31A704\wadada\build\image_picker_android\intermediates\merged_manifest\debug\AndroidManifest.xml:13:13-74
+104            android:exported="false"
+104-->[:image_picker_android] C:\Users\SSAFY\Desktop\wadada_pjt\S10P31A704\wadada\build\image_picker_android\intermediates\merged_manifest\debug\AndroidManifest.xml:14:13-37
+105            android:grantUriPermissions="true" >
+105-->[:image_picker_android] C:\Users\SSAFY\Desktop\wadada_pjt\S10P31A704\wadada\build\image_picker_android\intermediates\merged_manifest\debug\AndroidManifest.xml:15:13-47
+106            <meta-data
+106-->[:image_picker_android] C:\Users\SSAFY\Desktop\wadada_pjt\S10P31A704\wadada\build\image_picker_android\intermediates\merged_manifest\debug\AndroidManifest.xml:16:13-18:75
+107                android:name="android.support.FILE_PROVIDER_PATHS"
+107-->[:image_picker_android] C:\Users\SSAFY\Desktop\wadada_pjt\S10P31A704\wadada\build\image_picker_android\intermediates\merged_manifest\debug\AndroidManifest.xml:17:17-67
+108                android:resource="@xml/flutter_image_picker_file_paths" />
+108-->[:image_picker_android] C:\Users\SSAFY\Desktop\wadada_pjt\S10P31A704\wadada\build\image_picker_android\intermediates\merged_manifest\debug\AndroidManifest.xml:18:17-72
+109        </provider> <!-- Trigger Google Play services to install the backported photo picker module. -->
+110        <service
+110-->[:image_picker_android] C:\Users\SSAFY\Desktop\wadada_pjt\S10P31A704\wadada\build\image_picker_android\intermediates\merged_manifest\debug\AndroidManifest.xml:21:9-33:19
+111            android:name="com.google.android.gms.metadata.ModuleDependencies"
+111-->[:image_picker_android] C:\Users\SSAFY\Desktop\wadada_pjt\S10P31A704\wadada\build\image_picker_android\intermediates\merged_manifest\debug\AndroidManifest.xml:22:13-78
+112            android:enabled="false"
+112-->[:image_picker_android] C:\Users\SSAFY\Desktop\wadada_pjt\S10P31A704\wadada\build\image_picker_android\intermediates\merged_manifest\debug\AndroidManifest.xml:23:13-36
+113            android:exported="false" >
+113-->[:image_picker_android] C:\Users\SSAFY\Desktop\wadada_pjt\S10P31A704\wadada\build\image_picker_android\intermediates\merged_manifest\debug\AndroidManifest.xml:24:13-37
+114            <intent-filter>
+114-->[:image_picker_android] C:\Users\SSAFY\Desktop\wadada_pjt\S10P31A704\wadada\build\image_picker_android\intermediates\merged_manifest\debug\AndroidManifest.xml:26:13-28:29
+115                <action android:name="com.google.android.gms.metadata.MODULE_DEPENDENCIES" />
+115-->[:image_picker_android] C:\Users\SSAFY\Desktop\wadada_pjt\S10P31A704\wadada\build\image_picker_android\intermediates\merged_manifest\debug\AndroidManifest.xml:27:17-94
+115-->[:image_picker_android] C:\Users\SSAFY\Desktop\wadada_pjt\S10P31A704\wadada\build\image_picker_android\intermediates\merged_manifest\debug\AndroidManifest.xml:27:25-91
+116            </intent-filter>
+117
+118            <meta-data
+118-->[:image_picker_android] C:\Users\SSAFY\Desktop\wadada_pjt\S10P31A704\wadada\build\image_picker_android\intermediates\merged_manifest\debug\AndroidManifest.xml:30:13-32:36
+119                android:name="photopicker_activity:0:required"
+119-->[:image_picker_android] C:\Users\SSAFY\Desktop\wadada_pjt\S10P31A704\wadada\build\image_picker_android\intermediates\merged_manifest\debug\AndroidManifest.xml:31:17-63
+120                android:value="" />
+120-->[:image_picker_android] C:\Users\SSAFY\Desktop\wadada_pjt\S10P31A704\wadada\build\image_picker_android\intermediates\merged_manifest\debug\AndroidManifest.xml:32:17-33
+121        </service>
+122
+123        <activity
+123-->[:kakao_flutter_sdk_common] C:\Users\SSAFY\Desktop\wadada_pjt\S10P31A704\wadada\build\kakao_flutter_sdk_common\intermediates\merged_manifest\debug\AndroidManifest.xml:27:9-32:56
+124            android:name="com.kakao.sdk.flutter.TalkAuthCodeActivity"
+124-->[:kakao_flutter_sdk_common] C:\Users\SSAFY\Desktop\wadada_pjt\S10P31A704\wadada\build\kakao_flutter_sdk_common\intermediates\merged_manifest\debug\AndroidManifest.xml:28:13-70
+125            android:configChanges="orientation|screenSize|keyboardHidden|uiMode"
+125-->[:kakao_flutter_sdk_common] C:\Users\SSAFY\Desktop\wadada_pjt\S10P31A704\wadada\build\kakao_flutter_sdk_common\intermediates\merged_manifest\debug\AndroidManifest.xml:29:13-81
+126            android:exported="false"
+126-->[:kakao_flutter_sdk_common] C:\Users\SSAFY\Desktop\wadada_pjt\S10P31A704\wadada\build\kakao_flutter_sdk_common\intermediates\merged_manifest\debug\AndroidManifest.xml:30:13-37
+127            android:launchMode="singleTask"
+127-->[:kakao_flutter_sdk_common] C:\Users\SSAFY\Desktop\wadada_pjt\S10P31A704\wadada\build\kakao_flutter_sdk_common\intermediates\merged_manifest\debug\AndroidManifest.xml:31:13-44
+128            android:theme="@style/TransparentCompat" />
+128-->[:kakao_flutter_sdk_common] C:\Users\SSAFY\Desktop\wadada_pjt\S10P31A704\wadada\build\kakao_flutter_sdk_common\intermediates\merged_manifest\debug\AndroidManifest.xml:32:13-53
+129        <activity
+129-->[:kakao_flutter_sdk_common] C:\Users\SSAFY\Desktop\wadada_pjt\S10P31A704\wadada\build\kakao_flutter_sdk_common\intermediates\merged_manifest\debug\AndroidManifest.xml:33:9-37:56
+130            android:name="com.kakao.sdk.flutter.AuthCodeCustomTabsActivity"
+130-->[:kakao_flutter_sdk_common] C:\Users\SSAFY\Desktop\wadada_pjt\S10P31A704\wadada\build\kakao_flutter_sdk_common\intermediates\merged_manifest\debug\AndroidManifest.xml:34:13-76
+131            android:exported="true"
+131-->[:kakao_flutter_sdk_common] C:\Users\SSAFY\Desktop\wadada_pjt\S10P31A704\wadada\build\kakao_flutter_sdk_common\intermediates\merged_manifest\debug\AndroidManifest.xml:35:13-36
+132            android:launchMode="singleTask"
+132-->[:kakao_flutter_sdk_common] C:\Users\SSAFY\Desktop\wadada_pjt\S10P31A704\wadada\build\kakao_flutter_sdk_common\intermediates\merged_manifest\debug\AndroidManifest.xml:36:13-44
+133            android:theme="@style/TransparentCompat" />
+133-->[:kakao_flutter_sdk_common] C:\Users\SSAFY\Desktop\wadada_pjt\S10P31A704\wadada\build\kakao_flutter_sdk_common\intermediates\merged_manifest\debug\AndroidManifest.xml:37:13-53
+134        <activity
+134-->[:kakao_flutter_sdk_common] C:\Users\SSAFY\Desktop\wadada_pjt\S10P31A704\wadada\build\kakao_flutter_sdk_common\intermediates\merged_manifest\debug\AndroidManifest.xml:38:9-42:56
+135            android:name="com.kakao.sdk.flutter.FollowChannelHandlerActivity"
+135-->[:kakao_flutter_sdk_common] C:\Users\SSAFY\Desktop\wadada_pjt\S10P31A704\wadada\build\kakao_flutter_sdk_common\intermediates\merged_manifest\debug\AndroidManifest.xml:39:13-78
+136            android:exported="true"
+136-->[:kakao_flutter_sdk_common] C:\Users\SSAFY\Desktop\wadada_pjt\S10P31A704\wadada\build\kakao_flutter_sdk_common\intermediates\merged_manifest\debug\AndroidManifest.xml:40:13-36
+137            android:launchMode="singleTask"
+137-->[:kakao_flutter_sdk_common] C:\Users\SSAFY\Desktop\wadada_pjt\S10P31A704\wadada\build\kakao_flutter_sdk_common\intermediates\merged_manifest\debug\AndroidManifest.xml:41:13-44
+138            android:theme="@style/TransparentCompat" />
+138-->[:kakao_flutter_sdk_common] C:\Users\SSAFY\Desktop\wadada_pjt\S10P31A704\wadada\build\kakao_flutter_sdk_common\intermediates\merged_manifest\debug\AndroidManifest.xml:42:13-53
+139        <activity
+139-->[:kakao_flutter_sdk_common] C:\Users\SSAFY\Desktop\wadada_pjt\S10P31A704\wadada\build\kakao_flutter_sdk_common\intermediates\merged_manifest\debug\AndroidManifest.xml:43:9-47:56
+140            android:name="com.kakao.sdk.flutter.AppsHandlerActivity"
+140-->[:kakao_flutter_sdk_common] C:\Users\SSAFY\Desktop\wadada_pjt\S10P31A704\wadada\build\kakao_flutter_sdk_common\intermediates\merged_manifest\debug\AndroidManifest.xml:44:13-69
+141            android:exported="true"
+141-->[:kakao_flutter_sdk_common] C:\Users\SSAFY\Desktop\wadada_pjt\S10P31A704\wadada\build\kakao_flutter_sdk_common\intermediates\merged_manifest\debug\AndroidManifest.xml:45:13-36
+142            android:launchMode="singleTask"
+142-->[:kakao_flutter_sdk_common] C:\Users\SSAFY\Desktop\wadada_pjt\S10P31A704\wadada\build\kakao_flutter_sdk_common\intermediates\merged_manifest\debug\AndroidManifest.xml:46:13-44
+143            android:theme="@style/TransparentCompat" />
+143-->[:kakao_flutter_sdk_common] C:\Users\SSAFY\Desktop\wadada_pjt\S10P31A704\wadada\build\kakao_flutter_sdk_common\intermediates\merged_manifest\debug\AndroidManifest.xml:47:13-53
+144
+145        <uses-library
+145-->[androidx.window:window:1.0.0-beta04] C:\Users\SSAFY\.gradle\caches\transforms-3\032f4dff274e516110d9363a9793a3e3\transformed\jetified-window-1.0.0-beta04\AndroidManifest.xml:25:9-27:40
+146            android:name="androidx.window.extensions"
+146-->[androidx.window:window:1.0.0-beta04] C:\Users\SSAFY\.gradle\caches\transforms-3\032f4dff274e516110d9363a9793a3e3\transformed\jetified-window-1.0.0-beta04\AndroidManifest.xml:26:13-54
+147            android:required="false" />
+147-->[androidx.window:window:1.0.0-beta04] C:\Users\SSAFY\.gradle\caches\transforms-3\032f4dff274e516110d9363a9793a3e3\transformed\jetified-window-1.0.0-beta04\AndroidManifest.xml:27:13-37
+148        <uses-library
+148-->[androidx.window:window:1.0.0-beta04] C:\Users\SSAFY\.gradle\caches\transforms-3\032f4dff274e516110d9363a9793a3e3\transformed\jetified-window-1.0.0-beta04\AndroidManifest.xml:28:9-30:40
+149            android:name="androidx.window.sidecar"
+149-->[androidx.window:window:1.0.0-beta04] C:\Users\SSAFY\.gradle\caches\transforms-3\032f4dff274e516110d9363a9793a3e3\transformed\jetified-window-1.0.0-beta04\AndroidManifest.xml:29:13-51
+150            android:required="false" />
+150-->[androidx.window:window:1.0.0-beta04] C:\Users\SSAFY\.gradle\caches\transforms-3\032f4dff274e516110d9363a9793a3e3\transformed\jetified-window-1.0.0-beta04\AndroidManifest.xml:30:13-37
+151
+152        <activity
+152-->[com.google.android.gms:play-services-base:18.1.0] C:\Users\SSAFY\.gradle\caches\transforms-3\4b9d22533576529904e76f8ef61c175c\transformed\jetified-play-services-base-18.1.0\AndroidManifest.xml:20:9-22:45
+153            android:name="com.google.android.gms.common.api.GoogleApiActivity"
+153-->[com.google.android.gms:play-services-base:18.1.0] C:\Users\SSAFY\.gradle\caches\transforms-3\4b9d22533576529904e76f8ef61c175c\transformed\jetified-play-services-base-18.1.0\AndroidManifest.xml:20:19-85
+154            android:exported="false"
+154-->[com.google.android.gms:play-services-base:18.1.0] C:\Users\SSAFY\.gradle\caches\transforms-3\4b9d22533576529904e76f8ef61c175c\transformed\jetified-play-services-base-18.1.0\AndroidManifest.xml:22:19-43
+155            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+155-->[com.google.android.gms:play-services-base:18.1.0] C:\Users\SSAFY\.gradle\caches\transforms-3\4b9d22533576529904e76f8ef61c175c\transformed\jetified-play-services-base-18.1.0\AndroidManifest.xml:21:19-78
+156
+157        <meta-data
+157-->[com.google.android.gms:play-services-basement:18.1.0] C:\Users\SSAFY\.gradle\caches\transforms-3\95e76454cff392b3dff66e1259c7e57f\transformed\jetified-play-services-basement-18.1.0\AndroidManifest.xml:21:9-23:69
+158            android:name="com.google.android.gms.version"
+158-->[com.google.android.gms:play-services-basement:18.1.0] C:\Users\SSAFY\.gradle\caches\transforms-3\95e76454cff392b3dff66e1259c7e57f\transformed\jetified-play-services-basement-18.1.0\AndroidManifest.xml:22:13-58
+159            android:value="@integer/google_play_services_version" />
+159-->[com.google.android.gms:play-services-basement:18.1.0] C:\Users\SSAFY\.gradle\caches\transforms-3\95e76454cff392b3dff66e1259c7e57f\transformed\jetified-play-services-basement-18.1.0\AndroidManifest.xml:23:13-66
+160
+161        <provider
+161-->[androidx.emoji2:emoji2:1.2.0] C:\Users\SSAFY\.gradle\caches\transforms-3\98f8115e8f56ec67d96e5a388c46890f\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:24:9-32:20
+162            android:name="androidx.startup.InitializationProvider"
+162-->[androidx.emoji2:emoji2:1.2.0] C:\Users\SSAFY\.gradle\caches\transforms-3\98f8115e8f56ec67d96e5a388c46890f\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:25:13-67
+163            android:authorities="com.ssafy.wadada.androidx-startup"
+163-->[androidx.emoji2:emoji2:1.2.0] C:\Users\SSAFY\.gradle\caches\transforms-3\98f8115e8f56ec67d96e5a388c46890f\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:26:13-68
+164            android:exported="false" >
+164-->[androidx.emoji2:emoji2:1.2.0] C:\Users\SSAFY\.gradle\caches\transforms-3\98f8115e8f56ec67d96e5a388c46890f\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:27:13-37
+165            <meta-data
+165-->[androidx.emoji2:emoji2:1.2.0] C:\Users\SSAFY\.gradle\caches\transforms-3\98f8115e8f56ec67d96e5a388c46890f\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:29:13-31:52
+166                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+166-->[androidx.emoji2:emoji2:1.2.0] C:\Users\SSAFY\.gradle\caches\transforms-3\98f8115e8f56ec67d96e5a388c46890f\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:30:17-75
+167                android:value="androidx.startup" />
+167-->[androidx.emoji2:emoji2:1.2.0] C:\Users\SSAFY\.gradle\caches\transforms-3\98f8115e8f56ec67d96e5a388c46890f\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:31:17-49
+168            <meta-data
+168-->[androidx.lifecycle:lifecycle-process:2.6.2] C:\Users\SSAFY\.gradle\caches\transforms-3\bfef5a9b6d4feb56da75153a72e3957b\transformed\jetified-lifecycle-process-2.6.2\AndroidManifest.xml:29:13-31:52
+169                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+169-->[androidx.lifecycle:lifecycle-process:2.6.2] C:\Users\SSAFY\.gradle\caches\transforms-3\bfef5a9b6d4feb56da75153a72e3957b\transformed\jetified-lifecycle-process-2.6.2\AndroidManifest.xml:30:17-78
+170                android:value="androidx.startup" />
+170-->[androidx.lifecycle:lifecycle-process:2.6.2] C:\Users\SSAFY\.gradle\caches\transforms-3\bfef5a9b6d4feb56da75153a72e3957b\transformed\jetified-lifecycle-process-2.6.2\AndroidManifest.xml:31:17-49
+171            <meta-data
+171-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\SSAFY\.gradle\caches\transforms-3\a0ecce03964d1d4dc26ffab32b08b16e\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:29:13-31:52
+172                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
+172-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\SSAFY\.gradle\caches\transforms-3\a0ecce03964d1d4dc26ffab32b08b16e\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:30:17-85
+173                android:value="androidx.startup" />
+173-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\SSAFY\.gradle\caches\transforms-3\a0ecce03964d1d4dc26ffab32b08b16e\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:31:17-49
+174        </provider>
+175
+176        <receiver
+176-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\SSAFY\.gradle\caches\transforms-3\a0ecce03964d1d4dc26ffab32b08b16e\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:34:9-52:20
+177            android:name="androidx.profileinstaller.ProfileInstallReceiver"
+177-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\SSAFY\.gradle\caches\transforms-3\a0ecce03964d1d4dc26ffab32b08b16e\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:35:13-76
+178            android:directBootAware="false"
+178-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\SSAFY\.gradle\caches\transforms-3\a0ecce03964d1d4dc26ffab32b08b16e\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:36:13-44
+179            android:enabled="true"
+179-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\SSAFY\.gradle\caches\transforms-3\a0ecce03964d1d4dc26ffab32b08b16e\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:37:13-35
+180            android:exported="true"
+180-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\SSAFY\.gradle\caches\transforms-3\a0ecce03964d1d4dc26ffab32b08b16e\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:38:13-36
+181            android:permission="android.permission.DUMP" >
+181-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\SSAFY\.gradle\caches\transforms-3\a0ecce03964d1d4dc26ffab32b08b16e\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:39:13-57
+182            <intent-filter>
+182-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\SSAFY\.gradle\caches\transforms-3\a0ecce03964d1d4dc26ffab32b08b16e\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:40:13-42:29
+183                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
+183-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\SSAFY\.gradle\caches\transforms-3\a0ecce03964d1d4dc26ffab32b08b16e\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:41:17-91
+183-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\SSAFY\.gradle\caches\transforms-3\a0ecce03964d1d4dc26ffab32b08b16e\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:41:25-88
+184            </intent-filter>
+185            <intent-filter>
+185-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\SSAFY\.gradle\caches\transforms-3\a0ecce03964d1d4dc26ffab32b08b16e\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:43:13-45:29
+186                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
+186-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\SSAFY\.gradle\caches\transforms-3\a0ecce03964d1d4dc26ffab32b08b16e\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:44:17-85
+186-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\SSAFY\.gradle\caches\transforms-3\a0ecce03964d1d4dc26ffab32b08b16e\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:44:25-82
+187            </intent-filter>
+188            <intent-filter>
+188-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\SSAFY\.gradle\caches\transforms-3\a0ecce03964d1d4dc26ffab32b08b16e\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:46:13-48:29
+189                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
+189-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\SSAFY\.gradle\caches\transforms-3\a0ecce03964d1d4dc26ffab32b08b16e\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:47:17-88
+189-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\SSAFY\.gradle\caches\transforms-3\a0ecce03964d1d4dc26ffab32b08b16e\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:47:25-85
+190            </intent-filter>
+191            <intent-filter>
+191-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\SSAFY\.gradle\caches\transforms-3\a0ecce03964d1d4dc26ffab32b08b16e\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:49:13-51:29
+192                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
+192-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\SSAFY\.gradle\caches\transforms-3\a0ecce03964d1d4dc26ffab32b08b16e\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:50:17-95
+192-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\SSAFY\.gradle\caches\transforms-3\a0ecce03964d1d4dc26ffab32b08b16e\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:50:25-92
+193            </intent-filter>
+194        </receiver>
+195    </application>
+196
+197</manifest>
