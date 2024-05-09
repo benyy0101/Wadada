@@ -55,9 +55,6 @@ public class RoomDto{
     }
 
     public List<RoomMemberRes> getMemberList(){
-//        if(this.members.isEmpty()){
-//            throw new RuntimeException("방에 멤버가 없습니다");
-//        }
         return new ArrayList<>(this.members.values());
     }
     public int getMemberCount(){

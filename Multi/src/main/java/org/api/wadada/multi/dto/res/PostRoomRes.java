@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class TempRes {
+public class PostRoomRes {
 
     private int roomIdx;
     private int roomSeq;
