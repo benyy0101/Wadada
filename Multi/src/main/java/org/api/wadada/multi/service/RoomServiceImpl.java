@@ -96,7 +96,7 @@ public class RoomServiceImpl implements RoomService {
 
         roomDocumentRepository.save(document);
         RoomDto roomDto = new RoomDto();
-        roomDto.addMember(RoomMemberRes.of(true, member));
+        //roomDto.addMember(RoomMemberRes.of(true, member));
         List<RoomMemberRes> memberResList = roomDto.getMemberList();
         roomDto.setRoomSeq(savedRoom.getRoomSeq());
         roomDto.setRoomMode(createRoomReq.getRoomMode());
