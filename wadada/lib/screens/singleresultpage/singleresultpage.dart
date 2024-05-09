@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 import 'package:wadada/common/component/lineChart.dart';
 import 'package:wadada/common/const/colors.dart';
@@ -61,7 +62,8 @@ class _SingleResultState extends State<SingleResult> {
         child: Column(
           children: [
             SizedBox(height: 15),
-            _buildTimeAndRouteSection(formattedHours, formattedMinutes, formattedSeconds),
+            _buildTimeAndRouteSection(
+                formattedHours, formattedMinutes, formattedSeconds),
             SizedBox(height: 40),
             // _buildDistanceSection(),
             SizedBox(
@@ -90,62 +92,57 @@ class _SingleResultState extends State<SingleResult> {
               ),
             ),
             SizedBox(height: 30),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('속도 (km/h)',
-                  style: TextStyle(
-                    color: GRAY_500,
-                    fontSize: 19,
-                  ),
+            Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(
+                '속도 (km/h)',
+                style: TextStyle(
+                  color: GRAY_500,
+                  fontSize: 19,
                 ),
-                SizedBox(height: 10),
-                _buildSpeedLineChart(),
-                  ]
-            ),
+              ),
+              SizedBox(height: 10),
+              _buildSpeedLineChart(),
+            ]),
             SizedBox(height: 30),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('페이스',
-                  style: TextStyle(
-                    color: GRAY_500,
-                    fontSize: 19,
-                  ),
+            Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(
+                '페이스',
+                style: TextStyle(
+                  color: GRAY_500,
+                  fontSize: 19,
                 ),
-                SizedBox(height: 10),
-                _buildPaceLineChart(),
-                  ]
-            ),
+              ),
+              SizedBox(height: 10),
+              _buildPaceLineChart(),
+            ]),
             SizedBox(height: 40),
             GestureDetector(
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => SingleMain(),
-                  ),
-                );
+                Get.to(SingleMain());
+                // Navigator.push(
+                //   context,
+                //   MaterialPageRoute(
+                //     builder: (context) => SingleMain(),
+                //   ),
+                // );
               },
               child: Container(
-                width:double.maxFinite,
+                width: double.maxFinite,
                 decoration: BoxDecoration(
                   color: GREEN_COLOR,
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Padding(
-                  padding: EdgeInsets.symmetric(
-                    vertical: 15,
-                  ),
-                  child: Text('종료하기',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    )
-                  )
-                ),
+                    padding: EdgeInsets.symmetric(
+                      vertical: 15,
+                    ),
+                    child: Text('종료하기',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ))),
               ),
             ),
             SizedBox(height: 40),
@@ -155,7 +152,8 @@ class _SingleResultState extends State<SingleResult> {
     );
   }
 
-  Widget _buildTimeAndRouteSection(String hours, String minutes, String seconds) {
+  Widget _buildTimeAndRouteSection(
+      String hours, String minutes, String seconds) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -230,7 +228,8 @@ class _SingleResultState extends State<SingleResult> {
                 latLng: widget.startLocation!,
                 width: 30,
                 height: 54,
-                markerImageSrc: 'https://github.com/jjeong41/t/assets/103355863/4e6d205d-694e-458c-b992-8ea7c27b85b1',
+                markerImageSrc:
+                    'https://github.com/jjeong41/t/assets/103355863/4e6d205d-694e-458c-b992-8ea7c27b85b1',
               ),
             );
           }
@@ -242,7 +241,8 @@ class _SingleResultState extends State<SingleResult> {
                 latLng: widget.endLocation!,
                 width: 30,
                 height: 54,
-                markerImageSrc: 'https://github.com/jjeong41/t/assets/103355863/f52baea5-c46e-47ec-b541-80a0b081f6db',
+                markerImageSrc:
+                    'https://github.com/jjeong41/t/assets/103355863/f52baea5-c46e-47ec-b541-80a0b081f6db',
               ),
             );
           }
@@ -263,10 +263,10 @@ class _SingleResultState extends State<SingleResult> {
 
           LatLng southWest = LatLng(minLat, minLng);
           LatLng northEast = LatLng(maxLat, maxLng);
-          
+
           List<LatLng> bounds = [
-              LatLng(minLat, minLng),
-              LatLng(maxLat, maxLng)
+            LatLng(minLat, minLng),
+            LatLng(maxLat, maxLng)
           ];
           mapController?.fitBounds(bounds);
         },
@@ -305,20 +305,19 @@ class _SingleResultState extends State<SingleResult> {
       ),
     );
   }
-  
+
   Widget _buildSpeedLineChart() {
     List<chartData> myChartData = widget.distanceSpeed.map((data) {
       return chartData(
           // (data['dist']! * 1000).toInt(),
           data['dist']! / 1000,
-          data['speed']! * 3.6
-      );
+          data['speed']! * 3.6);
     }).toList();
 
     return LineChart<chartData>(
-        chartData: myChartData,
-        metrics: '',
-        graphType: 'speed',
+      chartData: myChartData,
+      metrics: '',
+      graphType: 'speed',
     );
   }
 
@@ -328,21 +327,19 @@ class _SingleResultState extends State<SingleResult> {
 
     double paceInMinutesAndSeconds = minutes + (seconds / 60);
     return paceInMinutesAndSeconds;
-}
+  }
 
   Widget _buildPaceLineChart() {
     List<chartData> myChartData = widget.distancePace.map((data) {
-        return chartData(
-            data['dist']! / 1000,
-            formatPaceAsDecimal(data['pace']!)
-        );
+      return chartData(
+          data['dist']! / 1000, formatPaceAsDecimal(data['pace']!));
     }).toList();
 
     // LineChart 사용
     return LineChart<chartData>(
-        chartData: myChartData,
-        metrics: 'km/h',
-        graphType: 'pace',
+      chartData: myChartData,
+      metrics: 'km/h',
+      graphType: 'pace',
     );
   }
 }

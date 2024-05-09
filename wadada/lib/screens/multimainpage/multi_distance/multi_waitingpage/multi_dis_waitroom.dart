@@ -69,13 +69,16 @@ class _MultiDisWait extends State<MultiDisWait> {
                   children: [
                     ElevatedButton(
                       onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => MultiDistanceRoomForm(
-                                    roomMode: roomMode,
-                                  )),
-                        );
+                        Get.to(MultiDistanceRoomForm(
+                          roomMode: roomMode,
+                        ));
+                        // Navigator.push(
+                        //   context,
+                        //   MaterialPageRoute(
+                        //       builder: (context) => MultiDistanceRoomForm(
+                        //             roomMode: roomMode,
+                        //           )),
+                        // );
                       },
                       style: ElevatedButton.styleFrom(
                         foregroundColor: Colors.white,

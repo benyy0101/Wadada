@@ -411,7 +411,8 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                               SizedBox(height: 10),
                               TextButton(
                                 onPressed: () {
-                                  Navigator.pop(context);
+                                  Get.back();
+                                  //Navigator.pop(context);
                                 },
                                 style: TextButton.styleFrom(
                                   foregroundColor: Colors.white,

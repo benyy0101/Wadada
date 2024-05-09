@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
@@ -12,86 +13,83 @@ import 'package:wadada/screens/singlemainpage/single_main.dart';
 import 'package:http/http.dart' as http;
 import 'package:dio/dio.dart';
 
-AndroidOptions _getAndroidOptions() => const AndroidOptions(encryptedSharedPreferences: true,);
+AndroidOptions _getAndroidOptions() => const AndroidOptions(
+      encryptedSharedPreferences: true,
+    );
 final storage = FlutterSecureStorage(aOptions: _getAndroidOptions());
 final dio = Dio();
-  // ..options = BaseOptions(
-  //   baseUrl: 'https://k10a704.p.ssafy.io/Wadada',
-  //   validateStatus: (status) {
-  //     return status! < 500; // 500 미만의 모든 상태 코드를 성공으로 간주합니다.
-  //   },
-  // );
+// ..options = BaseOptions(
+//   baseUrl: 'https://k10a704.p.ssafy.io/Wadada',
+//   validateStatus: (status) {
+//     return status! < 500; // 500 미만의 모든 상태 코드를 성공으로 간주합니다.
+//   },
+// );
 
 class MainPageLayout extends StatelessWidget {
   const MainPageLayout({super.key});
-  
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        width: MediaQuery.of(context).size.width,
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              OATMEAL_COLOR,
-              OATMEAL_COLOR,
-            ]
-          )
-        ),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              const Text(
-                'Just Bring your Phone',
-                style: TextStyle(
-                  fontWeight: FontWeight.w700,
-                  fontSize: 30,
-                  color: GREEN_COLOR,
+          width: MediaQuery.of(context).size.width,
+          decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                OATMEAL_COLOR,
+                OATMEAL_COLOR,
+              ])),
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                const Text(
+                  'Just Bring your Phone',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 30,
+                    color: GREEN_COLOR,
+                  ),
                 ),
-              ),
 
-              const SizedBox(height: 40),
+                const SizedBox(height: 40),
 
-              // Lottie.network(
-              //   'https://lottie.host/a2885500-601c-48ba-b6bc-28fd759bda31/0HzLMJCkqu.json',
-              //   width: 400, 
-              //   height: 400,
-              //   fit: BoxFit.fill,
-              // ),
+                // Lottie.network(
+                //   'https://lottie.host/a2885500-601c-48ba-b6bc-28fd759bda31/0HzLMJCkqu.json',
+                //   width: 400,
+                //   height: 400,
+                //   fit: BoxFit.fill,
+                // ),
 
-              Lottie.asset(
-                'assets/animations/start_animation.json',
-                width: 400, 
-                height: 400,
-                fit: BoxFit.fill,
-              ),
-
-              const SizedBox(height: 40),
-
-              const Text(
-                "LET's WDD",
-                style: TextStyle(
-                  fontWeight: FontWeight.w700,
-                  fontSize: 40,
-                  color: GREEN_COLOR,
+                Lottie.asset(
+                  'assets/animations/start_animation.json',
+                  width: 400,
+                  height: 400,
+                  fit: BoxFit.fill,
                 ),
-              ),
-              
-              const SizedBox(height: 50),
 
-              KakaoLoginButton(),
-            ],
-          ),
-        )
-      ),
+                const SizedBox(height: 40),
+
+                const Text(
+                  "LET's WDD",
+                  style: TextStyle(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 40,
+                    color: GREEN_COLOR,
+                  ),
+                ),
+
+                const SizedBox(height: 50),
+
+                KakaoLoginButton(),
+              ],
+            ),
+          )),
     );
   }
 }
-
 
 class KakaoLoginButton extends StatelessWidget {
   const KakaoLoginButton({super.key});
@@ -107,7 +105,6 @@ class KakaoLoginButton extends StatelessWidget {
   }
 }
 
-
 Future<void> signWithKakao(BuildContext context) async {
   try {
     OAuthToken token;
@@ -115,16 +112,20 @@ Future<void> signWithKakao(BuildContext context) async {
     if (await isKakaoTalkInstalled()) {
       token = await UserApi.instance.loginWithKakaoTalk();
       print('카카오톡 앱으로 로그인 성공');
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SingleMain()));
+      Get.to(SingleMain());
+      // Navigator.pushReplacement(
+      //     context, MaterialPageRoute(builder: (context) => SingleMain()));
       // 앱 설치 안 되어있으면 카카오계정으로 로그인
     } else {
       token = await UserApi.instance.loginWithKakaoAccount();
       print('카카오계정으로 로그인 성공');
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SingleMain()));
+      Get.to(SingleMain());
+      // Navigator.pushReplacement(
+      //     context, MaterialPageRoute(builder: (context) => SingleMain()));
     }
-    
+
     await sendTokenToServer(token.accessToken);
-    // const surl = 'https://k10a704.p.ssafy.io/Wadada/profile'; 
+    // const surl = 'https://k10a704.p.ssafy.io/Wadada/profile';
     // Map<String, dynamic> plz = {
     //   "memberNickname": "ㅋㅋㅋㅋㅋㅋ",
     //   "memberBirthday": "1990-01-01",
@@ -141,7 +142,6 @@ Future<void> signWithKakao(BuildContext context) async {
     //   data: jsonEncode(plz)
     // );
     // print(single.data);
-    
   } catch (error) {
     print('로그인 실패 $error');
   }
@@ -150,29 +150,27 @@ Future<void> signWithKakao(BuildContext context) async {
 Future<void> sendTokenToServer(String accessToken) async {
   try {
     const url = 'https://k10a704.p.ssafy.io/Wadada/auth/login';
-    Map<String, dynamic> res = {'code': accessToken};  // 카카오 토큰
+    Map<String, dynamic> res = {'code': accessToken}; // 카카오 토큰
     // print(jsonEncode(res));  // {"code":"T58J8ySbYsfRtg46K_Up8FLMGOBZwfYhylAKKclfAAABjy2ONb76Fwx8Dt1GgQ"}
 
     // 서버에 요청 보내기
     var response = await dio.post(
-      url, 
-      options: Options(
-        headers: {'Content-Type': 'application/json'}
-      ),
-      data: jsonEncode(res), 
+      url,
+      options: Options(headers: {'Content-Type': 'application/json'}),
+      data: jsonEncode(res),
     );
-    
+
     if (response.statusCode == 200) {
       print('서버에 토큰 전송 성공');
       print('결과 ${response.data}');
       final responseData = response.data;
       // print(responseData['jwtToken']['accessToken']);
-      
+
       // jwt accesstoken 저장
-      await storage.write(key: 'server_token', value: responseData['jwtToken']['accessToken']);
+      await storage.write(
+          key: 'server_token', value: responseData['jwtToken']['accessToken']);
       // final wadada = await storage.read(key: 'server_token');
       // print(wadada);
-
     } else {
       print('서버에 토큰 전송 실패: ${response.data}');
     }
@@ -193,7 +191,7 @@ void setupInterceptor() {
         print(options.headers);
       }
       // 요청 진행 킵고잉
-      return handler.next(options); 
+      return handler.next(options);
     },
     onResponse: (response, handler) {
       // 요청 성공

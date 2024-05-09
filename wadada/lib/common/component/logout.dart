@@ -22,8 +22,9 @@ class LogoutButton extends StatelessWidget {
           await UserApi.instance.logout();
           // 로그아웃 성공 시 처리
           print('로그아웃 성공');
-          Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) => MainPageLayout()));
+          Get.to(MainPageLayout());
+          // Navigator.pushReplacement(context,
+          //     MaterialPageRoute(builder: (context) => MainPageLayout()));
         } catch (error) {
           // 로그아웃 실패 시 처리
           print('로그아웃 실패: $error');

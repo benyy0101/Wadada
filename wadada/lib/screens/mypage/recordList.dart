@@ -102,13 +102,17 @@ class ListTileWidget extends StatelessWidget {
             ),
             trailing: IconButton(
               onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => MyRecords(
-                              recordSeq: simple.recordSeq,
-                              recordType: simple.recordType,
-                            )));
+                Get.to(MyRecords(
+                  recordSeq: simple.recordSeq,
+                  recordType: simple.recordType,
+                ));
+                // Navigator.push(
+                //     context,
+                //     MaterialPageRoute(
+                //         builder: (context) => MyRecords(
+                //               recordSeq: simple.recordSeq,
+                //               recordType: simple.recordType,
+                //             )));
               },
               icon: const Icon(Icons.arrow_forward_ios_rounded),
             ));
