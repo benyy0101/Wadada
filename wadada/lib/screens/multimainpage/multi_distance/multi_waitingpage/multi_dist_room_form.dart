@@ -7,14 +7,20 @@ import 'package:wadada/screens/multimainpage/multi_distance/multi_waitingpage/mu
 import 'package:wadada/screens/multimainpage/multi_distance/multi_waitingpage/options/multi_select_dist_option.dart';
 
 class MultiDistanceRoomForm extends StatefulWidget {
-  const MultiDistanceRoomForm({super.key});
+  int roomMode;
+
+  MultiDistanceRoomForm({super.key, required this.roomMode});
 
   @override
-  MultiDistanceRoomFormState createState() => MultiDistanceRoomFormState();
+  MultiDistanceRoomFormState createState() =>
+      MultiDistanceRoomFormState(roomMode: roomMode);
 }
 
 class MultiDistanceRoomFormState extends State<MultiDistanceRoomForm> {
-  // 각 입력 필드를 위한 TextEditingController 인스턴스 생성
+  int roomMode;
+
+  MultiDistanceRoomFormState({required this.roomMode});
+  // 각 입력 필드를 위한 TextEreditingController 인스턴스 생성
   final participantController = TextEditingController();
   final passwordController = TextEditingController();
   final hashTagController = TextEditingController();

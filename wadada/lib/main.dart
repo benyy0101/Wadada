@@ -63,11 +63,11 @@ class MyApp extends StatelessWidget {
     // } else {
 
     // }
-    return MaterialApp(
+    return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       // home: MainPageLayout(),
-      home: MultiMain(),
+      home: homeWidget,
     );
   }
 }

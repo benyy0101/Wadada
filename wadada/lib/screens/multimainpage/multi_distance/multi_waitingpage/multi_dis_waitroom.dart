@@ -11,13 +11,18 @@ import 'package:wadada/screens/multimainpage/multi_distance/multi_waitingpage/mu
 import 'package:wadada/screens/multimainpage/multi_distance/multi_waitingpage/multi_dist_room_form.dart';
 
 class MultiDisWait extends StatefulWidget {
-  MultiDisWait();
+  int roomMode;
+
+  MultiDisWait({required this.roomMode});
 
   @override
-  _MultiDisWait createState() => _MultiDisWait();
+  _MultiDisWait createState() => _MultiDisWait(roomMode: roomMode);
 }
 
 class _MultiDisWait extends State<MultiDisWait> {
+  int roomMode;
+
+  _MultiDisWait({required this.roomMode});
   final controller = Get.put(
       MultiController(repo: MultiRepository(provider: MultiProvider())));
 
@@ -25,15 +30,23 @@ class _MultiDisWait extends State<MultiDisWait> {
   void initState() {
     super.initState();
     // Call the method to fetch data with the provided parameter
-    controller.getMultiRoomsByMode(1);
+    controller.getMultiRoomsByMode(roomMode);
   }
 
   @override
   Widget build(BuildContext context) {
+    late String titleText = '';
     // controller.getMultiRoomsByMode(1);
+    if (roomMode == 1) {
+      titleText = '거리모드 - 멀티';
+    } else if (roomMode == 2) {
+      titleText = '시간모드 - 멀티';
+    } else {
+      titleText = '만남모드 - 멀티';
+    }
     return Scaffold(
       appBar: AppBar(
-        title: const Text('거리모드 - 멀티',
+        title: Text(titleText,
             style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
         backgroundColor: Colors.white,
         elevation: 0,
@@ -59,7 +72,9 @@ class _MultiDisWait extends State<MultiDisWait> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => MultiDistanceRoomForm()),
+                              builder: (context) => MultiDistanceRoomForm(
+                                    roomMode: roomMode,
+                                  )),
                         );
                       },
                       style: ElevatedButton.styleFrom(
