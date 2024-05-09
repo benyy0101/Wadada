@@ -10,6 +10,7 @@ import org.api.wadada.multi.entity.Member;
 // 프론트 response
 public class RoomMemberRes {
 
+
     private boolean isManager;
     private String memberNickname;
     private String memberId;
@@ -17,6 +18,7 @@ public class RoomMemberRes {
     private String memberProfileImage;
     private int memberLevel;
     private boolean memberReady;
+
 
     public void changeReady(){
         this.memberReady = !this.memberReady;

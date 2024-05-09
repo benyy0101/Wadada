@@ -16,8 +16,8 @@ public class GameResultRes {
     private String multiRecordImage;
     private Integer multiRecordDist;
     private Integer multiRecordTime;
-    private Point multiRecordStartLocation;
-    private Point multiRecordEndLocation;
+    private String multiRecordStartLocation;
+    private String multiRecordEndLocation;
     private String multiRecordSpeed;
     private String multiRecordHeartbeat;
     private Integer multiRecordMeanSpeed;
