@@ -5,6 +5,9 @@ import co.elastic.clients.elasticsearch._types.query_dsl.FuzzyQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.QueryBuilders;
 import co.elastic.clients.elasticsearch.core.SearchRequest;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
+import com.querydsl.jpa.impl.JPAQueryFactory;
+import lombok.AllArgsConstructor;
+import org.api.wadada.multi.entity.QRoom;
 import org.api.wadada.multi.entity.RoomDocument;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
@@ -20,10 +23,13 @@ public class CustomRoomRepository {
     private final ElasticsearchOperations elasticsearchOperations;
     private ElasticsearchClient client;
 
+    private final JPAQueryFactory jpaQueryFactory;
+
     @Autowired
-    public CustomRoomRepository(ElasticsearchOperations elasticsearchOperations, ElasticsearchClient client) {
+    public CustomRoomRepository(ElasticsearchOperations elasticsearchOperations, ElasticsearchClient client, JPAQueryFactory jpaQueryFactory) {
         this.elasticsearchOperations = elasticsearchOperations;
         this.client = client;
+        this.jpaQueryFactory = jpaQueryFactory;
     }
 
     public List<RoomDocument> findByRoomTags(String[] tags) {

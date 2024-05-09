@@ -1,9 +1,11 @@
 package org.api.wadada.multi.dto.req;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.api.wadada.util.PointDeserializer;
 import org.locationtech.jts.geom.Point;
 
 @AllArgsConstructor
@@ -11,7 +13,8 @@ import org.locationtech.jts.geom.Point;
 @Builder
 @Getter
 public class GameStartReq {
-    private Integer recordMode;
+    @JsonDeserialize(using = PointDeserializer.class)
     private Point recordStartLocation;
+    private Integer roomSeq;
     private Integer recordPeople;
 }

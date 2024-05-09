@@ -6,10 +6,7 @@ import org.api.wadada.multi.dto.game.GameMessage;
 import org.api.wadada.multi.dto.req.CreateRoomReq;
 import org.api.wadada.multi.dto.req.GameEndReq;
 import org.api.wadada.multi.dto.req.GameStartReq;
-import org.api.wadada.multi.dto.res.GameEndRes;
-import org.api.wadada.multi.dto.res.GameResultRes;
-import org.api.wadada.multi.dto.res.GameStartRes;
-import org.api.wadada.multi.dto.res.RoomMemberRes;
+import org.api.wadada.multi.dto.res.*;
 import org.api.wadada.multi.exception.CanNotJoinRoomException;
 import org.api.wadada.multi.exception.CreateRoomException;
 import org.api.wadada.multi.exception.NotFoundMemberException;
@@ -49,7 +46,7 @@ public class MultiController {
     @PostMapping("/create")
     public ResponseEntity<?> createRoom(@RequestBody CreateRoomReq createRoomReq, Principal principal) throws Exception {
         try{
-            HashMap<Integer, List<RoomMemberRes>> result = roomService.createRoom(createRoomReq,principal);
+            HashMap<Integer, CreateRoomRes> result = roomService.createRoom(createRoomReq,principal);
             return new ResponseEntity<>(result,HttpStatus.OK);
         }catch (NotFoundMemberException e1){
             return new ResponseEntity<>("없는 멤버 정보입니다.",HttpStatus.NOT_ACCEPTABLE);
@@ -129,8 +126,6 @@ public class MultiController {
         // 게임 시작 정보 메시지 생성 (API 요청 URL 포함)
 
         String message = GameMessage.GAME_START_INFO_REQUEST.toJson();
-        // 해당 방의 모든 사용자에게 메시지 전송
-        //messagingTemplate.convertAndSend("/sub/attend/" + roomIdx, message);
         roomService.startGame(roomIdx);
         return new ResponseEntity<>(message,HttpStatus.OK);
     }
