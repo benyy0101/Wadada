@@ -61,7 +61,7 @@ class TestButton extends StatelessWidget {
         onPressed: () {
           try {
             //controller.getMultiRoomsByMode(1);
-            controller.sendStartLocation(Point(0, 0), 3, 3);
+            controller.sendStartLocation('0', '0', 3, 3);
             //print(controller.roomList.toString());
           } catch (error) {
             // 로그아웃 실패 시 처리
