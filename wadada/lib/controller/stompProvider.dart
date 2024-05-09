@@ -10,15 +10,15 @@ import 'package:stomp_dart_client/stomp_dart_client.dart';
 import 'package:wadada/models/stomp.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
-class StompProvider extends GetxController {
+class StompController extends GetxController {
   late StompClient client;
   final int roomIdx;
   late String accessToken;
   late String serverUrl;
-  late List<CurrentMember> members = [];
+  RxList<CurrentMember> members = <CurrentMember>[].obs;
   bool isStart = false;
 
-  StompProvider({required this.roomIdx}) {
+  StompController({required this.roomIdx}) {
     client = StompClient(
       config: StompConfig.sockJS(
         url: dotenv.env['STOMP_URL']!,
@@ -52,10 +52,13 @@ class StompProvider extends GetxController {
                 //참가자 list화
                 List<dynamic> membersJson = res['body'][roomIdx.toString()];
                 if (membersJson.isNotEmpty) {
-                  members = membersJson.map((item) {
+                  List<CurrentMember> temp = membersJson.map((item) {
                     // Create a CurrentMember object from each JSON item
                     return CurrentMember.fromJson(item);
                   }).toList();
+                  temp.forEach((element) {
+                    members.add(element);
+                  });
                 }
               } catch (e) {
                 print(e);

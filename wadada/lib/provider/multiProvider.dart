@@ -27,6 +27,8 @@ class MultiProvider {
     final response = await _dio.get(
       '/$mode',
     );
+    // print("--------------");
+    // print(response.data);
     return response;
   }
 

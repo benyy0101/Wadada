@@ -42,7 +42,7 @@ class DisRoomInfoCard extends StatelessWidget {
                 Expanded(
                   flex: 1, // 왼쪽 부분 (방 코드)의 크기 조절
                   child: Text(
-                    controller.multiroom.roomTitle,
+                    roomInfo.roomTitle,
                     style: TextStyle(
                       color: DARK_GREEN_COLOR,
                       fontWeight: FontWeight.bold,
@@ -96,9 +96,10 @@ class DisRoomInfoCard extends StatelessWidget {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('${roomInfo.roomIdx}  km'),
+                          Text('${roomInfo.roomDist}  km'),
                           SizedBox(height: 12),
-                          Text('1 / ${roomInfo.roomPeople}'),
+                          Text(
+                              '${roomInfo.nowRoomPeople} / ${roomInfo.roomPeople}'),
                           SizedBox(height: 12),
                           Text(''),
                         ],

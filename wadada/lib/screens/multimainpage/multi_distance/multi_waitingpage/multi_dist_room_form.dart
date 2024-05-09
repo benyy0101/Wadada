@@ -37,6 +37,19 @@ class MultiDistanceRoomFormState extends State<MultiDistanceRoomForm> {
   @override
   Widget build(BuildContext context) {
     Get.put(MultiController(repo: MultiRepository(provider: MultiProvider())));
+    String roomOption;
+    String optionMetric;
+    if (roomMode == 1) {
+      roomOption = '거리';
+      optionMetric = 'km';
+    } else if (roomMode == 2) {
+      roomOption = '시간';
+      optionMetric = '분';
+    } else {
+      roomOption = '';
+      optionMetric = '';
+    }
+
     return GetBuilder<MultiController>(builder: (MultiController controller) {
       return Scaffold(
         appBar: AppBar(
@@ -56,11 +69,11 @@ class MultiDistanceRoomFormState extends State<MultiDistanceRoomForm> {
                 Container(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
+                    children: [
                       SizedBox(height: 10),
                       MultiSelectDistOption(
-                        option_dis: '거리',
-                        optionstr_dis: '(km)',
+                        option_dis: roomOption,
+                        optionstr_dis: optionMetric,
                         option_people: '참여 인원',
                         optionstr_people: '(명)',
                         option_password: '비밀 번호',
@@ -104,7 +117,10 @@ class MultiDistanceRoomFormState extends State<MultiDistanceRoomForm> {
                           // 방 생성 로직
                           try {
                             controller.creatMultiRoom(controller.multiroom);
-                            print(controller.multiroom.toString());
+                            Get.to(MultiRoomDetail(
+                              roomInfo: controller.cur,
+                            ));
+                            //print(controller.multiroom.toString());
                             // Navigator.push(
                             //   context,
                             //   MaterialPageRoute(

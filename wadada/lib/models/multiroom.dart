@@ -7,7 +7,7 @@ class MultiRoom {
   int roomPeople;
   int roomDist;
   int roomMode;
-  int? roomSecret;
+  int roomSecret;
   String roomTag;
   int roomTime;
   String roomTitle;
@@ -16,7 +16,7 @@ class MultiRoom {
       {required this.roomPeople,
       required this.roomDist,
       required this.roomMode,
-      this.roomSecret,
+      required this.roomSecret,
       required this.roomTag,
       required this.roomTime,
       required this.roomTitle});
@@ -218,6 +218,7 @@ class SimpleRoom {
   int roomMode;
   int? roomDist;
   int? roomTime;
+  int? nowRoomPeople;
 
   SimpleRoom({
     required this.roomIdx,
@@ -228,6 +229,7 @@ class SimpleRoom {
     required this.roomMode,
     this.roomDist,
     this.roomTime,
+    required this.nowRoomPeople,
   });
 
   // Convert SimpleRoom object to a Map
@@ -241,6 +243,7 @@ class SimpleRoom {
       'roomMode': roomMode,
       'roomDist': roomDist,
       'roomTime': roomTime,
+      'nowRoomPeople': nowRoomPeople,
     };
   }
 
@@ -255,11 +258,12 @@ class SimpleRoom {
       roomMode: json['roomMode'] as int,
       roomDist: json['roomDist'] as int?,
       roomTime: json['roomTime'] as int?,
+      nowRoomPeople: json['nowRoomPeople'] as int,
     );
   }
 
   @override
   String toString() {
-    return 'SimpleRoom{ roomIdx: $roomIdx, roomTitle: $roomTitle, roomPeople: $roomPeople, roomTag: $roomTag, roomSecret: $roomSecret, roomMode: $roomMode, roomDist: $roomDist, roomTime: $roomTime }';
+    return 'SimpleRoom{ roomIdx: $roomIdx, roomTitle: $roomTitle, roomPeople: $roomPeople, roomTag: $roomTag, roomSecret: $roomSecret, roomMode: $roomMode, roomDist: $roomDist, roomTime: $roomTime, nowRoomPeople: $nowRoomPeople }';
   }
 }
