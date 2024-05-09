@@ -47,7 +47,7 @@ public class MultiController {
     public ResponseEntity<?> createRoom(@RequestBody CreateRoomReq createRoomReq, Principal principal) throws Exception {
         try{
 //            HashMap<Integer, CreateRoomRes> result = roomService.createRoom(createRoomReq,principal);
-            int result = roomService.createRoom(createRoomReq,principal);
+            TempRes result = roomService.createRoom(createRoomReq,principal);
             return new ResponseEntity<>(result,HttpStatus.OK);
         }catch (NotFoundMemberException e1){
             return new ResponseEntity<>("없는 멤버 정보입니다.",HttpStatus.NOT_ACCEPTABLE);
