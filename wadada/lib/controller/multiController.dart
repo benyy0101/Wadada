@@ -5,7 +5,6 @@ import 'package:wadada/repository/multiRepo.dart';
 
 class MultiController extends GetxController {
   final MultiRepository repo;
-
   RoomInfo info = RoomInfo(
       roomIdx: -1,
       roomPeople: -1,
@@ -16,17 +15,26 @@ class MultiController extends GetxController {
       roomTime: -1,
       roomTitle: '');
 
+
+  MultiRoom multiroom = MultiRoom(
+    roomPeople: 0, 
+    roomDist: 0, 
+    roomMode: 1, 
+    roomTag: '', 
+    roomTime: 1, 
+    roomTitle: '의 방');
+    
   List<SimpleRoom> roomList = [];
   int recordSeq = -1;
 
   MultiRoomGameEnd gameEndInfo = MultiRoomGameEnd(
       roomIdx: -1,
-      recordStartLocation: Point(-1, -1),
+      recordStartLocation: 'POINT(-1 -1)',
       recordMode: '',
       recordImage: '',
       recordDist: -1,
       recordTime: Duration.zero,
-      recordEndLocation: Point(-1, -1),
+      recordEndLocation: 'Point(-1 -1)',
       recordWay: '',
       recordSpeed: '',
       recordHeartbeat: '',
@@ -49,6 +57,7 @@ class MultiController extends GetxController {
   void getMultiRoomsByMode(int mode) async {
     try {
       roomList = await repo.multiRoomGet(mode);
+      print(roomList.length);
       update();
     } catch (e) {
       print(e);
@@ -56,9 +65,10 @@ class MultiController extends GetxController {
     }
   }
 
-  void sendStartLocation(Point point, int roomIdx, int people) async {
+  void sendStartLocation(
+      String lat, String long, int roomIdx, int people) async {
     try {
-      recordSeq = await repo.sendStartLocation(point, roomIdx, people);
+      recordSeq = await repo.sendStartLocation(lat, long, roomIdx, people);
       update();
     } catch (e) {
       print(e);

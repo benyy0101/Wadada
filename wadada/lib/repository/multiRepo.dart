@@ -1,8 +1,9 @@
 import 'package:wadada/models/multiroom.dart';
+import 'package:wadada/provider/multiProvider.dart';
+import 'package:dio/src/response.dart';
 import 'package:wadada/models/mypage.dart';
 import 'package:wadada/provider/multiProvider.dart';
 import 'package:dio/src/response.dart';
-// import 'package:wadada/screens/multimainpage/component/room.dart';
 
 abstract class AbstractMultiRepository {
   Future<RoomInfo> createRoom(MultiRoom roomInfo);
@@ -70,9 +71,12 @@ class MultiRepository extends AbstractMultiRepository {
   }
 
   //MULTI-006
-  Future<int> sendStartLocation(Point point, int roomIdx, int people) async {
+  Future<int> sendStartLocation(
+      String lat, String long, int roomIdx, int people) async {
     MultiRoomGameStart start = MultiRoomGameStart(
-        roomIdx: roomIdx, recordStartLocation: point, recordPeople: people);
+        roomIdx: roomIdx,
+        recordStartLocation: 'POINT(${lat} ${long})',
+        recordPeople: people);
     try {
       print("--------------------");
       print(start);
