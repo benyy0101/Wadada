@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:wadada/common/const/colors.dart';
+import 'package:wadada/screens/mypage/layout.dart';
+import 'package:wadada/screens/singlemainpage/single_main.dart';
 
 
 class TabBars extends StatelessWidget {
@@ -21,16 +23,19 @@ class TabBars extends StatelessWidget {
                 Tab(icon: Icon(Icons.person), text: '싱글모드'),
                 Tab(icon: Icon(Icons.groups), text: '멀티모드'),
                 Tab(icon: Icon(Icons.emoji_events), text: '마라톤'),
-                Tab(icon: Icon(Icons.insert_chart), text: '나의기록'),
+                Tab(icon: Icon(Icons.insert_chart), text: '마이페이지'),
               ],
             ),
           ),
           body: TabBarView(
             children: [
-              Icon(Icons.person),
-              Icon(Icons.groups),
+              SingleMain(),
+              // Icon(Icons.person),
+              Icon(Icons.groups), // 아직 멀티 페이지가 없어서 임시로 넣어놓음
+              // 아직 마라톤도 없어서 임시로 넣어놓음
               Icon(Icons.emoji_events),
-              Icon(Icons.insert_chart),
+              MyPageLayout(),
+              // Icon(Icons.insert_chart),
             ],
           ),
         ),
