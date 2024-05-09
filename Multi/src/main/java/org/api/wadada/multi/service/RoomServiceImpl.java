@@ -51,9 +51,9 @@ public class RoomServiceImpl implements RoomService {
     private final SimpMessagingTemplate messagingTemplate;
     private ExecutorService executor = Executors.newCachedThreadPool();
 
-
+    //
     @Override
-    public HashMap<Integer, CreateRoomRes> createRoom(CreateRoomReq createRoomReq, Principal principal) throws Exception {
+    public int createRoom(CreateRoomReq createRoomReq, Principal principal) throws Exception {
         Optional<Member> optional = memberRepository.getMemberByMemberId(principal.getName());
         if (optional.isEmpty()) {
             throw new NotFoundMemberException();
@@ -104,7 +104,8 @@ public class RoomServiceImpl implements RoomService {
 
         HashMap<Integer, CreateRoomRes> resultMap = new HashMap<>();
         resultMap.put(idx, new CreateRoomRes(savedRoom.getRoomSeq(), memberResList));
-        return resultMap;
+//        return resultMap;
+        return idx;
     }
 
     @Override
@@ -129,7 +130,12 @@ public class RoomServiceImpl implements RoomService {
         }
 
         // 해당 방에 참가시키고
-        roomDto.addMember(RoomMemberRes.of(false, member));
+        if(roomDto.getMemberList().isEmpty()){
+            roomDto.addMember(RoomMemberRes.of(true, member));
+        }
+        else{
+            roomDto.addMember(RoomMemberRes.of(false, member));
+        }
         List<RoomMemberRes> memberResList = roomDto.getMemberList();
         // 해당 방 유저 정보들 반환
         HashMap<Integer, List<RoomMemberRes>> resultMap = new HashMap<>();
