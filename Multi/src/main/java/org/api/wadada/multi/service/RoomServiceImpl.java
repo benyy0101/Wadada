@@ -9,6 +9,7 @@ import org.api.wadada.multi.dto.req.CreateRoomReq;
 import org.api.wadada.multi.dto.res.CreateRoomRes;
 import org.api.wadada.multi.dto.res.RoomMemberRes;
 import org.api.wadada.multi.dto.res.RoomRes;
+import org.api.wadada.multi.dto.res.TempRes;
 import org.api.wadada.multi.entity.Member;
 import org.api.wadada.multi.entity.Room;
 import org.api.wadada.multi.entity.RoomDocument;
@@ -53,7 +54,7 @@ public class RoomServiceImpl implements RoomService {
 
     //
     @Override
-    public int createRoom(CreateRoomReq createRoomReq, Principal principal) throws Exception {
+    public TempRes createRoom(CreateRoomReq createRoomReq, Principal principal) throws Exception {
         Optional<Member> optional = memberRepository.getMemberByMemberId(principal.getName());
         if (optional.isEmpty()) {
             throw new NotFoundMemberException();
@@ -101,7 +102,7 @@ public class RoomServiceImpl implements RoomService {
         roomDto.setRoomMode(createRoomReq.getRoomMode());
         int idx = roomManager.addRoom(savedRoom.getRoomSeq(), roomDto);
         //        return resultMap;
-        return idx;
+        return TempRes.builder().roomIdx(idx).roomSeq(savedRoom.getRoomSeq()).build();
     }
 
     @Override
