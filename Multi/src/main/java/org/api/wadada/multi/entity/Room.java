@@ -34,8 +34,6 @@ public class Room extends BaseEntity {
 
     private int roomTime;
 
-    private String roomTarget;
-
     private Point roomTargetPoint;
 
 
@@ -46,7 +44,7 @@ public class Room extends BaseEntity {
 //    private List<MultiRecord> multiRecordList = new ArrayList<>();
 
     @Builder
-    public Room(String roomTitle,int roomPeople, int roomMode, String roomTag,int roomSecret, int roomDist, int roomTime, String roomTarget, double roomTargetLatitude, double roomTargetLongitude, int roomMaker,Point roomTargetPoint) {
+    public Room(String roomTitle,int roomPeople, int roomMode, String roomTag,int roomSecret, int roomDist, int roomTime, Point roomTargetPoint, int roomMaker) {
         this.roomTitle = roomTitle;
         this.roomPeople = roomPeople;
         this.roomMode = roomMode;
@@ -54,7 +52,6 @@ public class Room extends BaseEntity {
         this.roomSecret = roomSecret;
         this.roomDist = roomDist;
         this.roomTime = roomTime;
-        this.roomTarget = roomTarget;
         this.roomMaker = roomMaker;
         this.roomTargetPoint = roomTargetPoint;
     }
