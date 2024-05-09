@@ -28,7 +28,7 @@ class MultiProvider {
   Future<Response<dynamic>> multiRoomGet(String mode) async {
     await setAuth();
     final response = await _dio.get(
-      '/${mode}',
+      '/$mode',
     );
     return response;
   }
@@ -36,35 +36,40 @@ class MultiProvider {
   Future<Response<dynamic>> multiRoomSearch(String title) async {
     await setAuth();
     final response = await _dio.get(
-      '/${title}',
+      '/$title',
     );
     return response;
   }
 
   Future<Response<dynamic>> multiRoomCreate(MultiRoom room) async {
     await setAuth();
+    print(_dio.options.headers['Authorization']);
     final response = await _dio.post('/create', data: room.toJson());
     return response;
   }
 
+  //DEAD END
   Future<Response<dynamic>> multiRoomAttend(String roomSeq) async {
-    setAuth();
+    await setAuth();
     final response = await _dio.get(
-      '/attend/${roomSeq}',
+      '/attend/$roomSeq',
     );
     return response;
   }
 
+  //MULTI-006
   Future<Response<dynamic>> multiRoomGameStart(
       MultiRoomGameStart startInfo) async {
-    setAuth();
-    final response = await _dio.post('/start', data: startInfo);
+    await setAuth();
+    final response = await _dio.post('/start', data: startInfo.toJson());
     return response;
   }
 
+  //MULTI-007
   Future<Response<dynamic>> multiRoomGameEnd(MultiRoomGameEnd endInfo) async {
-    setAuth();
-    final response = await _dio.patch('/result', data: endInfo);
+    await setAuth();
+    final response = await _dio.patch('/result', data: endInfo.toJson());
     return response;
   }
 }
+

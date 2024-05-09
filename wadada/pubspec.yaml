@@ -44,6 +44,7 @@ dependencies:
   kakao_map_plugin: ^0.3.0
   geolocator: ^11.0.0
   http: ^1.2.1
+  textfield_tags: ^3.0.1
   flutter_secure_storage: ^9.0.0
   flutter_launcher_icons: ^0.13.1
   fl_chart:
