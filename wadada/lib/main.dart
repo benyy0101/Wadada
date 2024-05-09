@@ -7,19 +7,19 @@ import 'package:get/get_connect/connect.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:kakao_flutter_sdk_common/kakao_flutter_sdk_common.dart';
-// import 'package:wadada/common/component/myRecords.dart';
+import 'package:wadada/common/component/tabbars.dart';
 import 'package:wadada/screens/mainpage/layout.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 //import 'package:wadada/common/pages/mainpage.dart';
 import 'package:wadada/screens/mypage/layout.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:wadada/screens/multimainpage/multimainpage.dart';
 import 'package:wadada/screens/newprofilepage/layout.dart';
+import 'package:wadada/screens/multimainpage/multi_main.dart';
 import 'package:wadada/screens/singlemainpage/single_main.dart';
 import 'dart:io';
 import 'package:wadada/screens/mypage/layout.dart';
 
 void main() async {
-  
   HttpOverrides.global = NoCheckCertificateHttpOverrides();
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -50,12 +50,14 @@ class NoCheckCertificateHttpOverrides extends HttpOverrides {
 class MyApp extends StatelessWidget {
   final storage = FlutterSecureStorage();
 
-  MyApp({Key? key});
+  MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     Widget homeWidget;
     homeWidget = NewProfileLayout();
+    // Widget homeWidget;
+    // homeWidget = SingleMain();
     // if (storage.read(key: 'accessToken') != null) {
     //   homeWidget = MyPageLayout();
     // } else {
@@ -64,7 +66,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
-      home: homeWidget,
+      // home: MainPageLayout(),
+      home: MultiMain(),
     );
   }
 }

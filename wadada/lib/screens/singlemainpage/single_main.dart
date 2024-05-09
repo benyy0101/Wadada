@@ -11,14 +11,14 @@ class SingleMain extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Container(
+      body: SingleChildScrollView(
         padding: EdgeInsets.only(left: 30, right: 30),
         child: Column(
           children: [
             SizedBox(
               height: 45,
             ),
-            Row(
+            Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: const [
                 Column(
@@ -30,11 +30,11 @@ class SingleMain extends StatelessWidget {
                           fontWeight: FontWeight.w600,
                         )),
                   ],
-                )
+                ),
+                SizedBox(
+                  height: 40,
+                ),
               ],
-            ),
-            SizedBox(
-              height: 40,
             ),
             Container(
               child: Row(
@@ -50,7 +50,7 @@ class SingleMain extends StatelessWidget {
             SizedBox(
               height: 10,
             ),
-            // SingleRecord(),
+            SingleRecord(),
             SizedBox(
               height: 30,
             ),
