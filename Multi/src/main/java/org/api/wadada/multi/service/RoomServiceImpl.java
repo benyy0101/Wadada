@@ -97,14 +97,10 @@ public class RoomServiceImpl implements RoomService {
         roomDocumentRepository.save(document);
         RoomDto roomDto = new RoomDto();
         //roomDto.addMember(RoomMemberRes.of(true, member));
-        List<RoomMemberRes> memberResList = roomDto.getMemberList();
         roomDto.setRoomSeq(savedRoom.getRoomSeq());
         roomDto.setRoomMode(createRoomReq.getRoomMode());
         int idx = roomManager.addRoom(savedRoom.getRoomSeq(), roomDto);
-
-        HashMap<Integer, CreateRoomRes> resultMap = new HashMap<>();
-        resultMap.put(idx, new CreateRoomRes(savedRoom.getRoomSeq(), memberResList));
-//        return resultMap;
+        //        return resultMap;
         return idx;
     }
 
