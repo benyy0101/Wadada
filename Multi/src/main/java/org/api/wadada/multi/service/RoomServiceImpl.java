@@ -209,7 +209,11 @@ public class RoomServiceImpl implements RoomService {
         }
 
         List<RoomRes> roomResList = roomRepository.findAllById(activeSeqList).stream().map(
-                room -> RoomRes.of(roomIdxMap.get(room.getRoomSeq()), room)
+                room -> {
+                    int idx = roomIdxMap.get(room.getRoomSeq());
+                    int now = activeRooms.get(idx).getMembers().size();
+                    return RoomRes.of(idx, room, now);
+                }
         ).toList();
         log.info("같은 방 찾기");
         return roomResList;
@@ -242,7 +246,9 @@ public class RoomServiceImpl implements RoomService {
         // index와 정보를 response로
         List<RoomRes> roomResList = roomDocuments.stream().map(
                 roomDocument -> {
-                    return RoomRes.of(roomInfo.get(roomDocument.getRoomSeq()), roomDocument);
+                    int idx = roomInfo.get(roomDocument.getRoomSeq());
+                    int now = activeRooms.get(idx).getMembers().size();
+                    return RoomRes.of(roomInfo.get(roomDocument.getRoomSeq()), roomDocument,now);
                 }
         ).collect(Collectors.toList());
 
