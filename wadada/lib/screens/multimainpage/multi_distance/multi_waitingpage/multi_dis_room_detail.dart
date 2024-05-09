@@ -8,7 +8,7 @@ import 'package:wadada/common/const/colors.dart';
 import 'package:wadada/controller/multiController.dart';
 import 'package:wadada/models/multiroom.dart';
 import 'package:wadada/provider/multiProvider.dart';
-import 'package:wadada/controller/stompProvider.dart';
+import 'package:wadada/controller/stompController.dart';
 import 'package:wadada/repository/multiRepo.dart';
 
 class MultiRoomDetail extends StatefulWidget {
@@ -25,11 +25,14 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
   SimpleRoom roomInfo;
   late StompController controller;
   late List<String> tags;
+
   _MultiRoomDetailState({
     required this.roomInfo,
   }) {
+    print("-----------------initiating websocket----------------");
     controller = StompController(roomIdx: roomInfo.roomIdx);
-    if (roomInfo.roomTag!.isNotEmpty) tags = roomInfo.roomTag!.split('#');
+    
+    //if (roomInfo.roomTag!.isNotEmpty) tags = roomInfo.roomTag!.split('#');
   }
   bool isButtonPressed = false;
 
@@ -182,7 +185,8 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                               SizedBox(height: 20),
                               //현재인원 받아와야 하는 곳
                               Obx(
-                                () => Text('1 / ${roomInfo.roomPeople}',
+                                () => Text(
+                                    '${controller.members.length} / ${roomInfo.roomPeople}',
                                     style: TextStyle(
                                         fontSize: 20,
                                         fontWeight: FontWeight.bold,

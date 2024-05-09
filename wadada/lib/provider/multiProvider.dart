@@ -27,8 +27,7 @@ class MultiProvider {
     final response = await _dio.get(
       '/$mode',
     );
-    // print("--------------");
-    // print(response.data);
+
     return response;
   }
 
@@ -43,6 +42,8 @@ class MultiProvider {
   Future<Response<dynamic>> multiRoomCreate(MultiRoom room) async {
     await setAuth();
     final response = await _dio.post('/create', data: room.toJson());
+    print("--------------create------------------");
+    print(response.data);
     return response;
   }
 

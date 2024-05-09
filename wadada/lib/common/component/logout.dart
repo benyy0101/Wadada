@@ -7,7 +7,7 @@ import 'package:wadada/controller/multiController.dart';
 import 'package:wadada/models/multiroom.dart';
 import 'package:wadada/models/mypage.dart';
 import 'package:wadada/provider/multiProvider.dart';
-import 'package:wadada/controller/stompProvider.dart';
+import 'package:wadada/controller/stompController.dart';
 import 'package:wadada/repository/multiRepo.dart';
 import 'package:wadada/screens/mainpage/layout.dart';
 

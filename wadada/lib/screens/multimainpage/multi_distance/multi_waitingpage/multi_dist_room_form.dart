@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:wadada/controller/multiController.dart';
+import 'package:wadada/models/multiroom.dart';
 import 'package:wadada/provider/multiProvider.dart';
 import 'package:wadada/repository/multiRepo.dart';
 import 'package:wadada/screens/multimainpage/multi_distance/multi_waitingpage/multi_dis_room_detail.dart';
@@ -117,6 +118,18 @@ class MultiDistanceRoomFormState extends State<MultiDistanceRoomForm> {
                           // 방 생성 로직
                           try {
                             controller.creatMultiRoom(controller.multiroom);
+                            controller.cur.roomDist =
+                                controller.multiroom.roomDist;
+                            controller.cur.roomTitle =
+                                controller.multiroom.roomTitle;
+                            controller.cur.roomSecret =
+                                controller.multiroom.roomSecret;
+                            controller.cur.roomTime =
+                                controller.multiroom.roomTime;
+                            controller.cur.roomPeople =
+                                controller.multiroom.roomPeople;
+                            controller.cur.roomMode =
+                                controller.multiroom.roomMode;
                             Get.to(MultiRoomDetail(
                               roomInfo: controller.cur,
                             ));

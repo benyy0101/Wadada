@@ -52,6 +52,7 @@ class MultiRepository extends AbstractMultiRepository {
     try {
       Response res = await provider.multiRoomCreate(roomInfo);
       int roomIdx = int.parse(res.data.keys.first);
+
       RoomInfo info = RoomInfo(
         roomIdx: roomIdx,
         roomPeople: roomInfo.roomPeople,

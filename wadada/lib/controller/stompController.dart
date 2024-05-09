@@ -31,8 +31,11 @@ class StompController extends GetxController {
             },
             callback: (frame) {
               try {
+                print("Incoming Messages:--------------------");
+
                 //에러메세지: 해당방에 입장해 있거나, 이미 나간 방일때
                 Map<String, dynamic> res = jsonDecode(frame.body!);
+                print(res['body']);
                 if (res['body'].runtimeType == String &&
                     res['statusCodeValue'] != 200) {
                   throw Exception(jsonDecode(frame.body!)['body']);
@@ -79,6 +82,7 @@ class StompController extends GetxController {
         onWebSocketError: (dynamic error) => print(error.toString()),
       ),
     );
+    print("-------------------client activated--------------");
     client.activate();
   }
 
