@@ -82,8 +82,6 @@ class StompController extends GetxController {
         onWebSocketError: (dynamic error) => print(error.toString()),
       ),
     );
-    print("-------------------client activated--------------");
-    client.activate();
   }
 
   Future<void> _init() async {
@@ -94,10 +92,12 @@ class StompController extends GetxController {
   }
 
   void attend(int roomIdx) {
+    print("-------------attend-------------");
     client.send(destination: '/pub/attend/$roomIdx');
   }
 
   void out(int roomIdx) {
+    print("--------------socket OUT---------");
     client.send(destination: '/pub/out/$roomIdx');
   }
 
@@ -110,6 +110,13 @@ class StompController extends GetxController {
   }
 
   void disconnect() {
+    print("-----controller deactivated---------");
     client.deactivate();
+  }
+
+  @override
+  void dispose() {
+    out(roomIdx);
+    disconnect();
   }
 }

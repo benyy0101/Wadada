@@ -11,6 +11,18 @@ import 'package:wadada/provider/multiProvider.dart';
 import 'package:wadada/controller/stompController.dart';
 import 'package:wadada/repository/multiRepo.dart';
 
+class Participant {
+  final IconData iconData;
+  final String name;
+  final String status;
+
+  Participant({
+    required this.iconData,
+    required this.name,
+    required this.status,
+  });
+}
+
 class MultiRoomDetail extends StatefulWidget {
   SimpleRoom roomInfo;
 
@@ -26,12 +38,20 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
   late StompController controller;
   late List<String> tags;
 
+  List<Participant> participants = [
+    Participant(iconData: Icons.person_add_alt_1, name: '스펀지밥', status: '준비중'),
+    Participant(iconData: Icons.person, name: '아린시치', status: '준비완료'),
+    Participant(iconData: Icons.person, name: '커피보이', status: '준비완료'),
+  ];
+
   _MultiRoomDetailState({
     required this.roomInfo,
   }) {
     print("-----------------initiating websocket----------------");
     controller = StompController(roomIdx: roomInfo.roomIdx);
+    controller.client.activate();
     
+    controller.attend(roomInfo.roomIdx);
     //if (roomInfo.roomTag!.isNotEmpty) tags = roomInfo.roomTag!.split('#');
   }
   bool isButtonPressed = false;
@@ -40,6 +60,7 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: Text('거리모드 - 멀티',
             style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
         backgroundColor: Colors.white,
@@ -278,172 +299,125 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                         ],
                       ),
                       SizedBox(height: 30),
-                      Row(
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 10.0), // 첫 번째 Column에 대한 양옆 padding
-                            child: Column(
-                              children: const [
-                                Icon(Icons.person_add_alt_1,
-                                    color: DARK_GREEN_COLOR, size: 30),
-                                SizedBox(height: 20),
-                                Icon(Icons.person,
-                                    color: DARK_GREEN_COLOR, size: 30),
-                                SizedBox(height: 20),
-                                Icon(Icons.person,
-                                    color: DARK_GREEN_COLOR, size: 30),
-                              ],
-                            ),
-                          ),
-                          SizedBox(width: 30), // 아이콘과 참가자 이름 사이의 간격
-                          Padding(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 10.0), // 두 번째 Column에 대한 양옆 padding
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: const [
-                                Text(
-                                  '스펀지밥',
-                                  style: TextStyle(
+                      Obx(() {
+                        final members = controller.members;
+                        if (members == null || members.isEmpty) {
+                          // Show a loading indicator or a placeholder
+                          return Center(
+                            child:
+                                CircularProgressIndicator(), // Or any other placeholder widget
+                          );
+                        } else {
+                          // Show the list when data is available
+                          return ListView.builder(
+                            itemCount: members.length,
+                            shrinkWrap: true,
+                            itemBuilder: (context, index) {
+                              final member = members[index];
+                              return Padding(
+                                padding: EdgeInsets.symmetric(vertical: 10.0),
+                                child: ListTile(
+                                  leading: CircleAvatar(
+                                    backgroundImage:
+                                        AssetImage(member.memberProfileImage),
+                                  ),
+                                  title: Text(
+                                    member.memberNickname,
+                                    style: TextStyle(
                                       fontSize: 20,
                                       color: DARK_GREEN_COLOR,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                SizedBox(height: 20),
-                                Text(
-                                  '아린시치',
-                                  style: TextStyle(
-                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  subtitle: Text(
+                                    'Level: ${member.memberLevel}, Ready: ${member.memberReady}',
+                                    style: TextStyle(
                                       color: DARK_GREEN_COLOR,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                SizedBox(height: 20),
-                                Text(
-                                  '커피보이',
-                                  style: TextStyle(
-                                      fontSize: 20,
-                                      color: DARK_GREEN_COLOR,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                              ],
-                            ),
-                          ),
-                          SizedBox(width: 30), // 참가자 이름과 준비완료/준비중 사이의 간격
-                          Padding(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 10.0), // 세 번째 Column에 대한 양옆 padding
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Container(
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 8, vertical: 4),
-                                  decoration: BoxDecoration(
-                                    color: DARK_GREEN_COLOR,
-                                    borderRadius: BorderRadius.circular(8),
+                                    ),
                                   ),
-                                  child: Text(
-                                    '준비중',
-                                    style: TextStyle(
-                                        fontSize: 15, color: Colors.white),
+                                  trailing: Container(
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 8, vertical: 4),
+                                    decoration: BoxDecoration(
+                                      color: member.memberReady
+                                          ? DARK_GREEN_COLOR
+                                          : GRAY_400,
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Text(
+                                      member.memberReady
+                                          ? 'Ready'
+                                          : 'Not Ready',
+                                      style: TextStyle(
+                                          fontSize: 15, color: Colors.white),
+                                    ),
                                   ),
                                 ),
-                                SizedBox(height: 20),
-                                Container(
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 8, vertical: 4),
-                                  decoration: BoxDecoration(
-                                    color: GRAY_400,
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Text(
-                                    '준비완료',
-                                    style: TextStyle(
-                                        fontSize: 15, color: Colors.white),
-                                  ),
-                                ),
-                                SizedBox(height: 20),
-                                Container(
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 8, vertical: 4),
-                                  decoration: BoxDecoration(
-                                    color: GRAY_400,
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Text(
-                                    '준비완료',
-                                    style: TextStyle(
-                                        fontSize: 15, color: Colors.white),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
+                              );
+                            },
+                          );
+                        }
+                      }),
                       SizedBox(height: 30),
                       Center(
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            TextButton(
-                              onPressed: () {
-                                if (!isButtonPressed) {
-                                  setState(() {
-                                    isButtonPressed = true;
-                                  });
-                                }
-
-                                // 진행할 페이지
-                              },
-                              style: TextButton.styleFrom(
-                                foregroundColor: Colors.white,
-                                backgroundColor: isButtonPressed
-                                    ? Colors.grey[400]
-                                    : GREEN_COLOR,
-                                padding: EdgeInsets.only(
-                                    left: 120, right: 120, top: 10, bottom: 10),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                              ),
-                              child: Text(
-                                '준비완료',
-                                style: TextStyle(fontSize: 18),
-                              ),
-                            ),
-                            SizedBox(height: 10),
-                            TextButton(
-                              onPressed: () {
-                                Get.back();
-                                //Navigator.pop(context);
-                              },
-                              style: TextButton.styleFrom(
-                                foregroundColor: Colors.white,
-                                backgroundColor: Colors
-                                    .grey[400], // GRAY_400 대신 실제 색상 값을 사용하세요.
-                                padding: EdgeInsets.only(
-                                    left: 100, right: 95, top: 10, bottom: 10),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: const [
-                                  Icon(Icons.exit_to_app),
-                                  Text("  방 나가기 ",
-                                      style: TextStyle(fontSize: 18)),
-                                ],
-                              ),
-                            ),
-                          ],
+                          children: [],
                         ),
                       ),
                     ],
                   ),
+                ),
+              ),
+              SizedBox(height: 30),
+              TextButton(
+                onPressed: () {
+                  if (!isButtonPressed) {
+                    setState(() {
+                      isButtonPressed = true;
+                    });
+                  }
+
+                  // 진행할 페이지
+                },
+                style: TextButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  backgroundColor:
+                      isButtonPressed ? Colors.grey[400] : GREEN_COLOR,
+                  padding: EdgeInsets.only(
+                      left: 155, right: 155, top: 10, bottom: 10),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                child: Text(
+                  '준비완료',
+                  style: TextStyle(fontSize: 18),
+                ),
+              ),
+              SizedBox(height: 10),
+              TextButton(
+                onPressed: () {
+                  Get.back();
+                  //Navigator.pop(context);
+                },
+                style: TextButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  backgroundColor:
+                      Colors.grey[400], // GRAY_400 대신 실제 색상 값을 사용하세요.
+                  padding: EdgeInsets.only(
+                      left: 135, right: 135, top: 10, bottom: 10),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: const [
+                    Icon(Icons.exit_to_app),
+                    Text("  방 나가기 ", style: TextStyle(fontSize: 18)),
+                  ],
                 ),
               ),
             ],
