@@ -12,7 +12,7 @@ import java.util.List;
 public interface RoomService {
 
 //    HashMap<Integer, CreateRoomRes> createRoom(CreateRoomReq createRoomReq, Principal principal) throws Exception;
-    int createRoom(CreateRoomReq createRoomReq, Principal principal) throws Exception;
+    TempRes createRoom(CreateRoomReq createRoomReq, Principal principal) throws Exception;
 
 
     HashMap<Integer, List<RoomMemberRes>> attendRoom(int roomIdx,Principal principal);
