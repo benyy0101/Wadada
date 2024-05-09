@@ -55,7 +55,7 @@ class _MyMapState extends State<MyMap> {
 
   KakaoMapController? mapController;
   StreamSubscription<Position>? positionStream;
-  StreamSubscription<Position>? realTimePositionStream;
+  // StreamSubscription<geolocator.Position>? realTimePositionStream;
   Set<Polyline> polylines = {};
   Set<Marker> markers = {};
   // Set<PolyLine> polylines = {};
@@ -70,9 +70,8 @@ class _MyMapState extends State<MyMap> {
     );
 
     startTime = DateTime.now();
-
     _startTrackingLocation();
-    _subscribeToRealTimeLocationUpdates();
+    // _subscribeToRealTimeLocationUpdates();
   }
 
   Future<void> _startTrackingLocation() async {
@@ -91,8 +90,16 @@ class _MyMapState extends State<MyMap> {
 
     final locationSettings = LocationSettings(
       accuracy: LocationAccuracy.high,
-      distanceFilter: 5,
+      distanceFilter: 1,
     );
+
+    // const double minDistance = 1.0;
+    // StreamSubscription<Position>? realTimePositionStream;
+
+    // final realTimeLocationSettings = LocationSettings(
+    //   accuracy: LocationAccuracy.high,
+    //   distanceFilter: 1,
+    // );
 
     positionStream = Geolocator.getPositionStream(locationSettings: locationSettings).listen((Position? position) {
       if (position != null) {
@@ -116,6 +123,8 @@ class _MyMapState extends State<MyMap> {
               currentLatitude!,
               currentLongitude!,
             );
+
+            // if (distance >= minDistance) {
             
             totalDistance += distance;
             Duration timeDiff = DateTime.now().difference(previousTime!);
@@ -144,6 +153,8 @@ class _MyMapState extends State<MyMap> {
                 "pace": paceInSecondsPerKm,
             });
           }
+          // }
+
           previousTime = DateTime.now();
 
           void updateLocation(double latitude, double longitude) {
@@ -159,84 +170,66 @@ class _MyMapState extends State<MyMap> {
             existingPolyline.points?.add(newCenter);
           }
 
-          // markers.removeWhere((marker) => marker.markerId == 'currentlocation');
+          markers.removeWhere((marker) => marker.markerId == 'currentlocation');
 
-          // markers.add(Marker(
-          //   markerId: 'currentlocation',
-          //   latLng: LatLng(currentLatitude!, currentLongitude!),
-          //   width: 40,
-          //   height: 40,
-          //   markerImageSrc:
-          //     'https://github.com/jjeong41/t/assets/103355863/608f452a-c1d4-4784-b989-7e8cfdf4a236',
-          //   zIndex: 10,
-          // ));
+          markers.add(Marker(
+            markerId: 'currentlocation',
+            latLng: LatLng(currentLatitude!, currentLongitude!),
+            width: 30,
+            height: 30,
+            offsetX: 15, // width의 절반 값을 지정합니다.
+            offsetY: 15,
+            markerImageSrc:
+              'https://github.com/jjeong41/t/assets/103355863/5ff2a217-8cbc-4e41-b6c2-0ff12103b40b',
+            zIndex: 10,
+          ));
+          
 
           setState(() {});
         });
       }
     });
-
-    // positionStream = Geolocator.getPositionStream(locationSettings: realTimeLocationSettings).listen((Position? position) {
-    //   if (position != null) {
-    //     setState(() {
-    //       LatLng newLocation = LatLng(position.latitude, position.longitude);
-          
-    //       markers.removeWhere((marker) => marker.markerId == 'currentLocationMarker');
-          
-    //       markers.add(Marker(
-    //           markerId: 'currentLocationMarker',
-    //           latLng: newLocation,
-    //           width: 30,
-    //           height: 30,
-    //           markerImageSrc: 'https://github.com/jjeong41/t/assets/103355863/5ff2a217-8cbc-4e41-b6c2-0ff12103b40b',
-    //       ));
-          
-    //       mapController?.setCenter(newLocation);
-
-    //       setState(() {});
-    //   });
-    //   }
-    // });
   }
 
-  Future<void> _subscribeToRealTimeLocationUpdates() async {
-    final realTimeLocationSettings = LocationSettings(
-      accuracy: LocationAccuracy.high,
-      distanceFilter: 0,
-    );
+  // Future<void> _subscribeToRealTimeLocationUpdates() async {
+  //   final realTimeLocationSettings = LocationSettings(
+  //     accuracy: LocationAccuracy.high,
+  //     distanceFilter: 0,
+  //   );
 
-    realTimePositionStream = Geolocator.getPositionStream(
-      locationSettings: realTimeLocationSettings,
-    ).listen((Position? position) {
-      if (position != null) {
-        LatLng newLocation = LatLng(position.latitude, position.longitude);
+  //   realTimePositionStream = Geolocator.getPositionStream(
+  //     locationSettings: realTimeLocationSettings,
+  //   ).listen((Position? position) {
+  //     if (position != null) {
+  //       LatLng newLocation = LatLng(position.latitude, position.longitude);
 
-        _updateMapWithNewLocation(newLocation);
-      }
-    });
-  }
+  //       _updateMapWithNewLocation(newLocation);
+  //     }
+  //   });
+  // }
 
-  void _updateMapWithNewLocation(LatLng newLocation) {
-    markers.removeWhere((marker) => marker.markerId == 'currentLocationMarker');
+  // void _updateMapWithNewLocation(LatLng newLocation) {
+  //   markers.removeWhere((marker) => marker.markerId == 'currentLocationMarker');
     
-    markers.add(Marker(
-        markerId: 'currentLocationMarker',
-        latLng: newLocation,
-        width: 30,
-        height: 30,
-        markerImageSrc: 'https://github.com/jjeong41/t/assets/103355863/5ff2a217-8cbc-4e41-b6c2-0ff12103b40b',
-    ));
+  //   markers.add(Marker(
+  //       markerId: 'currentLocationMarker',
+  //       latLng: newLocation,
+  //       width: 30,
+  //       height: 30,
+  //       offsetX: 15,
+  //       offsetY: 15,
+  //       markerImageSrc: 'https://github.com/jjeong41/t/assets/103355863/5ff2a217-8cbc-4e41-b6c2-0ff12103b40b',
+  //   ));
     
-    mapController?.setCenter(newLocation);
-    setState(() {});
-  }
+  //   mapController?.setCenter(newLocation);
+  //   setState(() {});
+  // }
 
 
 
   @override
   void dispose() {
     // 스트림 구독 해제
-    realTimePositionStream?.cancel();
     positionStream?.cancel();
     super.dispose();
   }
@@ -270,17 +263,17 @@ class _MyMapState extends State<MyMap> {
               'https://github.com/jjeong41/t/assets/103355863/955c2700-e829-426d-a4a0-4806d3f5c085',
           ));
 
-          markers.add(Marker(
-            markerId: 'currentLocationMarker',
-            latLng: LatLng(currentLatitude!, currentLongitude!),
-            width: 30,
-            height: 30,
-            // offsetX: 15,
-            // offsetY: 44,
-            markerImageSrc:
-              // 'https://w7.pngwing.com/pngs/96/889/png-transparent-marker-map-interesting-places-the-location-on-the-map-the-location-of-the-thumbnail.png',
-              'https://github.com/jjeong41/t/assets/103355863/955c2700-e829-426d-a4a0-4806d3f5c085',
-          ));
+          // markers.add(Marker(
+          //   markerId: 'currentLocationMarker',
+          //   latLng: LatLng(currentLatitude!, currentLongitude!),
+          //   width: 30,
+          //   height: 30,
+          //   // offsetX: 15,
+          //   // offsetY: 44,
+          //   markerImageSrc:
+          //     // 'https://w7.pngwing.com/pngs/96/889/png-transparent-marker-map-interesting-places-the-location-on-the-map-the-location-of-the-thumbnail.png',
+          //     'https://github.com/jjeong41/t/assets/103355863/955c2700-e829-426d-a4a0-4806d3f5c085',
+          // ));
 
           polylines.add(
             Polyline(

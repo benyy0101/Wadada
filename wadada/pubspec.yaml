@@ -49,6 +49,7 @@ dependencies:
   fl_chart:
   lottie: ^3.1.0
   stomp_dart_client: ^2.0.0
+  location: ^6.0.2
   
 
 flutter_launcher_icons:

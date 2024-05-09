@@ -7,6 +7,7 @@ import 'package:wadada/screens/singleresultpage/singleresultpage.dart';
 import 'package:wadada/screens/singlerunpage/component/clock.dart';
 import 'package:wadada/screens/singlerunpage/component/map.dart';
 import 'package:wadada/screens/singlerunpage/component/dist_bar.dart';
+import 'package:wadada/screens/singlerunpage/component/testmap.dart';
 import 'package:wadada/screens/singlerunpage/component/time_bar.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 import 'package:dio/dio.dart';
@@ -39,6 +40,7 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
   late Clock clock;
 
   late MyMap myMap;
+  // late MyMap1 myMap1;
 
   @override
   void initState() {
@@ -47,6 +49,7 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
     startTimers();
 
     myMap = MyMap(appKey: widget.appKey);
+    // myMap1 = MyMap1(appKey: widget.appKey);
 
     myMap.startLocationNotifier.addListener(() {
       if (myMap.startLocationNotifier.value != null) {
@@ -485,6 +488,7 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
                     ),
                     SizedBox(height: 10),
                     myMap,
+                    // myMap1,
                   ],
                 ),
                 SizedBox(height: 35),
