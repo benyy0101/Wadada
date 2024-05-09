@@ -130,7 +130,7 @@ public class RoomServiceImpl implements RoomService {
         }
 
         // 해당 방에 참가시키고
-        if(roomDto.getMemberList().isEmpty()){
+        if(roomDto.getMembers().isEmpty()){
             roomDto.addMember(RoomMemberRes.of(true, member));
         }
         else{
