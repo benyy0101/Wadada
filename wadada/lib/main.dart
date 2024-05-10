@@ -13,13 +13,13 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 //import 'package:wadada/common/pages/mainpage.dart';
 import 'package:wadada/screens/mypage/layout.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:wadada/screens/newprofilepage/layout.dart';
 import 'package:wadada/screens/multimainpage/multi_main.dart';
 import 'package:wadada/screens/singlemainpage/single_main.dart';
 import 'dart:io';
 import 'package:wadada/screens/mypage/layout.dart';
 
 void main() async {
-  
   HttpOverrides.global = NoCheckCertificateHttpOverrides();
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -54,18 +54,18 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Widget homeWidget;
-    // homeWidget = SingleMain();
+    Widget homeWidget;
+    homeWidget = MainPageLayout();
     // if (storage.read(key: 'accessToken') != null) {
-    //   homeWidget = MyPageLayout();
+    //   homeWidget = MultiMain();
     // } else {
-
+    //   homeWidget = MainPageLayout();
     // }
-    return MaterialApp(
+    return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       // home: MainPageLayout(),
-      home: MultiMain(),
+      home: homeWidget,
     );
   }
 }
