@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dio/src/response.dart';
 import 'package:wadada/models/mypage.dart';
 import 'package:wadada/provider/mypageProvider.dart';
@@ -8,6 +10,7 @@ abstract class AbstractMypageRepository {
   Future<SingleDetail> getSingleDetail(int req);
   Future<MultiDetail> getMultiDetail(int req);
   Future<MarathonDetail> getMarathonDetail(int req);
+  Future<String> uploadImage(File file);
 }
 
 class MypageRepository implements AbstractMypageRepository {
@@ -58,6 +61,17 @@ class MypageRepository implements AbstractMypageRepository {
       return SingleDetail.fromJson(res.data);
     } catch (e) {
       print("ERROR: $e");
+      rethrow;
+    }
+  }
+
+  @override
+  Future<String> uploadImage(File file) async {
+    try {
+      Response res = await mypageAPI.imageUpload(file);
+      return res.data['child_picture'];
+    } catch (e) {
+      print(e);
       rethrow;
     }
   }

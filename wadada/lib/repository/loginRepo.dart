@@ -14,26 +14,32 @@ class LoginDto {
   final String? kakao_email;
   final Jwt jwtToken;
 
-  LoginDto(
-      {required this.kakao_id,
-      required this.kakao_nickname,
-      required this.kakao_email,
-      required this.jwtToken});
+  LoginDto({
+    required this.kakao_id,
+    required this.kakao_nickname,
+    required this.kakao_email,
+    required this.jwtToken,
+  });
 
   factory LoginDto.fromJson(Map<String, dynamic> json) {
     return LoginDto(
       kakao_id:
-          json['kakao_id'] != null ? json['kakao_id'] as String : "temp_id",
+          json['member_id'] != null ? json['member_id'] as String : "no id",
       kakao_nickname: json['kakao_nickname'] != null
           ? json['kakao_nickname'] as String
-          : "temp_nickname",
+          : "no_id",
       kakao_email: json['kakao_email'] != null
           ? json['kakao_email'] as String
-          : "temp_email",
+          : "no_email",
       jwtToken: json['jwtToken'] != null
           ? Jwt.fromJson(json['jwtToken'] as Map<String, dynamic>)
-          : Jwt(grantType: "temp_grantType", accessToken: "temp_accessToken"),
+          : Jwt(grantType: "no_granttype", accessToken: "no_accesstoken"),
     );
+  }
+
+  @override
+  String toString() {
+    return 'LoginDto{kakao_id: $kakao_id, kakao_nickname: $kakao_nickname, kakao_email: $kakao_email, jwtToken: $jwtToken}';
   }
 }
 
@@ -53,6 +59,7 @@ class LoginRepository implements AbstractLoginRepository {
 
   LoginRepository({required this.provider});
 
+  @override
   Future<LoginDto> loginToServer() async {
     try {
       OAuthToken token;

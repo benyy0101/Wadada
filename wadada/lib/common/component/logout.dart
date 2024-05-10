@@ -7,7 +7,7 @@ import 'package:wadada/controller/multiController.dart';
 import 'package:wadada/models/multiroom.dart';
 import 'package:wadada/models/mypage.dart';
 import 'package:wadada/provider/multiProvider.dart';
-import 'package:wadada/provider/stompProvider.dart';
+import 'package:wadada/controller/stompController.dart';
 import 'package:wadada/repository/multiRepo.dart';
 import 'package:wadada/screens/mainpage/layout.dart';
 
@@ -22,8 +22,9 @@ class LogoutButton extends StatelessWidget {
           await UserApi.instance.logout();
           // 로그아웃 성공 시 처리
           print('로그아웃 성공');
-          Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) => MainPageLayout()));
+          Get.to(MainPageLayout());
+          // Navigator.pushReplacement(context,
+          //     MaterialPageRoute(builder: (context) => MainPageLayout()));
         } catch (error) {
           // 로그아웃 실패 시 처리
           print('로그아웃 실패: $error');
@@ -46,7 +47,6 @@ class TestButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Get.put(MultiController(repo: MultiRepository(provider: MultiProvider())));
     return GetBuilder<MultiController>(builder: (MultiController controller) {
       MultiRoom test = MultiRoom(
           roomPeople: 3,
@@ -56,7 +56,7 @@ class TestButton extends StatelessWidget {
           roomTag: '#싸피',
           roomTime: 3,
           roomTitle: 'test');
-      StompProvider provider = StompProvider(roomIdx: 0);
+      //StompProvider provider = StompProvider(roomIdx: 0);
       return ElevatedButton(
         onPressed: () {
           try {

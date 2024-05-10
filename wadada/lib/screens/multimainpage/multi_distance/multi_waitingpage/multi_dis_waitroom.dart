@@ -10,44 +10,76 @@ import 'package:wadada/screens/multimainpage/multi_distance/multi_waitingpage/mu
 import 'package:wadada/screens/multimainpage/multi_distance/multi_waitingpage/multi_dis_roomcard.dart';
 import 'package:wadada/screens/multimainpage/multi_distance/multi_waitingpage/multi_dist_room_form.dart';
 
-class MultiDisWait extends StatelessWidget {
-  double? roomDist;
-  double? roomPeople;
-  double? roomSecret;
-  double? roomTag;
-  double? roomTitle;
-  double? roomIdx;
+class MultiDisWait extends StatefulWidget {
+  int roomMode;
 
-  MultiDisWait({super.key});
+  MultiDisWait({required this.roomMode});
+
+  @override
+  _MultiDisWait createState() => _MultiDisWait(roomMode: roomMode);
+}
+
+class _MultiDisWait extends State<MultiDisWait> {
+  int roomMode;
+
+  _MultiDisWait({required this.roomMode});
+  final controller = Get.put(
+      MultiController(repo: MultiRepository(provider: MultiProvider())));
+
+  @override
+  void initState() {
+    super.initState();
+    // Call the method to fetch data with the provided parameter
+    controller.getMultiRoomsByMode(roomMode);
+  }
 
   @override
   Widget build(BuildContext context) {
-    Get.put(MultiController(repo: MultiRepository(provider: MultiProvider())));
-    return GetBuilder<MultiController>(builder: (MultiController controller) {
-      return Scaffold(
-        appBar: AppBar(
-          title: const Text('거리모드 - 멀티', style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
-          backgroundColor: Colors.white,
-          elevation: 0,
-          centerTitle: true,
-        ),
+    late String titleText = '';
+    // controller.getMultiRoomsByMode(1);
+    if (roomMode == 1) {
+      titleText = '거리모드 - 멀티';
+    } else if (roomMode == 2) {
+      titleText = '시간모드 - 멀티';
+    } else {
+      titleText = '만남모드 - 멀티';
+    }
+    controller.getMultiRoomsByMode(roomMode);
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(titleText,
+            style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
         backgroundColor: Colors.white,
-        body: SafeArea(
+        elevation: 0,
+        centerTitle: true,
+      ),
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          // Wrap with SingleChildScrollView
           child: Padding(
-            padding: const EdgeInsets.only(left: 30, right: 30),
+            padding: const EdgeInsets.only(
+                left: 30,
+                right: 30,
+                bottom: 20), // Add padding to the bottom to avoid overflow
             child: Column(
               children: [
-                // 방 생성 버튼
+                // Rest of your content
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     ElevatedButton(
                       onPressed: () {
-                        // 방 생성하는 폼으로 슛
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => MultiDistanceRoomForm()),
-                        );
+                        Get.to(MultiDistanceRoomForm(
+                          roomMode: roomMode,
+                        ));
+                        // Navigator.push(
+                        //   context,
+                        //   MaterialPageRoute(
+                        //       builder: (context) => MultiDistanceRoomForm(
+                        //             roomMode: roomMode,
+                        //           )),
+                        // );
                       },
                       style: ElevatedButton.styleFrom(
                         foregroundColor: Colors.white,
@@ -55,15 +87,13 @@ class MultiDisWait extends StatelessWidget {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        minimumSize: Size(90, 40), 
+                        minimumSize: Size(90, 40),
                       ),
                       child: const Text('방 생성하기'),
                     ),
-
                   ],
                 ),
                 const SizedBox(height: 10),
-                // 검색 창과 검색 버튼
                 Row(
                   children: [
                     Expanded(
@@ -80,26 +110,24 @@ class MultiDisWait extends StatelessWidget {
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(color: GREEN_COLOR), 
+                              borderSide: BorderSide(color: GREEN_COLOR),
                             ),
-                            enabledBorder: OutlineInputBorder( 
+                            enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(color: Colors.grey), 
+                              borderSide: BorderSide(color: Colors.grey),
                             ),
                           ),
                         ),
                       ),
                     ),
-
                     const SizedBox(width: 10),
                     ElevatedButton(
                       onPressed: () {
                         // 검색 로직
-
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.white,
-                        foregroundColor: DARK_GREEN_COLOR, 
+                        foregroundColor: DARK_GREEN_COLOR,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8.0),
                           side: BorderSide(color: DARK_GREEN_COLOR),
@@ -109,41 +137,29 @@ class MultiDisWait extends StatelessWidget {
                     ),
                   ],
                 ),
-
                 const SizedBox(height: 20),
-                GestureDetector(
-                  // onTap: () {
-                  //   Navigator.push(
-                  //     context,
-                  //     MaterialPageRoute(builder: (context) => MultiRoomDetail(roomIdx: .roomIdx, roomDist: item.roomDist, roomPeople: item.roomPeople, roomSecret: item.roomSecret, roomTag: item.roomTag, roomTitle: item.roomTitle)),
-                  //   );
-                  // },
-                  child: DisRoomInfoCard(),
-                ),
-                const SizedBox(height: 30),
-                // ListView.builder(
-                //   itemCount: controller.getMultiRoomsByMode(1).length,
-                //   itemBuilder: (context, roomIdx) {
-                //     final room = controller.getMultiRoomsByMode(1)[roomIdx];
-                //     return GestureDetector(
-                //       onTap: () {
-                //         Navigator.push(
-                //           context,
-                //           MaterialPageRoute(builder: (context) => MultiRoomDetail(room: room)),
-                //         );
-                //       },
-                //       child: DisRoomInfoCard(room: room), 
-                //     );
-                //   },
-                // )
-
-
-
+                Obx(() {
+                  return ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: controller.roomList.length,
+                      itemBuilder: (context, idx) {
+                        return GestureDetector(
+                            onTap: () {
+                              Get.to(() => MultiRoomDetail(
+                                  roomInfo: controller.roomList[idx]));
+                            },
+                            child: Column(children: [
+                              const SizedBox(height: 30),
+                              DisRoomInfoCard(
+                                  roomInfo: controller.roomList[idx]),
+                            ]));
+                      });
+                })
               ],
             ),
           ),
         ),
-      );
-    });
+      ),
+    );
   }
 }

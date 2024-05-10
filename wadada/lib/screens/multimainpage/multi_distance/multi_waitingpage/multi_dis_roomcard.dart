@@ -4,22 +4,15 @@ import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_state_manager/src/simple/get_state.dart';
 import 'package:wadada/common/const/colors.dart';
 import 'package:wadada/controller/multiController.dart';
+import 'package:wadada/models/multiroom.dart';
 import 'package:wadada/provider/multiProvider.dart';
 import 'package:wadada/repository/multiRepo.dart';
 
 // ignore: must_be_immutable
 class DisRoomInfoCard extends StatelessWidget {
+  SimpleRoom roomInfo;
 
-  double? roomDist;
-  double? roomPeople;
-  double? roomSecret;
-  double? roomTag;
-  double? roomTitle;
-
-  DisRoomInfoCard({super.key});
-
-
-
+  DisRoomInfoCard({super.key, required this.roomInfo});
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +42,7 @@ class DisRoomInfoCard extends StatelessWidget {
                 Expanded(
                   flex: 1, // 왼쪽 부분 (방 코드)의 크기 조절
                   child: Text(
-                    controller.multiroom.roomTitle,
+                    roomInfo.roomTitle,
                     style: TextStyle(
                       color: DARK_GREEN_COLOR,
                       fontWeight: FontWeight.bold,
@@ -69,7 +62,9 @@ class DisRoomInfoCard extends StatelessWidget {
                           Icon(Icons.people, color: DARK_GREEN_COLOR),
                           SizedBox(height: 10),
                           Icon(
-                            controller.multiroom.roomSecret != null ? Icons.lock : Icons.lock_open,
+                            roomInfo.roomSecret != null
+                                ? Icons.lock
+                                : Icons.lock_open,
                             color: DARK_GREEN_COLOR,
                           )
                         ],
@@ -78,22 +73,18 @@ class DisRoomInfoCard extends StatelessWidget {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('거리', 
-                            style: TextStyle(
-                              color: DARK_GREEN_COLOR, 
-                              fontWeight: FontWeight.bold
-                            )
-                          ),
+                          Text('거리',
+                              style: TextStyle(
+                                  color: DARK_GREEN_COLOR,
+                                  fontWeight: FontWeight.bold)),
                           SizedBox(height: 12),
-                          Text('참여 인원', 
-                            style: TextStyle(
-                              color: DARK_GREEN_COLOR, 
-                              fontWeight: FontWeight.bold
-                              )
-                            ),
+                          Text('참여 인원',
+                              style: TextStyle(
+                                  color: DARK_GREEN_COLOR,
+                                  fontWeight: FontWeight.bold)),
                           SizedBox(height: 12),
                           Text(
-                            controller.multiroom.roomSecret != null ? '비밀방' : '공개방',
+                            roomInfo.roomSecret != null ? '비밀방' : '공개방',
                             style: TextStyle(
                               color: DARK_GREEN_COLOR,
                               fontWeight: FontWeight.bold,
@@ -105,9 +96,10 @@ class DisRoomInfoCard extends StatelessWidget {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('${controller.multiroom.roomDist}  km'),
+                          Text('${roomInfo.roomDist}  km'),
                           SizedBox(height: 12),
-                          Text('1 / ${controller.multiroom.roomPeople}'),
+                          Text(
+                              '${roomInfo.nowRoomPeople} / ${roomInfo.roomPeople}'),
                           SizedBox(height: 12),
                           Text(''),
                         ],

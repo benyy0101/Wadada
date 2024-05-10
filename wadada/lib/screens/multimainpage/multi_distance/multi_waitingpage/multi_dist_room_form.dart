@@ -1,20 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:wadada/controller/multiController.dart';
+import 'package:wadada/models/multiroom.dart';
 import 'package:wadada/provider/multiProvider.dart';
 import 'package:wadada/repository/multiRepo.dart';
 import 'package:wadada/screens/multimainpage/multi_distance/multi_waitingpage/multi_dis_room_detail.dart';
 import 'package:wadada/screens/multimainpage/multi_distance/multi_waitingpage/options/multi_select_dist_option.dart';
 
 class MultiDistanceRoomForm extends StatefulWidget {
-  const MultiDistanceRoomForm({super.key});
+  int roomMode;
+
+  MultiDistanceRoomForm({super.key, required this.roomMode});
 
   @override
-  MultiDistanceRoomFormState createState() => MultiDistanceRoomFormState();
+  MultiDistanceRoomFormState createState() =>
+      MultiDistanceRoomFormState(roomMode: roomMode);
 }
 
 class MultiDistanceRoomFormState extends State<MultiDistanceRoomForm> {
-  // 각 입력 필드를 위한 TextEditingController 인스턴스 생성
+  int roomMode;
+
+  MultiDistanceRoomFormState({required this.roomMode});
+  // 각 입력 필드를 위한 TextEreditingController 인스턴스 생성
   final participantController = TextEditingController();
   final passwordController = TextEditingController();
   final hashTagController = TextEditingController();
@@ -31,6 +38,19 @@ class MultiDistanceRoomFormState extends State<MultiDistanceRoomForm> {
   @override
   Widget build(BuildContext context) {
     Get.put(MultiController(repo: MultiRepository(provider: MultiProvider())));
+    String roomOption;
+    String optionMetric;
+    if (roomMode == 1) {
+      roomOption = '거리';
+      optionMetric = 'km';
+    } else if (roomMode == 2) {
+      roomOption = '시간';
+      optionMetric = '분';
+    } else {
+      roomOption = '';
+      optionMetric = '';
+    }
+
     return GetBuilder<MultiController>(builder: (MultiController controller) {
       return Scaffold(
         appBar: AppBar(
@@ -50,11 +70,11 @@ class MultiDistanceRoomFormState extends State<MultiDistanceRoomForm> {
                 Container(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
+                    children: [
                       SizedBox(height: 10),
                       MultiSelectDistOption(
-                        option_dis: '거리',
-                        optionstr_dis: '(km)',
+                        option_dis: roomOption,
+                        optionstr_dis: optionMetric,
                         option_people: '참여 인원',
                         optionstr_people: '(명)',
                         option_password: '비밀 번호',
@@ -94,11 +114,27 @@ class MultiDistanceRoomFormState extends State<MultiDistanceRoomForm> {
                     SizedBox(width: 20),
                     Expanded(
                       child: GestureDetector(
-                        onTap: () {
+                        onTap: () async {
                           // 방 생성 로직
                           try {
-                            controller.creatMultiRoom(controller.multiroom);
-                            print(controller.multiroom.toString());
+                            controller.cur.roomIdx = await controller
+                                .creatMultiRoom(controller.multiroom);
+                            controller.cur.roomTag =
+                                controller.multiroom.roomTag;
+                            controller.cur.roomDist =
+                                controller.multiroom.roomDist;
+                            controller.cur.roomSecret =
+                                controller.multiroom.roomSecret;
+                            controller.cur.roomTime =
+                                controller.multiroom.roomTime;
+                            controller.cur.roomPeople =
+                                controller.multiroom.roomPeople;
+                            controller.cur.roomMode =
+                                controller.multiroom.roomMode;
+                            Get.to(MultiRoomDetail(
+                              roomInfo: controller.cur,
+                            ));
+                            //print(controller.multiroom.toString());
                             // Navigator.push(
                             //   context,
                             //   MaterialPageRoute(

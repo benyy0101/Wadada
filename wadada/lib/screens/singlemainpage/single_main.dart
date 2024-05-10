@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:wadada/screens/singleoptionpage/single_free_option.dart';
 import 'package:wadada/common/component/logout.dart';
 import 'package:wadada/screens/singlemainpage/component/select_mode.dart';
@@ -60,27 +61,33 @@ class SingleMain extends StatelessWidget {
               des: '목표한 거리만큼 달려보세요.',
               btn: '28',
               onTapAction: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => SingleOption(isDistMode: true)),
-                );
+                Get.to(SingleOption(
+                  isDistMode: true,
+                ));
+                // Navigator.push(
+                //   context,
+                //   MaterialPageRoute(
+                //       builder: (context) => SingleOption(isDistMode: true)),
+                // );
               },
             ),
             SizedBox(
               height: 25,
             ),
             SelectMode(
-              icon: 'assets/images/clock.png',
+              icon: 'assets/images/clock_2.png',
               name: '시간모드',
               des: '목표한 시간만큼 달려보세요.',
               btn: '28',
               onTapAction: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => SingleOption(isDistMode: false)),
-                );
+                Get.to(SingleOption(
+                  isDistMode: false,
+                ));
+                // Navigator.push(
+                //   context,
+                //   MaterialPageRoute(
+                //       builder: (context) => SingleOption(isDistMode: false)),
+                // );
               },
             ),
             SizedBox(
@@ -92,18 +99,21 @@ class SingleMain extends StatelessWidget {
               des: '코스를 뛰고, 기록에 도전하세요.',
               btn: '8',
               onTapAction: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => SingleOption(isDistMode: false)),
-                );
+                Get.to(SingleOption(
+                  isDistMode: false,
+                ));
+                // Navigator.push(
+                //   context,
+                //   MaterialPageRoute(
+                //       builder: (context) => SingleOption(isDistMode: false)),
+                // );
               },
             ),
             SizedBox(
               height: 30,
             ),
             // LogoutButton(),
-            TestButton(),
+            // TestButton(),
           ],
         ),
       ),

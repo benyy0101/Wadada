@@ -24,7 +24,6 @@ class MultiRepository extends AbstractMultiRepository {
       res.data.forEach((item) {
         resSerialized.add(SimpleRoom.fromJson(item));
       });
-      print(resSerialized);
       return resSerialized;
     } catch (e) {
       print(e);
@@ -52,7 +51,7 @@ class MultiRepository extends AbstractMultiRepository {
   Future<RoomInfo> createRoom(MultiRoom roomInfo) async {
     try {
       Response res = await provider.multiRoomCreate(roomInfo);
-      int roomIdx = int.parse(res.data.keys.first);
+      int roomIdx = res.data['roomIdx'];
       RoomInfo info = RoomInfo(
         roomIdx: roomIdx,
         roomPeople: roomInfo.roomPeople,
