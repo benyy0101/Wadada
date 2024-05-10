@@ -11,10 +11,10 @@ import 'package:wadada/provider/stompProvider.dart';
 import 'package:wadada/repository/multiRepo.dart';
 
 class MultiRoomDetail extends StatefulWidget {
-  Int roomIdx;
-  Int roomDist;
-  Int roomPeople;
-  Int roomSecret;
+  int roomIdx;
+  int roomDist;
+  int roomPeople;
+  int roomSecret;
   String roomTitle;
   String roomTag;
 

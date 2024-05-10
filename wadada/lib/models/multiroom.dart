@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:wadada/models/mypage.dart';
 import 'dart:math';
 
@@ -124,10 +126,10 @@ class MultiRoomGameStart {
 }
 
 class MultiRoomGameEnd {
-  String recordMode;
+  // String recordMode;
   String recordImage;
-  double recordDist;
-  Duration recordTime;
+  int recordDist;
+  int recordTime;
   String recordStartLocation;
   String recordEndLocation;
   String recordWay; // JSON
@@ -139,7 +141,6 @@ class MultiRoomGameEnd {
 
   MultiRoomGameEnd({
     required this.roomIdx,
-    required this.recordMode,
     required this.recordImage,
     required this.recordDist,
     required this.recordTime,
@@ -155,10 +156,9 @@ class MultiRoomGameEnd {
   factory MultiRoomGameEnd.fromJson(Map<String, dynamic> json) {
     return MultiRoomGameEnd(
       roomIdx: json['roomIdx'] as int,
-      recordMode: json['recordMode'] as String,
       recordImage: json['recordImage'] as String,
-      recordDist: json['recordDist'] as double,
-      recordTime: Duration(milliseconds: json['recordTime'] as int),
+      recordDist: json['recordDist'] as int,
+      recordTime: json['recordTime'] as int,
       recordStartLocation: json['recordStartLocation'] as String,
       recordEndLocation: json['recordEndLocation'] as String,
       recordWay: json['recordWay'] as String,
@@ -171,10 +171,9 @@ class MultiRoomGameEnd {
 
   Map<String, dynamic> toJson() => {
         'roomIdx': roomIdx,
-        'recordMode': recordMode,
         'recordImage': recordImage,
         'recordDist': recordDist,
-        'recordTime': recordTime.inMilliseconds,
+        'recordTime': recordTime,
         'recordStartLocation': recordStartLocation,
         'recordEndLocation': recordEndLocation,
         'recordWay': recordWay,
@@ -186,7 +185,7 @@ class MultiRoomGameEnd {
 
   @override
   String toString() {
-    return 'MultiRoomGameEnd(roomIdx: $roomIdx, recordMode: $recordMode, recordImage: $recordImage, recordDist: $recordDist, recordTime: $recordTime, recordStartLocation: $recordStartLocation, recordEndLocation: $recordEndLocation, recordWay: $recordWay, recordSpeed: $recordSpeed, recordHeartbeat: $recordHeartbeat, recordPace: $recordPace, recordRank: $recordRank)';
+    return 'MultiRoomGameEnd(roomIdx: $roomIdx, recordImage: $recordImage, recordDist: $recordDist, recordTime: $recordTime, recordStartLocation: $recordStartLocation, recordEndLocation: $recordEndLocation, recordWay: $recordWay, recordSpeed: $recordSpeed, recordHeartbeat: $recordHeartbeat, recordPace: $recordPace, recordRank: $recordRank)';
   }
 }
 

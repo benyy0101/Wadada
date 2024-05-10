@@ -51,6 +51,7 @@ dependencies:
   lottie: ^3.1.0
   stomp_dart_client: ^2.0.0
   location: ^6.0.2
+  flutter_local_notifications: ^17.1.2
   
 
 flutter_launcher_icons:

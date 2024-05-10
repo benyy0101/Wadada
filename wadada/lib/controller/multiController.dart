@@ -29,12 +29,11 @@ class MultiController extends GetxController {
 
   MultiRoomGameEnd gameEndInfo = MultiRoomGameEnd(
       roomIdx: -1,
-      recordStartLocation: 'POINT(-1 -1)',
-      recordMode: '',
+      recordStartLocation: '',
       recordImage: '',
       recordDist: -1,
-      recordTime: Duration.zero,
-      recordEndLocation: 'Point(-1 -1)',
+      recordTime: 1,
+      recordEndLocation: '',
       recordWay: '',
       recordSpeed: '',
       recordHeartbeat: '',
@@ -66,7 +65,7 @@ class MultiController extends GetxController {
   }
 
   void sendStartLocation(
-      String lat, String long, int roomIdx, int people) async {
+      double lat, double long, int roomIdx, int people) async {
     try {
       recordSeq = await repo.sendStartLocation(lat, long, roomIdx, people);
       update();

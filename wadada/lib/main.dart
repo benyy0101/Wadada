@@ -8,6 +8,7 @@ import 'package:get/get_core/src/get_main.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:kakao_flutter_sdk_common/kakao_flutter_sdk_common.dart';
 import 'package:wadada/common/component/tabbars.dart';
+import 'package:wadada/screens/firststartpage/firststartpage.dart';
 import 'package:wadada/screens/mainpage/layout.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 //import 'package:wadada/common/pages/mainpage.dart';
@@ -65,7 +66,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       // home: MainPageLayout(),
-      home: MultiMain(),
+      home: StartPageLayout(),
     );
   }
 }

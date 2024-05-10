@@ -72,10 +72,10 @@ class MultiRepository extends AbstractMultiRepository {
 
   //MULTI-006
   Future<int> sendStartLocation(
-      String lat, String long, int roomIdx, int people) async {
+      double lat, double long, int roomIdx, int people) async {
     MultiRoomGameStart start = MultiRoomGameStart(
         roomIdx: roomIdx,
-        recordStartLocation: 'POINT(${lat} ${long})',
+        recordStartLocation: 'POINT($lat $long)',
         recordPeople: people);
     try {
       print("--------------------");
