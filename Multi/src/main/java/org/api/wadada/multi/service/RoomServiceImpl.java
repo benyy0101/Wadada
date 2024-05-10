@@ -233,9 +233,7 @@ public class RoomServiceImpl implements RoomService {
 
         // 레포지토리에서 검색
         List<RoomDocument> roomDocuments = customRoomRepository.findByRoomTags(tagList);
-        for (RoomDocument document : roomDocuments) {
-            log.info(document.getRoomTag());
-        }
+        log.info("찾은 수"+String.valueOf(roomDocuments.size()));
         // 현재 활성화된 룸 정보 가져오고
         HashMap<Integer, Integer> roomInfo = new HashMap<>();
         Map<Integer,RoomDto> activeRooms = roomManager.getAllRooms();
@@ -244,12 +242,12 @@ public class RoomServiceImpl implements RoomService {
         }
 
 
-        //거르는 작업(로그 스태시가 1분 주기라 삭제 반영 안된 정보 거르기)
         roomDocuments = roomDocuments.stream()
                 .filter(roomDocument -> activeRooms.values().stream()
                         .anyMatch(r -> r.getRoomSeq() == roomDocument.getRoomSeq()))
                 .toList();
 
+        log.info("거른 후"+roomDocuments.size());
 
         // index와 정보를 response로
         List<RoomRes> roomResList = roomDocuments.stream().map(
