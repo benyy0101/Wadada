@@ -10,12 +10,6 @@ class MultiMain extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: false,
-      appBar: AppBar(
-        title: const Text('멀티 모드'),
-        backgroundColor: Colors.white,
-        elevation: 0,
-        centerTitle: true,
-      ),
       backgroundColor: Colors.white,
       body: Container(
         padding: EdgeInsets.only(left: 30, right: 30, top: 10),
@@ -23,6 +17,15 @@ class MultiMain extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              SizedBox(
+                height: 45,
+              ),
+              Text('멀티모드',
+                  style: TextStyle(
+                    color: Colors.black87,
+                    fontSize: 30,
+                    fontWeight: FontWeight.w600,
+                  )),
               SizedBox(
                 height: 60,
               ),
@@ -35,11 +38,6 @@ class MultiMain extends StatelessWidget {
                   Get.to(MultiDisWait(
                     roomMode: 1,
                   ));
-                  // Navigator.push(
-                  //   context,
-
-                  //   // MaterialPageRoute(builder: (context) => MultiDisWait()),
-                  // );
                 },
               ),
               SizedBox(
@@ -54,10 +52,6 @@ class MultiMain extends StatelessWidget {
                   Get.to(MultiDisWait(
                     roomMode: 2,
                   ));
-                  // Navigator.push(
-                  //   context,
-                  //   MaterialPageRoute(builder: (context) => MultiTimeWait()),
-                  // );
                 },
               ),
               SizedBox(

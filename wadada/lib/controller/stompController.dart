@@ -58,7 +58,6 @@ class StompController extends GetxController {
 
                 //게임 스타트
                 if (res['body']['action'] == "/Multi/start") {
-                  
                   return;
                 }
                 //Null값 처리
@@ -137,6 +136,7 @@ class StompController extends GetxController {
   }
 
   void countReady() {
+    numReady = 0;
     members.forEach((item) {
       if (item.memberReady == true) numReady++;
     });

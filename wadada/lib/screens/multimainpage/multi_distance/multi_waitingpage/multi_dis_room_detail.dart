@@ -31,6 +31,9 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
   late StompController controller;
   late MultiController multiController;
   List<String> tags = [];
+  String titleText = '';
+  String optionMetric = '';
+  String roomOption = '';
   final storage = FlutterSecureStorage();
 
   bool isHost = false;
@@ -49,6 +52,7 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
       // Now you can proceed with other actions
       print("send--------------------");
       controller.attend(roomInfo.roomIdx);
+      setRoomInfo();
       //print(isHost);
       if (controller.numReady == controller.members.length - 1) toStart = true;
     });
@@ -71,12 +75,29 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
     });
   }
 
+  void setRoomInfo() {
+    print(roomInfo.roomMode);
+    if (roomInfo.roomMode == 1) {
+      titleText = '거리모드 - 멀티';
+      roomOption = '거리';
+      optionMetric = 'km';
+    } else if (roomInfo.roomMode == 2) {
+      titleText = '시간모드 - 멀티';
+      roomOption = '시간';
+      optionMetric = '분';
+    } else {
+      titleText = '만남모드 - 멀티';
+      roomOption = '';
+      optionMetric = '';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: Text('거리모드 - 멀티',
+        title: Text(titleText,
             style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
         backgroundColor: Colors.white,
         elevation: 0,
@@ -178,10 +199,10 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                           // 두 번째 컬럼
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            children: const [
+                            children: [
                               SizedBox(height: 5),
                               Text(
-                                '거리',
+                                roomOption,
                                 style: TextStyle(
                                     fontSize: 20,
                                     fontWeight: FontWeight.bold,
@@ -212,7 +233,7 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                             children: [
                               SizedBox(height: 5),
                               Text(
-                                '${roomInfo.roomDist} km',
+                                '${roomInfo.roomDist} $optionMetric',
                                 style: TextStyle(
                                     fontSize: 20,
                                     fontWeight: FontWeight.bold,

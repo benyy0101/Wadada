@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:wadada/common/const/colors.dart';
+import 'package:wadada/screens/multimainpage/multi_main.dart';
 import 'package:wadada/screens/mypage/layout.dart';
 import 'package:wadada/screens/singlemainpage/single_main.dart';
 
-
-class TabBars extends StatelessWidget {
-  const TabBars({super.key});
+class MainLayout extends StatelessWidget {
+  const MainLayout({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return const GetMaterialApp(
+      debugShowCheckedModeBanner: false,
       home: DefaultTabController(
         length: 4,
         child: Scaffold(
@@ -31,7 +33,7 @@ class TabBars extends StatelessWidget {
             children: [
               SingleMain(),
               // Icon(Icons.person),
-              Icon(Icons.groups), // 아직 멀티 페이지가 없어서 임시로 넣어놓음
+              MultiMain(), // 아직 멀티 페이지가 없어서 임시로 넣어놓음
               // 아직 마라톤도 없어서 임시로 넣어놓음
               Icon(Icons.emoji_events),
               MyPageLayout(),
@@ -43,4 +45,3 @@ class TabBars extends StatelessWidget {
     );
   }
 }
-
