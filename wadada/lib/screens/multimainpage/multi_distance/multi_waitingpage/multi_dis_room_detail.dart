@@ -3,6 +3,7 @@ import 'dart:ffi';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:wadada/common/const/colors.dart';
@@ -28,9 +29,9 @@ class MultiRoomDetail extends StatefulWidget {
 class _MultiRoomDetailState extends State<MultiRoomDetail> {
   SimpleRoom roomInfo;
   late StompController controller;
-  late LoginController loginController;
   late MultiController multiController;
-  late List<String> tags;
+  List<String> tags = ['#직장인', '#저녁런닝'];
+  final storage = FlutterSecureStorage();
 
   bool isHost = false;
   bool isButtonPressed = false;
@@ -46,18 +47,7 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
     Future.delayed(Duration(milliseconds: 2000), () {
       // Now you can proceed with other actions
       print("send--------------------");
-      // print(roomInfo.roomIdx);
-      // print(multiController.cur.roomIdx);
       controller.attend(roomInfo.roomIdx);
-      //print(loginController.loginInfo.kakao_id);
-      //print(controller.members);
-      controller.members.forEach((element) {
-        //print(element.memberId);
-        if (element.memberId == loginController.loginInfo.kakao_id &&
-            element.manager == true) {
-          isHost = true;
-        }
-      });
       //print(isHost);
       if (controller.numReady == controller.members.length - 1) toStart = true;
     });
@@ -66,21 +56,8 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
 
   void initControllers() {
     controller = StompController(roomIdx: roomInfo.roomIdx);
-    loginController = LoginController(
-        loginRepository: LoginRepository(provider: LoginProvider()));
     multiController =
         MultiController(repo: MultiRepository(provider: MultiProvider()));
-  }
-
-  void checkOwner() {
-    print(loginController.loginInfo.kakao_id);
-    controller.members.forEach((element) {
-      print(element.memberId);
-      if (element.memberId == loginController.loginInfo.kakao_id &&
-          element.manager == true) {
-        isHost = true;
-      }
-    });
   }
 
   @override
@@ -251,36 +228,34 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                         ],
                       ),
                       SizedBox(height: 20),
-                      Row(
-                        children: [
-                          Container(
+                      GridView.count(
+                        crossAxisCount: 2,
+                        childAspectRatio: 3, // Number of columns
+                        shrinkWrap:
+                            true, // Ensure that the GridView only occupies the space it needs
+                        physics:
+                            NeverScrollableScrollPhysics(), // Disable scrolling
+                        children: List.generate(tags.length, (index) {
+                          return Padding(
                             padding: EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: DARK_GREEN_COLOR,
-                              borderRadius: BorderRadius.circular(8),
+                                vertical: 4, horizontal: 8),
+                            child: Flexible(
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: DARK_GREEN_COLOR,
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    tags[index],
+                                    style: TextStyle(
+                                        fontSize: 18, color: Colors.white),
+                                  ),
+                                ),
+                              ),
                             ),
-                            child: Text(
-                              '#직장인',
-                              style:
-                                  TextStyle(fontSize: 18, color: Colors.white),
-                            ),
-                          ),
-                          SizedBox(width: 10),
-                          Container(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: DARK_GREEN_COLOR,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Text(
-                              '#저녁런닝',
-                              style:
-                                  TextStyle(fontSize: 18, color: Colors.white),
-                            ),
-                          ),
-                        ],
+                          );
+                        }),
                       ),
                     ],
                   ),
@@ -330,13 +305,11 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                         final members = controller.members;
                         if (members == null || members.isEmpty) {
                           // Show a loading indicator or a placeholder
-
                           return Center(
                             child:
                                 CircularProgressIndicator(), // Or any other placeholder widget
                           );
                         } else {
-                          checkOwner();
                           // Show the list when data is available
                           return ListView.builder(
                             itemCount: members.length,
@@ -366,7 +339,7 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                                       color: DARK_GREEN_COLOR,
                                     ),
                                   ),
-                                  trailing: isHost
+                                  trailing: controller.isOwner
                                       ? GameOwner()
                                       : PlayerCondition(
                                           isReady: member.memberReady),

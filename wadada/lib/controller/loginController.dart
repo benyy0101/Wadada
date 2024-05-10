@@ -5,6 +5,7 @@ import 'package:wadada/repository/loginRepo.dart';
 class LoginController extends GetxController {
   final LoginRepository loginRepository;
   final storage = FlutterSecureStorage();
+  
   LoginDto loginInfo = LoginDto(
       kakao_id: 'kakaoId',
       kakao_nickname: 'kakaoNickname',
@@ -16,7 +17,7 @@ class LoginController extends GetxController {
   Future<void> login() async {
     try {
       loginInfo = await loginRepository.loginToServer();
-      print(loginInfo.jwtToken.accessToken);
+      print(loginInfo);
       await storage.write(
           key: 'accessToken',
           value:

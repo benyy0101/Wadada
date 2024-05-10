@@ -121,8 +121,6 @@ class MultiDistanceRoomFormState extends State<MultiDistanceRoomForm> {
                                 .creatMultiRoom(controller.multiroom);
                             controller.cur.roomDist =
                                 controller.multiroom.roomDist;
-                            controller.cur.roomTitle =
-                                controller.multiroom.roomTitle;
                             controller.cur.roomSecret =
                                 controller.multiroom.roomSecret;
                             controller.cur.roomTime =

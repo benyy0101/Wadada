@@ -106,7 +106,7 @@ class KakaoLoginButton extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         controller.login();
-        Get.to(MultiMain());
+        Get.to(() => MultiMain());
       },
       child: Container(
         child: Image.asset('assets/images/kakao_button.png'),

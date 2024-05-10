@@ -17,7 +17,9 @@ class StompController extends GetxController {
   late String serverUrl;
   RxList<CurrentMember> members = <CurrentMember>[].obs;
   bool isStart = false;
+  bool isOwner = false;
   int numReady = -1;
+  final storage = FlutterSecureStorage();
 
   StompController({required this.roomIdx}) {
     client = StompClient(
@@ -30,7 +32,7 @@ class StompController extends GetxController {
               'Authorization': dotenv.env['accessToken'] ??
                   'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNDYzNDMxNDUzIiwiYXV0aCI6IlJPTEVfU09DSUFMIiwiZXhwIjoxNzE1NDA1MzkzfQ.dmjUkVX1sFe9EpYhT3SGO3uC7q1dLIoddBvzhoOSisM'
             },
-            callback: (frame) {
+            callback: (frame) async {
               try {
                 print("Incoming Messages:--------------------");
 
@@ -55,7 +57,10 @@ class StompController extends GetxController {
 
                 //참가자 list화
                 fromJson(res['body'][roomIdx.toString()]);
+
                 countReady();
+                await checkOwner();
+                splitTags();
               } catch (e) {
                 print(e);
                 rethrow;
@@ -134,6 +139,20 @@ class StompController extends GetxController {
     print("-----controller deactivated---------");
     out(roomIdx);
     client.deactivate();
+  }
+
+  Future<void> checkOwner() async {
+    String kakaoId = await storage.read(key: 'kakaoId') ?? "nothing";
+    // print(kakaoId);
+    if (kakaoId == "nothing") {
+      throw Exception("카카오 아이디가 없습니다.");
+    }
+    members.forEach((element) {
+      // print(element.memberId);
+      if (element.memberId == kakaoId && element.manager == true) {
+        isOwner = true;
+      }
+    });
   }
 
   @override
