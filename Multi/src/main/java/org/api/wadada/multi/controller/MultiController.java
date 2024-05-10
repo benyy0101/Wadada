@@ -168,10 +168,8 @@ public class MultiController {
 
     @MessageMapping("/flag/{roomIdx}")
     @SendTo("/sub/attend/{roomIdx}")
-    public ResponseEntity<?> getFlagPoint(@DestinationVariable int roomIdx){
-        String message = "{\"message\": \"깃발요청\", \"action\": \"/Multi/flag\"}";
+    public void getFlagPoint(@DestinationVariable int roomIdx){
         roomService.getFlagPoint(roomIdx);
-        return new ResponseEntity<>(message,HttpStatus.OK);
     }
 
     @PostMapping("/flag")

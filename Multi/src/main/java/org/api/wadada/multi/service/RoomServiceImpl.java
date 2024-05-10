@@ -262,15 +262,22 @@ public class RoomServiceImpl implements RoomService {
     }
 
     public void getFlagPoint(int roomIdx) {
-
+        String message = GameMessage.GAME_FLAG_INFO_REQUEST.toJson();
+        messagingTemplate.convertAndSend("/sub/attend/" + roomIdx, message);
         RoomDto roomDto = roomManager.getAllRooms().get(roomIdx);
 
         CompletableFuture<Void> flagOptimization = CompletableFuture.anyOf(
                 CompletableFuture.runAsync(() -> awaitAllMemberSend(roomDto), executor),
                 CompletableFuture.runAsync(this::waitSeconds, executor)
         ).thenRun(() -> {  //하나라도 성공하면
-            FlagPointRes message = calculatePoint(roomDto.getRoomPoints());
-            messagingTemplate.convertAndSend("/sub/attend/" + roomIdx, message);
+            if (roomDto.getRoomPoints().size()==0){
+                messagingTemplate.convertAndSend("/sub/attend/" + roomIdx, "사용자 위치정보가 없습니다");
+            }
+            else{
+                FlagPointRes point = calculatePoint(roomDto.getRoomPoints());
+                messagingTemplate.convertAndSend("/sub/attend/" + roomIdx, point);
+            }
+
             roomDto.getRoomPoints().clear();
         });
 
