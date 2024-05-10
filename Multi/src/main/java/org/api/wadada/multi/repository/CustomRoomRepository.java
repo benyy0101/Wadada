@@ -61,5 +61,8 @@ public class CustomRoomRepository {
         }
     }
 
+    public void saveDocument(RoomDocument roomDocument) {
+        elasticsearchOperations.save(roomDocument);
+    }
 
 }

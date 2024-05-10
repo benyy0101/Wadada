@@ -30,6 +30,7 @@ import org.api.wadada.multi.exception.CreateRoomException;
 import org.api.wadada.multi.exception.NotFoundMemberException;
 import org.api.wadada.multi.exception.NotFoundRoomException;
 import org.api.wadada.multi.repository.*;
+import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
@@ -55,10 +56,8 @@ public class RoomServiceImpl implements RoomService {
     private final ConcurrentHashMap<Integer, CompletableFuture<Void>> gameStartFutures = new ConcurrentHashMap<>();
     private final SimpMessagingTemplate messagingTemplate;
     private ExecutorService executor = Executors.newCachedThreadPool();
-
-    //
-
     private final ConcurrentHashMap<Integer, CompletableFuture<Void>> flagFutures = new ConcurrentHashMap<>();
+
 
     @Override
     public PostRoomRes createRoom(CreateRoomReq createRoomReq, Principal principal) throws Exception {
@@ -89,6 +88,7 @@ public class RoomServiceImpl implements RoomService {
         Room savedRoom = roomRepository.save(room);
 
         RoomDocument document = RoomDocument.builder()
+                .id(String.valueOf(savedRoom.getRoomSeq()))
                 .roomSeq(savedRoom.getRoomSeq())
                 .roomDist(savedRoom.getRoomDist())
                 .roomTime(savedRoom.getRoomTime())
@@ -101,7 +101,6 @@ public class RoomServiceImpl implements RoomService {
                 .isDeleted(false)
                 .updatedAt(new Date())
                 .build();
-
         roomDocumentRepository.save(document);
         RoomDto roomDto = new RoomDto();
         roomDto.setRoomSeq(savedRoom.getRoomSeq());
@@ -234,9 +233,7 @@ public class RoomServiceImpl implements RoomService {
 
         // 레포지토리에서 검색
         List<RoomDocument> roomDocuments = customRoomRepository.findByRoomTags(tagList);
-        for (RoomDocument document : roomDocuments) {
-            log.info(document.getRoomTag());
-        }
+        log.info("찾은 수"+String.valueOf(roomDocuments.size()));
         // 현재 활성화된 룸 정보 가져오고
         HashMap<Integer, Integer> roomInfo = new HashMap<>();
         Map<Integer,RoomDto> activeRooms = roomManager.getAllRooms();
@@ -245,12 +242,12 @@ public class RoomServiceImpl implements RoomService {
         }
 
 
-        //거르는 작업(로그 스태시가 1분 주기라 삭제 반영 안된 정보 거르기)
         roomDocuments = roomDocuments.stream()
                 .filter(roomDocument -> activeRooms.values().stream()
                         .anyMatch(r -> r.getRoomSeq() == roomDocument.getRoomSeq()))
                 .toList();
 
+        log.info("거른 후"+roomDocuments.size());
 
         // index와 정보를 response로
         List<RoomRes> roomResList = roomDocuments.stream().map(
