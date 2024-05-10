@@ -30,6 +30,7 @@ import org.api.wadada.multi.exception.CreateRoomException;
 import org.api.wadada.multi.exception.NotFoundMemberException;
 import org.api.wadada.multi.exception.NotFoundRoomException;
 import org.api.wadada.multi.repository.*;
+import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
@@ -55,10 +56,8 @@ public class RoomServiceImpl implements RoomService {
     private final ConcurrentHashMap<Integer, CompletableFuture<Void>> gameStartFutures = new ConcurrentHashMap<>();
     private final SimpMessagingTemplate messagingTemplate;
     private ExecutorService executor = Executors.newCachedThreadPool();
-
-    //
-
     private final ConcurrentHashMap<Integer, CompletableFuture<Void>> flagFutures = new ConcurrentHashMap<>();
+
 
     @Override
     public PostRoomRes createRoom(CreateRoomReq createRoomReq, Principal principal) throws Exception {
@@ -89,6 +88,7 @@ public class RoomServiceImpl implements RoomService {
         Room savedRoom = roomRepository.save(room);
 
         RoomDocument document = RoomDocument.builder()
+                .id(String.valueOf(savedRoom.getRoomSeq()))
                 .roomSeq(savedRoom.getRoomSeq())
                 .roomDist(savedRoom.getRoomDist())
                 .roomTime(savedRoom.getRoomTime())
@@ -101,7 +101,6 @@ public class RoomServiceImpl implements RoomService {
                 .isDeleted(false)
                 .updatedAt(new Date())
                 .build();
-
         roomDocumentRepository.save(document);
         RoomDto roomDto = new RoomDto();
         roomDto.setRoomSeq(savedRoom.getRoomSeq());
