@@ -317,6 +317,8 @@ public class RoomServiceImpl implements RoomService {
     public void startGame(int roomIdx) {
         RoomDto curRoom = roomManager.getAllRooms().get(roomIdx);
         ConcurrentMap<String, PlayerInfo> infoConcurrentMap = new ConcurrentHashMap<>();
+        HashMap<String,Boolean> disconnected = new HashMap<>();
+        HashMap<String,Boolean> finished = new HashMap<>();
 
         for(RoomMemberRes member :curRoom.getMembers().values()){
             PlayerInfo playerInfo = PlayerInfo.builder()
@@ -326,13 +328,18 @@ public class RoomServiceImpl implements RoomService {
                     .memberId(member.getMemberId())
                     .build();
             infoConcurrentMap.put(member.getMemberId(),playerInfo);
+            disconnected.put(member.getMemberId(),false);
+            finished.put(member.getMemberId(),false);
         }
+
 
         GameRoomDto curGame = GameRoomDto.builder()
                 .roomIdx(roomIdx)
                 .curPeople(0)
                 .MaxPeople(curRoom.getMemberCount())
                 .playerInfo(infoConcurrentMap)
+                .disconnected(disconnected)
+                .finished(finished)
                 .roomSeq(curRoom.getRoomSeq()).build();
         removeRoom(curRoom.getRoomSeq(), curRoom.getRoomIdx());
         //연결 끊었다가 새로하는 로직

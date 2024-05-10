@@ -5,6 +5,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.api.wadada.auth.JwtTokenProvider;
+import org.api.wadada.multi.dto.GameRoomDto;
+import org.api.wadada.multi.dto.GameRoomManager;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
@@ -16,8 +18,7 @@ import org.springframework.messaging.Message;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.security.Principal;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 
 @Slf4j
@@ -26,6 +27,7 @@ import java.util.Objects;
 public class ChannelInboundInterceptor  implements ChannelInterceptor {
 
     private final JwtTokenProvider jwtTokenProvider;
+    private final GameRoomManager gameRoomManager;
 
     /**
      * 메세지를 보내기 전에 실행되는 interceptor 메소드
@@ -55,6 +57,18 @@ public class ChannelInboundInterceptor  implements ChannelInterceptor {
         if (StompCommand.SUBSCRIBE.equals(command)) {
             Principal principal = accessor.getUser();
             setValue(accessor,"userName",principal.getName());
+
+        }
+        if(StompCommand.DISCONNECT.equals(command)){
+            String userName = accessor.getUser().getName();
+            List<GameRoomDto> list = gameRoomManager.getAllRooms().values().stream().toList();
+            // 어떤 방에 있는지 찾아서
+            for(GameRoomDto dto: list){
+                if(dto.getPlayerInfo().containsKey(userName)){
+                    // 연결끊긴 유저 true로 바꿔주기
+                    dto.getDisconnected().put(userName,true);
+                }
+            }
         }
 
 

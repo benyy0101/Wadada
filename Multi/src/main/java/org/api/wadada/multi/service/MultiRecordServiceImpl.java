@@ -143,8 +143,26 @@ public class MultiRecordServiceImpl implements MultiRecordService {
 
     public void updatePlayRank(int roomSeq){
 
-        // 서버에서 완주한 사람 + 나간 사람 체크 해서 아니면 정보 요청 전송
-        // else
+        // 게임 방 정보 가져오기
+        GameRoomDto roomDto = gameRoomManager.getAllRooms().get(roomSeq);
+        List<PlayerInfo> playerInfos = new ArrayList<>(roomDto.getPlayerInfo().values());
+        // 서버에서 완주한 사람
+//        for(PlayerInfo playerInfo: playerInfos){
+//            int dist = playerInfo.getDist();
+//            if(dist)
+//        }
+
+        //끊어진 사람 수 세기
+        int cnt = 0;
+        for(PlayerInfo playerInfo: playerInfos){
+            if(roomDto.getDisconnected(playerInfo.getMemberId())){
+                cnt++;
+            }
+        }
+        // 다 끊어진 경우 게임 종료
+        if(cnt == roomDto.getMaxPeople()){
+            stopPlayerRankUpdates(roomSeq);
+        }
 
         String message = GameMessage.GAME_LIVE_INFO_REQUEST.toJson();
         messagingTemplate.convertAndSend("/sub/game/" + roomSeq, message);
@@ -156,10 +174,8 @@ public class MultiRecordServiceImpl implements MultiRecordService {
         try {
             log.info(String.valueOf(roomSeq));
 
-            // 게임 방 정보 가져오기
-            GameRoomDto roomDto = gameRoomManager.getAllRooms().get(roomSeq);
+
             List<GameInfoRes> gameInfoRes = new ArrayList<>();
-            List<PlayerInfo> playerInfos = new ArrayList<>(roomDto.getPlayerInfo().values());
             Collections.sort(playerInfos);
             HashMap<String, Integer> rank = new HashMap<>();
             for (int i = 0; i < playerInfos.size(); i++) {
@@ -183,6 +199,9 @@ public class MultiRecordServiceImpl implements MultiRecordService {
     // (curConnection == MaxConnection) 자동 End API 호출  완주해도 늘어나고, 연결이 끊겨도 늘어남
     // || 누가 End API 호출
     public void stopPlayerRankUpdates(int roomSeq) {
+
+        //게임이 종료 되기 전 방 지우기
+        gameRoomManager.removeRoom(roomSeq);
         ScheduledExecutorService scheduler = roomSchedulers.remove(roomSeq);
         if (scheduler != null) {
             scheduler.shutdown();
