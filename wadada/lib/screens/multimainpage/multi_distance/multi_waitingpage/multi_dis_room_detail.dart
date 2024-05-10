@@ -350,7 +350,7 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                                       color: DARK_GREEN_COLOR,
                                     ),
                                   ),
-                                  trailing: controller.isOwner
+                                  trailing: member.manager
                                       ? GameOwner()
                                       : PlayerCondition(
                                           isReady: member.memberReady),
@@ -366,14 +366,12 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                 ),
               ),
               SizedBox(height: 30),
+
               //팀원일때 준비 버튼
               Visibility(
-                visible: !isHost,
+                visible: controller.isOwner,
                 child: TextButton(
                   onPressed: () {
-                    setState(() {
-                      isButtonPressed = !isButtonPressed;
-                    });
                     controller.ready(roomInfo.roomIdx);
                   },
                   style: TextButton.styleFrom(
@@ -394,30 +392,35 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
               ),
               //방장일때 레디 버튼
               Visibility(
-                visible: isHost,
-                child: TextButton(
-                  onPressed: () {
-                    setState(() {
-                      isButtonPressed = !isButtonPressed;
-                    });
-                    controller.ready(roomInfo.roomIdx);
-                  },
-                  style: TextButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    backgroundColor:
-                        isButtonPressed ? Colors.grey[400] : GREEN_COLOR,
-                    padding: EdgeInsets.only(
-                        left: 155, right: 155, top: 10, bottom: 10),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  child: Text(
-                    '시작하기',
-                    style: TextStyle(fontSize: 18),
-                  ),
-                ),
-              ),
+                  visible: !controller.isOwner,
+                  child: Obx(() {
+                    print("controller.numREady--------------");
+                    print(controller.numReady);
+                    return TextButton(
+                      onPressed:
+                          controller.numReady == controller.members.length - 1
+                              ? () {
+                                  controller.gameStart();
+                                }
+                              : null,
+                      style: TextButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        backgroundColor:
+                            controller.numReady == controller.members.length - 1
+                                ? GREEN_COLOR
+                                : Colors.grey[400],
+                        padding: EdgeInsets.only(
+                            left: 155, right: 155, top: 10, bottom: 10),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      child: Text(
+                        '시작하기',
+                        style: TextStyle(fontSize: 18),
+                      ),
+                    );
+                  })),
               SizedBox(height: 10),
               TextButton(
                 onPressed: () {

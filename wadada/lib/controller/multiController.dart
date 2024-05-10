@@ -73,7 +73,7 @@ class MultiController extends GetxController {
   void getMultiRoomsByMode(int mode) async {
     print("call");
     try {
-      roomList = <SimpleRoom>[].obs;
+      roomList.clear();
       List temp = await repo.multiRoomGet(mode);
       temp.forEach((item) {
         roomList.add(item);

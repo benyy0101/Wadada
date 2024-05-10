@@ -8,6 +8,8 @@ import 'package:get/get.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:stomp_dart_client/stomp_dart_client.dart';
 import 'package:wadada/models/stomp.dart';
+import 'package:wadada/provider/multiProvider.dart';
+import 'package:wadada/repository/multiRepo.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 class StompController extends GetxController {
@@ -16,9 +18,18 @@ class StompController extends GetxController {
   late String accessToken;
   late String serverUrl;
   RxList<CurrentMember> members = <CurrentMember>[].obs;
+  MultiRepository repo = MultiRepository(provider: MultiProvider());
   bool isStart = false;
-  bool isOwner = false;
-  int numReady = -1;
+  late bool isOwner = false;
+  late int numReady = 0;
+  CurrentMember itMe = CurrentMember(
+      memberNickname: 'memberNickname',
+      memberGender: 'memberGender',
+      memberProfileImage: 'memberProfileImage',
+      memberId: 'memberId',
+      memberLevel: -1,
+      memberReady: false,
+      manager: false);
   final storage = FlutterSecureStorage();
 
   StompController({required this.roomIdx}) {
@@ -38,6 +49,7 @@ class StompController extends GetxController {
 
                 //에러메세지: 해당방에 입장해 있거나, 이미 나간 방일때
                 Map<String, dynamic> res = jsonDecode(frame.body!);
+                print('-----res[body]-----------------');
                 print(res['body']);
                 if (res['body'].runtimeType == String &&
                     res['statusCodeValue'] != 200) {
@@ -45,9 +57,8 @@ class StompController extends GetxController {
                 }
 
                 //게임 스타트
-                if (res['body'].runtimeType == String &&
-                    res['statusCodeValue'] == 200) {
-                  setGameStart();
+                if (res['body']['action'] == "/Multi/start") {
+                  
                   return;
                 }
                 //Null값 처리
@@ -60,6 +71,7 @@ class StompController extends GetxController {
 
                 countReady();
                 await checkOwner();
+                await findMe();
               } catch (e) {
                 print(e);
                 rethrow;
@@ -94,7 +106,7 @@ class StompController extends GetxController {
     try {
       if (client.isActive) {
         client.send(destination: '/pub/attend/$roomIdx');
-        print("--------------published------------------");
+        print("--------------published ${roomIdx}------------------");
       } else {
         throw Exception("서버가 준비되어 있지 않습니다.");
       }
@@ -115,6 +127,15 @@ class StompController extends GetxController {
     }
   }
 
+  Future<void> findMe() async {
+    String kakaoId = await storage.read(key: 'kakaoId') ?? "nothing";
+    members.forEach((element) {
+      if (element.memberId == kakaoId) {
+        itMe = element;
+      }
+    });
+  }
+
   void countReady() {
     members.forEach((item) {
       if (item.memberReady == true) numReady++;
@@ -122,12 +143,17 @@ class StompController extends GetxController {
   }
 
   void out(int roomIdx) {
-    print("--------------socket OUT---------");
+    print("--------------socket OUT $roomIdx---------");
     client.send(destination: '/pub/out/$roomIdx');
   }
 
   void ready(int roomIdx) {
     client.send(destination: '/pub/change/ready/$roomIdx');
+  }
+
+  void gameStart() {
+    print("-----------------start game $roomIdx------------");
+    client.send(destination: '/pub/game/start/$roomIdx');
   }
 
   void setGameStart() {
@@ -152,6 +178,8 @@ class StompController extends GetxController {
         isOwner = true;
       }
     });
+    print('isOwner------------------------------');
+    print(isOwner);
   }
 
   @override

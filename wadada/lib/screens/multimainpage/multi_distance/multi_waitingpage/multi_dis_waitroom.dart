@@ -44,6 +44,7 @@ class _MultiDisWait extends State<MultiDisWait> {
     } else {
       titleText = '만남모드 - 멀티';
     }
+    controller.getMultiRoomsByMode(roomMode);
     return Scaffold(
       appBar: AppBar(
         title: Text(titleText,
@@ -144,12 +145,8 @@ class _MultiDisWait extends State<MultiDisWait> {
                       itemBuilder: (context, idx) {
                         return GestureDetector(
                             onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => MultiRoomDetail(
-                                        roomInfo: controller.roomList[idx])),
-                              );
+                              Get.to(() => MultiRoomDetail(
+                                  roomInfo: controller.roomList[idx]));
                             },
                             child: Column(children: [
                               const SizedBox(height: 30),
