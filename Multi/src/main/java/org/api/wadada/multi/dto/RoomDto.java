@@ -24,6 +24,9 @@ public class RoomDto{
     @Setter
     private int roomIdx;
 
+    @Setter
+    private List<LatLng> roomPoints = new ArrayList<>();
+
     public RoomDto() {
         this.members = new ConcurrentHashMap<>();
     }
@@ -65,5 +68,8 @@ public class RoomDto{
         members.clear();
     }
 
+    public void addPoint(double lat, double lng){
+        this.roomPoints.add(new LatLng(lat,lng));
+    }
 
 }
