@@ -3,6 +3,11 @@ package org.api.wadada.multi.dto;
 import lombok.*;
 import org.api.wadada.multi.dto.game.GameUpdateListener;
 import org.api.wadada.multi.dto.game.PlayerInfo;
+import org.springframework.context.event.EventListener;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.simp.stomp.StompCommand;
+import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
+import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +35,8 @@ public class GameRoomDto {
     private List<GameUpdateListener> listeners;
 
     private ConcurrentMap<String,PlayerInfo> playerInfo;
+
+    private int connectPeople;
 
     public void addMember(PlayerInfo member) {
         if (playerInfo.containsKey(member.getName())) {
@@ -87,6 +94,19 @@ public class GameRoomDto {
         info.setDist(dist);
         info.setTime(time);
         this.playerInfo.put(memberId,info);
+    }
+
+    @EventListener
+    public void onDisconnectEvent(SessionDisconnectEvent sessionDisconnectEvent) {
+
+        Message<byte[]> message = sessionDisconnectEvent.getMessage();
+        StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
+
+        
+
+        StompCommand command = accessor.getCommand();
+        System.out.println("연결 끊어짐!");
+
     }
 
 }

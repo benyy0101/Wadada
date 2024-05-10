@@ -185,8 +185,8 @@ public class MultiController {
         }
     }
 
-    @MessageMapping("/game/data")
-    public ResponseEntity<?> requestPlayerInfoData(Principal principal, @Payload RequestDataReq requestDataReq){
+    @PostMapping("/game/data")
+    public ResponseEntity<?> requestPlayerInfoData(Principal principal, @RequestBody RequestDataReq requestDataReq){
         try {
             multiRecordService.savePlayerData(principal, requestDataReq);
             return new ResponseEntity<>("플레이어 info 저장에 성공했습니다",HttpStatus.OK);
