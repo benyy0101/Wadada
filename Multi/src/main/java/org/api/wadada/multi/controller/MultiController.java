@@ -3,10 +3,7 @@ package org.api.wadada.multi.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.api.wadada.multi.dto.game.GameMessage;
-import org.api.wadada.multi.dto.req.CreateRoomReq;
-import org.api.wadada.multi.dto.req.GameEndReq;
-import org.api.wadada.multi.dto.req.GameStartReq;
-import org.api.wadada.multi.dto.req.UserPointReq;
+import org.api.wadada.multi.dto.req.*;
 import org.api.wadada.multi.dto.res.GameEndRes;
 import org.api.wadada.multi.dto.res.GameResultRes;
 import org.api.wadada.multi.dto.res.GameStartRes;
@@ -187,6 +184,36 @@ public class MultiController {
         }
     }
 
+    @PostMapping("/game/data")
+    public ResponseEntity<?> requestPlayerInfoData(Principal principal, @RequestBody RequestDataReq requestDataReq){
+        try {
+            multiRecordService.savePlayerData(principal, requestDataReq);
+            return new ResponseEntity<>("플레이어 info 저장에 성공했습니다",HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>("플레이어 info 저장에 실패했습니다.",HttpStatus.NOT_ACCEPTABLE);
+        }
+    }
+
+    // 1. 게임 시작하면 해당 api 요청
+    // 2. requestPlayerInfoData로 현재 멤버의 데이터를 저장
+    // 3.
+    @GetMapping("/game/rank/{roomSeq}")
+//    @SendTo("/sub/game/{roomSeq}")
+    public ResponseEntity<?> getPlayerRank(@PathVariable int roomSeq){
+        multiRecordService.getPlayerRank(roomSeq);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping("/game/end/{roomSeq}")
+    public ResponseEntity<?> isEndGame(@PathVariable int roomSeq){
+        try{
+            multiRecordService.stopPlayerRankUpdates();
+            return new ResponseEntity<>("게임 종료 성공",HttpStatus.OK);
+        }catch (Exception e){
+            e.printStackTrace();
+            return new ResponseEntity<>("게임 종료 실패",HttpStatus.NOT_ACCEPTABLE);
+        }
+    }
 
 
 

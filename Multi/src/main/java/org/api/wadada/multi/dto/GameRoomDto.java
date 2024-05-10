@@ -82,4 +82,11 @@ public class GameRoomDto {
         }
     }
 
+    public void updatePlayerInfo(String memberId, int dist, int time){
+        PlayerInfo info = this.playerInfo.get(memberId);
+        info.setDist(dist);
+        info.setTime(time);
+        this.playerInfo.put(memberId,info);
+    }
+
 }
