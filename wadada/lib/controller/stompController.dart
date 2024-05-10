@@ -60,7 +60,6 @@ class StompController extends GetxController {
 
                 countReady();
                 await checkOwner();
-                splitTags();
               } catch (e) {
                 print(e);
                 rethrow;

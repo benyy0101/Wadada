@@ -30,7 +30,7 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
   SimpleRoom roomInfo;
   late StompController controller;
   late MultiController multiController;
-  List<String> tags = ['#직장인', '#저녁런닝'];
+  List<String> tags = [];
   final storage = FlutterSecureStorage();
 
   bool isHost = false;
@@ -40,6 +40,7 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
   _MultiRoomDetailState({
     required this.roomInfo,
   }) {
+    splitTags();
     initControllers();
     print("-----------------initiating websocket----------------");
     controller.client.activate();
@@ -58,6 +59,16 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
     controller = StompController(roomIdx: roomInfo.roomIdx);
     multiController =
         MultiController(repo: MultiRepository(provider: MultiProvider()));
+  }
+
+  void splitTags() {
+    List<String> temp = roomInfo.roomTag!.split('#');
+
+    temp.forEach((item) {
+      if (item != '') {
+        tags.add("#" + item);
+      }
+    });
   }
 
   @override
