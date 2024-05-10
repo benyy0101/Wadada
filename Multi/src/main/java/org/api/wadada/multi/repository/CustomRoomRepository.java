@@ -57,7 +57,7 @@ public class CustomRoomRepository {
         SearchRequest searchRequest = SearchRequest.of(s -> s
                 .index("room")
                 .query(query)
-                .size(100));
+                .size(500));
 
         try {
             SearchResponse<RoomDocument> response = client.search(searchRequest, RoomDocument.class);
