@@ -60,8 +60,8 @@ dependencies {
 	implementation 'org.elasticsearch:elasticsearch:8.13.0'
 	implementation 'co.elastic.clients:elasticsearch-java:8.13.0'
 
-
-
+	// flag 계산
+	implementation 'org.apache.commons:commons-math3:3.6.1'
 }
 
 tasks.named('test') {
