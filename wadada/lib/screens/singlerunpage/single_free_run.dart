@@ -94,7 +94,7 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
 
           WidgetsBinding.instance.addPostFrameCallback((_) {
             _clockKey.currentState?.start();
-          });
+        });
         }
       });
     });
@@ -111,6 +111,7 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
     final dio = Dio();
     int recordMode = widget.time > 0 ? 2 : 1;
 
+
     if (startLocation != null) {
       final url = Uri.parse('https://k10a704.p.ssafy.io/Single/start');
 
@@ -119,6 +120,7 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
         "recordStartLocation":
             "POINT(${startLocation.latitude} ${startLocation.longitude})"
       });
+
 
       try {
         final response = await dio.post(
@@ -131,6 +133,7 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
                 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNDYzNDMxNDUzIiwiYXV0aCI6IlJPTEVfU09DSUFMIiwiZXhwIjoxNzE1NDA1MzkzfQ.dmjUkVX1sFe9EpYhT3SGO3uC7q1dLIoddBvzhoOSisM',
           }),
         );
+
 
         if (response.statusCode == 200) {
           // 서버 응답 성공 처리
@@ -184,6 +187,7 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
 
     int recordMode = widget.time > 0 ? 2 : 1;
 
+
     // final elapsedTime = _clockKey.currentState?.elapsed ?? Duration.zero;
     // final formattedElapsedTime = formatElapsedTime(elapsedTime);
     // print(formattedElapsedTime);
@@ -223,15 +227,19 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
     //     if (paceInSecondsPerKm == 0) return 0.0; // 0으로 나누는 오류 방지
     //     return 3600 / paceInSecondsPerKm;
     // }
+    // // 초 단위의 페이스를 km/h로 변환
+    // double convertPaceToKmPerHour(double paceInSecondsPerKm) {
+    //     if (paceInSecondsPerKm == 0) return 0.0; // 0으로 나누는 오류 방지
+    //     return 3600 / paceInSecondsPerKm;
+    // }
 
     double averageSpeed = calculateAverageSpeed(distanceSpeed);
     double averagePaceInSecondsPerKm = calculateAveragePace(distancePace);
     // double averagePaceInKmPerHour = convertPaceToKmPerHour(averagePaceInSecondsPerKm);
 
-    print('km 거리 $formattedDistance');
-    print('km 평균 속도 $averageSpeed');
-    print('km 평균 페이스 $averagePaceInSecondsPerKm');
-
+    averageSpeed = double.parse(averageSpeed.toStringAsFixed(2)) * 1000;
+    // averagePaceInSecondsPerKm = double.parse(averagePaceInSecondsPerKm.toStringAsFixed(2)) * 1000;
+    // double formattedDistanceInMeters = double.parse(formattedDistance) * 1000;
     averageSpeed = double.parse(averageSpeed.toStringAsFixed(2)) * 1000;
     // averagePaceInSecondsPerKm = double.parse(averagePaceInSecondsPerKm.toStringAsFixed(2)) * 1000;
     // double formattedDistanceInMeters = double.parse(formattedDistance) * 1000;
@@ -240,6 +248,9 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
     int intaveragepaceinkmperhour = averagePaceInSecondsPerKm.toInt();
     // int intformatteddistanceinmeters = formattedDistanceInMeters.toInt();
 
+    // print('평균 속도 $intaveragespeed');
+    // print('평균 페이스 $intaveragepaceinkmperhour');
+    // print('총 거리 $totalDistance');
     // print('평균 속도 $intaveragespeed');
     // print('평균 페이스 $intaveragepaceinkmperhour');
     // print('총 거리 $totalDistance');
@@ -268,6 +279,8 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
         options: Options(headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
+          'authorization':
+              'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNDYzNDMxNDUzIiwiYXV0aCI6IlJPTEVfU09DSUFMIiwiZXhwIjoxNzE1NDA1MzkzfQ.dmjUkVX1sFe9EpYhT3SGO3uC7q1dLIoddBvzhoOSisM',
           'authorization':
               'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNDYzNDMxNDUzIiwiYXV0aCI6IlJPTEVfU09DSUFMIiwiZXhwIjoxNzE1NDA1MzkzfQ.dmjUkVX1sFe9EpYhT3SGO3uC7q1dLIoddBvzhoOSisM',
         }),
@@ -301,14 +314,32 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
 
       Duration elapsedTime = Duration(seconds: elapsedSeconds.round());
       String formattedElapsedTime = formatElapsedTime(elapsedTime);
+      // final formattedElapsedTime = formatElapsedTime(elapsedTime);
 
+      _sendRecordToServer();
       // final formattedElapsedTime = formatElapsedTime(elapsedTime);
 
       _sendRecordToServer();
 
       print('스피드 - $distanceSpeed');
       print('페이스 - $distancePace');
+      print('스피드 - $distanceSpeed');
+      print('페이스 - $distancePace');
 
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => SingleResult(
+            elapsedTime: elapsedTime,
+            coordinates: coordinates,
+            startLocation: coordinates.first,
+            endLocation: coordinates.last,
+            totaldist: formattedDistance,
+            distanceSpeed: distanceSpeed,
+            distancePace: distancePace,
+          ),
+        ),
+      );
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -440,6 +471,9 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
       progressBar = DistBar(
           dist: widget.dist,
           formattedDistance: double.parse(formattedDistance));
+      progressBar = DistBar(
+          dist: widget.dist,
+          formattedDistance: double.parse(formattedDistance));
     } else if (widget.time > 0) {
       // progressBar = TimeBar(initialTime: widget.time);
       double elapsedSeconds =
@@ -448,7 +482,21 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
       // Duration elapsedTime = Duration(seconds: elapsedSeconds.round());
       // Duration elapsedTime = _clockKey.currentState?.elapsed ?? Duration.zero;
       // double elapsedTimeInSeconds = elapsedTime.inSeconds.toDouble();
+      // progressBar = TimeBar(initialTime: widget.time);
 
+      // progressBar = ValueListenableBuilder<Duration>(
+      //     valueListenable: elapsedTimeNotifier,
+      //     builder: (context, elapsedDuration, _) {
+      //         // Convert Duration to double
+      //         double elapsedTimeInSeconds = elapsedDuration.inSeconds.toDouble();
+
+      //         // Pass the elapsed time in seconds to TimeBar
+      //         return TimeBar(
+      //             initialTime: widget.time,
+      //             elapsedTime: elapsedTimeInSeconds,
+      //         );
+      //     },
+      // );
       // progressBar = ValueListenableBuilder<Duration>(
       //     valueListenable: elapsedTimeNotifier,
       //     builder: (context, elapsedDuration, _) {
