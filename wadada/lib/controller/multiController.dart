@@ -51,7 +51,7 @@ class MultiController extends GetxController {
 
   MultiController({required this.repo});
 
-  void creatMultiRoom(MultiRoom roomInfo) async {
+  Future<int> creatMultiRoom(MultiRoom roomInfo) async {
     try {
       info = await repo.createRoom(roomInfo);
       cur = SimpleRoom(
@@ -62,7 +62,7 @@ class MultiController extends GetxController {
         roomMode: info.roomMode,
         nowRoomPeople: 1,
       );
-      update();
+      return info.roomIdx;
     } catch (e) {
       print("방이 생성되지 않았습니다. 다시 시도해 주세요");
       print(e);

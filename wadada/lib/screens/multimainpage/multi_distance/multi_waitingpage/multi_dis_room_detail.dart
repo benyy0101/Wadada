@@ -1,27 +1,19 @@
 import 'dart:async';
 import 'dart:ffi';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:wadada/common/const/colors.dart';
+import 'package:wadada/controller/loginController.dart';
 import 'package:wadada/controller/multiController.dart';
 import 'package:wadada/models/multiroom.dart';
+import 'package:wadada/provider/loginProvider.dart';
 import 'package:wadada/provider/multiProvider.dart';
 import 'package:wadada/controller/stompController.dart';
+import 'package:wadada/repository/loginRepo.dart';
 import 'package:wadada/repository/multiRepo.dart';
-
-class Participant {
-  final IconData iconData;
-  final String name;
-  final String status;
-
-  Participant({
-    required this.iconData,
-    required this.name,
-    required this.status,
-  });
-}
 
 class MultiRoomDetail extends StatefulWidget {
   SimpleRoom roomInfo;
@@ -36,25 +28,60 @@ class MultiRoomDetail extends StatefulWidget {
 class _MultiRoomDetailState extends State<MultiRoomDetail> {
   SimpleRoom roomInfo;
   late StompController controller;
+  late LoginController loginController;
+  late MultiController multiController;
   late List<String> tags;
 
-  List<Participant> participants = [
-    Participant(iconData: Icons.person_add_alt_1, name: '스펀지밥', status: '준비중'),
-    Participant(iconData: Icons.person, name: '아린시치', status: '준비완료'),
-    Participant(iconData: Icons.person, name: '커피보이', status: '준비완료'),
-  ];
+  bool isHost = false;
+  bool isButtonPressed = false;
+  bool toStart = false;
 
   _MultiRoomDetailState({
     required this.roomInfo,
   }) {
+    initControllers();
     print("-----------------initiating websocket----------------");
-    controller = StompController(roomIdx: roomInfo.roomIdx);
     controller.client.activate();
-    
-    controller.attend(roomInfo.roomIdx);
+// Introduce a delay to allow time for activation to complete
+    Future.delayed(Duration(milliseconds: 2000), () {
+      // Now you can proceed with other actions
+      print("send--------------------");
+      // print(roomInfo.roomIdx);
+      // print(multiController.cur.roomIdx);
+      controller.attend(roomInfo.roomIdx);
+      //print(loginController.loginInfo.kakao_id);
+      //print(controller.members);
+      controller.members.forEach((element) {
+        //print(element.memberId);
+        if (element.memberId == loginController.loginInfo.kakao_id &&
+            element.manager == true) {
+          isHost = true;
+        }
+      });
+      //print(isHost);
+      if (controller.numReady == controller.members.length - 1) toStart = true;
+    });
     //if (roomInfo.roomTag!.isNotEmpty) tags = roomInfo.roomTag!.split('#');
   }
-  bool isButtonPressed = false;
+
+  void initControllers() {
+    controller = StompController(roomIdx: roomInfo.roomIdx);
+    loginController = LoginController(
+        loginRepository: LoginRepository(provider: LoginProvider()));
+    multiController =
+        MultiController(repo: MultiRepository(provider: MultiProvider()));
+  }
+
+  void checkOwner() {
+    print(loginController.loginInfo.kakao_id);
+    controller.members.forEach((element) {
+      print(element.memberId);
+      if (element.memberId == loginController.loginInfo.kakao_id &&
+          element.manager == true) {
+        isHost = true;
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -303,11 +330,13 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                         final members = controller.members;
                         if (members == null || members.isEmpty) {
                           // Show a loading indicator or a placeholder
+
                           return Center(
                             child:
                                 CircularProgressIndicator(), // Or any other placeholder widget
                           );
                         } else {
+                          checkOwner();
                           // Show the list when data is available
                           return ListView.builder(
                             itemCount: members.length,
@@ -325,33 +354,22 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                                     member.memberNickname,
                                     style: TextStyle(
                                       fontSize: 20,
-                                      color: DARK_GREEN_COLOR,
+                                      color: member.manager
+                                          ? Colors.deepPurpleAccent
+                                          : DARK_GREEN_COLOR,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
                                   subtitle: Text(
-                                    'Level: ${member.memberLevel}, Ready: ${member.memberReady}',
+                                    '레벨: ${member.memberLevel}',
                                     style: TextStyle(
                                       color: DARK_GREEN_COLOR,
                                     ),
                                   ),
-                                  trailing: Container(
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: 8, vertical: 4),
-                                    decoration: BoxDecoration(
-                                      color: member.memberReady
-                                          ? DARK_GREEN_COLOR
-                                          : GRAY_400,
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: Text(
-                                      member.memberReady
-                                          ? 'Ready'
-                                          : 'Not Ready',
-                                      style: TextStyle(
-                                          fontSize: 15, color: Colors.white),
-                                    ),
-                                  ),
+                                  trailing: isHost
+                                      ? GameOwner()
+                                      : PlayerCondition(
+                                          isReady: member.memberReady),
                                 ),
                               );
                             },
@@ -359,46 +377,67 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                         }
                       }),
                       SizedBox(height: 30),
-                      Center(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [],
-                        ),
-                      ),
                     ],
                   ),
                 ),
               ),
               SizedBox(height: 30),
-              TextButton(
-                onPressed: () {
-                  if (!isButtonPressed) {
+              //팀원일때 준비 버튼
+              Visibility(
+                visible: !isHost,
+                child: TextButton(
+                  onPressed: () {
                     setState(() {
-                      isButtonPressed = true;
+                      isButtonPressed = !isButtonPressed;
                     });
-                  }
-
-                  // 진행할 페이지
-                },
-                style: TextButton.styleFrom(
-                  foregroundColor: Colors.white,
-                  backgroundColor:
-                      isButtonPressed ? Colors.grey[400] : GREEN_COLOR,
-                  padding: EdgeInsets.only(
-                      left: 155, right: 155, top: 10, bottom: 10),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    controller.ready(roomInfo.roomIdx);
+                  },
+                  style: TextButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    backgroundColor:
+                        isButtonPressed ? Colors.grey[400] : GREEN_COLOR,
+                    padding: EdgeInsets.only(
+                        left: 155, right: 155, top: 10, bottom: 10),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child: Text(
+                    '준비완료',
+                    style: TextStyle(fontSize: 18),
                   ),
                 ),
-                child: Text(
-                  '준비완료',
-                  style: TextStyle(fontSize: 18),
+              ),
+              //방장일때 레디 버튼
+              Visibility(
+                visible: isHost,
+                child: TextButton(
+                  onPressed: () {
+                    setState(() {
+                      isButtonPressed = !isButtonPressed;
+                    });
+                    controller.ready(roomInfo.roomIdx);
+                  },
+                  style: TextButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    backgroundColor:
+                        isButtonPressed ? Colors.grey[400] : GREEN_COLOR,
+                    padding: EdgeInsets.only(
+                        left: 155, right: 155, top: 10, bottom: 10),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child: Text(
+                    '시작하기',
+                    style: TextStyle(fontSize: 18),
+                  ),
                 ),
               ),
               SizedBox(height: 10),
               TextButton(
                 onPressed: () {
+                  controller.out(roomInfo.roomIdx);
                   Get.back();
                   //Navigator.pop(context);
                 },
@@ -423,6 +462,45 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class PlayerCondition extends StatelessWidget {
+  bool isReady;
+  PlayerCondition({super.key, required this.isReady});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: isReady ? DARK_GREEN_COLOR : GRAY_400,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Text(
+        isReady ? '준비완료' : '대기중',
+        style: TextStyle(fontSize: 15, color: Colors.white),
+      ),
+    );
+  }
+}
+
+class GameOwner extends StatelessWidget {
+  GameOwner({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: DARK_GREEN_COLOR,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Text(
+        "방장",
+        style: TextStyle(fontSize: 15, color: Colors.white),
       ),
     );
   }

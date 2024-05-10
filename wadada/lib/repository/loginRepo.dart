@@ -53,6 +53,7 @@ class LoginRepository implements AbstractLoginRepository {
 
   LoginRepository({required this.provider});
 
+  @override
   Future<LoginDto> loginToServer() async {
     try {
       OAuthToken token;

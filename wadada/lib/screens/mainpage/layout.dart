@@ -9,6 +9,10 @@ import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:wadada/common/component/tabbars.dart';
 import 'package:wadada/common/const/colors.dart';
+import 'package:wadada/controller/loginController.dart';
+import 'package:wadada/provider/loginProvider.dart';
+import 'package:wadada/repository/loginRepo.dart';
+import 'package:wadada/screens/multimainpage/multi_main.dart';
 import 'package:wadada/screens/singlemainpage/single_main.dart';
 import 'package:http/http.dart' as http;
 import 'package:dio/dio.dart';
@@ -18,6 +22,9 @@ AndroidOptions _getAndroidOptions() => const AndroidOptions(
     );
 final storage = FlutterSecureStorage(aOptions: _getAndroidOptions());
 final dio = Dio();
+
+LoginController controller = LoginController(
+    loginRepository: LoginRepository(provider: LoginProvider()));
 // ..options = BaseOptions(
 //   baseUrl: 'https://k10a704.p.ssafy.io/Wadada',
 //   validateStatus: (status) {
@@ -97,7 +104,10 @@ class KakaoLoginButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => signWithKakao(context),
+      onTap: () {
+        controller.login();
+        Get.to(MultiMain());
+      },
       child: Container(
         child: Image.asset('assets/images/kakao_button.png'),
       ),
@@ -105,104 +115,104 @@ class KakaoLoginButton extends StatelessWidget {
   }
 }
 
-Future<void> signWithKakao(BuildContext context) async {
-  try {
-    OAuthToken token;
-    // 카카오톡 실행 가능 여부 확인 (앱설치되어 있으면 )
-    if (await isKakaoTalkInstalled()) {
-      token = await UserApi.instance.loginWithKakaoTalk();
-      print('카카오톡 앱으로 로그인 성공');
-      Get.to(SingleMain());
-      // Navigator.pushReplacement(
-      //     context, MaterialPageRoute(builder: (context) => SingleMain()));
-      // 앱 설치 안 되어있으면 카카오계정으로 로그인
-    } else {
-      token = await UserApi.instance.loginWithKakaoAccount();
-      print('카카오계정으로 로그인 성공');
-      Get.to(SingleMain());
-      // Navigator.pushReplacement(
-      //     context, MaterialPageRoute(builder: (context) => SingleMain()));
-    }
+// Future<void> signWithKakao(BuildContext context) async {
+//   try {
+//     OAuthToken token;
+//     // 카카오톡 실행 가능 여부 확인 (앱설치되어 있으면 )
+//     if (await isKakaoTalkInstalled()) {
+//       token = await UserApi.instance.loginWithKakaoTalk();
+//       print('카카오톡 앱으로 로그인 성공');
+//       Get.to(MultiMain());
+//       // Navigator.pushReplacement(
+//       //     context, MaterialPageRoute(builder: (context) => SingleMain()));
+//       // 앱 설치 안 되어있으면 카카오계정으로 로그인
+//     } else {
+//       token = await UserApi.instance.loginWithKakaoAccount();
+//       print('카카오계정으로 로그인 성공');
+//       Get.to(MultiMain());
+//       // Navigator.pushReplacement(
+//       //     context, MaterialPageRoute(builder: (context) => SingleMain()));
+//     }
 
-    await sendTokenToServer(token.accessToken);
-    // const surl = 'https://k10a704.p.ssafy.io/Wadada/profile';
-    // Map<String, dynamic> plz = {
-    //   "memberNickname": "ㅋㅋㅋㅋㅋㅋ",
-    //   "memberBirthday": "1990-01-01",
-    //   "memberGender": "F",
-    //   "memberEmail": "sample@example.com",
-    //   "memberProfileImage": "https://s3.example.com/path/to/image.jpg"
-    // };
+//     await sendTokenToServer(token.accessToken);
+//     // const surl = 'https://k10a704.p.ssafy.io/Wadada/profile';
+//     // Map<String, dynamic> plz = {
+//     //   "memberNickname": "ㅋㅋㅋㅋㅋㅋ",
+//     //   "memberBirthday": "1990-01-01",
+//     //   "memberGender": "F",
+//     //   "memberEmail": "sample@example.com",
+//     //   "memberProfileImage": "https://s3.example.com/path/to/image.jpg"
+//     // };
 
-    // final single = await dio.patch(
-    //   surl,
-    //   options: Options(
-    //     headers: {'Content-Type' : 'application/json'},
-    //   ),
-    //   data: jsonEncode(plz)
-    // );
-    // print(single.data);
-  } catch (error) {
-    print('로그인 실패 $error');
-  }
-}
+//     // final single = await dio.patch(
+//     //   surl,
+//     //   options: Options(
+//     //     headers: {'Content-Type' : 'application/json'},
+//     //   ),
+//     //   data: jsonEncode(plz)
+//     // );
+//     // print(single.data);
+//   } catch (error) {
+//     print('로그인 실패 $error');
+//   }
+// }
 
-Future<void> sendTokenToServer(String accessToken) async {
-  try {
-    const url = 'https://k10a704.p.ssafy.io/Wadada/auth/login';
-    Map<String, dynamic> res = {'code': accessToken}; // 카카오 토큰
-    // print(jsonEncode(res));  // {"code":"T58J8ySbYsfRtg46K_Up8FLMGOBZwfYhylAKKclfAAABjy2ONb76Fwx8Dt1GgQ"}
+// Future<void> sendTokenToServer(String accessToken) async {
+//   try {
+//     const url = 'https://k10a704.p.ssafy.io/Wadada/auth/login';
+//     Map<String, dynamic> res = {'code': accessToken}; // 카카오 토큰
+//     // print(jsonEncode(res));  // {"code":"T58J8ySbYsfRtg46K_Up8FLMGOBZwfYhylAKKclfAAABjy2ONb76Fwx8Dt1GgQ"}
 
-    // 서버에 요청 보내기
-    var response = await dio.post(
-      url,
-      options: Options(headers: {'Content-Type': 'application/json'}),
-      data: jsonEncode(res),
-    );
+//     // 서버에 요청 보내기
+//     var response = await dio.post(
+//       url,
+//       options: Options(headers: {'Content-Type': 'application/json'}),
+//       data: jsonEncode(res),
+//     );
 
-    if (response.statusCode == 200) {
-      print('서버에 토큰 전송 성공');
-      print('결과 ${response.data}');
-      final responseData = response.data;
-      // print(responseData['jwtToken']['accessToken']);
+//     if (response.statusCode == 200) {
+//       print('서버에 토큰 전송 성공');
+//       print('결과 ${response.data}');
+//       final responseData = response.data;
+//       // print(responseData['jwtToken']['accessToken']);
 
-      // jwt accesstoken 저장
-      await storage.write(
-          key: 'server_token', value: responseData['jwtToken']['accessToken']);
-      // final wadada = await storage.read(key: 'server_token');
-      // print(wadada);
-    } else {
-      print('서버에 토큰 전송 실패: ${response.data}');
-    }
-  } catch (e) {
-    print('요청 처리 중 에러 발생: $e');
-  }
-}
+//       // jwt accesstoken 저장
+//       await storage.write(
+//           key: 'server_token', value: responseData['jwtToken']['accessToken']);
+//       // final wadada = await storage.read(key: 'server_token');
+//       // print(wadada);
+//     } else {
+//       print('서버에 토큰 전송 실패: ${response.data}');
+//     }
+//   } catch (e) {
+//     print('요청 처리 중 에러 발생: $e');
+//   }
+// }
 
-void setupInterceptor() {
-  dio.interceptors.add(InterceptorsWrapper(
-    onRequest: (options, handler) async {
-      // Secure Storage에서 jwt 토큰 읽어옴
-      String? jwtToken = await storage.read(key: 'server_token');
-      if (jwtToken != null) {
-        // 읽어온 토큰 헤더에 추가
-        options.headers["Authorization"] = "Bearer $jwtToken";
-        print('헤더에 싣는다');
-        print(options.headers);
-      }
-      // 요청 진행 킵고잉
-      return handler.next(options);
-    },
-    onResponse: (response, handler) {
-      // 요청 성공
-      print('성공 슛');
-      return handler.next(response);
-    },
-    // ignore: deprecated_member_use
-    onError: (DioError e, handler) {
-      // 요청 실패
-      print('실패 우웩');
-      return handler.next(e);
-    },
-  ));
-}
+// void setupInterceptor() {
+//   dio.interceptors.add(InterceptorsWrapper(
+//     onRequest: (options, handler) async {
+//       // Secure Storage에서 jwt 토큰 읽어옴
+//       String? jwtToken = await storage.read(key: 'server_token');
+//       if (jwtToken != null) {
+//         // 읽어온 토큰 헤더에 추가
+//         options.headers["Authorization"] = "Bearer $jwtToken";
+//         print('헤더에 싣는다');
+//         print(options.headers);
+//       }
+//       // 요청 진행 킵고잉
+//       return handler.next(options);
+//     },
+//     onResponse: (response, handler) {
+//       // 요청 성공
+//       print('성공 슛');
+//       return handler.next(response);
+//     },
+//     // ignore: deprecated_member_use
+//     onError: (DioError e, handler) {
+//       // 요청 실패
+//       print('실패 우웩');
+//       return handler.next(e);
+//     },
+//   ));
+// }

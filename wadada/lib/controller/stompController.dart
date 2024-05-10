@@ -17,6 +17,7 @@ class StompController extends GetxController {
   late String serverUrl;
   RxList<CurrentMember> members = <CurrentMember>[].obs;
   bool isStart = false;
+  int numReady = -1;
 
   StompController({required this.roomIdx}) {
     client = StompClient(
@@ -26,7 +27,7 @@ class StompController extends GetxController {
           client.subscribe(
             destination: '/sub/attend/$roomIdx',
             headers: {
-              'Authorization':
+              'Authorization': dotenv.env['accessToken'] ??
                   'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNDYzNDMxNDUzIiwiYXV0aCI6IlJPTEVfU09DSUFMIiwiZXhwIjoxNzE1NDA1MzkzfQ.dmjUkVX1sFe9EpYhT3SGO3uC7q1dLIoddBvzhoOSisM'
             },
             callback: (frame) {
@@ -53,16 +54,8 @@ class StompController extends GetxController {
                 }
 
                 //참가자 list화
-                List<dynamic> membersJson = res['body'][roomIdx.toString()];
-                if (membersJson.isNotEmpty) {
-                  List<CurrentMember> temp = membersJson.map((item) {
-                    // Create a CurrentMember object from each JSON item
-                    return CurrentMember.fromJson(item);
-                  }).toList();
-                  temp.forEach((element) {
-                    members.add(element);
-                  });
-                }
+                fromJson(res['body'][roomIdx.toString()]);
+                countReady();
               } catch (e) {
                 print(e);
                 rethrow;
@@ -72,11 +65,11 @@ class StompController extends GetxController {
         }, // Pass the onConnect method as a callback here
         webSocketConnectHeaders: {
           "transports": ["websocket"],
-          'Authorization':
+          'Authorization': dotenv.env['accessToken'] ??
               'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNDYzNDMxNDUzIiwiYXV0aCI6IlJPTEVfU09DSUFMIiwiZXhwIjoxNzE1NDA1MzkzfQ.dmjUkVX1sFe9EpYhT3SGO3uC7q1dLIoddBvzhoOSisM'
         },
         stompConnectHeaders: {
-          'Authorization':
+          'Authorization': dotenv.env['accessToken'] ??
               'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNDYzNDMxNDUzIiwiYXV0aCI6IlJPTEVfU09DSUFMIiwiZXhwIjoxNzE1NDA1MzkzfQ.dmjUkVX1sFe9EpYhT3SGO3uC7q1dLIoddBvzhoOSisM'
         },
         onWebSocketError: (dynamic error) => print(error.toString()),
@@ -92,8 +85,36 @@ class StompController extends GetxController {
   }
 
   void attend(int roomIdx) {
+    client.activate();
     print("-------------attend-------------");
-    client.send(destination: '/pub/attend/$roomIdx');
+    try {
+      if (client.isActive) {
+        client.send(destination: '/pub/attend/$roomIdx');
+        print("--------------published------------------");
+      } else {
+        throw Exception("서버가 준비되어 있지 않습니다.");
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  void fromJson(List<dynamic> list) {
+    if (list.isNotEmpty) {
+      List<CurrentMember> temp = list.map((item) {
+        return CurrentMember.fromJson(item);
+      }).toList();
+      members.clear();
+      temp.forEach((element) {
+        members.add(element);
+      });
+    }
+  }
+
+  void countReady() {
+    members.forEach((item) {
+      if (item.memberReady == true) numReady++;
+    });
   }
 
   void out(int roomIdx) {
@@ -111,6 +132,7 @@ class StompController extends GetxController {
 
   void disconnect() {
     print("-----controller deactivated---------");
+    out(roomIdx);
     client.deactivate();
   }
 

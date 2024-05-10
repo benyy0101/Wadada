@@ -114,10 +114,11 @@ class MultiDistanceRoomFormState extends State<MultiDistanceRoomForm> {
                     SizedBox(width: 20),
                     Expanded(
                       child: GestureDetector(
-                        onTap: () {
+                        onTap: () async {
                           // 방 생성 로직
                           try {
-                            controller.creatMultiRoom(controller.multiroom);
+                            controller.cur.roomIdx = await controller
+                                .creatMultiRoom(controller.multiroom);
                             controller.cur.roomDist =
                                 controller.multiroom.roomDist;
                             controller.cur.roomTitle =

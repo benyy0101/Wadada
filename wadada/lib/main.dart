@@ -55,13 +55,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Widget homeWidget;
-    homeWidget = MultiMain();
-    // Widget homeWidget;
-    // homeWidget = SingleMain();
+    homeWidget = MainPageLayout();
     // if (storage.read(key: 'accessToken') != null) {
-    //   homeWidget = MyPageLayout();
+    //   homeWidget = MultiMain();
     // } else {
-
+    //   homeWidget = MainPageLayout();
     // }
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
