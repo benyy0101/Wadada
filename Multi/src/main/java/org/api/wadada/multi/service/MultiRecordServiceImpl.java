@@ -1,11 +1,13 @@
 package org.api.wadada.multi.service;
 
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.api.wadada.multi.dto.GameRoomDto;
 import org.api.wadada.multi.dto.GameRoomManager;
 import org.api.wadada.multi.dto.RoomDto;
 import org.api.wadada.multi.dto.RoomManager;
+import org.api.wadada.multi.dto.game.GameMessage;
 import org.api.wadada.multi.dto.game.PlayerInfo;
 import org.api.wadada.multi.dto.req.GameEndReq;
 import org.api.wadada.multi.dto.req.GameStartReq;
@@ -31,7 +33,7 @@ import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Slf4j
 public class MultiRecordServiceImpl implements MultiRecordService {
     private final MultiRecordRepository multiRecordRepository;
@@ -39,8 +41,7 @@ public class MultiRecordServiceImpl implements MultiRecordService {
     private final RoomManager roomManager;
     private final GameRoomManager gameRoomManager;
     private final SimpMessagingTemplate messagingTemplate;
-    private ScheduledExecutorService scheduler;
-
+    private Map<Integer, ScheduledExecutorService> roomSchedulers = new ConcurrentHashMap<>();
     public GameStartRes saveStartMulti(Principal principal, GameStartReq gameStartReq) throws ParseException {
         // 멤버 조회
         Optional<Member> optional = memberRepository.getMemberByMemberId(principal.getName());
@@ -136,59 +137,64 @@ public class MultiRecordServiceImpl implements MultiRecordService {
     // 멤버들에게 현재 등수 뿌려주기
     @Override
     public void getPlayerRank(int roomSeq) {
-
-        scheduler.scheduleAtFixedRate(() -> {
-            String message = "{\"message\": \"멤버INFO요청\", \"action\": \"/Multi/game/data\"}";
-            messagingTemplate.convertAndSend("/sub/game/" + roomSeq, message);
-            try {
-                Thread.sleep(10000);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-            try {
-                log.info(String.valueOf(roomSeq));
-
-                // 게임 방 정보 가져오기
-                GameRoomDto roomDto = gameRoomManager.getAllRooms().get(roomSeq);
-                List<GameInfoRes> gameInfoRes = new ArrayList<>();
-                List<PlayerInfo> playerInfos = new ArrayList<>(roomDto.getPlayerInfo().values());
-                Collections.sort(playerInfos);
-                HashMap<String, Integer> rank = new HashMap<>();
-                for (int i = 0; i < playerInfos.size(); i++) {
-                    rank.put(playerInfos.get(i).getMemberId(), i + 1);
-                }
-                for (PlayerInfo playerInfo : playerInfos) {
-                    gameInfoRes.add(GameInfoRes.builder()
-                            .memberRank(rank.get(playerInfo.getMemberId()))
-                            .memberNickname(playerInfo.getName())
-                            .memberProfile(playerInfo.getProfileImage())
-                            .memberDist(playerInfo.getDist())
-                            .memberTime(playerInfo.getTime())
-                            .build());
-                }
-                messagingTemplate.convertAndSend("/sub/game/" + roomSeq, gameInfoRes);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }, 0, 10, TimeUnit.SECONDS);
-
-
+        roomSchedulers.computeIfAbsent(roomSeq, k -> Executors.newScheduledThreadPool(1))
+                .scheduleAtFixedRate(() -> updatePlayRank(roomSeq), 0, 10, TimeUnit.SECONDS);
     }
 
-    public void stopPlayerRankUpdates() {
-        if (scheduler != null && !scheduler.isShutdown()) {
+    public void updatePlayRank(int roomSeq){
+
+        // 서버에서 완주한 사람 + 나간 사람 체크 해서 아니면 정보 요청 전송
+        // else
+
+        String message = GameMessage.GAME_LIVE_INFO_REQUEST.toJson();
+        messagingTemplate.convertAndSend("/sub/game/" + roomSeq, message);
+        try {
+            Thread.sleep(10000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            log.info(String.valueOf(roomSeq));
+
+            // 게임 방 정보 가져오기
+            GameRoomDto roomDto = gameRoomManager.getAllRooms().get(roomSeq);
+            List<GameInfoRes> gameInfoRes = new ArrayList<>();
+            List<PlayerInfo> playerInfos = new ArrayList<>(roomDto.getPlayerInfo().values());
+            Collections.sort(playerInfos);
+            HashMap<String, Integer> rank = new HashMap<>();
+            for (int i = 0; i < playerInfos.size(); i++) {
+                rank.put(playerInfos.get(i).getMemberId(), i + 1);
+            }
+            for (PlayerInfo playerInfo : playerInfos) {
+                gameInfoRes.add(GameInfoRes.builder()
+                        .memberRank(rank.get(playerInfo.getMemberId()))
+                        .memberNickname(playerInfo.getName())
+                        .memberProfile(playerInfo.getProfileImage())
+                        .memberDist(playerInfo.getDist())
+                        .memberTime(playerInfo.getTime())
+                        .build());
+            }
+            messagingTemplate.convertAndSend("/sub/game/" + roomSeq, gameInfoRes);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    // 종료 조건
+    // (curConnection == MaxConnection) 자동 End API 호출  완주해도 늘어나고, 연결이 끊겨도 늘어남
+    // || 누가 End API 호출
+    public void stopPlayerRankUpdates(int roomSeq) {
+        ScheduledExecutorService scheduler = roomSchedulers.remove(roomSeq);
+        if (scheduler != null) {
             scheduler.shutdown();
             try {
                 if (!scheduler.awaitTermination(1, TimeUnit.SECONDS)) {
                     scheduler.shutdownNow();
-                    log.info("스케줄 종료가 성공하였습니다.");
                 }
             } catch (InterruptedException e) {
-                scheduler.shutdownNow();
-                log.info("스케줄 종료가 실패하였습니다.");
+                Thread.currentThread().interrupt();
             }
         }
     }
 
-
+    //
 }

@@ -22,6 +22,6 @@ public class PlayerInfo implements Comparable<PlayerInfo> {
         if (distCompare == 0) {
             return Integer.compare(this.time, o.time);
         }
-        return distCompare;
+        return -distCompare;
     }
 }

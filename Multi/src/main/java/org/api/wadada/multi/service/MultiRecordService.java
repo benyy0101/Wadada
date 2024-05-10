@@ -23,5 +23,5 @@ public interface MultiRecordService {
     void savePlayerData(Principal principal, RequestDataReq requestDataReq);
 
     void getPlayerRank(int roomSeq);
-    void stopPlayerRankUpdates();
+    void stopPlayerRankUpdates(int roomSeq);
 }

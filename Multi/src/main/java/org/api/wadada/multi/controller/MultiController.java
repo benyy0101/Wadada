@@ -21,6 +21,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -184,8 +185,8 @@ public class MultiController {
         }
     }
 
-    @PostMapping("/game/data")
-    public ResponseEntity<?> requestPlayerInfoData(Principal principal, @RequestBody RequestDataReq requestDataReq){
+    @MessageMapping("/game/data")
+    public ResponseEntity<?> requestPlayerInfoData(Principal principal, @Payload RequestDataReq requestDataReq){
         try {
             multiRecordService.savePlayerData(principal, requestDataReq);
             return new ResponseEntity<>("플레이어 info 저장에 성공했습니다",HttpStatus.OK);
@@ -207,7 +208,7 @@ public class MultiController {
     @GetMapping("/game/end/{roomSeq}")
     public ResponseEntity<?> isEndGame(@PathVariable int roomSeq){
         try{
-            multiRecordService.stopPlayerRankUpdates();
+            multiRecordService.stopPlayerRankUpdates(roomSeq);
             return new ResponseEntity<>("게임 종료 성공",HttpStatus.OK);
         }catch (Exception e){
             e.printStackTrace();
