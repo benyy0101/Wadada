@@ -29,8 +29,6 @@ class _MultiDisWait extends State<MultiDisWait> {
   @override
   void initState() {
     super.initState();
-    // Call the method to fetch data with the provided parameter
-    controller.getMultiRoomsByMode(roomMode);
   }
 
   @override
@@ -65,6 +63,7 @@ class _MultiDisWait extends State<MultiDisWait> {
             child: Column(
               children: [
                 // Rest of your content
+                SizedBox(height: 30),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
@@ -73,13 +72,6 @@ class _MultiDisWait extends State<MultiDisWait> {
                         Get.to(MultiDistanceRoomForm(
                           roomMode: roomMode,
                         ));
-                        // Navigator.push(
-                        //   context,
-                        //   MaterialPageRoute(
-                        //       builder: (context) => MultiDistanceRoomForm(
-                        //             roomMode: roomMode,
-                        //           )),
-                        // );
                       },
                       style: ElevatedButton.styleFrom(
                         foregroundColor: Colors.white,
@@ -98,7 +90,7 @@ class _MultiDisWait extends State<MultiDisWait> {
                   children: [
                     Expanded(
                       child: SizedBox(
-                        height: 39,
+                        height: 40,
                         child: TextField(
                           decoration: InputDecoration(
                             contentPadding: EdgeInsets.all(5),
@@ -137,10 +129,11 @@ class _MultiDisWait extends State<MultiDisWait> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 20),
+
                 Obx(() {
                   return ListView.builder(
                       shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
                       itemCount: controller.roomList.length,
                       itemBuilder: (context, idx) {
                         return GestureDetector(

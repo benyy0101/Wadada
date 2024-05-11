@@ -104,8 +104,8 @@ class KakaoLoginButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        controller.login();
+      onTap: () async {
+        await controller.login();
         Get.to(() => MultiMain());
       },
       child: Container(
