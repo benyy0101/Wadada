@@ -38,7 +38,7 @@ public class QMarathonRecord extends EntityPathBase<MarathonRecord> {
 
     public final NumberPath<Integer> marathonRecordDist = createNumber("marathonRecordDist", Integer.class);
 
-    public final StringPath marathonRecordEnd = createString("marathonRecordEnd");
+    public final ComparablePath<org.locationtech.jts.geom.Point> marathonRecordEnd = createComparable("marathonRecordEnd", org.locationtech.jts.geom.Point.class);
 
     public final StringPath marathonRecordHeartbeat = createString("marathonRecordHeartbeat");
 
@@ -56,7 +56,7 @@ public class QMarathonRecord extends EntityPathBase<MarathonRecord> {
 
     public final StringPath marathonRecordSpeed = createString("marathonRecordSpeed");
 
-    public final StringPath marathonRecordStart = createString("marathonRecordStart");
+    public final ComparablePath<org.locationtech.jts.geom.Point> marathonRecordStart = createComparable("marathonRecordStart", org.locationtech.jts.geom.Point.class);
 
     public final NumberPath<Integer> marathonRecordTime = createNumber("marathonRecordTime", Integer.class);
 

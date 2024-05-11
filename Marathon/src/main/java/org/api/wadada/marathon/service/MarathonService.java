@@ -19,4 +19,6 @@ public interface MarathonService {
     MarathonGameStartRes saveStartMarathon(Principal principal, MarathonGameStartReq marathonGameStartReq);
     MarathonGameEndRes saveEndMarathon(Principal principal, MarathonGameEndReq marathonGameEndReq);
 
+    boolean isEndGame(int RoomSeq);
+
 }

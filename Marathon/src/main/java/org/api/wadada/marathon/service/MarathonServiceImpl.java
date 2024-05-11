@@ -2,6 +2,9 @@ package org.api.wadada.marathon.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.api.wadada.error.errorcode.CustomErrorCode;
+import org.api.wadada.error.errorcode.ErrorCode;
+import org.api.wadada.error.exception.RestApiException;
 import org.api.wadada.marathon.dto.MarathonRoomDto;
 import org.api.wadada.marathon.dto.MarathonRoomManager;
 import org.api.wadada.marathon.dto.MemberInfo;
@@ -111,10 +114,16 @@ public class MarathonServiceImpl implements MarathonService {
         if (memberOptional.isPresent()) {
             Member member = memberOptional.get();
 
+            Optional<MarathonRecord> optional = marathonRepository.findByMemberIdandMarathonSeq(member.getMemberSeq(),marathonGameStartReq.getMarathonSeq());
+            if(optional.isPresent()){
+                throw new RestApiException(CustomErrorCode.DUPLICATE_RECORD);
+            }
+
+
             MarathonRecord marathonRecord = MarathonRecord.builder()
                     .marathonRecordIsWin(marathonGameStartReq.isMarathonRecordIsWin())
-                    .marathonRecordStart(marathonGameStartReq.getRecordStartLocation())
-                    .marathonRecordSeq(marathonGameStartReq.getMarathonSeq())
+                    .marathonRecordStart(marathonGameStartReq.getMarathonRecordStart())
+                    .marathonSeq(marathonGameStartReq.getMarathonSeq())
                     .member(member) // Member 인스턴스 설정
                     .build();
 
@@ -138,12 +147,29 @@ public class MarathonServiceImpl implements MarathonService {
                 throw new NullPointerException("기록을 찾을 수 없습니다");
             }
 
-            optional.get().
 
+            optional.get().updateEnd(marathonGameEndReq.getMarathonRecordEnd(),marathonGameEndReq.getMarathonRecordTime(),
+                    marathonGameEndReq.getMarathonRecordDist(),marathonGameEndReq.getMarathonRecodeImage(),
+                    marathonGameEndReq.getMarathonRecordRank(),
+                    marathonGameEndReq.getMarathonRecodeWay(),
+                    marathonGameEndReq.getMarathonRecodePace(),
+                    marathonGameEndReq.getMarathonRecordSpeed(),
+                    marathonGameEndReq.getMarathonRecordHeartbeat(),
+                    marathonGameEndReq.isMarathonRecordIsWin());
 
             return new MarathonGameEndRes();
         } else {
             throw new NotFoundMemberException();
+        }
+    }
+
+    @Override
+    public boolean isEndGame(int RoomSeq) {
+        try {
+            marathonRoomManager.removeRoom(RoomSeq);
+            return true;
+        } catch (RestApiException e) {
+            throw new RestApiException(CustomErrorCode.NO_ROOM);
         }
     }
 

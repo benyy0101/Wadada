@@ -14,8 +14,6 @@ import org.locationtech.jts.geom.Point;
 @Getter
 public class MarathonGameStartReq {
     @JsonDeserialize(using = PointDeserializer.class)
-    private Point recordStartLocation;
+    private Point marathonRecordStart;
     private Integer marathonSeq;
-    private Integer recordPeople;
-    private boolean marathonRecordIsWin;
 }

@@ -52,11 +52,14 @@ public class MarathonController {
     public ResponseEntity<MarathonGameStartRes> saveStartMarathon(Principal principal, @RequestBody MarathonGameStartReq marathonGameStartReq){
         return new ResponseEntity<>(marathonService.saveStartMarathon(principal,marathonGameStartReq), HttpStatus.OK);
     }
-    @PostMapping("/end")
+    @PostMapping("/result")
     public ResponseEntity<MarathonGameEndRes> saveEndMarathon(Principal principal, @RequestBody MarathonGameEndReq marathonGameEndReq){
         return new ResponseEntity<>(marathonService.saveEndMarathon(principal,marathonGameEndReq),HttpStatus.OK);
     }
-
+    @GetMapping("/end/{room_seq}")
+    public ResponseEntity<Boolean> isEndGame(@PathVariable("room_seq") int roomSeq){
+        return ResponseEntity.ok(marathonService.isEndGame(roomSeq));
+    }
 
 
 }
