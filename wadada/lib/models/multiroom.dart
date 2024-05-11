@@ -7,11 +7,11 @@ import 'package:wadada/util/serializable.dart';
 
 class MultiRoom {
   int roomPeople;
-  int roomDist;
+  double roomDist;
   int roomMode;
   int roomSecret;
   String roomTag;
-  int roomTime;
+  double roomTime;
   String roomTitle;
 
   MultiRoom(
@@ -27,11 +27,11 @@ class MultiRoom {
   factory MultiRoom.fromJson(Map<String, dynamic> json) {
     return MultiRoom(
       roomPeople: json['roomPeople'] as int,
-      roomDist: json['roomDist'] as int,
+      roomDist: json['roomDist'] as double,
       roomMode: json['roomMode'] as int,
       roomSecret: json['roomSecret'] as int,
       roomTag: json['roomTag'] as String,
-      roomTime: json['roomTime'] as int,
+      roomTime: json['roomTime'] as double,
       roomTitle: json['roomTitle'] as String,
     );
   }
@@ -215,8 +215,8 @@ class SimpleRoom {
   String? roomTag;
   int roomSecret;
   int roomMode;
-  int? roomDist;
-  int? roomTime;
+  double roomDist;
+  double roomTime;
   int? nowRoomPeople;
 
   SimpleRoom({
@@ -226,8 +226,8 @@ class SimpleRoom {
     required this.roomSecret,
     this.roomTag,
     required this.roomMode,
-    this.roomDist,
-    this.roomTime,
+    required this.roomDist,
+    required this.roomTime,
     required this.nowRoomPeople,
   });
 
@@ -255,8 +255,8 @@ class SimpleRoom {
       roomTag: json['roomTag'] as String?,
       roomSecret: json['roomSecret'] as int,
       roomMode: json['roomMode'] as int,
-      roomDist: json['roomDist'] as int?,
-      roomTime: json['roomTime'] as int?,
+      roomDist: json['roomDist'] as double,
+      roomTime: json['roomTime'] as double,
       nowRoomPeople: json['nowRoomPeople'] as int,
     );
   }

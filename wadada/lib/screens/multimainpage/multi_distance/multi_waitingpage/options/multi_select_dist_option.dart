@@ -30,7 +30,7 @@ class MultiSelectDistOption extends StatefulWidget {
 
 class MultiSelectDistOptionState extends State<MultiSelectDistOption> {
   double dist = 0.0;
-  late int distselectnum = 0;
+  late double distselectnum = 0;
   late int peopleselectnum = 0;
   late int passwordselectnum = 0;
   final List<String> _tags = [];
@@ -209,7 +209,7 @@ class MultiSelectDistOptionState extends State<MultiSelectDistOption> {
                           controller: distController,
                           onChanged: (value) {
                             setState(() {
-                              distselectnum = int.tryParse(value) ?? 0;
+                              distselectnum = double.tryParse(value) ?? 0;
                               controller.multiroom.roomDist = distselectnum;
                               print(controller.multiroom.roomDist);
                               distupdateErrorText();

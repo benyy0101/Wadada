@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 // import 'package:flutter/rendering.dart';
 import 'package:wadada/common/const/colors.dart';
+import 'package:wadada/controller/stompController.dart';
 import 'package:wadada/models/multiroom.dart';
 import 'package:wadada/provider/multiProvider.dart';
 import 'package:wadada/repository/multiRepo.dart';
@@ -20,12 +21,15 @@ import 'package:http/http.dart' as http;
 
 import 'package:get/get.dart';
 import 'package:wadada/controller/multiController.dart';
+import 'package:wadada/controller/stompController.dart';
 
 class MultiRun extends StatefulWidget{
   final double time;
   final double dist;
   final String appKey;
-  const MultiRun({super.key, required this.time, required this.dist, required this.appKey});
+  final StompController controller;
+  final MultiController multiController;
+  const MultiRun({super.key, required this.time, required this.dist, required this.appKey, required this.controller, required this.multiController});
   
   @override
   _MultiRunState createState() => _MultiRunState();
@@ -34,6 +38,7 @@ class MultiRun extends StatefulWidget{
 class _MultiRunState extends State<MultiRun> {
   bool isLoading = true;
   int countdown = 5;
+  late StompController stompController;
   Timer? countdownTimer;
   bool showCountdown = false;
   int currentTab = 0;
@@ -136,7 +141,7 @@ class _MultiRunState extends State<MultiRun> {
           options: Options(headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
-            'authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNDUyNzIxNzM3IiwiYXV0aCI6IlJPTEVfU09DSUFMIiwiZXhwIjoxNzE0ODgzODg1fQ.7nS18Nv6vBsmIIzOh03-_RYS1UHcXDLygj9PUwDN1Vo',
+            'authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNDYzNDMxNDUzIiwiYXV0aCI6IlJPTEVfU09DSUFMIiwiZXhwIjoxNzE1Njg3MzY3fQ.g2NRh3nZWsmkFTRwbUlTGRPOgyi7G74PSdlYZ_YscaQ',
           }),
         );
         

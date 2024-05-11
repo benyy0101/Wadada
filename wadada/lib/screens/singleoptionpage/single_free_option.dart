@@ -90,7 +90,7 @@ class SingleFreeModeState extends State<SingleOption> {
               ),
             );
         } else if (selectedDistOptionState != null) {
-            double dist = selectedDistOptionState.dist ?? 0.0;
+            double dist = selectedDistOptionState.dist ?? 0;
             String appKey = dotenv.env['APP_KEY'] ?? '';
             Navigator.push(
               context,

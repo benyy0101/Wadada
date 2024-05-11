@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:ffi';
+import 'dart:ffi'; 
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -15,6 +15,8 @@ import 'package:wadada/provider/multiProvider.dart';
 import 'package:wadada/controller/stompController.dart';
 import 'package:wadada/repository/loginRepo.dart';
 import 'package:wadada/repository/multiRepo.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:wadada/screens/multirunpage/multirunpage.dart';
 
 class MultiRoomDetail extends StatefulWidget {
   SimpleRoom roomInfo;
@@ -400,7 +402,14 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                       onPressed:
                           controller.numReady == controller.members.length - 1
                               ? () {
-                                  controller.gameStart();
+                                  String appKey = dotenv.env['APP_KEY'] ?? '';
+                                  // controller.gameStart();
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => MultiRun(time: 0, dist: roomInfo.roomDist, appKey: appKey, controller: controller, multiController: multiController),
+                                    ),
+                                  );
                                 }
                               : null,
                       style: TextButton.styleFrom(

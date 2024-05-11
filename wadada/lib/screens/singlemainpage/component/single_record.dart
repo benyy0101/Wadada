@@ -32,7 +32,7 @@ class _SingleRecordState extends State<SingleRecord>{
         options: Options(headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
-          'authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNDYzNDMxNDUzIiwiYXV0aCI6IlJPTEVfU09DSUFMIiwiZXhwIjoxNzE1NDA1MzkzfQ.dmjUkVX1sFe9EpYhT3SGO3uC7q1dLIoddBvzhoOSisM',
+          'authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNDYzNDMxNDUzIiwiYXV0aCI6IlJPTEVfU09DSUFMIiwiZXhwIjoxNzE1Njg3MzY3fQ.g2NRh3nZWsmkFTRwbUlTGRPOgyi7G74PSdlYZ_YscaQ',
         }),
       );
 

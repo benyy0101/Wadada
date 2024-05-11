@@ -22,7 +22,9 @@ class MultiController extends GetxController {
       roomPeople: -1,
       roomSecret: -1,
       roomMode: -1,
-      nowRoomPeople: -1);
+      nowRoomPeople: -1,
+      roomDist: -1,
+      roomTime: -1);
 
   MultiRoom multiroom = MultiRoom(
       roomPeople: -1,
@@ -60,6 +62,8 @@ class MultiController extends GetxController {
         roomSecret: info.roomSecret,
         roomMode: info.roomMode,
         nowRoomPeople: 1,
+        roomDist: info.roomDist,
+        roomTime: info.roomTime,
       );
       return info.roomIdx;
     } catch (e) {
@@ -74,9 +78,9 @@ class MultiController extends GetxController {
     try {
       roomList.clear();
       List temp = await repo.multiRoomGet(mode);
-      temp.forEach((item) {
+      for (var item in temp) {
         roomList.add(item);
-      });
+      }
       print(roomList);
     } catch (e) {
       print(e);
