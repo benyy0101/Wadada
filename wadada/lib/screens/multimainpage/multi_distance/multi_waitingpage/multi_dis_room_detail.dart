@@ -46,17 +46,8 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
     splitTags();
     initControllers();
     print("-----------------initiating websocket----------------");
-    controller.client.activate();
-// Introduce a delay to allow time for activation to complete
-    Future.delayed(Duration(milliseconds: 2000), () {
-      // Now you can proceed with other actions
-      print("send--------------------");
-      controller.attend(roomInfo.roomIdx);
-      setRoomInfo();
-      //print(isHost);
-      if (controller.numReady == controller.members.length - 1) toStart = true;
-    });
-    //if (roomInfo.roomTag!.isNotEmpty) tags = roomInfo.roomTag!.split('#');
+    controller.attend(roomInfo.roomIdx);
+    setRoomInfo();
   }
 
   void initControllers() {
