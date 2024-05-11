@@ -51,6 +51,7 @@ public class RoomServiceImpl implements RoomService {
     private final CustomRoomRepository customRoomRepository;
     private final RoomManager roomManager;
     private final GameRoomManager gameRoomManager;
+    private final GeneticAlgorithmService geneticAlgorithmService;
 
 
     private final ConcurrentHashMap<Integer, CompletableFuture<Void>> gameStartFutures = new ConcurrentHashMap<>();
@@ -275,6 +276,7 @@ public class RoomServiceImpl implements RoomService {
             }
             else{
                 FlagPointRes point = calculatePoint(roomDto.getRoomPoints());
+//                FlagPointRes point = geneticAlgorithmService.findOptimalPoint(roomDto.getRoomPoints());
                 messagingTemplate.convertAndSend("/sub/attend/" + roomIdx, point);
             }
 
