@@ -121,7 +121,6 @@ public class MarathonServiceImpl implements MarathonService {
 
 
             MarathonRecord marathonRecord = MarathonRecord.builder()
-                    .marathonRecordIsWin(marathonGameStartReq.isMarathonRecordIsWin())
                     .marathonRecordStart(marathonGameStartReq.getMarathonRecordStart())
                     .marathonSeq(marathonGameStartReq.getMarathonSeq())
                     .member(member) // Member 인스턴스 설정
