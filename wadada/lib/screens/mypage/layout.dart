@@ -40,9 +40,18 @@ class _MyPageLayoutState extends State<MyPageLayout>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SafeArea(
+      body: Container(
         child: Column(
           children: [
+            SizedBox(
+              height: 45,
+            ),
+            Text('멀티모드',
+                style: TextStyle(
+                  color: Colors.black87,
+                  fontSize: 30,
+                  fontWeight: FontWeight.w600,
+                )),
             PreferredSize(
               preferredSize:
                   Size.fromHeight(100), // Specify the preferred height

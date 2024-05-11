@@ -13,9 +13,9 @@ import 'package:wadada/repository/multiRepo.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 class StompController extends GetxController {
-  late StompClient client;
+  StompClient client = StompClient(config: StompConfig(url: ''));
   final int roomIdx;
-  late String accessToken;
+  String accessToken = '';
   late String serverUrl;
   RxList<CurrentMember> members = <CurrentMember>[].obs;
   MultiRepository repo = MultiRepository(provider: MultiProvider());
@@ -31,16 +31,28 @@ class StompController extends GetxController {
       memberReady: false,
       manager: false);
   final storage = FlutterSecureStorage();
+  StompController({required this.roomIdx});
 
-  StompController({required this.roomIdx}) {
+  @override
+  Future<void> onInit() async {
+    super.onInit();
+    await dotenv.load(fileName: 'assets/env/.env');
+    final storage = FlutterSecureStorage();
+    serverUrl = dotenv.env['SERVER_URL'] ?? "";
+    accessToken = await storage.read(key: 'accessToken') ?? 'no Token';
+  }
+
+  void attend(int roomIdx) async {
+    print("-------------attend-------------");
+    String? accessToken = await storage.read(key: 'accessToken');
     client = StompClient(
       config: StompConfig.sockJS(
         url: dotenv.env['STOMP_URL']!,
-        onConnect: (StompFrame frame) {
+        onConnect: (p0) {
           client.subscribe(
             destination: '/sub/attend/$roomIdx',
             headers: {
-              'Authorization': dotenv.env['accessToken'] ??
+              'Authorization': accessToken ??
                   'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNDYzNDMxNDUzIiwiYXV0aCI6IlJPTEVfU09DSUFMIiwiZXhwIjoxNzE1NDA1MzkzfQ.dmjUkVX1sFe9EpYhT3SGO3uC7q1dLIoddBvzhoOSisM'
             },
             callback: (frame) async {
@@ -58,7 +70,6 @@ class StompController extends GetxController {
 
                 //게임 스타트
                 if (res['body']['action'] == "/Multi/start") {
-                  
                   return;
                 }
                 //Null값 처리
@@ -78,41 +89,33 @@ class StompController extends GetxController {
               }
             },
           );
-        }, // Pass the onConnect method as a callback here
+        },
+// Pass the onConnect method as a callback here
         webSocketConnectHeaders: {
           "transports": ["websocket"],
-          'Authorization': dotenv.env['accessToken'] ??
+          'Authorization': accessToken ??
               'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNDYzNDMxNDUzIiwiYXV0aCI6IlJPTEVfU09DSUFMIiwiZXhwIjoxNzE1NDA1MzkzfQ.dmjUkVX1sFe9EpYhT3SGO3uC7q1dLIoddBvzhoOSisM'
         },
         stompConnectHeaders: {
-          'Authorization': dotenv.env['accessToken'] ??
+          'Authorization': accessToken ??
               'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNDYzNDMxNDUzIiwiYXV0aCI6IlJPTEVfU09DSUFMIiwiZXhwIjoxNzE1NDA1MzkzfQ.dmjUkVX1sFe9EpYhT3SGO3uC7q1dLIoddBvzhoOSisM'
         },
         onWebSocketError: (dynamic error) => print(error.toString()),
       ),
     );
-  }
-
-  Future<void> _init() async {
-    await dotenv.load(fileName: 'assets/env/.env');
-    final storage = FlutterSecureStorage();
-    serverUrl = dotenv.env['SERVER_URL'] ?? "";
-    accessToken = storage.read(key: 'accessToken') as String;
-  }
-
-  void attend(int roomIdx) {
     client.activate();
-    print("-------------attend-------------");
-    try {
-      if (client.isActive) {
-        client.send(destination: '/pub/attend/$roomIdx');
-        print("--------------published ${roomIdx}------------------");
-      } else {
-        throw Exception("서버가 준비되어 있지 않습니다.");
+    Future.delayed(Duration(milliseconds: 2000), () {
+      try {
+        if (client.isActive) {
+          client.send(destination: '/pub/attend/$roomIdx');
+          print("--------------published ${roomIdx}------------------");
+        } else {
+          throw Exception("서버가 준비되어 있지 않습니다.");
+        }
+      } catch (e) {
+        print(e);
       }
-    } catch (e) {
-      print(e);
-    }
+    });
   }
 
   void fromJson(List<dynamic> list) {
@@ -137,6 +140,7 @@ class StompController extends GetxController {
   }
 
   void countReady() {
+    numReady = 0;
     members.forEach((item) {
       if (item.memberReady == true) numReady++;
     });
@@ -180,6 +184,12 @@ class StompController extends GetxController {
     });
     print('isOwner------------------------------');
     print(isOwner);
+  }
+
+  Future<void> onConnect() async {
+    String? accessToken = await storage.read(key: 'accessToken');
+    print("-----------------acwesbot-------------");
+    print(accessToken);
   }
 
   @override
