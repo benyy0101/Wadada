@@ -36,10 +36,10 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 //
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry){
-        registry.addEndpoint("/ws")
+        registry.addEndpoint("/Multi/ws")
 //                .setAllowedOrigins("https://k10a704.p.ssafy.io", "http://k10a704.p.ssafy.io", "http://localhost:8080","https://localhost:8080")
-                .setAllowedOrigins("https://apic.app");
-//                .withSockJS();
+                .setAllowedOrigins("https://apic.app")
+                .withSockJS();
     }
 
     // 연결 성공 체크
@@ -55,7 +55,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     Message<byte[]> message = sessionDisconnectEvent.getMessage();
     StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
     StompCommand command = accessor.getCommand();
-    log.info(message.toString());
+    System.out.println(sessionDisconnectEvent);
     System.out.println("연결 끊어짐!");
 
     }
