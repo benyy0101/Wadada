@@ -20,7 +20,6 @@ class MyApp extends StatelessWidget {
       // home: const HomeScreen(),
       // home: const RunStartScreen(),
       home: const ProceedingScreen(),
-      // home: const runPace(),
     );
   }
 }

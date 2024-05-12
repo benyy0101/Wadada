@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:watch_app/screens/components/heartbeat.dart';
 import 'package:watch_app/screens/components/pace.dart';
 import 'package:watch_app/screens/components/pageindicator.dart';
@@ -20,11 +21,21 @@ class _ProceedingScreenState extends State<ProceedingScreen>
   late TabController _tabController;
   int _currentPageIndex = 0;
 
+  static const platform = MethodChannel('com.example.watch_app/ambient');
+
   @override
   void initState() {
     super.initState();
     _pageViewController = PageController();
     _tabController = TabController(length: 4, vsync: this);
+    platform.setMethodCallHandler(_handlePlatformMessages);
+  }
+
+  Future<void> _handlePlatformMessages(MethodCall call) async {
+    if (call.method == 'ambientModeChanged') {
+      // Ambient Mode 상태 변경에 따른 로직 처리
+      // 예: 상태에 따라 UI 업데이트
+    }
   }
 
   @override

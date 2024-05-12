@@ -152,9 +152,14 @@ import android.Manifest
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.plugin.common.MethodChannel
 
+// 추가
+import android.util.Log
+import android.widget.Toast
+
+
 class MainActivity: FlutterActivity(), SensorEventListener {
 
-    private static final String CHANNEL = "com.example.watch_app/heart_rate";
+    // private static final String CHANNEL = "com.example.watch_app/heart_rate";
     
     private lateinit var sensorManager: SensorManager
     private var heartRateSensor: Sensor? = null
@@ -164,46 +169,74 @@ class MainActivity: FlutterActivity(), SensorEventListener {
     companion object {
         const val REQUESTED_PERMISSION = Manifest.permission.BODY_SENSORS
         const val REQUEST_PERMISSION_CODE = 1
+        // 추가
+        const val CHANNEL = "com.example.watch_app/heart_rate"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
-        heartRateSensor = sensorManager.getDefaultSensor(Sensor.TYPE_HEART_RATE)
+
+        //  저 센서 매니저 인스턴스를 얻어야 센서에 관련된 모든 작업 관리 가능함
+        val sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
+        val heartRateSensor = sensorManager.getDefaultSensor(Sensor.TYPE_HEART_RATE) // 여기서심박수 센서 겟함
         
         // Flutter랑 통신하는ㄱㅓ 
-        channel = MethodChannel(flutterEngine!!.dartExecutor.binaryMessenger, "com.example.watch_app/heart_rate")
+        channel = MethodChannel(flutterEngine!!.dartExecutor.binaryMessenger, CHANNEL)
         channel.setMethodCallHandler { call, result ->
-            if (call.method == "getHeartRate") {
-                // Flutter에서 심박수 데이터 요청 시 최근에 저장된 심박수 데이터를 반환
-                if (lastHeartRate != 0.0f) {
-                    result.success(lastHeartRate)
-                } else {
-                    result.error("UNAVAILABLE", "Heart rate data not available yet.", null)
+            // if (call.method == "getHeartRate") {
+            //     // Flutter에서 심박수 데이터 요청 시 최근에 저장된 심박수 데이터를 반환
+            //     if (lastHeartRate != 0.0f) {
+            //         result.success(lastHeartRate)
+            //     } else {
+            //         result.error("UNAVAILABLE", "Heart rate data not available yet.", null)
+            //     }
+            // } else {
+            //     result.notImplemented()
+            // }
+            // 추가
+            when (call.method) {
+                "getHeartRate" -> {
+                    if (lastHeartRate != 0.0f) {
+                        result.success(lastHeartRate)
+                    } else {
+                        result.error("아이고 불가능합니다", "Heart rate data not available yet", null)
+                    }
                 }
-            } else {
-                result.notImplemented()
+                else -> result.notImplemented()
             }
         }
 
         checkPermission()
+
+        // 리스너 등록
+        heartRateSensor?.also { heart ->
+            sensorManager.registerListener(this, heart, SensorManager.SENSOR_DELAY_NORMAL)
+
+        }
+        
     }
+
+    // override fun onPause() {
+    //     super.onPause()
+    //     sensorManager.unregisterListener(this)
+    // }
+    
+
+    
+
 
     // 1. 센서 권한 확인
     private fun checkPermission() {
         when {
             ContextCompat.checkSelfPermission(this, REQUESTED_PERMISSION) == PackageManager.PERMISSION_GRANTED -> {
-                // 권한이 이미 부여되어 있음
                 Log.d("MainActivity", "BODY_SENSORS 권한이 이미 부여됨")
             }
             ActivityCompat.shouldShowRequestPermissionRationale(this, REQUESTED_PERMISSION) -> {
-                // 교육용 UI 표시
-                Log.d("MainActivity", "BODY_SENSORS 권한 설명 필요")
+                Toast.makeText(this, "심박수 측정을 위해서는 권한이 필요합니다.", Toast.LENGTH_LONG).show()
+                ActivityCompat.requestPermissions(this, arrayOf(REQUESTED_PERMISSION), REQUEST_PERMISSION_CODE)
             }
             else -> {
-                // 권한 요청
                 ActivityCompat.requestPermissions(this, arrayOf(REQUESTED_PERMISSION), REQUEST_PERMISSION_CODE)
-                Log.d("MainActivity", "BODY_SENSORS 권한 요청")
             }
         }
     }
