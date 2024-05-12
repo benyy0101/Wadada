@@ -18,4 +18,7 @@ public enum GameMessage {
     public String toJson() {
         return String.format("{\"message\": \"%s\", \"action\": \"%s\"}", message, actionEndpoint);
     }
+    public String toJson(int roomSeq) {
+        return String.format("{\"message\": \"%s\", \"action\": \"%s\", \"roomSeq\": \"%d\"}", message, actionEndpoint, roomSeq);
+    }
 }

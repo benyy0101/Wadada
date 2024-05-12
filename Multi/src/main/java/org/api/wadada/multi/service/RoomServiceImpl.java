@@ -383,7 +383,7 @@ public class RoomServiceImpl implements RoomService {
         gameStartFutures.put(curGame.getRoomSeq(),tasks);
     }
     private void sendMessage (GameRoomDto curGame){
-        String message = GameMessage.GAME_START.toJson();
+        String message = GameMessage.GAME_START.toJson(curGame.getRoomSeq());
         System.out.println(message + " " + curGame.getRoomIdx());
         messagingTemplate.convertAndSend("/sub/attend/" + curGame.getRoomIdx(), message);
     }
