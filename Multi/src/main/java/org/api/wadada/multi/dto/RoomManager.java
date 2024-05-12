@@ -15,8 +15,8 @@ import java.util.concurrent.ConcurrentMap;
 public class RoomManager {
 
     private final List<RoomDto> rooms;
-    private static final int MAX_ROOMS = 40;
-    private int[] roomSeqList = new int[40];
+    private static final int MAX_ROOMS = 70;
+    private int[] roomSeqList = new int[70];
 
     public RoomManager() {
         this.rooms = new ArrayList<>(MAX_ROOMS);
