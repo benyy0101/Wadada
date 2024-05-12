@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 // ignore: unnecessary_import
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
+import 'package:wadada/common/component/tabbars.dart';
 import 'package:wadada/controller/profileController.dart';
 import 'package:wadada/repository/profileRepo.dart';
 import 'package:wadada/screens/mainpage/layout.dart';
@@ -355,8 +356,8 @@ class _MyButton extends StatelessWidget {
         const SizedBox(width: 10),
         TextButton(
           onPressed: () {
-            print(profileController.profile.value);
-            // Get.to(SingleMain());
+            // print(profileController.profile.value);
+            profileController.patchProfile(profileController.profile.value);
           },
           style: TextButton.styleFrom(
             backgroundColor: GREEN_COLOR,

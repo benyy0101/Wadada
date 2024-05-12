@@ -4,6 +4,8 @@ import 'package:wadada/models/profile.dart';
 import 'package:wadada/provider/mypageProvider.dart';
 import 'package:wadada/repository/mypageRepo.dart';
 import 'package:wadada/repository/profileRepo.dart';
+import 'package:wadada/screens/newprofilepage/Error.dart';
+import 'package:wadada/screens/newprofilepage/ProfileFinish.dart';
 
 class ProfileController extends GetxController {
   final ProfileRepository repo;
@@ -23,9 +25,11 @@ class ProfileController extends GetxController {
   void patchProfile(Profile newProfile) async {
     try {
       await repo.profilePatch(newProfile);
+      Get.to(ProfileFinish());
       return;
     } catch (e) {
       print('컨트롤러 에러');
+      Get.to(ProfileError());
       print(e);
     }
   }
