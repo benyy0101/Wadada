@@ -124,13 +124,11 @@ public class MultiController {
 
 
     @MessageMapping("/game/start/{roomIdx}")
-    @SendTo("/sub/attend/{roomIdx}")
     public ResponseEntity<String> startGameInfo(@DestinationVariable int roomIdx) {
         // 게임 시작 정보 메시지 생성 (API 요청 URL 포함)
 
-        String message = GameMessage.GAME_START_INFO_REQUEST.toJson();
         roomService.startGame(roomIdx);
-        return new ResponseEntity<>(message,HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 
