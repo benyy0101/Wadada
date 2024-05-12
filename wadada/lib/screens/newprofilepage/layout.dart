@@ -26,7 +26,7 @@ class NewProfileLayout extends StatefulWidget {
 
 class _NewProfileState extends State<NewProfileLayout> {
   ProfileController profileController =
-      ProfileController(repo: ProfileRepository());
+      Get.put(ProfileController(repo: ProfileRepository()));
   Uint8List? _image;
   File? selectedImage;
 
@@ -86,6 +86,7 @@ class _NewProfileState extends State<NewProfileLayout> {
                     onChanged: (String value) {
                       if (value != '') {
                         profileController.validateNickname(value);
+                        profileController.profile.value.memberNickname = value;
                       }
                     },
                   ),
@@ -143,7 +144,7 @@ class _NewProfileState extends State<NewProfileLayout> {
               ),
             ),
             const SizedBox(height: 60),
-            const _MyButton()
+            _MyButton()
           ],
         ),
       ),
@@ -213,6 +214,7 @@ class _NewProfileState extends State<NewProfileLayout> {
     setState(() {
       selectedImage = File(returnImage.path);
       _image = File(returnImage.path).readAsBytesSync();
+      profileController.uploadImage(returnImage.path);
     });
     // ignore: use_build_context_synchronously
     Get.back();
@@ -227,6 +229,7 @@ class _NewProfileState extends State<NewProfileLayout> {
     setState(() {
       selectedImage = File(returnImage.path);
       _image = File(returnImage.path).readAsBytesSync();
+      profileController.uploadImage(returnImage.path);
     });
     // ignore: use_build_context_synchronously
     Get.back();
@@ -319,8 +322,10 @@ class _Birthdate extends StatelessWidget {
 
 // 생성 취소 버튼
 class _MyButton extends StatelessWidget {
+  ProfileController profileController =
+      Get.put(ProfileController(repo: ProfileRepository()));
   // ignore: unused_element
-  const _MyButton({super.key});
+  _MyButton({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -329,39 +334,41 @@ class _MyButton extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         TextButton(
-          onPressed: () {},
+          onPressed: () {
+            Get.to(SingleMain());
+          },
           style: TextButton.styleFrom(
             backgroundColor: GRAY_400,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(4.0),
+              borderRadius: BorderRadius.circular(20),
             ),
-            minimumSize: const Size(130, 42),
+            minimumSize: const Size(200, 60),
           ),
           child: const Text(
-            "취소",
+            "다음에 만들기",
             style: TextStyle(
-              fontSize: 15,
+              fontSize: 20,
               color: Colors.white,
             ),
           ),
         ),
-        const SizedBox(width: 30),
+        const SizedBox(width: 10),
         TextButton(
           onPressed: () {
-            Get.to(SingleMain());
-            // Navigator.pushReplacementNamed(context, '/');
+            print(profileController.profile.value);
+            // Get.to(SingleMain());
           },
           style: TextButton.styleFrom(
             backgroundColor: GREEN_COLOR,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(4.0),
+              borderRadius: BorderRadius.circular(20),
             ),
-            minimumSize: const Size(130, 42),
+            minimumSize: const Size(200, 60),
           ),
           child: const Text(
             '생성하기',
             style: TextStyle(
-              fontSize: 15,
+              fontSize: 20,
               color: Colors.white,
             ),
           ),
@@ -370,48 +377,3 @@ class _MyButton extends StatelessWidget {
     );
   }
 }
-
-
-// 이거 수정 매우매우 필요한 상태 
-// 입력받은 값을 보내는 코드 필요
-// Future<void> sendMemberInfoToServer() async {
-//     final memberinfo = 
-//     final dio = Dio();
-        
-//     if (memberinfo != null) {
-//       final url = Uri.parse('https://k10a704.p.ssafy.io/Wadada/profile');
-
-//       final requestBody = jsonEncode({
-//         "memberNickname": "SampleNickname",
-//         "memberBirthday": "1990-01-01",
-//         "memberGender": "F",
-//         "memberEmail": "sample@example.com",
-//         "memberProfileImage": "https://s3.example.com/path/to/image.jpg"
-//       });
-      
-//       try {
-//         final response = await dio.post(
-//           url.toString(),
-//           data: requestBody,
-//           options: Options(
-//             headers: {
-//             'Content-Type': 'application/json',
-//             'Accept': 'application/json',
-//             'authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNDUyNzIxNzM3IiwiYXV0aCI6IlJPTEVfU09DSUFMIiwiZXhwIjoxNzE0ODkwMjQ1fQ.GABjqHm8MXBSgzv3ckROkNu3HeEyUrwrcQhsY-zWPSA',
-//             }
-//           ),
-//         );
-        
-//         if (response.statusCode == 200) {
-
-//           print('서버 요청 성공');
-//         } else {
-//           print('서버 요청 실패: ${response.statusCode}');
-//         }
-//       } catch (e) {
-//           print('요청 처리 중 에러 발생: $e');
-//       }
-//     } else {
-//         print("에러에러에러");
-//     }
-//   }

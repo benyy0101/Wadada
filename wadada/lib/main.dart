@@ -78,25 +78,25 @@ class _MyHomePageState extends State<MyHomePage> {
     String? accessToken = await FlutterSecureStorage().read(key: 'accessToken');
     String? nickName = await FlutterSecureStorage().read(key: 'kakaoNickname');
     // print(nickName == '임시');
-    // if (accessToken != null && nickName != "임시") {
-    //   setState(() {
-    //     //print('WHERE');
-    //     _homeWidget = MainLayout();
-    //   });
-    // } else if (nickName == "임시") {
-    //   setState(() {
-    //     _homeWidget = ProfileReady();
-    //     print("HIT");
-    //   });
-    // } else {
-    //   setState(() {
-    //     // print("WHAT");
-    //     _homeWidget = MainPageLayout();
-    //   });
-    // }
-    setState(() {
-      _homeWidget = MultiMain();
-    });
+    if (accessToken != null && nickName != "임시") {
+      setState(() {
+        //print('WHERE');
+        _homeWidget = MainLayout();
+      });
+    } else if (nickName == "임시") {
+      setState(() {
+        _homeWidget = ProfileReady();
+        print("HIT");
+      });
+    } else {
+      setState(() {
+        // print("WHAT");
+        _homeWidget = MainPageLayout();
+      });
+    }
+    // setState(() {
+    //   _homeWidget = MultiMain();
+    // });
     // print(_homeWidget);
   }
 

@@ -1,7 +1,10 @@
 // 생년월일
 // ignore: use_key_in_widget_constructors
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:wadada/common/const/colors.dart';
+import 'package:wadada/controller/profileController.dart';
+import 'package:wadada/repository/profileRepo.dart';
 
 class Calendar extends StatefulWidget {
   const Calendar({super.key});
@@ -11,7 +14,8 @@ class Calendar extends StatefulWidget {
 }
 
 class CalendarState extends State<Calendar> {
-
+  ProfileController profileController =
+      Get.put(ProfileController(repo: ProfileRepository()));
   DateTime date = DateTime.now();
 
   @override
@@ -24,7 +28,8 @@ class CalendarState extends State<Calendar> {
         child: TextButton(
           style: TextButton.styleFrom(
             backgroundColor: GREEN_COLOR,
-            padding: const EdgeInsets.symmetric(vertical: 13.0, horizontal: 60.0), 
+            padding:
+                const EdgeInsets.symmetric(vertical: 13.0, horizontal: 60.0),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(4.0),
             ),
@@ -43,7 +48,7 @@ class CalendarState extends State<Calendar> {
             }
           },
           child: Text(
-            date.toString().substring(0,10),
+            date.toString().substring(0, 10),
             style: const TextStyle(
               color: Colors.white,
               fontSize: 20.0,
