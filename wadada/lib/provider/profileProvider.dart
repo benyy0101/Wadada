@@ -15,7 +15,8 @@ class ProfileProvider {
   }
 
   Future<void> setAuth() async {
-    _dio.options.headers['Authorization'] = storage.read(key: 'accessToken');
+    _dio.options.headers['Authorization'] =
+        await storage.read(key: 'accessToken');
   }
 
   Future<Response<dynamic>> profileDelete() async {
@@ -40,8 +41,7 @@ class ProfileProvider {
 
   Future<Response> nickNameValidate(String nickName) async {
     await setAuth();
-    final response = await _dio.post('profile', data: nickName);
+    final response = await _dio.get('/${nickName}');
     return response;
   }
-
 }

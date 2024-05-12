@@ -1,12 +1,14 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
-
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 // ignore: unnecessary_import
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
+import 'package:wadada/controller/profileController.dart';
+import 'package:wadada/repository/profileRepo.dart';
+import 'package:wadada/screens/mainpage/layout.dart';
 import 'package:wadada/screens/newprofilepage/widget/birthdate.dart';
 import 'package:wadada/screens/newprofilepage/widget/custom_text_form_field.dart';
 import 'package:wadada/common/const/colors.dart';
@@ -23,14 +25,18 @@ class NewProfileLayout extends StatefulWidget {
 }
 
 class _NewProfileState extends State<NewProfileLayout> {
+  ProfileController profileController =
+      ProfileController(repo: ProfileRepository());
   Uint8List? _image;
   File? selectedImage;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       // 프로필 생성
       extendBodyBehindAppBar: true,
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: const Text('프로필 생성'),
         backgroundColor: Colors.white,
         elevation: 0,
@@ -42,9 +48,6 @@ class _NewProfileState extends State<NewProfileLayout> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const SizedBox(height: 110),
-
-            // 프로필 동그라미
-
             CircleAvatar(
               radius: 100,
               backgroundImage: _image != null
@@ -80,7 +83,19 @@ class _NewProfileState extends State<NewProfileLayout> {
                   const SizedBox(height: 20),
                   CustomTextFormField(
                     hintText: '닉네임을 입력하세요',
-                    onChanged: (String value) {},
+                    onChanged: (String value) {
+                      if (value != '') {
+                        profileController.validateNickname(value);
+                      }
+                    },
+                  ),
+                  Obx(
+                    () {
+                      return Visibility(
+                        child: Text('이미 있는 닉네임입니다'),
+                        visible: !profileController.isNicknameValid.value,
+                      );
+                    },
                   ),
                 ],
               ),
@@ -121,17 +136,13 @@ class _NewProfileState extends State<NewProfileLayout> {
                     alignment: Alignment.centerLeft,
                     child: _Birthdate(),
                   ),
-
                   SizedBox(height: 20),
-
                   // 생년월일 선택
                   Calendar(),
                 ],
               ),
             ),
-
             const SizedBox(height: 60),
-
             const _MyButton()
           ],
         ),
