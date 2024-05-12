@@ -355,10 +355,9 @@ public class RoomServiceImpl implements RoomService {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-//        String startMessage = GameMessage.GAME_START_INFO_REQUEST.toJson(curGame.getRoomSeq());
-//        log.info(startMessage);
-//        String tempMessage = GameMessage.GAME_START_INFO_REQUEST.toJson();
-//        messagingTemplate.convertAndSend("/sub/attend/" + curGame.getRoomIdx(),tempMessage);
+        String startMessage = GameMessage.GAME_START_INFO_REQUEST.toJson(curGame.getRoomSeq());
+
+        messagingTemplate.convertAndSend("/sub/attend/" + curGame.getRoomIdx(),startMessage);
         CompletableFuture<Void> tasks = CompletableFuture.anyOf(
                 //모든사람이 들어왔으면 시작
                 CompletableFuture.runAsync(() -> {

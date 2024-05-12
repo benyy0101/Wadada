@@ -16,10 +16,10 @@ public enum GameMessage {
     private final String actionEndpoint; // 클라이언트가 호출해야 할 API 엔드포인트
 
     public String toJson() {
-        return String.format("{\"message\": \"%s\", \"action\": \"%s\"}", message, actionEndpoint);
+        return String.format("{\"header\": {\"status\": 200, \"statusText\": \"OK\"}, \"body\": {\"message\": \"%s\", \"action\": \"%s\"}}", message, actionEndpoint);
     }
     public String toJson(int roomSeq) {
-//        String formattedEndpoint = actionEndpoint.replace("{roomSeq}", String.valueOf(roomSeq));
-        return String.format("{\"message\": \"%s\", \"action\": \"%s\", \"roomSeq\": \"%d\"}", message, actionEndpoint, roomSeq);
+        String formattedEndpoint = actionEndpoint.replace("{roomSeq}", String.valueOf(roomSeq));
+        return String.format("{\"header\": {\"status\": 200, \"statusText\": \"OK\"}, \"body\": {\"message\": \"%s\", \"action\": \"%s\", \"roomSeq\": %d}}", message, formattedEndpoint, roomSeq);
     }
 }
