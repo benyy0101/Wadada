@@ -1,6 +1,8 @@
 package org.api.wadada.multi.service;
 
-import lombok.AllArgsConstructor;
+import jakarta.json.Json;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.api.wadada.multi.dto.GameRoomDto;
@@ -142,7 +144,7 @@ public class MultiRecordServiceImpl implements MultiRecordService {
     }
 
     public void updatePlayRank(int roomSeq){
-
+        ObjectMapper mapper = new ObjectMapper();
         // 게임 방 정보 가져오기
         GameRoomDto roomDto = gameRoomManager.getAllRooms().get(roomSeq);
         List<PlayerInfo> playerInfos = new ArrayList<>(roomDto.getPlayerInfo().values());
@@ -190,7 +192,9 @@ public class MultiRecordServiceImpl implements MultiRecordService {
                         .memberTime(playerInfo.getTime())
                         .build());
             }
-            messagingTemplate.convertAndSend("/sub/game/" + roomSeq, gameInfoRes);
+            String gameInfoResJson = mapper.writeValueAsString(gameInfoRes); // 객체를 JSON 문자열로 변환
+            String rankMessage = String.format("{\"header\": {\"status\": 200, \"statusText\": \"OK\"}, \"body\": {\"message\": \"%s\", \"memberInfo\": %s}}", message, gameInfoResJson );
+            messagingTemplate.convertAndSend("/sub/game/" + roomSeq, rankMessage);
         } catch (Exception e) {
             e.printStackTrace();
         }
