@@ -1,3 +1,4 @@
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:wadada/models/profile.dart';
@@ -10,6 +11,7 @@ import 'package:wadada/screens/newprofilepage/ProfileFinish.dart';
 class ProfileController extends GetxController {
   final ProfileRepository repo;
   final MypageRepository mypageRepo = MypageRepository(mypageAPI: MypageAPI());
+  final storage = FlutterSecureStorage();
   Rx<Profile> profile = Profile(
           memberNickname: '',
           memberBirthday: DateTime(1995, 03, 04),
@@ -25,6 +27,8 @@ class ProfileController extends GetxController {
   void patchProfile(Profile newProfile) async {
     try {
       await repo.profilePatch(newProfile);
+      await storage.write(
+          key: 'kakaoNickname', value: profile.value.memberNickname);
       Get.to(ProfileFinish());
       return;
     } catch (e) {
