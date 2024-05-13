@@ -196,6 +196,7 @@ public class MultiController {
     @GetMapping("/game/rank/{roomSeq}")
 //    @SendTo("/sub/game/{roomSeq}")
     public ResponseEntity<?> getPlayerRank(@PathVariable int roomSeq){
+        log.info("roomSeq"+ roomSeq);
         multiRecordService.getPlayerRank(roomSeq);
         return new ResponseEntity<>(HttpStatus.OK);
     }

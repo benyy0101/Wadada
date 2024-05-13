@@ -30,9 +30,15 @@ import org.api.wadada.multi.exception.CreateRoomException;
 import org.api.wadada.multi.exception.NotFoundMemberException;
 import org.api.wadada.multi.exception.NotFoundRoomException;
 import org.api.wadada.multi.repository.*;
+import org.springframework.context.event.EventListener;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
+import org.springframework.messaging.Message;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
+import org.springframework.messaging.support.MessageHeaderAccessor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.socket.messaging.SessionConnectEvent;
+import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
 import java.security.Principal;
 import java.util.*;
@@ -454,6 +460,19 @@ public class RoomServiceImpl implements RoomService {
         );
 
         return FlagPointRes.builder().latitude(result.getPoint()[0]).longitude(result.getPoint()[1]).build();
+    }
+
+    @EventListener
+    public void isConnected(SessionConnectEvent sessionConnectEvent){
+        int[] seqList = roomManager.getRoomSeqList();
+        List<String> topics = new ArrayList<>();
+        for(int i:seqList){
+            topics.add("/sub/game/"+i);
+        }
+        for (String topic : topics) {
+            String message = topic + "에 연결되었습니다";
+            messagingTemplate.convertAndSend(topic, message);
+        }
     }
 
 

@@ -8,6 +8,8 @@ import org.api.wadada.auth.JwtTokenProvider;
 import org.api.wadada.multi.dto.GameRoomDto;
 import org.api.wadada.multi.dto.GameRoomManager;
 import org.springframework.messaging.MessageChannel;
+import org.springframework.messaging.converter.SimpleMessageConverter;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
@@ -28,7 +30,7 @@ public class ChannelInboundInterceptor  implements ChannelInterceptor {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final GameRoomManager gameRoomManager;
-
+    private SimpMessagingTemplate messagingTemplate;
     /**
      * 메세지를 보내기 전에 실행되는 interceptor 메소드
      *
@@ -45,6 +47,7 @@ public class ChannelInboundInterceptor  implements ChannelInterceptor {
         if(StompCommand.CONNECT.equals(command)){
             String token = Objects.requireNonNull(accessor.getFirstNativeHeader("Authorization")).substring(7);
             log.info(token);
+//            messagingTemplate.convertAndSend(destination, "hihi");
             if (jwtTokenProvider.validateToken(token)) {
                 Authentication authentication = jwtTokenProvider.getAuthentication(token);
                 log.info(authentication.getPrincipal().toString());
@@ -57,6 +60,8 @@ public class ChannelInboundInterceptor  implements ChannelInterceptor {
         if (StompCommand.SUBSCRIBE.equals(command)) {
             Principal principal = accessor.getUser();
             setValue(accessor,"userName",principal.getName());
+            String destination = accessor.getDestination();
+            log.info("Subscription request to destination: " + destination);
 
         }
         if(StompCommand.DISCONNECT.equals(command)){

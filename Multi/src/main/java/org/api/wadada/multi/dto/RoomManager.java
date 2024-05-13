@@ -1,6 +1,7 @@
 package org.api.wadada.multi.dto;
 
 import lombok.Data;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,7 @@ public class RoomManager {
 
     private final List<RoomDto> rooms;
     private static final int MAX_ROOMS = 70;
+    @Getter
     private int[] roomSeqList = new int[70];
 
     public RoomManager() {
