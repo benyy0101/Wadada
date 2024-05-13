@@ -113,9 +113,9 @@ class MypageController extends GetxController {
     }
   }
 
-  void uploadImage(File file) async {
+  void uploadImage(String path) async {
     try {
-      String temp = await mypageRepository.uploadImage(file);
+      String temp = await mypageRepository.uploadImage(path);
       print(temp);
     } catch (e) {
       print(e);

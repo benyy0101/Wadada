@@ -65,11 +65,13 @@ class StompController extends GetxController {
                 print(res['body']);
                 if (res['body'].runtimeType == String &&
                     res['statusCodeValue'] != 200) {
-                  throw Exception(jsonDecode(frame.body!)['body']);
+                  throw Exception(res['body']);
+                } else if (res['body'].runtimeType == String) {
+                  res['body'] = jsonDecode(res['body']);
                 }
-
                 //게임 스타트
                 if (res['body']['action'] == "/Multi/start") {
+                  print("READY TO START");
                   return;
                 }
                 //Null값 처리
