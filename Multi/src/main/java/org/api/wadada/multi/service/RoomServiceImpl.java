@@ -469,10 +469,14 @@ public class RoomServiceImpl implements RoomService {
         for(int i:seqList){
             topics.add("/sub/game/"+i);
         }
-        for (String topic : topics) {
-            String message = topic + "에 연결되었습니다";
-            messagingTemplate.convertAndSend(topic, message);
-        }
+        ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+        executorService.schedule(() -> {
+            for (String topic : topics) {
+                String message = topic + "에 연결되었습니다";
+                messagingTemplate.convertAndSend(topic, message);
+            }
+        }, 1, TimeUnit.SECONDS);
+        executorService.shutdown();
     }
 
 
