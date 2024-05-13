@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:wadada/controller/profileController.dart';
+import 'package:wadada/repository/profileRepo.dart';
 import 'package:wadada/screens/singleoptionpage/single_free_option.dart';
 import 'package:wadada/common/component/logout.dart';
 import 'package:wadada/screens/singlemainpage/component/select_mode.dart';
 import 'package:wadada/screens/singlemainpage/component/single_record.dart';
 
 class SingleMain extends StatelessWidget {
-  const SingleMain({super.key});
-
+  SingleMain({super.key});
+  ProfileController profileController =
+      Get.put(ProfileController(repo: ProfileRepository()));
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,12 +42,16 @@ class SingleMain extends StatelessWidget {
             ),
             Container(
               child: Row(
-                children: const [
-                  Text('김태수님의 최근 기록',
-                      style: TextStyle(
-                        color: Colors.black54,
-                        fontSize: 15,
-                      ))
+                children: [
+                  Obx(() {
+                    String nickname =
+                        profileController.profile.value.memberNickname ?? "???";
+                    return Text('$nickname님의 최근 기록',
+                        style: TextStyle(
+                          color: Colors.black54,
+                          fontSize: 15,
+                        ));
+                  })
                 ],
               ),
             ),

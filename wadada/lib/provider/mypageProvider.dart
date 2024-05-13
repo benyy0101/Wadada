@@ -47,11 +47,14 @@ class MypageAPI {
     return response;
   }
 
-  Future<Response> imageUpload(File file) async {
+  Future<Response> imageUpload(String path) async {
     await setAuth();
     _dio.options.headers['Content-Type'] = 'multipart/form-data';
 
-    final response = await _dio.post('image', data:{"profileImageFile": file});
+    final formData = FormData.fromMap(
+        {'profileImageFile': await MultipartFile.fromFile(path!)});
+
+    final response = await _dio.post('image', data: formData);
     return response;
   }
 }

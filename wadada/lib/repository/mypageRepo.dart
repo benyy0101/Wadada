@@ -10,7 +10,7 @@ abstract class AbstractMypageRepository {
   Future<SingleDetail> getSingleDetail(int req);
   Future<MultiDetail> getMultiDetail(int req);
   Future<MarathonDetail> getMarathonDetail(int req);
-  Future<String> uploadImage(File file);
+  Future<String> uploadImage(String path);
 }
 
 class MypageRepository implements AbstractMypageRepository {
@@ -66,10 +66,10 @@ class MypageRepository implements AbstractMypageRepository {
   }
 
   @override
-  Future<String> uploadImage(File file) async {
+  Future<String> uploadImage(String path) async {
     try {
-      Response res = await mypageAPI.imageUpload(file);
-      return res.data['child_picture'];
+      Response res = await mypageAPI.imageUpload(path);
+      return res.data;
     } catch (e) {
       print(e);
       rethrow;
