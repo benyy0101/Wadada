@@ -192,9 +192,22 @@ public class MultiRecordServiceImpl implements MultiRecordService {
                         .memberTime(playerInfo.getTime())
                         .build());
             }
-            String gameInfoResJson = mapper.writeValueAsString(gameInfoRes); // 객체를 JSON 문자열로 변환
-            String rankMessage = String.format("{\"header\": {\"status\": 200, \"statusText\": \"OK\"}, \"body\": {\"message\": \"%s\", \"memberInfo\": %s}}", message, gameInfoResJson );
-            messagingTemplate.convertAndSend("/sub/game/" + roomSeq, rankMessage);
+
+            HashMap<String, Object> responseBody = new HashMap<>();
+            responseBody.put("message", "멤버INFO요청");
+            responseBody.put("action", "/Multi/game/data");
+            responseBody.put("memberInfo", gameInfoRes);
+
+            HashMap<String, Object> responseHeader = new HashMap<>();
+            responseHeader.put("status", 200);
+            responseHeader.put("statusText", "OK");
+
+            HashMap<String, Object> fullMessage = new HashMap<>();
+            fullMessage.put("header", responseHeader);
+            fullMessage.put("body", responseBody);
+
+            String fullMessageJson = mapper.writeValueAsString(fullMessage);
+            messagingTemplate.convertAndSend("/sub/game/" + roomSeq, fullMessageJson);
         } catch (Exception e) {
             e.printStackTrace();
         }
