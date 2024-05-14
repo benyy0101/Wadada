@@ -140,7 +140,7 @@ public class MultiRecordServiceImpl implements MultiRecordService {
     @Override
     public void getPlayerRank(int roomSeq) {
         roomSchedulers.computeIfAbsent(roomSeq, k -> Executors.newScheduledThreadPool(1))
-                .scheduleAtFixedRate(() -> updatePlayRank(roomSeq), 0, 10, TimeUnit.SECONDS);
+                .scheduleAtFixedRate(() -> updatePlayRank(roomSeq), 0, 6, TimeUnit.SECONDS);
     }
 
     public void updatePlayRank(int roomSeq){
@@ -168,11 +168,11 @@ public class MultiRecordServiceImpl implements MultiRecordService {
 
         String message = GameMessage.GAME_LIVE_INFO_REQUEST.toJson();
         messagingTemplate.convertAndSend("/sub/game/" + roomSeq, message);
-        try {
-            Thread.sleep(10000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+//        try {
+//            Thread.sleep(10000);
+//        } catch (InterruptedException e) {
+//            throw new RuntimeException(e);
+//        }
         try {
             log.info(String.valueOf(roomSeq));
 
@@ -194,8 +194,7 @@ public class MultiRecordServiceImpl implements MultiRecordService {
             }
 
             HashMap<String, Object> responseBody = new HashMap<>();
-            responseBody.put("message", "멤버INFO요청");
-            responseBody.put("action", "/Multi/game/data");
+//            responseBody.put("message", "멤버순위");
             responseBody.put("memberInfo", gameInfoRes);
 
             HashMap<String, Object> responseHeader = new HashMap<>();
