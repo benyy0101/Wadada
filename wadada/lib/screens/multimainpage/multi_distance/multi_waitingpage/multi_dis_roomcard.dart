@@ -84,7 +84,7 @@ class DisRoomInfoCard extends StatelessWidget {
                                   fontWeight: FontWeight.bold)),
                           SizedBox(height: 12),
                           Text(
-                            roomInfo.roomSecret != null ? '비밀방' : '공개방',
+                            roomInfo.roomSecret != -1 ? '비밀방' : '공개방',
                             style: TextStyle(
                               color: DARK_GREEN_COLOR,
                               fontWeight: FontWeight.bold,

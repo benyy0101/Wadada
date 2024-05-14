@@ -35,6 +35,8 @@ class _MultiDisWait extends State<MultiDisWait> {
   Widget build(BuildContext context) {
     late String titleText = '';
     // controller.getMultiRoomsByMode(1);
+    print('roomMode------------------------------');
+    print(roomMode);
     if (roomMode == 1) {
       titleText = '거리모드 - 멀티';
     } else if (roomMode == 2) {

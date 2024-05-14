@@ -442,50 +442,53 @@ class MultiSelectDistOptionState extends State<MultiSelectDistOption> {
                                     controller:
                                         inputFieldValues.tagScrollController,
                                     scrollDirection: Axis.horizontal,
-                                    child: Row(
-                                        children: inputFieldValues.tags
-                                            .map((String tag) {
-                                      return Container(
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.all(
-                                            Radius.circular(20.0),
-                                          ),
-                                          color: DARK_GREEN_COLOR,
-                                        ),
-                                        margin:
-                                            const EdgeInsets.only(right: 10.0),
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 10.0, vertical: 4.0),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            InkWell(
-                                              child: Text(
-                                                '#$tag',
-                                                style: const TextStyle(
-                                                    color: Colors.white),
-                                              ),
-                                              onTap: () {},
+                                    child: Container(
+                                      padding:
+                                          EdgeInsets.fromLTRB(10, 0, 10, 0),
+                                      child: Row(
+                                          children: inputFieldValues.tags
+                                              .map((String tag) {
+                                        return Container(
+                                          decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.all(
+                                              Radius.circular(20.0),
                                             ),
-                                            const SizedBox(width: 4.0),
-                                            InkWell(
-                                              child: const Icon(
-                                                Icons.cancel,
-                                                size: 14.0,
-                                                color: Color.fromARGB(
-                                                    255, 233, 233, 233),
+                                            color: DARK_GREEN_COLOR,
+                                          ),
+                                          margin: const EdgeInsets.only(
+                                              right: 10.0),
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 10.0, vertical: 4.0),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              InkWell(
+                                                child: Text(
+                                                  '#$tag',
+                                                  style: const TextStyle(
+                                                      color: Colors.white),
+                                                ),
+                                                onTap: () {},
                                               ),
-                                              onTap: () {
-                                                inputFieldValues
-                                                    .onTagRemoved(tag);
-                                              },
-                                            )
-                                          ],
-                                        ),
-                                      );
-                                    }).toList()),
-                                  )
+                                              const SizedBox(width: 4.0),
+                                              InkWell(
+                                                child: const Icon(
+                                                  Icons.cancel,
+                                                  size: 14.0,
+                                                  color: Color.fromARGB(
+                                                      255, 233, 233, 233),
+                                                ),
+                                                onTap: () {
+                                                  inputFieldValues
+                                                      .onTagRemoved(tag);
+                                                },
+                                              )
+                                            ],
+                                          ),
+                                        );
+                                      }).toList()),
+                                    ))
                                 : null,
                             contentPadding: const EdgeInsets.all(20.0),
                           ),
