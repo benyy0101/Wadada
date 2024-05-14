@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/src/response.dart';
@@ -35,7 +36,8 @@ class MypageRepository implements AbstractMypageRepository {
   Future<MonthlyRecord> getMonthlyRecord(DateTime date) async {
     try {
       Response res = await mypageAPI.getMonthlyRecord(date);
-
+      // print('-------------res-------------');
+      // print(res.data);
       return MonthlyRecord.fromJson(res.data);
     } catch (e) {
       print("ERROR: $e");
@@ -47,6 +49,8 @@ class MypageRepository implements AbstractMypageRepository {
   Future<MultiDetail> getMultiDetail(int req) async {
     try {
       Response res = await mypageAPI.getMultiDetail(req);
+      print("print(res.data);");
+      print(res.data);
       return MultiDetail.fromJson(res.data);
     } catch (e) {
       print("ERROR: $e");
@@ -58,6 +62,8 @@ class MypageRepository implements AbstractMypageRepository {
   Future<SingleDetail> getSingleDetail(int req) async {
     try {
       Response res = await mypageAPI.getSingleDetail(req);
+      print("res");
+      print(res.data.runtimeType);
       return SingleDetail.fromJson(res.data);
     } catch (e) {
       print("ERROR: $e");
