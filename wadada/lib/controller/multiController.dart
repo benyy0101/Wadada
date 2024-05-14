@@ -81,7 +81,7 @@ class MultiController extends GetxController {
       print(roomList);
     } catch (e) {
       print(e);
-      rethrow;
+
     }
   }
 

@@ -89,43 +89,11 @@ class _MultiDisWait extends State<MultiDisWait> {
                 Row(
                   children: [
                     Expanded(
-                      child: SizedBox(
-                        height: 40,
-                        child: TextField(
-                          decoration: InputDecoration(
-                            contentPadding: EdgeInsets.all(5),
-                            hintText: '방 제목을 검색하세요.',
-                            prefixIcon: Icon(Icons.search),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(color: Colors.grey),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(color: GREEN_COLOR),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(color: Colors.grey),
-                            ),
-                          ),
-                        ),
+                      child: CustomSearchField(
+                        controller:
+                            TextEditingController(), // You can pass your own TextEditingController
+                        hintText: 'Enter room title to search',
                       ),
-                    ),
-                    const SizedBox(width: 10),
-                    ElevatedButton(
-                      onPressed: () {
-                        // 검색 로직
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        foregroundColor: DARK_GREEN_COLOR,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                          side: BorderSide(color: DARK_GREEN_COLOR),
-                        ),
-                      ),
-                      child: Text('검색'),
                     ),
                   ],
                 ),
@@ -152,6 +120,70 @@ class _MultiDisWait extends State<MultiDisWait> {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class CustomSearchField extends StatefulWidget {
+  final TextEditingController controller;
+  final String hintText;
+
+  const CustomSearchField({
+    Key? key,
+    required this.controller,
+    this.hintText = 'Enter your search query',
+  }) : super(key: key);
+
+  @override
+  _CustomSearchFieldState createState() => _CustomSearchFieldState();
+}
+
+class _CustomSearchFieldState extends State<CustomSearchField> {
+  late FocusNode _focusNode;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode = FocusNode();
+  }
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 40,
+      child: TextField(
+        controller: widget.controller,
+        focusNode: _focusNode,
+        decoration: InputDecoration(
+          contentPadding: EdgeInsets.all(5),
+          hintText: widget.hintText,
+          prefixIcon: Icon(Icons.search),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: BorderSide(color: Colors.grey),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: BorderSide(
+                color: Colors
+                    .green), // Assuming GREEN_COLOR is defined as Colors.green
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: BorderSide(color: Colors.grey),
+          ),
+        ),
+        onTap: () {
+          _focusNode
+              .requestFocus(); // Manually request focus when the text field is tapped
+        },
       ),
     );
   }

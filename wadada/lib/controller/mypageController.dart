@@ -74,7 +74,11 @@ class MypageController extends GetxController {
         if (!groupedRecords.containsKey(formattedDate)) {
           groupedRecords[formattedDate] = [record];
         } else {
-          groupedRecords[formattedDate]!.add(record);
+          bool flag = false;
+          groupedRecords[formattedDate]!.forEach((item) {
+            if (item.recordSeq == record.recordSeq) flag = true;
+          });
+          if (flag == false) groupedRecords[formattedDate]!.add(record);
         }
       });
       isLoading.value = false;
