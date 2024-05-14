@@ -104,13 +104,13 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
     controller.gameStartResponse.addListener(() {
       bool value = controller.gameStartResponse.value;
       if (value == true) {
-        _checkAndRequestLocationPermissionForAllParticipants();
+        _checkAndRequestLocationPermission();
       }
       // print('Gamego value changed: $value');
     });
   }
 
-  Future<void> _checkAndRequestLocationPermissionForAllParticipants() async {
+  Future<void> _checkAndRequestLocationPermission() async {
     bool serviceEnabled;
     LocationPermission permission;
 
@@ -146,19 +146,41 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
 
     // 위치 권한이 허용된 경우, 멀티런 페이지로 이동
     String appKey = dotenv.env['APP_KEY'] ?? '';
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => MultiRun(
-          time: 0,
-          dist: roomInfo.roomDist,
-          appKey: appKey,
-          controller: controller,
-          multiController: multiController,
-          roomInfo: roomInfo,
+    // Navigator.push(
+    //   context,
+    //   MaterialPageRoute(
+    //     builder: (context) => MultiRun(
+    //       time: 0,
+    //       dist: roomInfo.roomDist,
+    //       appKey: appKey,
+    //       controller: controller,
+    //       multiController: multiController,
+    //       roomInfo: roomInfo,
+    //     ),
+    //   ),
+    // );
+    // ).then((_) {
+    //   controller.client.deactivate();
+    // });
+    // 위치 권한이 허용된 경우, 멀티런 페이지로 이동
+    if (mounted) {
+      String appKey = dotenv.env['APP_KEY'] ?? '';
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => MultiRun(
+            time: 0,
+            dist: roomInfo.roomDist,
+            appKey: appKey,
+            controller: controller,
+            multiController: multiController,
+            roomInfo: roomInfo,
+          ),
         ),
-      ),
-    );
+      ).then((_) {
+      controller.client.deactivate();
+      });
+    }
   }
 
   @override
@@ -188,7 +210,7 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                     child: Container(
                       decoration: BoxDecoration(
                         color: Colors.green,
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20),),
                       ),
                       child: Padding(
                         padding: EdgeInsets.only(
@@ -228,11 +250,11 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: const [
                           Icon(Icons.info_outline,
-                              color: DARK_GREEN_COLOR, size: 30),
+                              color: DARK_GREEN_COLOR, size: 25),
                           SizedBox(width: 10),
                           Text('방 정보',
                               style: TextStyle(
-                                  fontSize: 25,
+                                  fontSize: 20,
                                   color: DARK_GREEN_COLOR,
                                   fontWeight: FontWeight.bold)),
                         ],
@@ -248,19 +270,19 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                               Icon(
                                 Icons.location_on,
                                 color: DARK_GREEN_COLOR,
-                                size: 30,
+                                size: 28,
                               ),
                               SizedBox(height: 20),
                               Icon(
                                 Icons.people,
                                 color: DARK_GREEN_COLOR,
-                                size: 30,
+                                size: 28,
                               ),
                               SizedBox(height: 20),
                               Icon(
                                 Icons.lock,
                                 color: DARK_GREEN_COLOR,
-                                size: 30,
+                                size: 28,
                               ),
                             ],
                           ),
@@ -331,7 +353,7 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                       SizedBox(height: 20),
                       GridView.count(
                         crossAxisCount: 2,
-                        childAspectRatio: 3, // Number of columns
+                        childAspectRatio: 5, // Number of columns
                         shrinkWrap:
                             true, // Ensure that the GridView only occupies the space it needs
                         physics:
@@ -339,7 +361,7 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                         children: List.generate(tags.length, (index) {
                           return Padding(
                             padding: EdgeInsets.symmetric(
-                                vertical: 4, horizontal: 8),
+                                vertical: 2, horizontal: 2),
                             child: Flexible(
                               child: Container(
                                 decoration: BoxDecoration(
@@ -391,17 +413,26 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                           Icon(
                             Icons.flag,
                             color: DARK_GREEN_COLOR,
-                            size: 40,
+                            size: 28,
                           ),
                           SizedBox(width: 10),
                           Text('참가자',
                               style: TextStyle(
-                                  fontSize: 25,
+                                  fontSize: 20,
                                   color: DARK_GREEN_COLOR,
                                   fontWeight: FontWeight.bold)),
                         ],
                       ),
-                      SizedBox(height: 30),
+                      SizedBox(height: 20),
+                      // ElevatedButton(
+                      //   onPressed: () {
+                      //     controller.flaginfo(roomInfo.roomIdx);
+                      //   },
+                      //   style: ElevatedButton.styleFrom(
+                      //     backgroundColor: DARK_GREEN_COLOR, // Background color
+                      //   ),
+                      //   child: Text("목적지 추천"),
+                      // ),
                       Obx(() {
                         final members = controller.members;
                         if (members.isEmpty) {
@@ -418,7 +449,7 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                             itemBuilder: (context, index) {
                               final member = members[index];
                               return Padding(
-                                padding: EdgeInsets.symmetric(vertical: 10.0),
+                                padding: EdgeInsets.symmetric(vertical: 5.0),
                                 child: ListTile(
                                   leading: CircleAvatar(
                                     backgroundImage:
@@ -490,32 +521,7 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                       onPressed:
                           controller.numReady == controller.members.length - 1
                               ? () {
-                              // ?
-                                  // String appKey = dotenv.env['APP_KEY'] ?? '';
-                                  // print(controller.roomIdx);
                                   controller.gameStart();
-                                  // _checkAndRequestLocationPermissionForAllParticipants();
-                                  // _startRun;
-                                  
-                                  // Navigator.push(
-                                  //   context,
-                                  //   MaterialPageRoute(
-                                  //     builder: (context) => MultiRun(time: 0, dist: roomInfo.roomDist, appKey: appKey, controller: controller, multiController: multiController),
-                                  //   ),
-                                  // );
-                                  // Get.to(() => MultiRun(time: 0, dist: 5, appKey: appKey, controller: controller, multiController: multiController));
-                                  // Navigator.push(
-                                  //   context,
-                                  //   MaterialPageRoute(
-                                  //     builder: (context) => MultiMain(),
-                                  //   ),
-                                  // );
-                                  // Navigator.push(
-                                  //   context,
-                                  //   MaterialPageRoute(
-                                  //     builder: (context) => SingleFreeRun(time: 0, dist: 5, appKey: appKey),
-                                  //   ),
-                                  // );
                                 }
                               : null,
                       style: TextButton.styleFrom(

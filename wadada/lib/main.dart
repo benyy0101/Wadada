@@ -16,6 +16,7 @@ import 'package:wadada/screens/mypage/layout.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:wadada/screens/newprofilepage/layout.dart';
 import 'package:wadada/screens/multimainpage/multi_main.dart';
+import 'package:wadada/screens/newprofilepage/profileReady.dart';
 import 'package:wadada/screens/singlemainpage/single_main.dart';
 import 'dart:io';
 import 'package:wadada/screens/mypage/layout.dart';
@@ -55,15 +56,60 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget homeWidget;
-    // ignore: unnecessary_null_comparison
-    if (storage.read(key: 'accessToken') != null) {
-      homeWidget = MainLayout();
-    } else {
-      homeWidget = MainPageLayout();
-    }
-    return homeWidget;
+    return GetMaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: MyHomePage(),
+    );
   }
+}
+
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key});
+
+  @override
+  _MyHomePageState createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  late Widget _homeWidget = Container();
+
+  @override
+  void initState() {
+    super.initState();
+    _initAsyncData();
+  }
+
+  Future<void> _initAsyncData() async {
+    // print("HERE");
+    String? accessToken = await FlutterSecureStorage().read(key: 'accessToken');
+    String? nickName = await FlutterSecureStorage().read(key: 'kakaoNickname');
+    // print(nickName == '임시');
+    if (accessToken != null && nickName != "임시") {
+      setState(() {
+        //print('WHERE');
+        _homeWidget = MainLayout();
+      });
+    } else if (nickName == "임시") {
+      setState(() {
+        _homeWidget = ProfileReady();
+        print("HIT");
+      });
+    } else {
+      setState(() {
+        // print("WHAT");
+        _homeWidget = MainPageLayout();
+      });
+    }
+    // setState(() {
+    //   _homeWidget = MultiMain();
+    // });
+    // print(_homeWidget);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return _homeWidget;
+    }
 }
 
 class MyHttpOverrides extends HttpOverrides {

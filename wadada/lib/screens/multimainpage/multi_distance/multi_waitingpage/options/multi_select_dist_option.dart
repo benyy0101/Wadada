@@ -209,9 +209,10 @@ class MultiSelectDistOptionState extends State<MultiSelectDistOption> {
                           controller: distController,
                           onChanged: (value) {
                             setState(() {
-                              // distselectnum = double.tryParse(value) ?? 0;
+                              distselectnum = int.tryParse(value) ?? 0;
                               controller.multiroom.roomDist = distselectnum;
-                              print(controller.multiroom.roomDist);
+                              print('거리 ${controller.multiroom.roomDist}');
+                              print('거리 value $value');
                               distupdateErrorText();
                             });
                           },

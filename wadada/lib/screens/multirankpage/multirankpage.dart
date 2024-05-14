@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:wadada/common/const/colors.dart';
+import 'package:wadada/controller/stompController.dart';
+import 'package:wadada/screens/mainpage/layout.dart';
 // import 'package:wadada/screens/multimainpage/component/room.dart';
 import 'package:wadada/screens/multiresultpage/multiresultpage.dart';
 import 'package:wadada/screens/singlemainpage/single_main.dart';
@@ -10,6 +12,7 @@ import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 class MultiRank extends StatefulWidget{
   final nickname = '닉네임';
   final rank = 1;
+  final StompController controller;
   
   final Duration elapsedTime;
     final List<LatLng> coordinates;
@@ -19,6 +22,7 @@ class MultiRank extends StatefulWidget{
     final List<Map<String, double>> distanceSpeed;
     final List<Map<String, double>> distancePace;
     final int myRank;
+    final List<dynamic> endRank;
 
     const MultiRank({super.key, 
         required this.elapsedTime,
@@ -29,6 +33,8 @@ class MultiRank extends StatefulWidget{
         required this.distanceSpeed,
         required this.distancePace,
         required this.myRank,
+        required this.endRank,
+        required this.controller,
     });
 
   // void _handleEndButtonPress(BuildContext context) {
@@ -40,8 +46,15 @@ class MultiRank extends StatefulWidget{
 }
 
 class _MultiRankState extends State<MultiRank> {
-  late String nickname;
-  
+  String nickname = '';
+
+  @override
+  void initState() {
+    super.initState();
+    loadNickname();  // 비동기 함수 호출
+    widget.controller.newclient.deactivate();
+  }
+
   void _handleEndButtonPress(BuildContext context) {
     // if (_clockKey.currentState != null) {
         // Duration elapsedTime = _clockKey.currentState!.elapsed;
@@ -73,6 +86,8 @@ class _MultiRankState extends State<MultiRank> {
                   totaldist: widget.totaldist,
                   distanceSpeed: widget.distanceSpeed,
                   distancePace: widget.distancePace,
+                  endRank: widget.endRank,
+                  controller: widget.controller,
               ),
           ),
       );

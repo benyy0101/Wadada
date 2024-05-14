@@ -131,6 +131,7 @@ class MultiDistanceRoomFormState extends State<MultiDistanceRoomForm> {
                                 controller.multiroom.roomPeople;
                             controller.cur.roomMode = roomMode;
                             print('=--------------=');
+                            print('거리설정 ${controller.cur.roomDist}');
                             print(controller.cur.roomMode);
                             Get.to(MultiRoomDetail(
                               roomInfo: controller.cur,

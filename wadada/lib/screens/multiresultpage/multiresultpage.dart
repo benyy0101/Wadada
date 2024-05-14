@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 import 'package:wadada/common/component/lineChart.dart';
 import 'package:wadada/common/const/colors.dart';
+import 'package:wadada/controller/stompController.dart';
 import 'package:wadada/screens/singlemainpage/single_main.dart';
 // import 'package:fl_chart/fl_chart.dart';
 
@@ -14,6 +15,8 @@ class MultiResult extends StatefulWidget {
   final String totaldist;
   final List<Map<String, double>> distanceSpeed;
   final List<Map<String, double>> distancePace;
+  final List<dynamic> endRank;
+  final StompController controller;
 
   const MultiResult({
     super.key,
@@ -24,6 +27,8 @@ class MultiResult extends StatefulWidget {
     required this.totaldist,
     required this.distanceSpeed,
     required this.distancePace,
+    required this.endRank,
+    required this.controller,
   });
 
   @override
@@ -132,104 +137,67 @@ class _MultiResultState extends State<MultiResult> {
               children: [
                 Column(
                   children: [
-                    SizedBox(height: 80),
+                    SizedBox(height: 40),
                     SizedBox(
                       child: Column(
-                        children: const [
-                          Row(
+                        children: widget.endRank.asMap().entries.map((entry) {
+                          int index = entry.key;
+                          var ranking = entry.value;
+                          return Column(
                             children: [
-                              Text('1',
-                              style: TextStyle(
-                                fontSize: 25,
-                                fontWeight: FontWeight.bold,
-                                color: DARK_GREEN_COLOR,
+                              Padding(
+                                padding: const EdgeInsets.only(left: 10, right: 10, top: 25, bottom: 25),
+                                child: Row(
+                                  children: [
+                                    Text(
+                                      '${ranking['memberRank']}',
+                                      style: TextStyle(
+                                        color: DARK_GREEN_COLOR,
+                                        fontSize: 23,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    SizedBox(width: 20),
+                                    if (ranking['memberProfile'] != null &&
+                                        ranking['memberProfile'].isNotEmpty)
+                                      CircleAvatar(
+                                        backgroundImage: NetworkImage(ranking['memberProfile']),
+                                        radius: 20,
+                                      )
+                                    else
+                                      CircleAvatar(
+                                        backgroundColor: Colors.grey,
+                                        radius: 20,
+                                        child: Icon(
+                                          Icons.person,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    SizedBox(width: 15),
+                                    Text(
+                                      '${ranking['memberNickname']}',
+                                      style: TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 20,
+                                      ),
+                                    ),
+                                    Spacer(),
+                                    Text(
+                                      '${(ranking['memberDist'] / 1000).toStringAsFixed(2)} km',
+                                      style: TextStyle(
+                                        color: DARK_GREEN_COLOR,
+                                        fontSize: 23,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                            SizedBox(width: 10),
-                            Text('닉네임',
-                              style: TextStyle(
-                                fontSize: 25,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black,
-                              ),
-                            ),
-                            SizedBox(width: 10),
-                            Text('00:02:23',
-                              style: TextStyle(
-                                fontSize: 25,
-                                fontWeight: FontWeight.bold,
-                                color: GREEN_COLOR,
-                              ),
-                            ),
+                              if (index < widget.endRank.length - 1) 
+                                Divider(color: GRAY_400),
                             ],
-                          ),
-                          SizedBox(height: 20),
-                          Divider(
-                            color: Color.fromARGB(255, 201, 201, 201),
-                            thickness: 1,
-                          ),
-                          SizedBox(height: 20),
-                          Row(
-                            children: [
-                              Text('2',
-                              style: TextStyle(
-                                fontSize: 25,
-                                fontWeight: FontWeight.bold,
-                                color: DARK_GREEN_COLOR,
-                              ),
-                            ),
-                            SizedBox(width: 10),
-                            Text('닉네임',
-                              style: TextStyle(
-                                fontSize: 25,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black,
-                              ),
-                            ),
-                            SizedBox(width: 10),
-                            Text('00:02:30',
-                              style: TextStyle(
-                                fontSize: 25,
-                                fontWeight: FontWeight.bold,
-                                color: GREEN_COLOR,
-                              ),
-                            ),
-                            ],
-                          ),
-                          SizedBox(height: 20),
-                          Divider(
-                            color: Color.fromARGB(255, 201, 201, 201),
-                            thickness: 1,
-                          ),
-                          SizedBox(height: 20),
-                          Row(
-                            children: [
-                              Text('2',
-                              style: TextStyle(
-                                fontSize: 25,
-                                fontWeight: FontWeight.bold,
-                                color: DARK_GREEN_COLOR,
-                              ),
-                            ),
-                            SizedBox(width: 10),
-                            Text('닉네임',
-                              style: TextStyle(
-                                fontSize: 25,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black,
-                              ),
-                            ),
-                            SizedBox(width: 10),
-                            Text('00:02:30',
-                              style: TextStyle(
-                                fontSize: 25,
-                                fontWeight: FontWeight.bold,
-                                color: GREEN_COLOR,
-                              ),
-                            ),
-                            ],
-                          ),
-                        ],
+                          );
+                        }).toList(),
                       ),
                     ),
                     SizedBox(height: 40),

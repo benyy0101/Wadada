@@ -11,6 +11,7 @@ import 'package:wadada/provider/multiProvider.dart';
 import 'package:wadada/repository/multiRepo.dart';
 import 'package:wadada/screens/multirankpage/multirankpage.dart';
 import 'package:wadada/screens/multiresultpage/multiresultpage.dart';
+import 'package:wadada/screens/singleresultpage/singleresultpage.dart';
 
 import 'package:wadada/screens/singlerunpage/component/clock.dart';
 import 'package:wadada/screens/singlerunpage/component/map.dart';
@@ -41,15 +42,6 @@ class MultiRun extends StatefulWidget{
 }
 
 class _MultiRunState extends State<MultiRun> {
-  // @override
-  // Widget build(BuildContext context) {
-  //   return Scaffold(
-  //     body: Text('테스트d')
-  //   );
-  // }
-  // final StompController _stompController = Get.find<StompController>();
-  // late StreamSubscription<String> _requestinfoSubscription;
-
   late StompClient stompClient;
   bool isLoading = true;
   bool iscountdown = false;
@@ -59,18 +51,18 @@ class _MultiRunState extends State<MultiRun> {
   int currentTab = 0;
   int? recordSeq;
   double totalDistance = 0.0;
+  int totalDistanceInt = 0;
   String formattedDistance = '0.00';
   List<dynamic>? rankingData = [];
   ValueNotifier<Duration> elapsedTimeNotifier = ValueNotifier<Duration>(Duration.zero);
   final GlobalKey<ClockState> _clockKey = GlobalKey<ClockState>();
   late Clock clock;
   late MyMap myMap;
+  late dynamic unsubscribeFn;
 
   bool allDataReceived = false;
   bool gameStartMessageReceived = false;
   String receivedMessage = '';
-
-  // late WebSocketChannel channel;
 
   void _toggleButton(int index) {
     setState(() {
@@ -82,6 +74,8 @@ class _MultiRunState extends State<MultiRun> {
   @override
   void initState() {
     super.initState();
+
+    print('설정한 거리 ${widget.dist}');
 
     // _initWebSocketListener();
 
@@ -95,36 +89,28 @@ class _MultiRunState extends State<MultiRun> {
 
     clock = Clock(key: _clockKey, time: widget.time, elapsedTimeNotifier: elapsedTimeNotifier,);
 
-    // widget.controller.requestinfo.value
-    // 정보 요청
     widget.controller.requestinfo.addListener(() {
-      print('requestinfo 들어오나 ${widget.controller.requestinfo.value}');
       sendrequestInfo();
     });
-    // _requestinfoSubscription = widget.controller.requestinfo.listen((requestinfo) {
-    //   // 변경된 requestinfo 값을 이용하여 원하는 동작을 수행합니다.
-    //   print('requestinfo가 변경되었습니다: $requestinfo');
-    //   // 변경된 requestinfo에 따른 로직을 추가하세요.
-    // });
 
-    // 랭킹
     widget.controller.ranking.addListener(() {
-      print('ranking 들어오나 ${widget.controller.ranking.value}');
       rankingData = widget.controller.ranking.value;
+      updateRankingData(rankingData);
       });
-    // _subscribeToTotalDistance();
+    _subscribeToTotalDistance();
   }
 
   void updateRankingData(List<dynamic>? newRankingData) async {
     if (newRankingData == null || newRankingData.isEmpty) return;
 
-    // 주어진 거리를 초과하는 멤버가 있는지 확인
-    final exceedingMembers = rankingData!.where((member) => member['memberDist'] > widget.dist).toList();
+    final exceedingMembers = rankingData!.where((member) => member['memberDist'] >= (widget.dist * 1000)).toList();
+    print('거리 초과하는 사람 $exceedingMembers');
 
     if (exceedingMembers.isNotEmpty) {
       final storage = FlutterSecureStorage();
       String? username1 = await storage.read(key: 'kakaoNickname');
       final myRank = rankingData!.indexWhere((member) => member['memberNickname'] == username1);
+      List<dynamic>? endranking = newRankingData;
 
       double elapsedSeconds = _clockKey.currentState!.getElapsedSeconds();
       _clockKey.currentState!.setRunning(false);
@@ -148,97 +134,25 @@ class _MultiRunState extends State<MultiRun> {
               totaldist: formattedDistance,
               distanceSpeed: distanceSpeed,
               distancePace: distancePace,
-              myRank: myRank-1,
+              myRank: myRank+1,
+              endRank: endranking,
+              controller: widget.controller,
           ),
         ),
       );
-
-      // 여기서 필요한 요청을 보내세요.
-      // 게임 종료 처리 등
-
-      // rankingData를 최종 데이터로 사용
-      setState(() {
-        rankingData = newRankingData;
-      });
     }
   }
 
-  // void _handleMessage(dynamic message) {
-  //   print("Received message: $message");
-  // }
-
-  // void _initWebSocketListener() {
-  //   channel = WebSocketChannel.connect(
-  //     Uri.parse('wss://k10a704.p.ssafy.io/Multi/ws/websocket'),
-  //   );
-  //   // WebSocket 이벤트 리스너를 설정합니다.
-  //   channel.stream.listen((message) {
-  //     _handleMessage(message);
-  //   });
-  // }
-
-  // void connectStompClient() async {
-  //   final storage = FlutterSecureStorage();
-  //   accessToken = await storage.read(key: 'accessToken') ?? 'no Token';
-
-  //   stompClient = StompClient(
-  //     config: StompConfig(
-  //       url: 'wss://k10a704.p.ssafy.io/Multi/ws/websocket',
-  //       onConnect: onConnectCallback,
-  //       beforeConnect: () async {
-  //         print('waiting to connect...');
-  //         await Future.delayed(Duration(milliseconds: 200));
-  //         print('connecting...');
-  //       },
-  //       stompConnectHeaders: {'Authorization': accessToken ??
-  //                             'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNDYzNDMxNDUzIiwiYXV0aCI6IlJPTEVfU09DSUFMIiwiZXhwIjoxNzE1NDA1MzkzfQ.dmjUkVX1sFe9EpYhT3SGO3uC7q1dLIoddBvzhoOSisM'},
-  //       webSocketConnectHeaders: {'Authorization': accessToken ??
-  //                             'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNDYzNDMxNDUzIiwiYXV0aCI6IlJPTEVfU09DSUFMIiwiZXhwIjoxNzE1NDA1MzkzfQ.dmjUkVX1sFe9EpYhT3SGO3uC7q1dLIoddBvzhoOSisM'},
-  //     ),
-  //   );
-  //   stompClient.activate();
-  // }
-
-  // void onConnectCallback(StompFrame connectFrame) {
-  //   stompClient.subscribe(
-  //   destination: '/sub/game/${widget.controller.receivedRoomSeq}',
-  //   headers: {
-  //     'Authorization': accessToken ??
-  //         'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNDYzNDMxNDUzIiwiYXV0aCI6IlJPTEVfU09DSUFMIiwiZXhwIjoxNzE1NDA1MzkzfQ.dmjUkVX1sFe9EpYhT3SGO3uC7q1dLIoddBvzhoOSisM'
-  //   },
-  //   callback: (StompFrame frame) {
-  //     if (frame.body != null) {
-  //       Map<String, dynamic> res = jsonDecode(frame.body!);
-  //       if (res['body'].runtimeType == String &&
-  //           res['statusCodeValue'] != 200) {
-  //         throw Exception(jsonDecode(frame.body!)['body']);
-  //       } else if (res['body'].runtimeType == String) {
-  //         res['body'] = jsonDecode(res['body']);
-  //       }
-
-  //       print('데이터가 어떻게 오나 $res');
-        
-  //       // performActionBasedOnMessage(res['body']['message']);
-  //       // print('데이터 옴');
-  //       // print("Received: ${frame.body}");
-  //       // try {
-  //       //   Map<String, dynamic> jsonData = jsonDecode(frame.body!);
-  //       //   performActionBasedOnMessage(jsonData['message']);
-  //       // } catch (e) {
-  //       //   print("Error parsing JSON data: $e");
-  //       //   // JSON 파싱에 실패한 경우, 그대로 메시지로 처리
-  //       //   performActionBasedOnMessage(frame.body!);
-  //       // }
-  //       // performActionBasedOnMessage(frame.body!);
-  //     }
-  //   },
-  // );
-  // }
-
-  // void performActionBasedOnMessage(String message) {
-  //   // 수신된 메시지에 대한 처리 로직
-  //   print("Action performed for message: $message");
-  // }
+  void _subscribeToTotalDistance() {
+    myMap.totalDistanceNotifier.addListener(() {
+      setState(() {
+        totalDistance = myMap.totalDistanceNotifier.value;
+        totalDistanceInt = totalDistance.round();
+        double distanceInKm = totalDistance / 1000.0;
+        formattedDistance = distanceInKm.toStringAsFixed(2);
+      });
+    });
+  }
 
   Future<void> sendrequestInfo() async {
     final dio = Dio();
@@ -246,10 +160,12 @@ class _MultiRunState extends State<MultiRun> {
       final storage = FlutterSecureStorage();
       String? accessToken = await storage.read(key: 'accessToken');
       String? username1 = await storage.read(key: 'kakaoNickname');
+      // int totalDistance11 = 0;
 
       // myMap.totalDistanceNotifier.addListener(() {
       //   setState(() {
-      //     totalDistance = myMap.totalDistanceNotifier.value;
+      //     totalDistance1 = myMap.totalDistanceNotifier.value;
+      //     totalDistance11 = totalDistance1.round();
       //     // double distanceInKm = totalDistance / 1000.0;
       //     // formattedDistance = distanceInKm.toStringAsFixed(2);
       //   });
@@ -262,13 +178,14 @@ class _MultiRunState extends State<MultiRun> {
 
       final requestBody = jsonEncode({
         "roomSeq": widget.controller.receivedRoomSeq,
-        "userDist": totalDistance,
+        "userDist": totalDistanceInt,
         "userTime": intelapsedseconds,
         "userName": username1,
       });
 
+      print('roomSeq111111: ${widget.controller.receivedRoomSeq}');
       print('userTime: $intelapsedseconds');
-      print('userDist: $totalDistance');
+      print('userDist: $totalDistanceInt');
       print('userName: $username1');
 
       try {
@@ -284,16 +201,12 @@ class _MultiRunState extends State<MultiRun> {
 
 
         if (response.statusCode == 200) {
-          // 서버 응답 성공 처리
-          // final responseData = jsonDecode(response.data);
-          // print('responseData type: ${responseData.runtimeType}');
-          // recordSeq = responseData['recordSeq'] as int;
           print('현재 정보 전송 성공: ${response.data}');
         } else {
           print('서버 요청 실패: ${response.statusCode}');
         }
       } catch (e) {
-        print('요청 처리 중 에러 발생: $e');
+        print('거리 보내기 - 요청 처리 중 에러 발생: $e');
       }
   }
 
@@ -454,16 +367,6 @@ class _MultiRunState extends State<MultiRun> {
     }
   }
 
-  void _subscribeToTotalDistance() {
-    myMap.totalDistanceNotifier.addListener(() {
-      setState(() {
-        totalDistance = myMap.totalDistanceNotifier.value;
-        double distanceInKm = totalDistance / 1000.0;
-        formattedDistance = distanceInKm.toStringAsFixed(2);
-      });
-    });
-  }
-
   String formatPace(double paceInSecondsPerKm) {
     int minutes = (paceInSecondsPerKm / 60).floor();
     int seconds = (paceInSecondsPerKm % 60).round();
@@ -622,8 +525,6 @@ class _MultiRunState extends State<MultiRun> {
         Duration elapsedTime = Duration(seconds: elapsedSeconds.round());
         String formattedElapsedTime = formatElapsedTime(elapsedTime);
 
-        // final formattedElapsedTime = formatElapsedTime(elapsedTime);
-        
         _sendRecordToServer();
 
         print('스피드 - $distanceSpeed');
@@ -632,7 +533,7 @@ class _MultiRunState extends State<MultiRun> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => MultiRank(
+            builder: (context) => SingleResult(
                 elapsedTime: elapsedTime,
                 coordinates: coordinates,
                 startLocation: coordinates.first,
@@ -640,7 +541,9 @@ class _MultiRunState extends State<MultiRun> {
                 totaldist: formattedDistance,
                 distanceSpeed: distanceSpeed,
                 distancePace: distancePace,
-                myRank: -1,
+                // controller: widget.controller,
+                // myRank: -1,
+                // endRank: const [],
             ),
           ),
         );
@@ -693,7 +596,7 @@ class _MultiRunState extends State<MultiRun> {
                       // Duration elapsedTime = _clockKey.currentState?.elapsed ?? Duration.zero;
                       // 종료 시 실행할 작업
                       // elapsedTime을 endlocation으로 넘겨주는 로직 추가
-                      // _handleEndButtonPress(context);
+                      _handleEndButtonPress(context);
                     },
                     child: Container(
                       width:double.maxFinite,
@@ -761,12 +664,8 @@ class _MultiRunState extends State<MultiRun> {
     if (widget.dist > 0) {
         progressBar = DistBar(dist: widget.dist, formattedDistance: double.parse(formattedDistance));
     } else if (widget.time > 0) {
-        // progressBar = TimeBar(initialTime: widget.time);
         double elapsedSeconds = _clockKey.currentState?.getElapsedSeconds() ?? 0.0;
         double elapsedTimeInSeconds = elapsedSeconds;
-        // Duration elapsedTime = Duration(seconds: elapsedSeconds.round());
-        // Duration elapsedTime = _clockKey.currentState?.elapsed ?? Duration.zero;
-        // double elapsedTimeInSeconds = elapsedTime.inSeconds.toDouble();
 
         progressBar = ValueListenableBuilder<Duration>(
             valueListenable: elapsedTimeNotifier,
@@ -782,8 +681,6 @@ class _MultiRunState extends State<MultiRun> {
             },
         );
     }
-
-    // Duration elapsedDuration = Duration(seconds: elapsedTimeNotifier.value.round());
 
     Clock clockWidget = Clock(
         key: _clockKey,
@@ -1012,51 +909,9 @@ class _MultiRunState extends State<MultiRun> {
                           ),
                         ],
                       ),
+                      padding: const EdgeInsets.only(left: 20, right: 20, top: 10),
                       width: 400,
                       height: 200,
-                      // child: Padding(
-                      //   padding: const EdgeInsets.all(30),
-                      //   child: Column(
-                      //     children: const [
-                      //       Column(
-                      //         children: [
-                      //           Row(
-                      //             children: [
-                      //               Text('1',
-                      //                 style: TextStyle(
-                      //                   fontSize: 20,
-                      //                   fontWeight: FontWeight.bold,
-                      //                   color: DARK_GREEN_COLOR,
-                      //                 ),
-                      //               ),
-                      //               SizedBox(width: 10),
-                      //               Text('닉네임',
-                      //                 style: TextStyle(
-                      //                   fontSize: 20,
-                      //                   fontWeight: FontWeight.bold,
-                      //                   color: Colors.black,
-                      //                 ),
-                      //               ),
-                      //               SizedBox(width: 10),
-                      //               Text('00:02:23',
-                      //                 style: TextStyle(
-                      //                   fontSize: 20,
-                      //                   fontWeight: FontWeight.bold,
-                      //                   color: DARK_GREEN_COLOR,
-                      //                 ),
-                      //               ),
-                      //             ],
-                      //           ),
-                      //         ],
-                      //       ),
-                      //     ],
-                      //   )
-                      // )
-
-                      // --------------------------------------------------------------
-                      // 
-                      // --------------------------------------------------------
-                       // 현재 페이지 인덱스를 저장하는 변수
                       child: rankingData!.isEmpty
                         ? Center(
                             child: Text(
@@ -1086,11 +941,43 @@ class _MultiRunState extends State<MultiRun> {
                                       padding: const EdgeInsets.all(8.0),
                                       child: Row(
                                         children: [
-                                          Text('${ranking['memberRank']}'),
-                                          SizedBox(width: 10),
-                                          Text('${ranking['memberNickname']}'),
-                                          SizedBox(width: 10),
-                                          Text('${ranking['memberDist']}'),
+                                          Text('${ranking['memberRank']}',
+                                            style: TextStyle(
+                                              color: DARK_GREEN_COLOR,
+                                              fontSize: 23,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          SizedBox(width: 20),
+                                          if (ranking['memberProfile'] != null && ranking['memberProfile'].isNotEmpty)
+                                            CircleAvatar(
+                                              backgroundImage: NetworkImage(ranking['memberProfile']),
+                                              radius: 20,
+                                            )
+                                          else
+                                            CircleAvatar(
+                                              backgroundColor: Colors.grey,
+                                              radius: 20,
+                                              child: Icon(
+                                                Icons.person,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          SizedBox(width: 15),
+                                          Text('${ranking['memberNickname']}',
+                                            style: TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 20,
+                                            ),
+                                          ),
+                                          Spacer(),
+                                          Text('${(ranking['memberDist'] / 1000).toStringAsFixed(2)} km',
+                                            style: TextStyle(
+                                              color: DARK_GREEN_COLOR,
+                                              fontSize: 23,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
                                         ],
                                       ),
                                     );
