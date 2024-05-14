@@ -229,7 +229,6 @@ public class RoomServiceImpl implements RoomService {
                     return RoomRes.of(idx, room, now);
                 }
         ).toList();
-        log.info("같은 방 찾기");
         return roomResList;
     }
 
@@ -240,7 +239,6 @@ public class RoomServiceImpl implements RoomService {
 
         // 레포지토리에서 검색
         List<RoomDocument> roomDocuments = customRoomRepository.findByRoomTags(tagList);
-        log.info("찾은 수"+String.valueOf(roomDocuments.size()));
         // 현재 활성화된 룸 정보 가져오고
         HashMap<Integer, Integer> roomInfo = new HashMap<>();
         Map<Integer,RoomDto> activeRooms = roomManager.getAllRooms();
@@ -253,9 +251,6 @@ public class RoomServiceImpl implements RoomService {
                 .filter(roomDocument -> activeRooms.values().stream()
                         .anyMatch(r -> r.getRoomSeq() == roomDocument.getRoomSeq()))
                 .toList();
-
-        log.info("거른 후"+roomDocuments.size());
-
         // index와 정보를 response로
         List<RoomRes> roomResList = roomDocuments.stream().map(
                 roomDocument -> {

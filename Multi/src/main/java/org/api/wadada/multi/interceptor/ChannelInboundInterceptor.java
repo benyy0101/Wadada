@@ -41,16 +41,13 @@ public class ChannelInboundInterceptor  implements ChannelInterceptor {
     @Transactional(readOnly = true)
     public Message<?> preSend(Message<?> message, MessageChannel channel){
         StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
-        log.info(accessor.toString());
         StompCommand command = accessor.getCommand();
 
         if(StompCommand.CONNECT.equals(command)){
             String token = Objects.requireNonNull(accessor.getFirstNativeHeader("Authorization")).substring(7);
-            log.info(token);
 //            messagingTemplate.convertAndSend(destination, "hihi");
             if (jwtTokenProvider.validateToken(token)) {
                 Authentication authentication = jwtTokenProvider.getAuthentication(token);
-                log.info(authentication.getPrincipal().toString());
                 accessor.setUser(authentication);
             }
             else {
@@ -61,7 +58,6 @@ public class ChannelInboundInterceptor  implements ChannelInterceptor {
             Principal principal = accessor.getUser();
             setValue(accessor,"userName",principal.getName());
             String destination = accessor.getDestination();
-            log.info("Subscription request to destination: " + destination);
 
         }
         if(StompCommand.DISCONNECT.equals(command)){

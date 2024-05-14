@@ -170,9 +170,6 @@ public class MultiRecordServiceImpl implements MultiRecordService {
         messagingTemplate.convertAndSend("/sub/game/" + roomSeq, message);
 
         try {
-            log.info(String.valueOf(roomSeq));
-
-
             List<GameInfoRes> gameInfoRes = new ArrayList<>();
             Collections.sort(playerInfos);
             HashMap<String, Integer> rank = new HashMap<>();
@@ -211,7 +208,7 @@ public class MultiRecordServiceImpl implements MultiRecordService {
     // (curConnection == MaxConnection) 자동 End API 호출  완주해도 늘어나고, 연결이 끊겨도 늘어남
     // || 누가 End API 호출
     public void stopPlayerRankUpdates(int roomSeq) {
-
+        log.info(roomSeq+"게임이 종료되었습니다");
         //게임이 종료 되기 전 방 지우기
         gameRoomManager.removeRoom(roomSeq);
         ScheduledExecutorService scheduler = roomSchedulers.remove(roomSeq);
