@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:wadada/common/const/colors.dart';
 // import 'package:wadada/screens/multimainpage/component/room.dart';
 import 'package:wadada/screens/multiresultpage/multiresultpage.dart';
@@ -17,6 +18,7 @@ class MultiRank extends StatefulWidget{
     final String totaldist;
     final List<Map<String, double>> distanceSpeed;
     final List<Map<String, double>> distancePace;
+    final int myRank;
 
     const MultiRank({super.key, 
         required this.elapsedTime,
@@ -26,6 +28,7 @@ class MultiRank extends StatefulWidget{
         required this.totaldist,
         required this.distanceSpeed,
         required this.distancePace,
+        required this.myRank,
     });
 
   // void _handleEndButtonPress(BuildContext context) {
@@ -37,9 +40,8 @@ class MultiRank extends StatefulWidget{
 }
 
 class _MultiRankState extends State<MultiRank> {
-  final String nickname = '닉네임';
-  final int rank = 1;
-
+  late String nickname;
+  
   void _handleEndButtonPress(BuildContext context) {
     // if (_clockKey.currentState != null) {
         // Duration elapsedTime = _clockKey.currentState!.elapsed;
@@ -75,8 +77,17 @@ class _MultiRankState extends State<MultiRank> {
           ),
       );
     // }
-
     // Navigator.push(context, MaterialPageRoute(builder: (context) => SingleResult()));
+  }
+
+  Future<void> loadNickname() async {
+    final storage = FlutterSecureStorage();
+    final loadedNickname = await storage.read(key: 'kakaoNickname');
+    if (loadedNickname != null) {
+      setState(() {
+        nickname = loadedNickname;
+      });
+    }
   }
 
   @override
@@ -94,7 +105,7 @@ class _MultiRankState extends State<MultiRank> {
                 child: Image.asset('assets/images/running_result.png', width: 300),
               ),
               SizedBox(height: 20),
-              Text('$nickname 님의 등수는\n$rank등입니다 !',
+              Text('$nickname 님의 등수는\n${widget.myRank}등입니다 !',
                 style: TextStyle(
                   color: Colors.black,
                   fontSize: 25,

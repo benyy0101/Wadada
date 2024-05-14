@@ -7,15 +7,17 @@ import 'package:wadada/util/serializable.dart';
 
 class MultiRoom {
   int roomPeople;
-  double roomDist;
+  int roomSeq;
+  int roomDist;
   int roomMode;
   int roomSecret;
   String roomTag;
-  double roomTime;
+  int roomTime;
   String roomTitle;
 
   MultiRoom(
       {required this.roomPeople,
+      required this.roomSeq,
       required this.roomDist,
       required this.roomMode,
       required this.roomSecret,
@@ -27,11 +29,12 @@ class MultiRoom {
   factory MultiRoom.fromJson(Map<String, dynamic> json) {
     return MultiRoom(
       roomPeople: json['roomPeople'] as int,
-      roomDist: json['roomDist'] as double,
+      roomSeq: json['roomSeq'] as int,
+      roomDist: json['roomDist'] as int,
       roomMode: json['roomMode'] as int,
       roomSecret: json['roomSecret'] as int,
       roomTag: json['roomTag'] as String,
-      roomTime: json['roomTime'] as double,
+      roomTime: json['roomTime'] as int,
       roomTitle: json['roomTitle'] as String,
     );
   }
@@ -40,6 +43,7 @@ class MultiRoom {
   Map<String, dynamic> toJson() {
     return {
       'roomPeople': roomPeople,
+      'roomIdx': roomSeq,
       'roomDist': roomDist,
       'roomMode': roomMode,
       'roomSecret': roomSecret,
@@ -51,7 +55,7 @@ class MultiRoom {
 
   @override
   String toString() {
-    return 'MultiRoom(roomPeople: $roomPeople, roomDist: $roomDist, roomMode: $roomMode, roomSecret: $roomSecret, roomTag: "$roomTag", roomTime: $roomTime, roomTitle: "$roomTitle")';
+    return 'MultiRoom(roomSeq: $roomSeq, roomPeople: $roomPeople, roomDist: $roomDist, roomMode: $roomMode, roomSecret: $roomSecret, roomTag: "$roomTag", roomTime: $roomTime, roomTitle: "$roomTitle")';
   }
 }
 
@@ -60,6 +64,7 @@ class RoomInfo extends MultiRoom {
 
   RoomInfo(
       {required this.roomIdx,
+      required super.roomSeq,
       required super.roomPeople,
       required super.roomDist,
       required super.roomMode,
@@ -70,7 +75,7 @@ class RoomInfo extends MultiRoom {
 
   @override
   String toString() {
-    return 'RoomInfo(roomIdx: $roomIdx, roomPeople: $roomPeople, roomDist: $roomDist, roomMode: $roomMode, roomSecret: $roomSecret, roomTag: $roomTag, roomTime: $roomTime, roomTitle: $roomTitle)';
+    return 'RoomInfo(roomIdx: $roomIdx, roomPeople: $roomPeople, roomDist: $roomDist, roomMode: $roomMode, roomSecret: $roomSecret, roomTag: $roomTag, roomTime: $roomTime, roomTitle: $roomTitle, roomSeq: $roomSeq)';
   }
 }
 
@@ -215,9 +220,10 @@ class SimpleRoom {
   String? roomTag;
   int roomSecret;
   int roomMode;
-  double roomDist;
-  double roomTime;
+  int roomDist;
+  int roomTime;
   int? nowRoomPeople;
+  // int roomSeq;
 
   SimpleRoom({
     required this.roomIdx,
@@ -229,6 +235,7 @@ class SimpleRoom {
     required this.roomDist,
     required this.roomTime,
     required this.nowRoomPeople,
+    // required this.roomSeq,
   });
 
   // Convert SimpleRoom object to a Map
@@ -243,6 +250,7 @@ class SimpleRoom {
       'roomDist': roomDist,
       'roomTime': roomTime,
       'nowRoomPeople': nowRoomPeople,
+      // 'roomSeq': roomSeq,
     };
   }
 
@@ -255,14 +263,18 @@ class SimpleRoom {
       roomTag: json['roomTag'] as String?,
       roomSecret: json['roomSecret'] as int,
       roomMode: json['roomMode'] as int,
-      roomDist: json['roomDist'] as double,
-      roomTime: json['roomTime'] as double,
+      roomDist: json['roomDist'] as int,
+      roomTime: json['roomTime'] as int,
+      // roomSeq: json['roomSeq'] as int,
       nowRoomPeople: json['nowRoomPeople'] as int,
     );
   }
 
   @override
   String toString() {
-    return 'SimpleRoom{ roomIdx: $roomIdx, roomTitle: $roomTitle, roomPeople: $roomPeople, roomTag: $roomTag, roomSecret: $roomSecret, roomMode: $roomMode, roomDist: $roomDist, roomTime: $roomTime, nowRoomPeople: $nowRoomPeople }';
+    return 'SimpleRoom{ roomIdx: $roomIdx, roomTitle: $roomTitle, roomPeople: $roomPeople, roomTag: $roomTag, roomSecret: $roomSecret, roomMode: $roomMode, roomDist: $roomDist, roomTime: $roomTime, nowRoomPeople: $nowRoomPeople}';
   }
+  // String toString() {
+  //   return 'SimpleRoom{ roomIdx: $roomIdx, roomTitle: $roomTitle, roomPeople: $roomPeople, roomTag: $roomTag, roomSecret: $roomSecret, roomMode: $roomMode, nowRoomPeople: $nowRoomPeople }';
+  // }
 }

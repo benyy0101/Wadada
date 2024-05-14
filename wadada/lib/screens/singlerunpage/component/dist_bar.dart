@@ -5,7 +5,7 @@ import 'package:percent_indicator/percent_indicator.dart';
 class DistBar extends StatefulWidget{
   // final double dist;
   // const ProgressBar({super.key, required this.dist});
-  final double dist;
+  final int dist;
   final double formattedDistance;
 
   const DistBar({super.key, required this.dist, required this.formattedDistance});

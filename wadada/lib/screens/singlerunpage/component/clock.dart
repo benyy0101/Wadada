@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:wadada/common/const/colors.dart';
 
 class Clock extends StatefulWidget{
-  final double time;
+  final int time;
   final ValueNotifier<Duration> elapsedTimeNotifier;
   const Clock({super.key, required this.time, required this.elapsedTimeNotifier});
 

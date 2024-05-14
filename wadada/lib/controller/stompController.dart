@@ -1,22 +1,38 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:stomp_dart_client/stomp_dart_client.dart';
+import 'package:wadada/models/multiroom.dart';
 import 'package:wadada/models/stomp.dart';
 import 'package:wadada/provider/multiProvider.dart';
 import 'package:wadada/repository/multiRepo.dart';
+import 'package:wadada/screens/multimainpage/multi_main.dart';
+import 'package:wadada/screens/multirunpage/multirunpage.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 class StompController extends GetxController {
-  late StompClient client;
+  StompClient client = StompClient(config: StompConfig(url: ''));
+  StompClient newclient = StompClient(config: StompConfig(url: ''));
+  bool isNewClientActivated = false;
   final int roomIdx;
-  late String accessToken;
+
+  String accessToken = '';
   late String serverUrl;
+  int receivedRoomSeq = 0;
+  // RxBool gameStartResponse = false.obs;  // 게임 시작 메시지
+  // RxBool gamego = false.obs;
+  ValueNotifier<bool> gameStartResponse = ValueNotifier<bool>(false);
+  ValueNotifier<bool> gamego = ValueNotifier<bool>(false);
+  ValueNotifier<String> requestinfo = ValueNotifier<String>('');
+  ValueNotifier<List<dynamic>> ranking = ValueNotifier<List<dynamic>>([]);
+  ValueNotifier<List<dynamic>> memberInfoList = ValueNotifier<List<dynamic>>([]);
+  late dynamic unsubscribeFn;
   RxList<CurrentMember> members = <CurrentMember>[].obs;
   MultiRepository repo = MultiRepository(provider: MultiProvider());
   bool isStart = false;
@@ -31,16 +47,36 @@ class StompController extends GetxController {
       memberReady: false,
       manager: false);
   final storage = FlutterSecureStorage();
+  StompController({required this.roomIdx});
 
-  StompController({required this.roomIdx}) {
+  @override
+  Future<void> onInit() async {
+    super.onInit();
+    await dotenv.load(fileName: 'assets/env/.env');
+    final storage = FlutterSecureStorage();
+    serverUrl = dotenv.env['SERVER_URL'] ?? "";
+    accessToken = await storage.read(key: 'accessToken') ?? 'no Token';
+  }
+
+  void attend(int roomIdx) async {
+    print("-------------attend-------------");
+    String? accessToken = await storage.read(key: 'accessToken');
+    // bool unsubscribed = false;
     client = StompClient(
       config: StompConfig.sockJS(
         url: dotenv.env['STOMP_URL']!,
-        onConnect: (StompFrame frame) {
-          client.subscribe(
+        onConnect: (p0) {
+          // unsubscribeFn = () {
+          //   if (!unsubscribed) {
+          //     unsubscribeFn(); // 구독 해제
+          //     unsubscribed = true; // 플래그 설정
+          //     print("구독이 해제되었습니다.");
+          //   }
+          // };
+          unsubscribeFn = client.subscribe(
             destination: '/sub/attend/$roomIdx',
             headers: {
-              'Authorization': dotenv.env['accessToken'] ??
+              'Authorization': accessToken ??
                   'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNDYzNDMxNDUzIiwiYXV0aCI6IlJPTEVfU09DSUFMIiwiZXhwIjoxNzE1NDA1MzkzfQ.dmjUkVX1sFe9EpYhT3SGO3uC7q1dLIoddBvzhoOSisM'
             },
             callback: (frame) async {
@@ -54,16 +90,151 @@ class StompController extends GetxController {
                 if (res['body'].runtimeType == String &&
                     res['statusCodeValue'] != 200) {
                   throw Exception(jsonDecode(frame.body!)['body']);
+                } else if (res['body'].runtimeType == String) {
+                  res['body'] = jsonDecode(res['body']);
+                }
+
+                print(res['body'][roomIdx.toString()]);
+
+                if (res['body'] == null) {
+                  print("null임");
+                  return;
+                }
+
+                if (res['body']['message'] == "게임이 시작되었습니다") {
+                  print("multigo");
+                  gamego.value = true;
+                  print('gamego 값 ${gamego.value}');
+                  print('방장인지 아닌지 $isOwner');
+
+                  if (isOwner) {
+                    unsubscribeFn();
+                    print('여기까지는 됨');
+
+                    int newRoomSeq = res['body']['roomSeq'];
+                    print('roomSeq $newRoomSeq');
+
+                    newclient = StompClient(
+                      config: StompConfig.sockJS(
+                        url: dotenv.env['STOMP_URL']!,
+                        onConnect: (p0) {
+                          newclient.subscribe(
+                            destination: '/sub/game/$newRoomSeq',
+                            headers: {
+                              'Authorization': accessToken ??
+                                  'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNDYzNDMxNDUzIiwiYXV0aCI6IlJPTEVfU09DSUFMIiwiZXhwIjoxNzE1NDA1MzkzfQ.dmjUkVX1sFe9EpYhT3SGO3uC7q1dLIoddBvzhoOSisM'
+                            },
+                            callback: (frame) async {
+                              try{
+                                print('테스트');
+
+                                print('새로운 구독');
+                                print('isOwner $isOwner');
+                                
+                                if (isOwner) {
+                                  print('isOwner2 $isOwner');
+                                  final url = Uri.parse('https://k10a704.p.ssafy.io/Multi/game/rank/$receivedRoomSeq');
+                                  final storage = FlutterSecureStorage();
+                                  String? accessToken = await storage.read(key: 'accessToken');
+                                  final dio = Dio();
+
+                                  print('설마 $url');
+                                  print(accessToken);
+
+                                  try {
+                                    final response = await dio.get(url.toString(),
+                                        options: Options(headers: {
+                                          'Content-Type': 'application/json',
+                                          'Accept': 'application/json',
+                                          'authorization': accessToken
+                                        }));
+                                    // print('확인 ${response.data}');
+
+                                    if (response.statusCode == 200) {
+                                      Map<String, dynamic> resp = jsonDecode(frame.body!);
+                                      if (resp['body'].runtimeType == String &&
+                                          resp['statusCodeValue'] != 200) {
+                                        throw Exception(jsonDecode(frame.body!)['body']);
+                                      } else if (resp['body'].runtimeType == String) {
+                                        resp['body'] = jsonDecode(resp['body']);
+                                      }
+                                      print('최종 ${resp['body']}');
+
+                                      if (resp['body']['action'] == "/Multi/game/data") {
+                                        requestinfo.value = resp['body']['action'];
+                                        requestinfo.value = '';
+                                      }
+
+                                      if (resp['body']['memberInfo'] != null) {
+                                        ranking.value = resp['body']['memberInfo'];
+                                        print('랭킹 ${ranking.value}');
+                                        print('랭킹 타입 ${ranking.value.runtimeType}');
+                                      }
+
+                                      // requestinfo.value = resp['body']['action'];
+                                      // requestinfo.value = '';
+                                      // ranking.value = resp['body']['memberInfo'];
+                                      // print('body ${resp['body']}');
+                                      // print('랭킹 ${ranking.value}');
+                                      // print('랭킹 타입 ${ranking.value.runtimeType}');
+
+                                      // final data = response.data as Map<String, dynamic>;
+                                      // final jsonData = jsonDecode(response.data);
+                                      // print('제발요 ${response.data.runtimeType}');
+                                      // print('디코딩된 JSON 데이터: $jsonData');
+                                      // print('방장 통신 성공');
+                                      // return data;
+                                    } else if (response.statusCode == 204) {
+                                      print('204');
+                                      // return {};
+                                    } else {
+                                      print('서버 요청 실패: ${response.statusCode}');
+                                      // return {};
+                                    }
+                                  } catch (e) {
+                                    print('요청 처리 중 에러 발생: $e');
+                                    // return {};
+                                  }
+                                }
+
+                              } catch(e) {
+                                print(e);
+                              }
+                            },
+                          );
+                        },
+                        webSocketConnectHeaders: {
+                          "transports": ["websocket"],
+                          'Authorization': accessToken ??
+                              'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNDYzNDMxNDUzIiwiYXV0aCI6IlJPTEVfU09DSUFMIiwiZXhwIjoxNzE1NDA1MzkzfQ.dmjUkVX1sFe9EpYhT3SGO3uC7q1dLIoddBvzhoOSisM'
+                        },
+                        stompConnectHeaders: {
+                          'Authorization': accessToken ??
+                              'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNDYzNDMxNDUzIiwiYXV0aCI6IlJPTEVfU09DSUFMIiwiZXhwIjoxNzE1NDA1MzkzfQ.dmjUkVX1sFe9EpYhT3SGO3uC7q1dLIoddBvzhoOSisM'
+                        },
+                        onWebSocketError: (dynamic error) => print('WebSocket error: $error'),
+                      ),
+                    );
+
+                    newclient.activate();
+                  }
+
+                  return;
                 }
 
                 //게임 스타트
                 if (res['body']['action'] == "/Multi/start") {
-                  
+                  print("multistart");
+                  gameStartResponse.value = true;
+                  print('start 응답 값 : ${gameStartResponse.value}');
+                  receivedRoomSeq = res['body']['roomSeq'];
+                  // print(res['body']);
                   return;
                 }
                 //Null값 처리
                 if (res['body'][roomIdx.toString()] == null) {
-                  throw Exception("해당 방의 정보가 없습니다.");
+                  // throw Exception("해당 방의 정보가 없습니다.");
+                  return;
                 }
 
                 //참가자 list화
@@ -78,41 +249,33 @@ class StompController extends GetxController {
               }
             },
           );
-        }, // Pass the onConnect method as a callback here
+        },
+// Pass the onConnect method as a callback here
         webSocketConnectHeaders: {
           "transports": ["websocket"],
-          'Authorization': dotenv.env['accessToken'] ??
+          'Authorization': accessToken ??
               'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNDYzNDMxNDUzIiwiYXV0aCI6IlJPTEVfU09DSUFMIiwiZXhwIjoxNzE1NDA1MzkzfQ.dmjUkVX1sFe9EpYhT3SGO3uC7q1dLIoddBvzhoOSisM'
         },
         stompConnectHeaders: {
-          'Authorization': dotenv.env['accessToken'] ??
+          'Authorization': accessToken ??
               'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNDYzNDMxNDUzIiwiYXV0aCI6IlJPTEVfU09DSUFMIiwiZXhwIjoxNzE1NDA1MzkzfQ.dmjUkVX1sFe9EpYhT3SGO3uC7q1dLIoddBvzhoOSisM'
         },
         onWebSocketError: (dynamic error) => print(error.toString()),
       ),
     );
-  }
-
-  Future<void> _init() async {
-    await dotenv.load(fileName: 'assets/env/.env');
-    final storage = FlutterSecureStorage();
-    serverUrl = dotenv.env['SERVER_URL'] ?? "";
-    accessToken = storage.read(key: 'accessToken') as String;
-  }
-
-  void attend(int roomIdx) {
     client.activate();
-    print("-------------attend-------------");
-    try {
-      if (client.isActive) {
-        client.send(destination: '/pub/attend/$roomIdx');
-        print("--------------published ${roomIdx}------------------");
-      } else {
-        throw Exception("서버가 준비되어 있지 않습니다.");
+    Future.delayed(Duration(milliseconds: 2000), () {
+      try {
+        if (client.isActive) {
+          client.send(destination: '/pub/attend/$roomIdx');
+          print("--------------published $roomIdx------------------");
+        } else {
+          throw Exception("서버가 준비되어 있지 않습니다.");
+        }
+      } catch (e) {
+        print(e);
       }
-    } catch (e) {
-      print(e);
-    }
+    });
   }
 
   void fromJson(List<dynamic> list) {
@@ -121,25 +284,26 @@ class StompController extends GetxController {
         return CurrentMember.fromJson(item);
       }).toList();
       members.clear();
-      temp.forEach((element) {
+      for (var element in temp) {
         members.add(element);
-      });
+      }
     }
   }
 
   Future<void> findMe() async {
     String kakaoId = await storage.read(key: 'kakaoId') ?? "nothing";
-    members.forEach((element) {
+    for (var element in members) {
       if (element.memberId == kakaoId) {
         itMe = element;
       }
-    });
+    }
   }
 
   void countReady() {
-    members.forEach((item) {
+    numReady = 0;
+    for (var item in members) {
       if (item.memberReady == true) numReady++;
-    });
+    }
   }
 
   void out(int roomIdx) {
@@ -172,14 +336,20 @@ class StompController extends GetxController {
     if (kakaoId == "nothing") {
       throw Exception("카카오 아이디가 없습니다.");
     }
-    members.forEach((element) {
+    for (var element in members) {
       // print(element.memberId);
       if (element.memberId == kakaoId && element.manager == true) {
         isOwner = true;
       }
-    });
+    }
     print('isOwner------------------------------');
     print(isOwner);
+  }
+
+  Future<void> onConnect() async {
+    String? accessToken = await storage.read(key: 'accessToken');
+    print("-----------------acwesbot-------------");
+    print(accessToken);
   }
 
   @override

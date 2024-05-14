@@ -55,7 +55,8 @@ class TestButton extends StatelessWidget {
           roomSecret: 1111,
           roomTag: '#싸피',
           roomTime: 3,
-          roomTitle: 'test');
+          roomTitle: 'test',
+          roomSeq: -1);
       //StompProvider provider = StompProvider(roomIdx: 0);
       return ElevatedButton(
         onPressed: () {

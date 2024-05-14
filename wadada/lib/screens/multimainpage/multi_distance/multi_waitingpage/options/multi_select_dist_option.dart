@@ -29,8 +29,8 @@ class MultiSelectDistOption extends StatefulWidget {
 }
 
 class MultiSelectDistOptionState extends State<MultiSelectDistOption> {
-  double dist = 0.0;
-  late double distselectnum = 0;
+  int dist = 0;
+  late int distselectnum = 0;
   late int peopleselectnum = 0;
   late int passwordselectnum = 0;
   final List<String> _tags = [];
@@ -92,7 +92,7 @@ class MultiSelectDistOptionState extends State<MultiSelectDistOption> {
     }
 
     setState(() {});
-    dist = double.tryParse(value) ?? 0.0;
+    // dist = double.tryParse(value) ?? 0.0;
   }
 
   // 참여인원 에러 텍스트
@@ -105,7 +105,7 @@ class MultiSelectDistOptionState extends State<MultiSelectDistOption> {
     }
 
     setState(() {});
-    dist = double.tryParse(value) ?? 0.0;
+    // dist = double.tryParse(value) ?? 0.0;
   }
 
   // 비밀번호 에러 텍스트
@@ -118,7 +118,7 @@ class MultiSelectDistOptionState extends State<MultiSelectDistOption> {
     }
 
     setState(() {});
-    dist = double.tryParse(value) ?? 0.0;
+    // dist = double.tryParse(value) ?? 0.0;
   }
 
   // 해시태그 에러 텍스트
@@ -132,7 +132,7 @@ class MultiSelectDistOptionState extends State<MultiSelectDistOption> {
     }
 
     setState(() {});
-    dist = double.tryParse(value) ?? 0.0;
+    // dist = double.tryParse(value) ?? 0.0;
   }
 
 
@@ -209,7 +209,7 @@ class MultiSelectDistOptionState extends State<MultiSelectDistOption> {
                           controller: distController,
                           onChanged: (value) {
                             setState(() {
-                              distselectnum = double.tryParse(value) ?? 0;
+                              // distselectnum = double.tryParse(value) ?? 0;
                               controller.multiroom.roomDist = distselectnum;
                               print(controller.multiroom.roomDist);
                               distupdateErrorText();

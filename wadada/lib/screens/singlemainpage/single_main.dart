@@ -26,7 +26,7 @@ class SingleMain extends StatelessWidget {
                   children: [
                     Text('싱글모드',
                         style: TextStyle(
-                          color: Colors.black,
+                          color: Colors.black87,
                           fontSize: 30,
                           fontWeight: FontWeight.w600,
                         )),
@@ -61,14 +61,14 @@ class SingleMain extends StatelessWidget {
               des: '목표한 거리만큼 달려보세요.',
               btn: '28',
               onTapAction: () {
-                Get.to(SingleOption(
-                  isDistMode: true,
-                ));
-                // Navigator.push(
-                //   context,
-                //   MaterialPageRoute(
-                //       builder: (context) => SingleOption(isDistMode: true)),
-                // );
+                // Get.to(SingleOption(
+                //   isDistMode: true,
+                // ));
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => SingleOption(isDistMode: true)),
+                );
               },
             ),
             SizedBox(
@@ -80,14 +80,14 @@ class SingleMain extends StatelessWidget {
               des: '목표한 시간만큼 달려보세요.',
               btn: '28',
               onTapAction: () {
-                Get.to(SingleOption(
-                  isDistMode: false,
-                ));
-                // Navigator.push(
-                //   context,
-                //   MaterialPageRoute(
-                //       builder: (context) => SingleOption(isDistMode: false)),
-                // );
+                // Get.to(SingleOption(
+                //   isDistMode: false,
+                // ));
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => SingleOption(isDistMode: false)),
+                );
               },
             ),
             SizedBox(
@@ -99,14 +99,14 @@ class SingleMain extends StatelessWidget {
               des: '코스를 뛰고, 기록에 도전하세요.',
               btn: '8',
               onTapAction: () {
-                Get.to(SingleOption(
-                  isDistMode: false,
-                ));
-                // Navigator.push(
-                //   context,
-                //   MaterialPageRoute(
-                //       builder: (context) => SingleOption(isDistMode: false)),
-                // );
+                // Get.to(SingleOption(
+                //   isDistMode: false,
+                // ));
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => SingleOption(isDistMode: false)),
+                );
               },
             ),
             SizedBox(

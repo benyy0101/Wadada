@@ -10,6 +10,7 @@ import 'package:wadada/screens/singlerunpage/component/map.dart';
 import 'package:wadada/screens/singlerunpage/component/dist_bar.dart';
 import 'package:wadada/screens/singlerunpage/component/testmap.dart';
 import 'package:wadada/screens/singlerunpage/component/time_bar.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 import 'package:dio/dio.dart';
 
@@ -17,8 +18,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class SingleFreeRun extends StatefulWidget {
-  final double time;
-  final double dist;
+  final int time;
+  final int dist;
   final String appKey;
   const SingleFreeRun(
       {super.key,
@@ -114,6 +115,8 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
 
     if (startLocation != null) {
       final url = Uri.parse('https://k10a704.p.ssafy.io/Single/start');
+      final storage = FlutterSecureStorage();
+      String? accessToken = await storage.read(key: 'accessToken');
 
       final requestBody = jsonEncode({
         "recordMode": recordMode,
@@ -129,8 +132,7 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
           options: Options(headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
-            'authorization':
-                'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNDYzNDMxNDUzIiwiYXV0aCI6IlJPTEVfU09DSUFMIiwiZXhwIjoxNzE1Njg3MzY3fQ.g2NRh3nZWsmkFTRwbUlTGRPOgyi7G74PSdlYZ_YscaQ',
+            'authorization': accessToken,
           }),
         );
 
@@ -183,6 +185,8 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
     final startLocation = myMap.startLocation;
     final endLocation = myMap.endLocation;
     final url = Uri.parse('https://k10a704.p.ssafy.io/Single/result');
+    final storage = FlutterSecureStorage();
+    String? accessToken = await storage.read(key: 'accessToken');
     final dio = Dio();
 
     int recordMode = widget.time > 0 ? 2 : 1;
@@ -279,10 +283,7 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
         options: Options(headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
-          'authorization':
-              'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNDYzNDMxNDUzIiwiYXV0aCI6IlJPTEVfU09DSUFMIiwiZXhwIjoxNzE1Njg3MzY3fQ.g2NRh3nZWsmkFTRwbUlTGRPOgyi7G74PSdlYZ_YscaQ',
-          'authorization':
-              'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNDYzNDMxNDUzIiwiYXV0aCI6IlJPTEVfU09DSUFMIiwiZXhwIjoxNzE1Njg3MzY3fQ.g2NRh3nZWsmkFTRwbUlTGRPOgyi7G74PSdlYZ_YscaQ',
+          'authorization': accessToken,
         }),
       );
 
@@ -468,9 +469,6 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
     Widget progressBar = Container();
 
     if (widget.dist > 0) {
-      progressBar = DistBar(
-          dist: widget.dist,
-          formattedDistance: double.parse(formattedDistance));
       progressBar = DistBar(
           dist: widget.dist,
           formattedDistance: double.parse(formattedDistance));

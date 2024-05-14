@@ -14,7 +14,8 @@ class MultiController extends GetxController {
       roomSecret: -2,
       roomTag: '',
       roomTime: -1,
-      roomTitle: '');
+      roomTitle: '',
+      roomSeq: -1);
 
   SimpleRoom cur = SimpleRoom(
       roomIdx: -1,
@@ -33,7 +34,8 @@ class MultiController extends GetxController {
       roomSecret: -1,
       roomTag: '',
       roomTime: -1,
-      roomTitle: '');
+      roomTitle: '',
+      roomSeq: -1);
 
   RxList<SimpleRoom> roomList = <SimpleRoom>[].obs;
   int recordSeq = -1;
@@ -55,16 +57,14 @@ class MultiController extends GetxController {
   Future<int> creatMultiRoom(MultiRoom roomInfo) async {
     try {
       info = await repo.createRoom(roomInfo);
-      cur = SimpleRoom(
-        roomIdx: info.roomIdx,
-        roomTitle: info.roomTitle,
-        roomPeople: info.roomPeople,
-        roomSecret: info.roomSecret,
-        roomMode: info.roomMode,
-        nowRoomPeople: 1,
-        roomDist: info.roomDist,
-        roomTime: info.roomTime,
-      );
+      // cur = SimpleRoom(
+      //   roomIdx: info.roomIdx,
+      //   roomTitle: info.roomTitle,
+      //   roomPeople: info.roomPeople,
+      //   roomSecret: info.roomSecret,
+      //   roomMode: info.roomMode,
+      //   nowRoomPeople: 1,
+      // );
       return info.roomIdx;
     } catch (e) {
       print("방이 생성되지 않았습니다. 다시 시도해 주세요");
@@ -81,7 +81,6 @@ class MultiController extends GetxController {
       for (var item in temp) {
         roomList.add(item);
       }
-      print(roomList);
     } catch (e) {
       print(e);
       rethrow;

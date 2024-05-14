@@ -16,7 +16,11 @@ import 'package:wadada/controller/stompController.dart';
 import 'package:wadada/repository/loginRepo.dart';
 import 'package:wadada/repository/multiRepo.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:wadada/screens/multimainpage/multi_main.dart';
 import 'package:wadada/screens/multirunpage/multirunpage.dart';
+import 'package:wadada/screens/singlemainpage/single_main.dart';
+import 'package:wadada/screens/singlerunpage/single_free_run.dart';
+import 'package:geolocator/geolocator.dart';
 
 class MultiRoomDetail extends StatefulWidget {
   SimpleRoom roomInfo;
@@ -33,6 +37,9 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
   late StompController controller;
   late MultiController multiController;
   List<String> tags = [];
+  String titleText = '';
+  String optionMetric = '';
+  String roomOption = '';
   final storage = FlutterSecureStorage();
 
   bool isHost = false;
@@ -45,16 +52,8 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
     splitTags();
     initControllers();
     print("-----------------initiating websocket----------------");
-    controller.client.activate();
-// Introduce a delay to allow time for activation to complete
-    Future.delayed(Duration(milliseconds: 2000), () {
-      // Now you can proceed with other actions
-      print("send--------------------");
-      controller.attend(roomInfo.roomIdx);
-      //print(isHost);
-      if (controller.numReady == controller.members.length - 1) toStart = true;
-    });
-    //if (roomInfo.roomTag!.isNotEmpty) tags = roomInfo.roomTag!.split('#');
+    controller.attend(roomInfo.roomIdx);
+    setRoomInfo();
   }
 
   void initControllers() {
@@ -73,12 +72,101 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
     }
   }
 
+  void setRoomInfo() {
+    print(roomInfo.roomMode);
+    if (roomInfo.roomMode == 1) {
+      titleText = '거리모드 - 멀티';
+      roomOption = '거리';
+      optionMetric = 'km';
+    } else if (roomInfo.roomMode == 2) {
+      titleText = '시간모드 - 멀티';
+      roomOption = '시간';
+      optionMetric = '분';
+    } else {
+      titleText = '만남모드 - 멀티';
+      roomOption = '';
+      optionMetric = '';
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    // // 게임 시작 응답을 감시하여 처리
+    // ever(controller.gameStartResponse.value, (bool response) {
+    //   if (response) {
+    //     // 게임 시작 응답을 받았을 때 처리할 로직을 여기에 작성
+    //     _checkAndRequestLocationPermissionForAllParticipants();
+    //   }
+    // });
+
+    controller.gameStartResponse.addListener(() {
+      bool value = controller.gameStartResponse.value;
+      if (value == true) {
+        _checkAndRequestLocationPermissionForAllParticipants();
+      }
+      // print('Gamego value changed: $value');
+    });
+  }
+
+  Future<void> _checkAndRequestLocationPermissionForAllParticipants() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    // 위치 서비스가 활성화되어 있는지 확인
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      // 위치 서비스가 비활성화되어 있으면 사용자에게 위치 서비스를 활성화하도록 요청
+      serviceEnabled = await Geolocator.openLocationSettings();
+      if (!serviceEnabled) {
+        // 사용자가 위치 서비스를 활성화하지 않으면 앱을 종료
+        return;
+      }
+    }
+
+    // 현재 위치 권한 확인
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.deniedForever) {
+      // 사용자가 위치 권한을 영구적으로 거부한 경우 설정 앱으로 이동하여 사용자가 권한을 변경할 수 있도록 안내
+      await Geolocator.openAppSettings();
+      return;
+    }
+
+    if (permission == LocationPermission.denied) {
+      // 사용자가 위치 권한을 거부한 경우 권한을 요청
+      permission = await Geolocator.requestPermission();
+      if (permission != LocationPermission.whileInUse &&
+          permission != LocationPermission.always) {
+        // 권한이 부여되지 않으면 사용자에게 메시지를 표시하고 앱을 종료
+        // 권한을 받지 못하면 런을 시작할 수 없음
+        return;
+      }
+    }
+
+    // 위치 권한이 허용된 경우, 멀티런 페이지로 이동
+    String appKey = dotenv.env['APP_KEY'] ?? '';
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => MultiRun(
+          time: 0,
+          dist: roomInfo.roomDist,
+          appKey: appKey,
+          controller: controller,
+          multiController: multiController,
+          roomInfo: roomInfo,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: Text('거리모드 - 멀티',
+        title: Text(titleText,
             style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
         backgroundColor: Colors.white,
         elevation: 0,
@@ -180,10 +268,10 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                           // 두 번째 컬럼
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            children: const [
+                            children: [
                               SizedBox(height: 5),
                               Text(
-                                '거리',
+                                roomOption,
                                 style: TextStyle(
                                     fontSize: 20,
                                     fontWeight: FontWeight.bold,
@@ -214,7 +302,7 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                             children: [
                               SizedBox(height: 5),
                               Text(
-                                '${roomInfo.roomDist} km',
+                                '${roomInfo.roomDist} $optionMetric',
                                 style: TextStyle(
                                     fontSize: 20,
                                     fontWeight: FontWeight.bold,
@@ -402,14 +490,32 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                       onPressed:
                           controller.numReady == controller.members.length - 1
                               ? () {
-                                  String appKey = dotenv.env['APP_KEY'] ?? '';
-                                  // controller.gameStart();
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => MultiRun(time: 0, dist: roomInfo.roomDist, appKey: appKey, controller: controller, multiController: multiController),
-                                    ),
-                                  );
+                              // ?
+                                  // String appKey = dotenv.env['APP_KEY'] ?? '';
+                                  // print(controller.roomIdx);
+                                  controller.gameStart();
+                                  // _checkAndRequestLocationPermissionForAllParticipants();
+                                  // _startRun;
+                                  
+                                  // Navigator.push(
+                                  //   context,
+                                  //   MaterialPageRoute(
+                                  //     builder: (context) => MultiRun(time: 0, dist: roomInfo.roomDist, appKey: appKey, controller: controller, multiController: multiController),
+                                  //   ),
+                                  // );
+                                  // Get.to(() => MultiRun(time: 0, dist: 5, appKey: appKey, controller: controller, multiController: multiController));
+                                  // Navigator.push(
+                                  //   context,
+                                  //   MaterialPageRoute(
+                                  //     builder: (context) => MultiMain(),
+                                  //   ),
+                                  // );
+                                  // Navigator.push(
+                                  //   context,
+                                  //   MaterialPageRoute(
+                                  //     builder: (context) => SingleFreeRun(time: 0, dist: 5, appKey: appKey),
+                                  //   ),
+                                  // );
                                 }
                               : null,
                       style: TextButton.styleFrom(

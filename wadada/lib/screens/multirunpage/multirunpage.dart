@@ -1,5 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
+import 'package:stomp_dart_client/stomp_dart_client.dart';
 // import 'package:flutter/rendering.dart';
 import 'package:wadada/common/const/colors.dart';
 import 'package:wadada/controller/stompController.dart';
@@ -22,34 +25,52 @@ import 'package:http/http.dart' as http;
 import 'package:get/get.dart';
 import 'package:wadada/controller/multiController.dart';
 import 'package:wadada/controller/stompController.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 class MultiRun extends StatefulWidget{
-  final double time;
-  final double dist;
+  final int time;
+  final int dist;
   final String appKey;
   final StompController controller;
   final MultiController multiController;
-  const MultiRun({super.key, required this.time, required this.dist, required this.appKey, required this.controller, required this.multiController});
+  SimpleRoom roomInfo;
+  MultiRun({super.key, required this.time, required this.dist, required this.appKey, required this.controller, required this.multiController, required this.roomInfo});
   
   @override
   _MultiRunState createState() => _MultiRunState();
 }
 
 class _MultiRunState extends State<MultiRun> {
+  // @override
+  // Widget build(BuildContext context) {
+  //   return Scaffold(
+  //     body: Text('테스트d')
+  //   );
+  // }
+  // final StompController _stompController = Get.find<StompController>();
+  // late StreamSubscription<String> _requestinfoSubscription;
+
+  late StompClient stompClient;
   bool isLoading = true;
+  bool iscountdown = false;
   int countdown = 5;
-  late StompController stompController;
   Timer? countdownTimer;
   bool showCountdown = false;
   int currentTab = 0;
   int? recordSeq;
   double totalDistance = 0.0;
   String formattedDistance = '0.00';
+  List<dynamic>? rankingData = [];
   ValueNotifier<Duration> elapsedTimeNotifier = ValueNotifier<Duration>(Duration.zero);
   final GlobalKey<ClockState> _clockKey = GlobalKey<ClockState>();
   late Clock clock;
-
   late MyMap myMap;
+
+  bool allDataReceived = false;
+  bool gameStartMessageReceived = false;
+  String receivedMessage = '';
+
+  // late WebSocketChannel channel;
 
   void _toggleButton(int index) {
     setState(() {
@@ -57,22 +78,223 @@ class _MultiRunState extends State<MultiRun> {
     });
   }
 
+
   @override
   void initState() {
     super.initState();
 
-    startTimers();
+    // _initWebSocketListener();
 
     myMap = MyMap(appKey: widget.appKey);
-
-    myMap.startLocationNotifier.addListener(() {
-      if (myMap.startLocation != null) {
-          sendLocationToServer();
-      }
-    });
+    onPageLoaded();
+    // _onGameGoChanged();
+    
+    // widget.controller.gamego.addListener(_onGameGoChanged);
+    startGameGoTimer();
+    print('ㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠ: ${widget.controller.gameStartResponse.value}');
 
     clock = Clock(key: _clockKey, time: widget.time, elapsedTimeNotifier: elapsedTimeNotifier,);
-    _subscribeToTotalDistance();
+
+    // widget.controller.requestinfo.value
+    // 정보 요청
+    widget.controller.requestinfo.addListener(() {
+      print('requestinfo 들어오나 ${widget.controller.requestinfo.value}');
+      sendrequestInfo();
+    });
+    // _requestinfoSubscription = widget.controller.requestinfo.listen((requestinfo) {
+    //   // 변경된 requestinfo 값을 이용하여 원하는 동작을 수행합니다.
+    //   print('requestinfo가 변경되었습니다: $requestinfo');
+    //   // 변경된 requestinfo에 따른 로직을 추가하세요.
+    // });
+
+    // 랭킹
+    widget.controller.ranking.addListener(() {
+      print('ranking 들어오나 ${widget.controller.ranking.value}');
+      rankingData = widget.controller.ranking.value;
+      });
+    // _subscribeToTotalDistance();
+  }
+
+  void updateRankingData(List<dynamic>? newRankingData) async {
+    if (newRankingData == null || newRankingData.isEmpty) return;
+
+    // 주어진 거리를 초과하는 멤버가 있는지 확인
+    final exceedingMembers = rankingData!.where((member) => member['memberDist'] > widget.dist).toList();
+
+    if (exceedingMembers.isNotEmpty) {
+      final storage = FlutterSecureStorage();
+      String? username1 = await storage.read(key: 'kakaoNickname');
+      final myRank = rankingData!.indexWhere((member) => member['memberNickname'] == username1);
+
+      double elapsedSeconds = _clockKey.currentState!.getElapsedSeconds();
+      _clockKey.currentState!.setRunning(false);
+
+      List<LatLng> coordinates = myMap.getCoordinates();
+      List<Map<String, double>> distanceSpeed = myMap.getdistanceSpeed();
+      List<Map<String, double>> distancePace = myMap.getdistancePace();
+
+      Duration elapsedTime = Duration(seconds: elapsedSeconds.round());
+      String formattedElapsedTime = formatElapsedTime(elapsedTime);
+
+      // 게임 결과 페이지로 이동
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => MultiRank(
+              elapsedTime: elapsedTime,
+              coordinates: coordinates,
+              startLocation: coordinates.first,
+              endLocation: coordinates.last,
+              totaldist: formattedDistance,
+              distanceSpeed: distanceSpeed,
+              distancePace: distancePace,
+              myRank: myRank-1,
+          ),
+        ),
+      );
+
+      // 여기서 필요한 요청을 보내세요.
+      // 게임 종료 처리 등
+
+      // rankingData를 최종 데이터로 사용
+      setState(() {
+        rankingData = newRankingData;
+      });
+    }
+  }
+
+  // void _handleMessage(dynamic message) {
+  //   print("Received message: $message");
+  // }
+
+  // void _initWebSocketListener() {
+  //   channel = WebSocketChannel.connect(
+  //     Uri.parse('wss://k10a704.p.ssafy.io/Multi/ws/websocket'),
+  //   );
+  //   // WebSocket 이벤트 리스너를 설정합니다.
+  //   channel.stream.listen((message) {
+  //     _handleMessage(message);
+  //   });
+  // }
+
+  // void connectStompClient() async {
+  //   final storage = FlutterSecureStorage();
+  //   accessToken = await storage.read(key: 'accessToken') ?? 'no Token';
+
+  //   stompClient = StompClient(
+  //     config: StompConfig(
+  //       url: 'wss://k10a704.p.ssafy.io/Multi/ws/websocket',
+  //       onConnect: onConnectCallback,
+  //       beforeConnect: () async {
+  //         print('waiting to connect...');
+  //         await Future.delayed(Duration(milliseconds: 200));
+  //         print('connecting...');
+  //       },
+  //       stompConnectHeaders: {'Authorization': accessToken ??
+  //                             'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNDYzNDMxNDUzIiwiYXV0aCI6IlJPTEVfU09DSUFMIiwiZXhwIjoxNzE1NDA1MzkzfQ.dmjUkVX1sFe9EpYhT3SGO3uC7q1dLIoddBvzhoOSisM'},
+  //       webSocketConnectHeaders: {'Authorization': accessToken ??
+  //                             'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNDYzNDMxNDUzIiwiYXV0aCI6IlJPTEVfU09DSUFMIiwiZXhwIjoxNzE1NDA1MzkzfQ.dmjUkVX1sFe9EpYhT3SGO3uC7q1dLIoddBvzhoOSisM'},
+  //     ),
+  //   );
+  //   stompClient.activate();
+  // }
+
+  // void onConnectCallback(StompFrame connectFrame) {
+  //   stompClient.subscribe(
+  //   destination: '/sub/game/${widget.controller.receivedRoomSeq}',
+  //   headers: {
+  //     'Authorization': accessToken ??
+  //         'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNDYzNDMxNDUzIiwiYXV0aCI6IlJPTEVfU09DSUFMIiwiZXhwIjoxNzE1NDA1MzkzfQ.dmjUkVX1sFe9EpYhT3SGO3uC7q1dLIoddBvzhoOSisM'
+  //   },
+  //   callback: (StompFrame frame) {
+  //     if (frame.body != null) {
+  //       Map<String, dynamic> res = jsonDecode(frame.body!);
+  //       if (res['body'].runtimeType == String &&
+  //           res['statusCodeValue'] != 200) {
+  //         throw Exception(jsonDecode(frame.body!)['body']);
+  //       } else if (res['body'].runtimeType == String) {
+  //         res['body'] = jsonDecode(res['body']);
+  //       }
+
+  //       print('데이터가 어떻게 오나 $res');
+        
+  //       // performActionBasedOnMessage(res['body']['message']);
+  //       // print('데이터 옴');
+  //       // print("Received: ${frame.body}");
+  //       // try {
+  //       //   Map<String, dynamic> jsonData = jsonDecode(frame.body!);
+  //       //   performActionBasedOnMessage(jsonData['message']);
+  //       // } catch (e) {
+  //       //   print("Error parsing JSON data: $e");
+  //       //   // JSON 파싱에 실패한 경우, 그대로 메시지로 처리
+  //       //   performActionBasedOnMessage(frame.body!);
+  //       // }
+  //       // performActionBasedOnMessage(frame.body!);
+  //     }
+  //   },
+  // );
+  // }
+
+  // void performActionBasedOnMessage(String message) {
+  //   // 수신된 메시지에 대한 처리 로직
+  //   print("Action performed for message: $message");
+  // }
+
+  Future<void> sendrequestInfo() async {
+    final dio = Dio();
+      final url = Uri.parse('https://k10a704.p.ssafy.io/Multi/game/data');
+      final storage = FlutterSecureStorage();
+      String? accessToken = await storage.read(key: 'accessToken');
+      String? username1 = await storage.read(key: 'kakaoNickname');
+
+      // myMap.totalDistanceNotifier.addListener(() {
+      //   setState(() {
+      //     totalDistance = myMap.totalDistanceNotifier.value;
+      //     // double distanceInKm = totalDistance / 1000.0;
+      //     // formattedDistance = distanceInKm.toStringAsFixed(2);
+      //   });
+      // });
+
+      double elapsedSeconds = _clockKey.currentState!.getElapsedSeconds();
+      int intelapsedseconds = elapsedSeconds.toInt();
+
+      // int totalDistance1 = totalDistance.toInt();
+
+      final requestBody = jsonEncode({
+        "roomSeq": widget.controller.receivedRoomSeq,
+        "userDist": totalDistance,
+        "userTime": intelapsedseconds,
+        "userName": username1,
+      });
+
+      print('userTime: $intelapsedseconds');
+      print('userDist: $totalDistance');
+      print('userName: $username1');
+
+      try {
+        final response = await dio.post(
+          url.toString(),
+          data: requestBody,
+          options: Options(headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'authorization': accessToken,
+          }),
+        );
+
+
+        if (response.statusCode == 200) {
+          // 서버 응답 성공 처리
+          // final responseData = jsonDecode(response.data);
+          // print('responseData type: ${responseData.runtimeType}');
+          // recordSeq = responseData['recordSeq'] as int;
+          print('현재 정보 전송 성공: ${response.data}');
+        } else {
+          print('서버 요청 실패: ${response.statusCode}');
+        }
+      } catch (e) {
+        print('요청 처리 중 에러 발생: $e');
+      }
   }
 
   void startTimers() {
@@ -90,7 +312,7 @@ class _MultiRunState extends State<MultiRun> {
         countdown--;
         if (countdown <= 0) {
           timer.cancel();
-          isLoading = false;
+          iscountdown = false;
 
           WidgetsBinding.instance.addPostFrameCallback((_) {
             _clockKey.currentState?.start();
@@ -102,8 +324,72 @@ class _MultiRunState extends State<MultiRun> {
 
   @override
   void dispose() {
+    stompClient.deactivate();
     countdownTimer?.cancel();
+    // _requestinfoSubscription.cancel();
     super.dispose();
+  }
+
+  void startGameGoTimer() {
+    Timer(Duration(seconds: 30), () {
+        if (!widget.controller.gamego.value) {
+          closeLoadingAndStartCountdown();
+        }
+      });
+  }
+
+  // void _onGameGoChanged() {
+  //   // bool response = widget.controller.gamego.value;
+  //   if (widget.controller.gamego.value) {
+  //     // 게임 시작 처리 로직을 여기에 추가합니다.
+  //     closeLoadingAndStartCountdown();
+  //   }
+  // }
+
+  void onPageLoaded() {
+    if (widget.controller.gameStartResponse.value) {
+      myMap.startLocationNotifier.addListener(() {
+        if (myMap.startLocation != null) {
+            print('보냄');
+            sendLocationToServer();
+        }
+      });
+    }
+
+    widget.controller.gamego.addListener(() {
+      print('gamego value 들어오나 ${widget.controller.gamego.value}');
+      if (widget.controller.gamego.value) {
+        print('closeloadingandstartcountdown true임');
+        closeLoadingAndStartCountdown();
+      }
+    });
+
+    // myMap.startLocationNotifier.addListener(() {
+    //   if (myMap.startLocation != null) {
+    //       sendLocationToServer();
+    //   }
+    // });
+
+    // myMap.startLocationNotifier.addListener(() {
+    //   if (myMap.startLocation != null) {
+    //       print("ㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇ");
+    //   }
+    // });
+
+    // // 30초 후에 로딩 창이 닫히도록 타이머 설정
+    // Timer(Duration(seconds: 30), () {
+    //   print('30초 지남');
+    //   // 30초 후에 로딩 창 닫기 및 카운트다운 시작
+    //   closeLoadingAndStartCountdown();
+    // });
+  }
+
+  void closeLoadingAndStartCountdown() {
+    setState(() {
+      isLoading = false;
+      iscountdown = true;
+    });
+    startTimers();
   }
 
   MultiController controller = Get.find<MultiController>();
@@ -114,10 +400,11 @@ class _MultiRunState extends State<MultiRun> {
 
   //   double lat = startLocation!.latitude;
   //   double long = startLocation.longitude;
-  //   int roomIdx = 1; // 수정 필요
-  //   int people = 4; // 수정 필요
+  //   int roomIdx = widget.controller.receivedRoomSeq;
+  //   int people = widget.roomInfo.roomPeople;
 
   //   controller.sendStartLocation(lat, long, roomIdx, people);
+  //   print('ㅇㅇ');
   // }
 
   Future<void> sendLocationToServer() async {
@@ -127,11 +414,15 @@ class _MultiRunState extends State<MultiRun> {
         
     if (startLocation != null) {
       final url = Uri.parse('https://k10a704.p.ssafy.io/Multi/start');
+      final storage = FlutterSecureStorage();
+      String? accessToken = await storage.read(key: 'accessToken');
 
       final requestBody = jsonEncode({
-        "recordMode": recordMode,
+        // "recordMode": recordMode,
         "recordStartLocation": "POINT(${startLocation.latitude} ${startLocation.longitude})",
-        // "recordPeople": 1,
+        "recordPeople": widget.roomInfo.roomPeople,
+        // "roomSeq": widget.controller.receivedRoomSeq,
+        "roomSeq": widget.controller.receivedRoomSeq,
       });
       
       try {
@@ -141,17 +432,21 @@ class _MultiRunState extends State<MultiRun> {
           options: Options(headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
-            'authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNDYzNDMxNDUzIiwiYXV0aCI6IlJPTEVfU09DSUFMIiwiZXhwIjoxNzE1Njg3MzY3fQ.g2NRh3nZWsmkFTRwbUlTGRPOgyi7G74PSdlYZ_YscaQ',
+            'authorization': accessToken,
           }),
         );
         
         if (response.statusCode == 200) {
-          recordSeq = response.data;
+          // recordSeq = response.data;
+          final responseData = response.data as Map<String, dynamic>;
+          recordSeq = responseData['recordSeq'] as int?;
           print('서버 요청 성공: $recordSeq');
         } else {
           print('서버 요청 실패: ${response.statusCode}');
         }
       } catch (e) {
+          print(widget.controller.receivedRoomSeq);
+          print(widget.roomInfo.roomPeople);
           print('요청 처리 중 에러 발생: $e');
       }
     } else {
@@ -345,6 +640,7 @@ class _MultiRunState extends State<MultiRun> {
                 totaldist: formattedDistance,
                 distanceSpeed: distanceSpeed,
                 distancePace: distancePace,
+                myRank: -1,
             ),
           ),
         );
@@ -397,7 +693,7 @@ class _MultiRunState extends State<MultiRun> {
                       // Duration elapsedTime = _clockKey.currentState?.elapsed ?? Duration.zero;
                       // 종료 시 실행할 작업
                       // elapsedTime을 endlocation으로 넘겨주는 로직 추가
-                      _handleEndButtonPress(context);
+                      // _handleEndButtonPress(context);
                     },
                     child: Container(
                       width:double.maxFinite,
@@ -460,6 +756,7 @@ class _MultiRunState extends State<MultiRun> {
   @override
   Widget build(BuildContext context) {
     Widget progressBar = Container();
+    int currentPageIndex = 0;
 
     if (widget.dist > 0) {
         progressBar = DistBar(dist: widget.dist, formattedDistance: double.parse(formattedDistance));
@@ -496,7 +793,8 @@ class _MultiRunState extends State<MultiRun> {
 
     return Scaffold(
         backgroundColor: Colors.white,
-        appBar: isLoading? null : AppBar(
+        // appBar: isLoading? null : AppBar(
+        appBar: (!isLoading && !iscountdown)? AppBar(
         bottom: PreferredSize(
           preferredSize: Size.fromHeight(25), 
           child: 
@@ -556,7 +854,7 @@ class _MultiRunState extends State<MultiRun> {
             ),
             )
           ),
-        ),
+        ): null,
         body: Stack(
           children: [
           Container(
@@ -701,18 +999,6 @@ class _MultiRunState extends State<MultiRun> {
                         )
                       ),
                       SizedBox(height: 15),
-                      // ValueListenableBuilder<double>(
-                      //   valueListenable: myMap.speedNotifier,
-                      //   builder: (context, speed, _) {
-                      //     return Text('${speed.toStringAsFixed(2)} km/h',
-                      //       style: TextStyle(
-                      //         color: GREEN_COLOR,
-                      //         fontSize: 30,
-                      //         fontWeight: FontWeight.w700,
-                      //       )
-                      //     );
-                      //   }
-                      // ),
                       Container(
                         decoration: BoxDecoration(
                         color: Color(0xffF6F4E9),
@@ -728,44 +1014,119 @@ class _MultiRunState extends State<MultiRun> {
                       ),
                       width: 400,
                       height: 200,
-                      child: Padding(
-                        padding: const EdgeInsets.all(30),
-                        child: Column(
-                          children: const [
-                            Column(
-                              children: [
-                                Row(
-                                  children: [
-                                    Text('1',
-                                      style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold,
-                                        color: DARK_GREEN_COLOR,
-                                      ),
-                                    ),
-                                    SizedBox(width: 10),
-                                    Text('닉네임',
-                                      style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black,
-                                      ),
-                                    ),
-                                    SizedBox(width: 10),
-                                    Text('00:02:23',
-                                      style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold,
-                                        color: DARK_GREEN_COLOR,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
+                      // child: Padding(
+                      //   padding: const EdgeInsets.all(30),
+                      //   child: Column(
+                      //     children: const [
+                      //       Column(
+                      //         children: [
+                      //           Row(
+                      //             children: [
+                      //               Text('1',
+                      //                 style: TextStyle(
+                      //                   fontSize: 20,
+                      //                   fontWeight: FontWeight.bold,
+                      //                   color: DARK_GREEN_COLOR,
+                      //                 ),
+                      //               ),
+                      //               SizedBox(width: 10),
+                      //               Text('닉네임',
+                      //                 style: TextStyle(
+                      //                   fontSize: 20,
+                      //                   fontWeight: FontWeight.bold,
+                      //                   color: Colors.black,
+                      //                 ),
+                      //               ),
+                      //               SizedBox(width: 10),
+                      //               Text('00:02:23',
+                      //                 style: TextStyle(
+                      //                   fontSize: 20,
+                      //                   fontWeight: FontWeight.bold,
+                      //                   color: DARK_GREEN_COLOR,
+                      //                 ),
+                      //               ),
+                      //             ],
+                      //           ),
+                      //         ],
+                      //       ),
+                      //     ],
+                      //   )
+                      // )
+
+                      // --------------------------------------------------------------
+                      // 
+                      // --------------------------------------------------------
+                       // 현재 페이지 인덱스를 저장하는 변수
+                      child: rankingData!.isEmpty
+                        ? Center(
+                            child: Text(
+                              '곧 실시간 순위가 나타납니다',
+                              style: TextStyle(fontSize: 16, color: Colors.grey),
+                              textAlign: TextAlign.center,
                             ),
-                          ],
-                        )
-                      )
+                          )
+                      : Column(
+                      children: [
+                          Expanded(
+                            child: PageView.builder(
+                              itemCount: (rankingData!.length / 3).ceil(),
+                              onPageChanged: (pageIndex) {
+                                setState(() {
+                                  currentPageIndex = pageIndex;
+                                });
+                              },
+                              itemBuilder: (context, pageIndex) {
+                                final startIndex = pageIndex * 3;
+                                final endIndex = (startIndex + 3).clamp(0, rankingData!.length);
+                                final currentPageData = rankingData!.sublist(startIndex, endIndex);
+
+                                return Column(
+                                  children: currentPageData.map((ranking) {
+                                    return Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Row(
+                                        children: [
+                                          Text('${ranking['memberRank']}'),
+                                          SizedBox(width: 10),
+                                          Text('${ranking['memberNickname']}'),
+                                          SizedBox(width: 10),
+                                          Text('${ranking['memberDist']}'),
+                                        ],
+                                      ),
+                                    );
+                                  }).toList(),
+                                );
+                              },
+                            ),
+                          ),
+              
+                          // 페이지 인덱스를 나타내는 동그라미들
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 10),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: List.generate((rankingData!.length / 3).ceil(), (index) {
+                                return GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      currentPageIndex = index;
+                                    });
+                                  },
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(4.0),
+                                    child: Icon(
+                                      Icons.circle,
+                                      size: 10,
+                                      color: currentPageIndex == index ? GREEN_COLOR : Colors.grey, // 현재 페이지에 해당하는 동그라미는 파란색으로, 그 외에는 회색으로 표시
+                                    ),
+                                  ),
+                                );
+                              }),
+                            ),
+                          ),
+                        ],
+                      
+                      ),
                       ),
                     ],
                   ),
@@ -801,6 +1162,24 @@ class _MultiRunState extends State<MultiRun> {
           ),
 
           if (isLoading)
+            Positioned.fill(
+              child: Container(
+                color: OATMEAL_COLOR,
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: const [
+                      CircularProgressIndicator(
+                        color: GREEN_COLOR,
+                      ),
+                    ]
+                  ),
+                )
+              ),
+            ),
+
+          if (iscountdown)
             Positioned.fill(
               child: Container(
                 color: OATMEAL_COLOR,

@@ -56,18 +56,13 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Widget homeWidget;
-    homeWidget = MainPageLayout();
-    // if (storage.read(key: 'accessToken') != null) {
-    //   homeWidget = MultiMain();
-    // } else {
-    //   homeWidget = MainPageLayout();
-    // }
-    return GetMaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
-      // home: MainPageLayout(),
-      home: homeWidget,
-    );
+    // ignore: unnecessary_null_comparison
+    if (storage.read(key: 'accessToken') != null) {
+      homeWidget = MainLayout();
+    } else {
+      homeWidget = MainPageLayout();
+    }
+    return homeWidget;
   }
 }
 
