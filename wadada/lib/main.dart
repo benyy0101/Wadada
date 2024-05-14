@@ -51,6 +51,8 @@ class NoCheckCertificateHttpOverrides extends HttpOverrides {
 class MyApp extends StatelessWidget {
   final storage = FlutterSecureStorage();
 
+  MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
@@ -61,6 +63,8 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key});
+
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
@@ -103,12 +107,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    if (_homeWidget == null) {
-      return Scaffold(body: Center(child: CircularProgressIndicator()));
-    } else {
-      return _homeWidget;
+    return _homeWidget;
     }
-  }
 }
 
 class MyHttpOverrides extends HttpOverrides {
