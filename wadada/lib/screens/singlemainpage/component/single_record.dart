@@ -1,6 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:wadada/common/const/colors.dart';
 import 'package:http/http.dart' as http;
 import 'package:dio/dio.dart';
@@ -12,7 +14,7 @@ class SingleRecord extends StatefulWidget {
   _SingleRecordState createState() => _SingleRecordState();
 }
 
-class _SingleRecordState extends State<SingleRecord>{
+class _SingleRecordState extends State<SingleRecord> {
   late Future<Map<String, dynamic>> _dataFuture;
 
   @override
@@ -23,18 +25,17 @@ class _SingleRecordState extends State<SingleRecord>{
 
   Future<Map<String, dynamic>> fetchData() async {
     final url = Uri.parse('https://k10a704.p.ssafy.io/Single');
-
+    final storage = FlutterSecureStorage();
+    String? accessToken = await storage.read(key: 'accessToken');
     final dio = Dio();
 
     try {
-      final response = await dio.get(
-        url.toString(),
-        options: Options(headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNDYzNDMxNDUzIiwiYXV0aCI6IlJPTEVfU09DSUFMIiwiZXhwIjoxNzE1NDA1MzkzfQ.dmjUkVX1sFe9EpYhT3SGO3uC7q1dLIoddBvzhoOSisM',
-        }),
-      );
+      final response = await dio.get(url.toString(),
+          options: Options(headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'authorization': accessToken
+          }));
 
       if (response.statusCode == 200) {
         final data = response.data as Map<String, dynamic>;
@@ -54,19 +55,19 @@ class _SingleRecordState extends State<SingleRecord>{
   }
 
   String formatDuration(int seconds) {
-  Duration duration = Duration(seconds: seconds);
-  int hours = duration.inHours;
-  int minutes = duration.inMinutes.remainder(60);
-  int secs = duration.inSeconds.remainder(60);
-  
-  return '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${secs.toString().padLeft(2, '0')}';
+    Duration duration = Duration(seconds: seconds);
+    int hours = duration.inHours;
+    int minutes = duration.inMinutes.remainder(60);
+    int secs = duration.inSeconds.remainder(60);
+
+    return '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${secs.toString().padLeft(2, '0')}';
   }
 
   // 초를 mm:ss 형식으로 변환하는 함수
   String formatPace(int seconds) {
     int minutes = seconds ~/ 60;
     int secs = seconds % 60;
-    
+
     return '${minutes.toString()}' "'${secs.toString().padLeft(2, '0')}\"";
   }
 
@@ -81,31 +82,28 @@ class _SingleRecordState extends State<SingleRecord>{
           return Center(child: Text('데이터를 가져오는 중 에러가 발생했습니다.'));
         } else if (snapshot.data != null && snapshot.data!.isEmpty) {
           return Container(
-            decoration: BoxDecoration(
-              color: Color(0xffF6F4E9),
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: const [
-                BoxShadow(
-                  color: Colors.black12,
-                  spreadRadius: 2,
-                  blurRadius: 5,
-                  offset: Offset(1, 2),
-                ),
-              ],
-            ),
-            width: 400,
-            child: Padding(
-              padding: const EdgeInsets.only(top: 30, bottom: 30),
-              child: Center(
-                child: Text('최근 기록이 없습니다.',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                  )
-                )
+              decoration: BoxDecoration(
+                color: Color(0xffF6F4E9),
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Colors.black12,
+                    spreadRadius: 2,
+                    blurRadius: 5,
+                    offset: Offset(1, 2),
+                  ),
+                ],
               ),
-            )
-          );
+              width: 400,
+              child: Padding(
+                padding: const EdgeInsets.only(top: 30, bottom: 30),
+                child: Center(
+                    child: Text('최근 기록이 없습니다.',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                        ))),
+              ));
         } else if (snapshot.hasData) {
           final data = snapshot.data!;
           final recordTime = data['recordTime'];
@@ -156,19 +154,17 @@ class _SingleRecordState extends State<SingleRecord>{
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text('총 운동거리',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600,
-                              )
-                            ),
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600,
+                                )),
                             SizedBox(height: 10),
                             Text('$formattedChangeDist km',
-                              style: TextStyle(
-                                color: GREEN_COLOR,
-                                fontSize: 30,
-                                fontWeight: FontWeight.w700,
-                              )
-                            ),
+                                style: TextStyle(
+                                  color: GREEN_COLOR,
+                                  fontSize: 30,
+                                  fontWeight: FontWeight.w700,
+                                )),
                           ],
                         ),
                       ),
@@ -177,19 +173,17 @@ class _SingleRecordState extends State<SingleRecord>{
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text('총 소요시간',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600,
-                              )
-                            ),
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600,
+                                )),
                             SizedBox(height: 10),
                             Text(formattedTime,
-                              style: TextStyle(
-                                color: GREEN_COLOR,
-                                fontSize: 30,
-                                fontWeight: FontWeight.w700,
-                              )
-                            ),
+                                style: TextStyle(
+                                  color: GREEN_COLOR,
+                                  fontSize: 30,
+                                  fontWeight: FontWeight.w700,
+                                )),
                           ],
                         ),
                       ),
@@ -203,19 +197,17 @@ class _SingleRecordState extends State<SingleRecord>{
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text('평균 페이스',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600,
-                              )
-                            ),
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600,
+                                )),
                             SizedBox(height: 10),
                             Text(formattedPace,
-                              style: TextStyle(
-                                color: GREEN_COLOR,
-                                fontSize: 30,
-                                fontWeight: FontWeight.w700,
-                              )
-                            ),
+                                style: TextStyle(
+                                  color: GREEN_COLOR,
+                                  fontSize: 30,
+                                  fontWeight: FontWeight.w700,
+                                )),
                           ],
                         ),
                       ),
@@ -224,19 +216,17 @@ class _SingleRecordState extends State<SingleRecord>{
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text('평균 심박수',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600,
-                              )
-                            ),
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600,
+                                )),
                             SizedBox(height: 10),
                             Text('$recordHeartbeat',
-                              style: TextStyle(
-                                color: GREEN_COLOR,
-                                fontSize: 30,
-                                fontWeight: FontWeight.w700,
-                              )
-                            ),
+                                style: TextStyle(
+                                  color: GREEN_COLOR,
+                                  fontSize: 30,
+                                  fontWeight: FontWeight.w700,
+                                )),
                           ],
                         ),
                       ),
@@ -247,8 +237,8 @@ class _SingleRecordState extends State<SingleRecord>{
             ),
           );
         } else {
-            return Center(child: Text('데이터가 없습니다.'));
-          }
+          return Center(child: Text('데이터가 없습니다.'));
+        }
       },
     );
   }

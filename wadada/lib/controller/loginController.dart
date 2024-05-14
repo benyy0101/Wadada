@@ -1,10 +1,13 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 import 'package:wadada/repository/loginRepo.dart';
+import 'package:wadada/screens/multimainpage/multi_main.dart';
+import 'package:wadada/screens/newprofilepage/layout.dart';
 
 class LoginController extends GetxController {
   final LoginRepository loginRepository;
   final storage = FlutterSecureStorage();
+
   LoginDto loginInfo = LoginDto(
       kakao_id: 'kakaoId',
       kakao_nickname: 'kakaoNickname',
@@ -16,14 +19,23 @@ class LoginController extends GetxController {
   Future<void> login() async {
     try {
       loginInfo = await loginRepository.loginToServer();
-      storage.write(
+      //print(loginInfo);
+      await storage.write(
           key: 'accessToken',
-          value: loginInfo.jwtToken.grantType +
-              " " +
-              loginInfo.jwtToken.accessToken);
+          value:
+              "${loginInfo.jwtToken.grantType} ${loginInfo.jwtToken.accessToken}");
+      await storage.write(key: 'kakaoId', value: loginInfo.kakao_id);
+      await storage.write(
+          key: 'kakaoNickname', value: loginInfo.kakao_nickname);
+      await storage.write(key: 'kakaoEmail', value: loginInfo.kakao_email);
+
+      if (loginInfo.kakao_nickname == '임시') {
+        Get.to(NewProfileLayout());
+      } else {
+        Get.to(MultiMain());
+      }
     } catch (e) {
       print(e);
-      rethrow;
     }
   }
 }

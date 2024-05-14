@@ -12,10 +12,15 @@ class ProfileProvider {
     _dio = Dio();
     _dio.options.baseUrl = 'https://k10a704.p.ssafy.io/Wadada/profile';
     _dio.options.headers['Content-Type'] = 'application/json';
-    _dio.options.headers['Authorization'] = storage.read(key: 'accessToken');
   }
 
-  Future<Response<dynamic>> profileDelete(String code) async {
+  Future<void> setAuth() async {
+    _dio.options.headers['Authorization'] =
+        await storage.read(key: 'accessToken');
+  }
+
+  Future<Response<dynamic>> profileDelete() async {
+    await setAuth();
     final response = await _dio.delete(
       'profile',
     );
@@ -23,17 +28,20 @@ class ProfileProvider {
   }
 
   Future<Response<dynamic>> profilePatch(Profile profile) async {
-    final response = await _dio.patch('profile', data: profile);
+    await setAuth();
+    final response = await _dio.patch('', data: profile);
     return response;
   }
 
-  Future<Response<dynamic>> profileGet(Profile profile) async {
+  Future<Response<dynamic>> profileGet() async {
+    await setAuth();
     final response = await _dio.get('profile');
     return response;
   }
 
   Future<Response> nickNameValidate(String nickName) async {
-    final response = await _dio.post('profile', data: nickName);
+    await setAuth();
+    final response = await _dio.get('/${nickName}');
     return response;
   }
 }

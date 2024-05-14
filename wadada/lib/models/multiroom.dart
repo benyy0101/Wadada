@@ -7,7 +7,7 @@ class MultiRoom {
   int roomPeople;
   int roomDist;
   int roomMode;
-  int? roomSecret;
+  int roomSecret;
   String roomTag;
   int roomTime;
   String roomTitle;
@@ -16,7 +16,7 @@ class MultiRoom {
       {required this.roomPeople,
       required this.roomDist,
       required this.roomMode,
-      this.roomSecret,
+      required this.roomSecret,
       required this.roomTag,
       required this.roomTime,
       required this.roomTitle});
@@ -45,8 +45,8 @@ class MultiRoom {
       'roomTime': roomTime,
       'roomTitle': roomTitle,
     };
-
   }
+
   @override
   String toString() {
     return 'MultiRoom(roomPeople: $roomPeople, roomDist: $roomDist, roomMode: $roomMode, roomSecret: $roomSecret, roomTag: "$roomTag", roomTime: $roomTime, roomTitle: "$roomTitle")';
@@ -215,13 +215,21 @@ class SimpleRoom {
   int roomPeople;
   String? roomTag;
   int roomSecret;
+  int roomMode;
+  int? roomDist;
+  int? roomTime;
+  int? nowRoomPeople;
 
   SimpleRoom({
     required this.roomIdx,
     required this.roomTitle,
     required this.roomPeople,
     required this.roomSecret,
-    required this.roomTag,
+    this.roomTag,
+    required this.roomMode,
+    this.roomDist,
+    this.roomTime,
+    required this.nowRoomPeople,
   });
 
   // Convert SimpleRoom object to a Map
@@ -232,6 +240,10 @@ class SimpleRoom {
       'roomPeople': roomPeople,
       'roomTag': roomTag,
       'roomSecret': roomSecret,
+      'roomMode': roomMode,
+      'roomDist': roomDist,
+      'roomTime': roomTime,
+      'nowRoomPeople': nowRoomPeople,
     };
   }
 
@@ -241,14 +253,17 @@ class SimpleRoom {
       roomIdx: json['roomIdx'] as int,
       roomTitle: json['roomTitle'] as String,
       roomPeople: json['roomPeople'] as int,
-      roomTag: json['roomTag'] ?? "",
-      roomSecret: json['roomSecret'] ?? -1,
+      roomTag: json['roomTag'] as String?,
+      roomSecret: json['roomSecret'] as int,
+      roomMode: json['roomMode'] as int,
+      roomDist: json['roomDist'] as int?,
+      roomTime: json['roomTime'] as int?,
+      nowRoomPeople: json['nowRoomPeople'] as int,
     );
   }
 
   @override
   String toString() {
-    return 'SimpleRoom{ roomIdx: $roomIdx, roomTitle: $roomTitle, roomPeople: $roomPeople, roomTag: $roomTag, roomSecret: $roomSecret }';
+    return 'SimpleRoom{ roomIdx: $roomIdx, roomTitle: $roomTitle, roomPeople: $roomPeople, roomTag: $roomTag, roomSecret: $roomSecret, roomMode: $roomMode, roomDist: $roomDist, roomTime: $roomTime, nowRoomPeople: $nowRoomPeople }';
   }
 }
-

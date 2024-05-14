@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:get/get_rx/src/rx_types/rx_types.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:wadada/models/mypage.dart';
@@ -105,6 +107,16 @@ class MypageController extends GetxController {
         marathonDetail =
             await mypageRepository.getMarathonDetail(req.recordSeq);
       }
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
+  }
+
+  void uploadImage(String path) async {
+    try {
+      String temp = await mypageRepository.uploadImage(path);
+      print(temp);
     } catch (e) {
       print(e);
       rethrow;

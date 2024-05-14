@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:wadada/controller/profileController.dart';
+import 'package:wadada/repository/profileRepo.dart';
 import 'package:wadada/screens/singleoptionpage/single_free_option.dart';
 import 'package:wadada/common/component/logout.dart';
 import 'package:wadada/screens/singlemainpage/component/select_mode.dart';
 import 'package:wadada/screens/singlemainpage/component/single_record.dart';
 
 class SingleMain extends StatelessWidget {
-  const SingleMain({super.key});
-
+  SingleMain({super.key});
+  ProfileController profileController =
+      Get.put(ProfileController(repo: ProfileRepository()));
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,7 +29,7 @@ class SingleMain extends StatelessWidget {
                   children: [
                     Text('싱글모드',
                         style: TextStyle(
-                          color: Colors.black,
+                          color: Colors.black87,
                           fontSize: 30,
                           fontWeight: FontWeight.w600,
                         )),
@@ -38,12 +42,16 @@ class SingleMain extends StatelessWidget {
             ),
             Container(
               child: Row(
-                children: const [
-                  Text('김태수님의 최근 기록',
-                      style: TextStyle(
-                        color: Colors.black54,
-                        fontSize: 15,
-                      ))
+                children: [
+                  Obx(() {
+                    String nickname =
+                        profileController.profile.value.memberNickname ?? "???";
+                    return Text('$nickname님의 최근 기록',
+                        style: TextStyle(
+                          color: Colors.black54,
+                          fontSize: 15,
+                        ));
+                  })
                 ],
               ),
             ),
@@ -60,6 +68,9 @@ class SingleMain extends StatelessWidget {
               des: '목표한 거리만큼 달려보세요.',
               btn: '28',
               onTapAction: () {
+                // Get.to(SingleOption(
+                //   isDistMode: true,
+                // ));
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -71,11 +82,14 @@ class SingleMain extends StatelessWidget {
               height: 25,
             ),
             SelectMode(
-              icon: 'assets/images/clock.png',
+              icon: 'assets/images/clock_2.png',
               name: '시간모드',
               des: '목표한 시간만큼 달려보세요.',
               btn: '28',
               onTapAction: () {
+                // Get.to(SingleOption(
+                //   isDistMode: false,
+                // ));
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -92,6 +106,9 @@ class SingleMain extends StatelessWidget {
               des: '코스를 뛰고, 기록에 도전하세요.',
               btn: '8',
               onTapAction: () {
+                // Get.to(SingleOption(
+                //   isDistMode: false,
+                // ));
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -103,7 +120,7 @@ class SingleMain extends StatelessWidget {
               height: 30,
             ),
             // LogoutButton(),
-            TestButton(),
+            // TestButton(),
           ],
         ),
       ),
