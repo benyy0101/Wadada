@@ -168,11 +168,7 @@ public class MultiRecordServiceImpl implements MultiRecordService {
 
         String message = GameMessage.GAME_LIVE_INFO_REQUEST.toJson();
         messagingTemplate.convertAndSend("/sub/game/" + roomSeq, message);
-//        try {
-//            Thread.sleep(10000);
-//        } catch (InterruptedException e) {
-//            throw new RuntimeException(e);
-//        }
+
         try {
             log.info(String.valueOf(roomSeq));
 
