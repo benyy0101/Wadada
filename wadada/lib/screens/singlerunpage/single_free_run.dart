@@ -45,14 +45,17 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
   late Clock clock;
 
   late MyMap myMap;
-
+  final GlobalKey<MyMapState> myMapStateKey = GlobalKey<MyMapState>();
   @override
   void initState() {
     super.initState();
 
     startTimers();
 
-    myMap = MyMap(appKey: widget.appKey);
+    myMap = MyMap(
+      appKey: widget.appKey,
+      key: myMapStateKey,
+    );
 
     myMap.startLocationNotifier.addListener(() {
       if (myMap.startLocationNotifier.value != null) {
@@ -100,6 +103,7 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
   @override
   void dispose() {
     countdownTimer?.cancel();
+    myMapStateKey.currentState?.dispose();
     super.dispose();
   }
 
@@ -395,6 +399,7 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
                       // Duration elapsedTime = _clockKey.currentState?.elapsed ?? Duration.zero;
                       // 종료 시 실행할 작업
                       // elapsedTime을 endlocation으로 넘겨주는 로직 추가
+                      dispose();
                       _handleEndButtonPress(context);
                     },
                     child: Container(
