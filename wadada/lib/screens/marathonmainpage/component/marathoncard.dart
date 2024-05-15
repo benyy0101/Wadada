@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:wadada/common/const/colors.dart';
+import 'package:wadada/models/marathon.dart';
 
 class MarathonCard extends StatelessWidget {
-  final Map<String, dynamic> marathon;
+  final SimpleMarathon marathon;
   final bool isPast;
   final VoidCallback? onTap;
 
@@ -38,19 +39,19 @@ class MarathonCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (marathon.containsKey('image') && !isPast)
-              ClipRRect(
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(20),
-                  topRight: Radius.circular(20),
-                ),
-                child: Image.network(
-                  marathon['image'],
-                  height: 200,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                ),
-              ),
+            // if (marathon.containsKey('image') && !isPast)
+            //   ClipRRect(
+            //     borderRadius: BorderRadius.only(
+            //       topLeft: Radius.circular(20),
+            //       topRight: Radius.circular(20),
+            //     ),
+            //     child: Image.network(
+            //       marathon['image'],
+            //       height: 200,
+            //       width: double.infinity,
+            //       fit: BoxFit.cover,
+            //     ),
+            //   ),
             Container(
               padding: EdgeInsets.all(30),
               child: Column(
@@ -59,13 +60,16 @@ class MarathonCard extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Container(
-                        padding: EdgeInsets.symmetric(horizontal: 13, vertical: 2),
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 13, vertical: 2),
                         decoration: BoxDecoration(
-                          color: isPast ? GRAY_400 : (isPast ? Colors.grey : GREEN_COLOR),
+                          color: isPast
+                              ? GRAY_400
+                              : (isPast ? Colors.grey : GREEN_COLOR),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
-                          isPast ? '종료' : 'D-${marathon['daysLeft']}',
+                          isPast ? '종료' : 'D-${DateTime.now().day}',
                           style: TextStyle(
                             fontSize: 16,
                             color: Colors.white,
@@ -74,7 +78,8 @@ class MarathonCard extends StatelessWidget {
                           ),
                         ),
                       ),
-                      Icon(Icons.arrow_forward_ios, color: isPast ? GRAY_400 : GREEN_COLOR),
+                      Icon(Icons.arrow_forward_ios,
+                          color: isPast ? GRAY_400 : GREEN_COLOR),
                     ],
                   ),
                   SizedBox(height: 20),
@@ -93,7 +98,7 @@ class MarathonCard extends StatelessWidget {
                       SizedBox(width: 58),
                       Expanded(
                         child: Text(
-                          '${marathon['date']} ${marathon['startTime']} ~ ${marathon['endTime']}',
+                          '${marathon.marathonStart} ~ ${marathon.marathonEnd}',
                           style: TextStyle(
                             fontSize: 17,
                             color: textColor,
@@ -118,7 +123,7 @@ class MarathonCard extends StatelessWidget {
                       SizedBox(width: 58),
                       Expanded(
                         child: Text(
-                          '${marathon['distance']} km',
+                          '${marathon.marathonDist} km',
                           style: TextStyle(
                             fontSize: 17,
                             color: textColor,
@@ -143,7 +148,7 @@ class MarathonCard extends StatelessWidget {
                       SizedBox(width: 20),
                       Expanded(
                         child: Text(
-                          '${marathon['participants']}명',
+                          '${marathon.marathonParticipate}명',
                           style: TextStyle(
                             fontSize: 17,
                             color: textColor,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wadada/common/const/colors.dart';
+import 'package:wadada/models/marathon.dart';
 
 final List<Map<String, dynamic>> peopleData = [
   {
@@ -25,7 +26,7 @@ final List<Map<String, dynamic>> peopleData = [
 ];
 
 class People extends StatelessWidget {
-  final Map<String, dynamic> marathon;
+  final SimpleMarathon marathon;
   final bool isPast;
 
   const People({super.key, required this.marathon, required this.isPast});

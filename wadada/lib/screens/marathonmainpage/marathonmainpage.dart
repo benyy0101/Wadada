@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:get/get.dart';
 import 'package:wadada/common/const/colors.dart';
+import 'package:wadada/controller/marathonController.dart';
+import 'package:wadada/models/marathon.dart';
 import 'package:wadada/screens/marathoninfopage/marathoninfopage.dart';
 import 'package:wadada/screens/marathonmainpage/component/marathoncard.dart';
 import 'package:wadada/screens/singleoptionpage/single_free_option.dart';
@@ -9,7 +12,7 @@ import 'package:wadada/screens/singlemainpage/component/select_mode.dart';
 import 'package:wadada/screens/singlemainpage/component/single_record.dart';
 import 'package:dio/dio.dart';
 
-class MarathonMain extends StatefulWidget{
+class MarathonMain extends StatefulWidget {
   const MarathonMain({super.key});
 
   @override
@@ -34,7 +37,8 @@ class _MarathonMainState extends State<MarathonMain> {
         'endTime': '15:00',
         'distance': 5,
         'participants': 100,
-        'image': 'https://github.com/jjeong41/t/assets/103355863/e3eb9518-0f43-4577-ab50-bbfbe6fbe4fa',
+        'image':
+            'https://github.com/jjeong41/t/assets/103355863/e3eb9518-0f43-4577-ab50-bbfbe6fbe4fa',
         'type': 'upcoming',
       },
       {
@@ -43,7 +47,8 @@ class _MarathonMainState extends State<MarathonMain> {
         'endTime': '18:00',
         'distance': 10,
         'participants': 200,
-        'image': 'https://github.com/jjeong41/t/assets/103355863/7ba67d84-a297-44c8-9999-d45a34b4f785',
+        'image':
+            'https://github.com/jjeong41/t/assets/103355863/7ba67d84-a297-44c8-9999-d45a34b4f785',
         'type': 'past',
       },
       {
@@ -52,7 +57,8 @@ class _MarathonMainState extends State<MarathonMain> {
         'endTime': '11:00',
         'distance': 3,
         'participants': 50,
-        'image': 'https://github.com/jjeong41/t/assets/103355863/7ba67d84-a297-44c8-9999-d45a34b4f785',
+        'image':
+            'https://github.com/jjeong41/t/assets/103355863/7ba67d84-a297-44c8-9999-d45a34b4f785',
         'type': 'past',
       },
     ];
@@ -62,22 +68,28 @@ class _MarathonMainState extends State<MarathonMain> {
 
     setState(() {
       coming = marathons.where((marathon) {
-        DateTime startDateTime = DateTime.parse('${marathon['date']}T${marathon['startTime']}');
-        DateTime endDateTime = DateTime.parse('${marathon['date']}T${marathon['endTime']}');
+        DateTime startDateTime =
+            DateTime.parse('${marathon['date']}T${marathon['startTime']}');
+        DateTime endDateTime =
+            DateTime.parse('${marathon['date']}T${marathon['endTime']}');
 
         int daysLeft = startDateTime.difference(currentDateTime).inDays;
         marathon['daysLeft'] = daysLeft;
 
-        return startDateTime.isAfter(currentDateTime) || 
-          (currentDateTime.isAfter(startDateTime) && currentDateTime.isBefore(endDateTime)) &&
-          marathon['type'] == 'coming';
+        return startDateTime.isAfter(currentDateTime) ||
+            (currentDateTime.isAfter(startDateTime) &&
+                    currentDateTime.isBefore(endDateTime)) &&
+                marathon['type'] == 'coming';
       }).toList();
-        
+
       past = marathons.where((marathon) {
-        DateTime startDateTime = DateTime.parse('${marathon['date']}T${marathon['startTime']}');
-        DateTime endDateTime = DateTime.parse('${marathon['date']}T${marathon['endTime']}');
-        
-        return endDateTime.isBefore(currentDateTime) && marathon['type'] == 'past';
+        DateTime startDateTime =
+            DateTime.parse('${marathon['date']}T${marathon['startTime']}');
+        DateTime endDateTime =
+            DateTime.parse('${marathon['date']}T${marathon['endTime']}');
+
+        return endDateTime.isBefore(currentDateTime) &&
+            marathon['type'] == 'past';
       }).toList();
     });
   }
@@ -118,128 +130,122 @@ class _MarathonMainState extends State<MarathonMain> {
 
   @override
   Widget build(BuildContext context) {
+    MarathonController controller = Get.put(MarathonController());
     return Scaffold(
-        backgroundColor: Colors.white,
-        // appBar: AppBar(
-        //   title: '마라톤'
-        // ),
-        body: 
-          SingleChildScrollView(
-            padding: EdgeInsets.only(left: 30, right: 30),
-            child:Column(
-              children: [
-                SizedBox(
-                  height: 45,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
-                    Column(children: [
-                      Text('마라톤',
+      backgroundColor: Colors.white,
+      // appBar: AppBar(
+      //   title: '마라톤'
+      // ),
+      body: SingleChildScrollView(
+        padding: EdgeInsets.only(left: 30, right: 30),
+        child: Column(
+          children: [
+            SizedBox(
+              height: 45,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: const [
+                Column(
+                  children: [
+                    Text('마라톤',
                         style: TextStyle(
                           color: Colors.black,
                           fontSize: 30,
                           fontWeight: FontWeight.w600,
-                        )
+                        )),
+                  ],
+                )
+              ],
+            ),
+            SizedBox(
+              height: 40,
+            ),
+            if (controller.marathonList.value.length == 0)
+              const Text(
+                '진행 예정인 마라톤이 없습니다.',
+                style: TextStyle(
+                  color: GRAY_400,
+                  fontSize: 19,
+                ),
+              )
+            else
+              Container(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '진행 예정인 마라톤',
+                      style: TextStyle(
+                        color: GRAY_400,
+                        fontSize: 19,
                       ),
-                    ],
-                    )
+                    ),
+                    SizedBox(height: 20),
+                    ...controller.marathonList.value
+                        .where((marathon) => marathon.isDeleted == -1)
+                        .map((marathon) {
+                      // coming 배열에 있는 카드를 클릭할 때 이동할 페이지
+                      void handleTap(SimpleMarathon marathon, bool isPast) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => MarathonInfo(
+                              marathon: marathon,
+                              isPast: isPast,
+                            ),
+                          ),
+                        );
+                      }
+
+                      return Column(
+                        children: [
+                          MarathonCard(
+                            marathon: marathon,
+                            isPast: false,
+                            onTap: () => handleTap(marathon, false), // 클릭 이벤트
+                          ),
+                          SizedBox(height: 15),
+                        ],
+                      );
+                    }),
                   ],
                 ),
-                SizedBox(
-                  height: 40,
-                ),
-                if (coming.isEmpty)
-                  const Text(
-                    '진행 예정인 마라톤이 없습니다.',
+              ),
+            SizedBox(height: 30),
+            Container(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '지난 마라톤',
                     style: TextStyle(
                       color: GRAY_400,
                       fontSize: 19,
                     ),
-                  )
-                else
-                  Container(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('진행 예정인 마라톤',
-                          style: TextStyle(
-                            color: GRAY_400,
-                            fontSize: 19,
-                          ),
-                        ), 
-                        SizedBox(height: 20),
-                        ...coming.map((marathon) {
-                          // coming 배열에 있는 카드를 클릭할 때 이동할 페이지
-                          void handleTap(Map<String, dynamic> marathon, bool isPast) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => MarathonInfo(
-                                  marathon: marathon,
-                                  isPast: isPast,
-                              ),
-                              ),
-                            );
-                          }
-
-                          return Column(
-                            children: [
-                              MarathonCard(
-                                marathon: marathon,
-                                isPast: false,
-                                onTap: () => handleTap(marathon, false), // 클릭 이벤트
-                              ),
-                              SizedBox(height: 15),
-                            ],
-                          );
-                        }),
-                      ],
-                    ),
                   ),
-                SizedBox(height: 30),
-                Container(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('지난 마라톤',
-                          style: TextStyle(
-                            color: GRAY_400,
-                            fontSize: 19,
-                          ),
-                        ), 
-                        SizedBox(height: 20),
-                        ...past.map((marathon) {
-                          // coming 배열에 있는 카드를 클릭할 때 이동할 페이지
-                          void handleTap(Map<String, dynamic> marathon, bool isPast) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => MarathonInfo(
-                                  marathon: marathon,
-                                  isPast: isPast,
-                              ),
-                              ),
-                            );
-                          }
+                  SizedBox(height: 20),
+                  ...controller.marathonList.value
+                      .where((marathon) => marathon.isDeleted != -1)
+                      .map((marathon) {
+                    // coming 배열에 있는 카드를 클릭할 때 이동할 페이지
 
-                          return Column(
-                            children: [
-                              MarathonCard(
-                                marathon: marathon,
-                                isPast: true,
-                                onTap: () => handleTap(marathon, true), // 클릭 이벤트
-                              ),
-                              SizedBox(height: 25),
-                            ],
-                          );
-                        }),
+                    return Column(
+                      children: [
+                        MarathonCard(
+                          marathon: marathon,
+                          isPast: true,
+                        ),
+                        SizedBox(height: 25),
                       ],
-                      ),
-                    ),
-              ],
-          ),
+                    );
+                  }),
+                ],
+              ),
+            ),
+          ],
         ),
-      );
+      ),
+    );
   }
 }
