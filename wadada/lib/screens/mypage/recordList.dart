@@ -12,50 +12,49 @@ import 'package:wadada/screens/mypage/myRecords.dart';
 class RecordList extends StatelessWidget {
   RecordList({super.key});
 
+  MypageController controller = Get.put(MypageController(
+      mypageRepository: MypageRepository(mypageAPI: MypageAPI())));
+
   @override
   Widget build(BuildContext context) {
-    Get.put(MypageController(
-        mypageRepository: MypageRepository(mypageAPI: MypageAPI())));
-    return GetBuilder<MypageController>(
-      builder: (MypageController controller) {
-        controller.fetchMonthlyRecords();
-        final Map<String, List<SimpleRecord>> groupedRecords = {};
-
-        controller.records.monthlyRecord.forEach((record) {
-          final formattedDate =
-              DateFormat('yyyy-MM-dd').format(record.recordCreatedAt);
-          if (!groupedRecords.containsKey(formattedDate)) {
-            groupedRecords[formattedDate] = [record];
+    return Container(
+      padding: EdgeInsets.fromLTRB(30, 0, 30, 0),
+      child: Obx(
+        () {
+          controller.fetchMonthlyRecords();
+          if (controller.isLoading.value) {
+            // Display spinner while data is being fetched
+            return Center(
+              child: CircularProgressIndicator(),
+            );
           } else {
-            groupedRecords[formattedDate]!.add(record);
-          }
-        });
-
-        final sortedKeys = groupedRecords.keys.toList()
-          ..sort((a, b) => a.compareTo(b));
-
-        return Container(
-          padding: EdgeInsets.fromLTRB(30, 0, 30, 0),
-          child: ListView(
-            shrinkWrap: true,
-            children: sortedKeys
-                .map((key) => Container(
-                    margin: EdgeInsets.all(10),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          key.toString(),
-                          style: TextStyle(color: GRAY_400),
+            // Data has been fetched, display the list
+            print("WHY");
+            final sortedKeys = controller.groupedRecords.value.keys.toList()
+              ..sort((a, b) => a.compareTo(b));
+            return ListView(
+              shrinkWrap: true,
+              children: sortedKeys
+                  .map((key) => Container(
+                        margin: EdgeInsets.all(10),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              key.toString(),
+                              style: TextStyle(color: GRAY_400),
+                            ),
+                            SizedBox(height: 10.0),
+                            RecordCard(
+                                records: controller.groupedRecords.value[key]!)
+                          ],
                         ),
-                        SizedBox(height: 10.0),
-                        RecordCard(records: groupedRecords[key]!)
-                      ],
-                    )))
-                .toList(),
-          ),
-        );
-      },
+                      ))
+                  .toList(),
+            );
+          }
+        },
+      ),
     );
   }
 }
