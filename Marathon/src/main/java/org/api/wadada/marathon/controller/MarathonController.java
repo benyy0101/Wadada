@@ -7,14 +7,20 @@ import org.api.wadada.marathon.dto.req.MarathonGameEndReq;
 import org.api.wadada.marathon.dto.req.MarathonGameStartReq;
 import org.api.wadada.marathon.dto.res.*;
 import org.api.wadada.marathon.service.MarathonService;
+import org.springframework.context.event.EventListener;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 //import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.socket.messaging.SessionConnectEvent;
 
 import java.security.Principal;
 import java.text.ParseException;
+import java.util.HashMap;
 import java.util.List;
 
 @Controller
@@ -24,7 +30,10 @@ import java.util.List;
 public class MarathonController {
 
     private final MarathonService marathonService;
-
+    @EventListener
+    public void handleWebSocketConnectListener(SessionConnectEvent event) {
+        log.info("Received a new web socket connection");
+    }
     @GetMapping
     public ResponseEntity<List<MainRes>> MarathonMain(){
         return ResponseEntity.ok(marathonService.getMarathonMain());
@@ -60,6 +69,20 @@ public class MarathonController {
     public ResponseEntity<Boolean> isEndGame(@PathVariable("room_seq") int roomSeq){
         return ResponseEntity.ok(marathonService.isEndGame(roomSeq));
     }
+
+
+
+
+
+    @MessageMapping("/attend/{roomIdx}")
+    @SendTo("/sub/attend/{roomIdx}")
+    public ResponseEntity<?> attendRoom(@DestinationVariable int roomIdx, Principal principal){
+            return new ResponseEntity<>("방을 만들었습니다",HttpStatus.OK);
+    }
+
+
+
+
 
 
 }
