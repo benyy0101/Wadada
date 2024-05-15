@@ -15,6 +15,7 @@ import 'package:wadada/provider/multiProvider.dart';
 import 'package:wadada/controller/stompController.dart';
 import 'package:wadada/repository/loginRepo.dart';
 import 'package:wadada/repository/multiRepo.dart';
+import 'package:wadada/screens/multimainpage/multi_distance/multi_waitingpage/multi_dis_waitroom.dart';
 
 class MultiRoomDetail extends StatefulWidget {
   SimpleRoom roomInfo;
@@ -346,7 +347,7 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                                 child: ListTile(
                                   leading: CircleAvatar(
                                     backgroundImage:
-                                        AssetImage(member.memberProfileImage),
+                                        NetworkImage(member.memberProfileImage),
                                   ),
                                   title: Text(
                                     member.memberNickname,
@@ -439,7 +440,7 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
               TextButton(
                 onPressed: () {
                   controller.out(roomInfo.roomIdx);
-                  Get.back();
+                  Get.to(MultiDisWait(roomMode: roomInfo.roomMode));
                   //Navigator.pop(context);
                 },
                 style: TextButton.styleFrom(

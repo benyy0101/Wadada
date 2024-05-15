@@ -25,6 +25,7 @@ class _MultiDisWait extends State<MultiDisWait> {
   int roomMode;
 
   _MultiDisWait({required this.roomMode});
+
   final controller = Get.put(
       MultiController(repo: MultiRepository(provider: MultiProvider())));
 
@@ -157,7 +158,7 @@ class _MultiDisWait extends State<MultiDisWait> {
     } else {
       titleText = '만남모드 - 멀티';
     }
-    controller.getMultiRoomsByMode(roomMode);
+
     return Scaffold(
       appBar: AppBar(
         title: Text(titleText,
@@ -217,8 +218,11 @@ class _MultiDisWait extends State<MultiDisWait> {
 
                 Obx(() {
                   if (controller.roomList.length == 0) {
-                    return Column(children: [
-                      const SizedBox(
+                    controller.getMultiRoomsByMode(roomMode);
+                  }
+                  if (controller.roomList.length == 0) {
+                    return Column(children: const [
+                      SizedBox(
                         height: 30,
                       ),
                       Text(
