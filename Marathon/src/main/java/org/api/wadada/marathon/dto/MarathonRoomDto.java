@@ -26,6 +26,14 @@ public class MarathonRoomDto {
         marathonMap.put(memberInfo.getMemberSeq(),memberInfo);
         return true;
     }
+
+    public boolean updateMember(MemberInfo memberInfo){
+        if(!marathonMap.containsKey(memberInfo.getMemberSeq())){
+            return false;
+        }
+        marathonMap.put(memberInfo.getMemberSeq(),memberInfo);
+        return true;
+    }
     public void removeAllMembers(){
       this.marathonMap = new HashMap<>(MAX_ROOM_SIZE);
     }

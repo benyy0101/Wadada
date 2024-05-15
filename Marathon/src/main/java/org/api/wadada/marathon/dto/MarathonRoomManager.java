@@ -80,6 +80,7 @@ public class MarathonRoomManager {
             //해당 방에 멤버 넣기
             rooms.get(curRooms).insertMember(memberInfo);
             //방 인덱스 1 증가
+            curRooms++;
         }
         //현재 방(채널)에 100명이 안찼으면
         else{
@@ -87,7 +88,13 @@ public class MarathonRoomManager {
             rooms.get(getCurRooms()).insertMember(memberInfo);
         }
         REAL_max_Person++;
+        memberInfo.updatememberLocation(curRooms,curPerson);
+        memberInfoMap.put(memberInfo.getMemberSeq(),memberInfo);
         return true;
+    }
+
+    public MemberInfo FindMember(Integer MemberSeq){
+        return memberInfoMap.get(MemberSeq);
     }
 
     public void increaseRealCurPerson(){

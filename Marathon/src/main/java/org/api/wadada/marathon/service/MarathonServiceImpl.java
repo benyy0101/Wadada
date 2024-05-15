@@ -164,7 +164,10 @@ public class MarathonServiceImpl implements MarathonService {
                     .build();
 
             MarathonRecord freshRecord = marathonRecordRepository.save(marathonRecord);
-            marathonGameManager.GetMarathonRoomManager().increaseRealCurPerson();
+            MarathonRoomManager marathonRoomManager = marathonGameManager.GetMarathonRoomManager();
+
+            marathonRoomManager.increaseRealCurPerson();
+
 
             return new MarathonGameStartRes(freshRecord.getMarathonRecordSeq());
         } else {

@@ -2,11 +2,13 @@ package org.api.wadada.marathon.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.api.wadada.marathon.dto.MessageDto;
 import org.api.wadada.marathon.dto.req.MarathonCreateReq;
 import org.api.wadada.marathon.dto.req.MarathonGameEndReq;
 import org.api.wadada.marathon.dto.req.MarathonGameStartReq;
 import org.api.wadada.marathon.dto.res.*;
 import org.api.wadada.marathon.service.MarathonService;
+import org.api.wadada.marathon.service.MessageService;
 import org.springframework.context.event.EventListener;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +32,9 @@ import java.util.List;
 public class MarathonController {
 
     private final MarathonService marathonService;
+    private final MessageService messageService;
+
+
     @EventListener
     public void handleWebSocketConnectListener(SessionConnectEvent event) {
         log.info("Received a new web socket connection");
@@ -82,7 +87,23 @@ public class MarathonController {
 
 
 
+    /**
+     * Queue로 메시지를 발행
+     *
+     * @param messageDto 발행할 메시지의 DTO 객체
+     * @return ResponseEntity 객체로 응답을 반환
+     */
+    @PostMapping("/post")
+    public ResponseEntity<?> sendMessage(@RequestBody MessageDto messageDto) {
+        messageService.sendMessage(messageDto);
+        return ResponseEntity.ok("Message sent to RabbitMQ!");
+    }
 
+    @PostMapping("/receive")
+    public ResponseEntity<?> receiveMessage(@RequestBody MessageDto messageDto) {
+        messageService.receiveMessage(messageDto);
+        return ResponseEntity.ok("Message sent to RabbitMQ!");
+    }
 
 
 }

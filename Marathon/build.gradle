@@ -53,9 +53,11 @@ dependencies {
 
 	// Point
 	implementation 'org.hibernate:hibernate-spatial:6.1.7.Final'
-
-
 	implementation 'org.locationtech.jts:jts-core:1.19.0'
+
+	// RabbitMQ
+	implementation 'org.springframework.boot:spring-boot-starter-amqp'
+
 }
 
 tasks.named('test') {
