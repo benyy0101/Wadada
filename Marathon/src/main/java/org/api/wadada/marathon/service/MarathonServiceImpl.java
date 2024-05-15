@@ -1,13 +1,12 @@
 package org.api.wadada.marathon.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.Synchronized;
 import lombok.extern.slf4j.Slf4j;
 import org.api.wadada.error.errorcode.CustomErrorCode;
 import org.api.wadada.error.errorcode.ErrorCode;
 import org.api.wadada.error.exception.RestApiException;
-import org.api.wadada.marathon.dto.MarathonRoomDto;
-import org.api.wadada.marathon.dto.MarathonRoomManager;
-import org.api.wadada.marathon.dto.MemberInfo;
+import org.api.wadada.marathon.dto.*;
 import org.api.wadada.marathon.dto.req.MarathonCreateReq;
 import org.api.wadada.marathon.dto.req.MarathonGameEndReq;
 import org.api.wadada.marathon.dto.req.MarathonGameStartReq;
@@ -19,15 +18,18 @@ import org.api.wadada.marathon.exception.NotFoundMemberException;
 import org.api.wadada.marathon.repository.MarathonRecordRepository;
 import org.api.wadada.marathon.repository.MemberRepository;
 import org.api.wadada.marathon.repository.MarathonRepository;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.security.Principal;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.*;
 
 @Service
 @Slf4j
@@ -36,8 +38,11 @@ public class MarathonServiceImpl implements MarathonService {
 
     private final MarathonRepository marathonRepository;
     private final MarathonRecordRepository marathonRecordRepository;
-    private final MarathonRoomManager marathonRoomManager;
+    private final MarathonGameManager marathonGameManager;
     private final MemberRepository memberRepository;
+   private  ScheduledExecutorService scheduledExecutor = Executors.newScheduledThreadPool(1);
+    private ExecutorService executor = Executors.newCachedThreadPool();
+
     @Override
     @Transactional
     public List<MainRes> getMarathonMain() {
@@ -73,7 +78,42 @@ public class MarathonServiceImpl implements MarathonService {
                                     .marathonRound(marathonCreateReq.getMarathonRound()).build();
             Marathon freshmarathon = marathonRepository.save(marathon);
             try {
-                marathonRoomManager.addRoom(new MarathonRoomDto(freshmarathon.getMarathonSeq()));
+//                MarathonRoomManager marathonRoomManager = marathonGameManager.GetMarathonRoomManager();
+                //marathonRoomManager.addRoom(new MarathonRoomDto(freshmarathon.getMarathonSeq()));
+
+                //추후 동시에 여러 마라톤 진행할 경우 해당 마라톤SEQ를 위와같이 넣어줘야 함
+                marathonGameManager.CreateNewMarathonGame();
+                MarathonRoomManager marathonRoomManager = marathonGameManager.GetMarathonRoomManager();
+
+                long delay = LocalDateTime.now().until(marathonCreateReq.getMarathonEnd(), ChronoUnit.MILLIS);
+
+                scheduledExecutor.schedule(() -> {
+
+                    CompletableFuture<Void> tasks = CompletableFuture.anyOf(
+                            //모든사람이 들어왔으면 시작
+                            CompletableFuture.runAsync(() -> {
+                                synchronized (marathonRoomManager) {
+                                    while (marathonRoomManager.getREAL_cur_Person() < marathonRoomManager.getREAL_max_Person()) {
+                                        try {
+                                            marathonRoomManager.wait();
+                                        } catch (InterruptedException e) {
+                                            Thread.currentThread().interrupt();
+                                        }
+                                    }
+                                }
+                            }, executor),
+                            //or 30초지나면 시작
+                            CompletableFuture.runAsync(() -> {
+                                try {
+                                    TimeUnit.SECONDS.sleep(30);
+                                } catch (InterruptedException e)     {
+                                    Thread.currentThread().interrupt();
+                                }
+                            }, executor)
+                    ).thenRun(marathonRoomManager::sendMessage);
+
+                }, delay, TimeUnit.MILLISECONDS);
+
 
             } catch (Exception e) {
                 throw new RuntimeException(e);
@@ -84,7 +124,7 @@ public class MarathonServiceImpl implements MarathonService {
     }
 
     @Override
-    public boolean isMarathonReady(Principal principal,int marathonSeq) {
+    public Integer isMarathonReady(Principal principal,int marathonSeq) throws Exception {
         Optional<Member> optional = memberRepository.getMemberByMemberId(principal.getName());
         if (optional.isEmpty()) {
             throw new NotFoundMemberException();
@@ -95,17 +135,14 @@ public class MarathonServiceImpl implements MarathonService {
                 .MemberName(member.getMemberNickName())
                 .registTime(LocalDateTime.now()).build();
 
-        MarathonRoomDto curMarathon = marathonRoomManager.getAllRooms().get(marathonSeq);
+        //마라톤 SEQ에 해당하는 게임정보 확인
+        MarathonRoomManager marathonRoomManager = marathonGameManager.GetMarathonRoomManager();
 
-        System.out.println("marathonSeq = " + marathonSeq);
-        System.out.println(curMarathon);
-        System.out.println(memberInfo.toString());
-
-
-        if(curMarathon.insertMember(memberInfo)){
-            return true;
+        //해당 게임에 Member 넣을 수 있으면 true 없으면 false
+        if(marathonRoomManager.InsertMember(memberInfo)){
+            return marathonRoomManager.getCurRooms();
         }
-        return false;
+        return -1;
     }
 
     @Override
@@ -127,6 +164,8 @@ public class MarathonServiceImpl implements MarathonService {
                     .build();
 
             MarathonRecord freshRecord = marathonRecordRepository.save(marathonRecord);
+            marathonGameManager.GetMarathonRoomManager().increaseRealCurPerson();
+
             return new MarathonGameStartRes(freshRecord.getMarathonRecordSeq());
         } else {
             throw new NotFoundMemberException();
@@ -165,6 +204,7 @@ public class MarathonServiceImpl implements MarathonService {
     @Override
     public boolean isEndGame(int RoomSeq) {
         try {
+            MarathonRoomManager marathonRoomManager = marathonGameManager.GetMarathonRoomManager();
             marathonRoomManager.removeRoom(RoomSeq);
             return true;
         } catch (RestApiException e) {

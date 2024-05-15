@@ -9,8 +9,9 @@ import java.util.Map;
 public class MarathonRoomDto {
 
     private int RoomSeq;
-    private final int MAX_ROOM_SIZE = 5000;
+    private final int MAX_ROOM_SIZE = 100;
     private Map<Integer,MemberInfo> marathonMap;
+
     public MarathonRoomDto(){
         marathonMap  = new HashMap<>(MAX_ROOM_SIZE);
     }
@@ -20,8 +21,6 @@ public class MarathonRoomDto {
     }
     public boolean insertMember(MemberInfo memberInfo){
         if(marathonMap.containsKey(memberInfo.getMemberSeq())){
-            System.out.println("marathonMap = " + marathonMap.containsKey(memberInfo.getMemberSeq()));
-            System.out.println("memberInfo = " + memberInfo.getMemberSeq());
             return false;
         }
         marathonMap.put(memberInfo.getMemberSeq(),memberInfo);

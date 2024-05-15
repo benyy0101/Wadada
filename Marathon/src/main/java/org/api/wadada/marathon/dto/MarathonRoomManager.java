@@ -3,21 +3,32 @@ package org.api.wadada.marathon.dto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.api.wadada.error.errorcode.CustomErrorCode;
 import org.api.wadada.error.exception.RestApiException;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @AllArgsConstructor
 @Service
 @Getter
 @Builder
 public class MarathonRoomManager {
+    private Map<Integer,MemberInfo> memberInfoMap = new HashMap<>();
     private final List<MarathonRoomDto> rooms;
     private static final int MAX_ROOMS = 40;
     private int curRooms = -1;
+    private int curPerson = -1;
+
+    private int REAL_max_Person;
+    private int REAL_cur_Person;
+    private SimpMessagingTemplate messagingTemplate;
+    private ExecutorService executor = Executors.newCachedThreadPool();
+
     public MarathonRoomManager() {
         this.rooms = new ArrayList<>(MAX_ROOMS);
         for (int i = 0; i < MAX_ROOMS; i++) {
@@ -25,19 +36,19 @@ public class MarathonRoomManager {
         }
     }
 
-    public int addRoom(MarathonRoomDto room) throws Exception {
-        Optional<Integer> emptyIndex = getEmptyIndex();
-        if (emptyIndex.isPresent()) {
-            rooms.set(emptyIndex.get(), room);
-            curRooms++;
-            return emptyIndex.get();
-        } else {
-            throw new Exception("방이 가득 차서 생성 불가");
+    public MarathonRoomManager(SimpMessagingTemplate messagingTemplate) {
+        this.messagingTemplate = messagingTemplate;
+        this.rooms = new ArrayList<>(MAX_ROOMS);
+        for (int i = 0; i < MAX_ROOMS; i++) {
+            rooms.add(null);
         }
+    }
+    private int addRoom(MarathonRoomDto room) throws Exception {
+        rooms.set(++curRooms, room);
+        return curRooms;
     }
 
     public void removeRoom(int index) {
-
         if (index < 0 || index >= MAX_ROOMS) {
             throw new IndexOutOfBoundsException("잘못된 방 인덱스");
         }
@@ -51,14 +62,6 @@ public class MarathonRoomManager {
         }
     }
 
-    public Optional<Integer> getEmptyIndex() {
-        for (int i = 0; i < MAX_ROOMS; i++) {
-            if (rooms.get(i) == null) {
-                return Optional.of(i);
-            }
-        }
-        return Optional.empty();
-    }
     public Optional<Integer> getRoomIndex(int index) {
         for (int i=0; i<=curRooms; i++){
             if (rooms.get(i).getRoomSeq() == index) {
@@ -67,23 +70,33 @@ public class MarathonRoomManager {
         }
         return Optional.empty();
     }
-    public Map<Integer,MarathonRoomDto> getAllRooms() {
-        Map<Integer,MarathonRoomDto> activeRooms = new HashMap<>();
-        for (MarathonRoomDto room : rooms) {
-            if (room != null) {
-                activeRooms.put(room.getRoomSeq(),room);
-            }
+
+
+    public boolean InsertMember(MemberInfo memberInfo) throws Exception {
+        //현재 방(채널)에 100명이 찼으면
+        if(++curPerson %100 == 0){
+            //방 만들고
+            curRooms = addRoom(new MarathonRoomDto());
+            //해당 방에 멤버 넣기
+            rooms.get(curRooms).insertMember(memberInfo);
+            //방 인덱스 1 증가
         }
-        return activeRooms;
-    }
-    public int getRoomCount() {
-        int count = 0;
-        for (MarathonRoomDto room : rooms) {
-            if (room != null) {
-                count++;
-            }
+        //현재 방(채널)에 100명이 안찼으면
+        else{
+            //현재 방에 멤버 넣기
+            rooms.get(getCurRooms()).insertMember(memberInfo);
         }
-        return count;
+        REAL_max_Person++;
+        return true;
     }
 
+    public void increaseRealCurPerson(){
+        this.REAL_cur_Person++;
+    }
+    public void sendMessage () {
+        String message = GameMessage.GAME_START.toJson();
+        for (int i = 0; i <= curRooms; i++) {
+            messagingTemplate.convertAndSend("/sub/attend/" + i, message);
+        }
+    }
 }

@@ -14,7 +14,7 @@ public interface MarathonService {
     List<MarathonMemberListRes> getMarathonMemberList(int marathonSeq);
     List<MarthonRankListRes> getMarathonRankList(int marathonSeq);
     Integer startMarathon(Principal principal, MarathonCreateReq marathonCreateReq);
-    boolean isMarathonReady(Principal principal,int marathonSeq);
+    Integer isMarathonReady(Principal principal,int marathonSeq) throws Exception;
 
     MarathonGameStartRes saveStartMarathon(Principal principal, MarathonGameStartReq marathonGameStartReq);
     MarathonGameEndRes saveEndMarathon(Principal principal, MarathonGameEndReq marathonGameEndReq);

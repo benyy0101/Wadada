@@ -54,7 +54,7 @@ public class MarathonController {
         return ResponseEntity.ok(marathonService.startMarathon(principal,marathonCreateReq));
     }
     @GetMapping("/attend/{marathon_seq}")
-    public ResponseEntity<Boolean> saveReadyMarathon(Principal principal, @PathVariable("marathon_seq") int marathonSeq){
+    public ResponseEntity<Integer> saveReadyMarathon(Principal principal, @PathVariable("marathon_seq") int marathonSeq) throws Exception {
         return ResponseEntity.ok(marathonService.isMarathonReady(principal,marathonSeq));
     }
     @PostMapping("/start")
