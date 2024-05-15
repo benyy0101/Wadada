@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:wadada/common/const/colors.dart';
+import 'package:wadada/screens/marathonmainpage/marathonmainpage.dart';
 import 'package:wadada/screens/multimainpage/multi_main.dart';
 import 'package:wadada/screens/mypage/layout.dart';
 import 'package:wadada/screens/singlemainpage/single_main.dart';
@@ -33,7 +34,8 @@ class MainLayout extends StatelessWidget {
             // Icon(Icons.person),
             MultiMain(), // 아직 멀티 페이지가 없어서 임시로 넣어놓음
             // 아직 마라톤도 없어서 임시로 넣어놓음
-            Icon(Icons.emoji_events),
+            // Icon(Icons.emoji_events),
+            MarathonMain(),
             MyPageLayout(),
             // Icon(Icons.insert_chart),
           ],
