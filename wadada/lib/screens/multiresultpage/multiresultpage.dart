@@ -486,15 +486,15 @@ class _MultiResultState extends State<MultiResult> {
   }
   
   Widget _buildSpeedLineChart() {
-    List<chartData> myChartData = widget.distanceSpeed.map((data) {
-      return chartData(
+    List<ChartData> myChartData = widget.distanceSpeed.map((data) {
+      return ChartData(
           // (data['dist']! * 1000).toInt(),
           data['dist']! / 1000,
           data['speed']! * 3.6
       );
     }).toList();
 
-    return LineChart<chartData>(
+    return LineChart<ChartData>(
         chartData: myChartData,
         metrics: '',
         graphType: 'speed',
@@ -510,15 +510,15 @@ class _MultiResultState extends State<MultiResult> {
 }
 
   Widget _buildPaceLineChart() {
-    List<chartData> myChartData = widget.distancePace.map((data) {
-        return chartData(
+    List<ChartData> myChartData = widget.distancePace.map((data) {
+        return ChartData(
             data['dist']! / 1000,
             formatPaceAsDecimal(data['pace']!)
         );
     }).toList();
 
     // LineChart 사용
-    return LineChart<chartData>(
+    return LineChart<ChartData>(
         chartData: myChartData,
         metrics: 'km/h',
         graphType: 'pace',

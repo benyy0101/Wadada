@@ -265,7 +265,7 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                         children: [
                           // 첫 번째 컬럼
                           Column(
-                            children: const [
+                            children: [
                               SizedBox(height: 10),
                               Icon(
                                 Icons.location_on,
@@ -280,7 +280,9 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                               ),
                               SizedBox(height: 20),
                               Icon(
-                                Icons.lock,
+                                roomInfo.roomSecret != -1
+                                    ? Icons.lock
+                                    : Icons.lock_open,
                                 color: DARK_GREEN_COLOR,
                                 size: 28,
                               ),
@@ -309,7 +311,7 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                               ),
                               SizedBox(height: 20),
                               Text(
-                                '비밀방',
+                                roomInfo.roomSecret == -1 ? '공개방' : '비밀방',
                                 style: TextStyle(
                                     fontSize: 20,
                                     fontWeight: FontWeight.bold,

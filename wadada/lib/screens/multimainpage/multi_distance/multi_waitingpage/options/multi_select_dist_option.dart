@@ -40,9 +40,9 @@ class MultiSelectDistOptionState extends State<MultiSelectDistOption> {
   double? roomSecret;
   double? roomTag;
   String concatenateTags(List<String> tags) {
-      // 태그 리스트 -> 하나의 문자열로
-      return tags.map((tag) => '#$tag').join();
-    }
+    // 태그 리스트 -> 하나의 문자열로
+    return tags.map((tag) => '#$tag').join();
+  }
 
   @override
   void didChangeDependencies() {
@@ -51,9 +51,8 @@ class MultiSelectDistOptionState extends State<MultiSelectDistOption> {
   }
 
   bool isPasswordMode = true;
-  String passwordErrorText = '비밀번호 4자리를 입력하세요.';
+  String passwordErrorText = '';
 
-  
   // 필드 입력 컨트롤러
   final TextEditingController distController = TextEditingController();
   final TextEditingController peopleController = TextEditingController();
@@ -111,8 +110,10 @@ class MultiSelectDistOptionState extends State<MultiSelectDistOption> {
   // 비밀번호 에러 텍스트
   void passwordupdateErrorText() {
     final value = passwordController.text;
-    if (value.startsWith('0') && value.length > 1) {
-      passworderrorText = '비밀방의 경우 비밀번호 숫자 4자리를 설정하세요.';
+    print("----------------------");
+    print(value.length);
+    if (value.length < 4) {
+      passworderrorText = '비밀번호 4자리를 입력하세요.';
     } else {
       passworderrorText = null;
     }
@@ -123,7 +124,9 @@ class MultiSelectDistOptionState extends State<MultiSelectDistOption> {
 
   // 해시태그 에러 텍스트
   void hashtagupdateErrorText() {
-    final value = passwordController.text;
+    final String value = passwordController.text;
+    print(value);
+    print(value.length);
     if (value.startsWith('0') && value.length > 1) {
       passworderrorText =
           '방을 소개할 단어를 입력하고 쉼표(,)를 적으면 입력되고, 최대 3개의 해시태그를 등록할 수 있어요.';
@@ -134,7 +137,6 @@ class MultiSelectDistOptionState extends State<MultiSelectDistOption> {
     setState(() {});
     // dist = double.tryParse(value) ?? 0.0;
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -441,60 +443,62 @@ class MultiSelectDistOptionState extends State<MultiSelectDistOption> {
                                     controller:
                                         inputFieldValues.tagScrollController,
                                     scrollDirection: Axis.horizontal,
-                                    child: Row(
-                                        children: inputFieldValues.tags
-                                            .map((String tag) {
-                                      return Container(
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.all(
-                                            Radius.circular(20.0),
-                                          ),
-                                          color:
-                                              DARK_GREEN_COLOR,
-                                        ),
-                                        margin:
-                                            const EdgeInsets.only(right: 10.0),
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 10.0, vertical: 4.0),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            InkWell(
-                                              child: Text(
-                                                '#$tag',
-                                                style: const TextStyle(
-                                                    color: Colors.white),
-                                              ),
-                                              onTap: () {
-                                              },
+                                    child: Container(
+                                      padding:
+                                          EdgeInsets.fromLTRB(10, 0, 10, 0),
+                                      child: Row(
+                                          children: inputFieldValues.tags
+                                              .map((String tag) {
+                                        return Container(
+                                          decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.all(
+                                              Radius.circular(20.0),
                                             ),
-                                            const SizedBox(width: 4.0),
-                                            InkWell(
-                                              child: const Icon(
-                                                Icons.cancel,
-                                                size: 14.0,
-                                                color: Color.fromARGB(
-                                                    255, 233, 233, 233),
+                                            color: DARK_GREEN_COLOR,
+                                          ),
+                                          margin: const EdgeInsets.only(
+                                              right: 10.0),
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 10.0, vertical: 4.0),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              InkWell(
+                                                child: Text(
+                                                  '#$tag',
+                                                  style: const TextStyle(
+                                                      color: Colors.white),
+                                                ),
+                                                onTap: () {},
                                               ),
-                                              onTap: () {
-                                                inputFieldValues
-                                                    .onTagRemoved(tag);
-                                              },
-                                            )
-                                          ],
-                                        ),
-                                      );
-                                    }).toList()),
-                                  )
+                                              const SizedBox(width: 4.0),
+                                              InkWell(
+                                                child: const Icon(
+                                                  Icons.cancel,
+                                                  size: 14.0,
+                                                  color: Color.fromARGB(
+                                                      255, 233, 233, 233),
+                                                ),
+                                                onTap: () {
+                                                  inputFieldValues
+                                                      .onTagRemoved(tag);
+                                                },
+                                              )
+                                            ],
+                                          ),
+                                        );
+                                      }).toList()),
+                                    ))
                                 : null,
-                              contentPadding: const EdgeInsets.all(20.0),
+                            contentPadding: const EdgeInsets.all(20.0),
                           ),
                           // 입력창에 뭐가 입력될 때 호출
                           onChanged: inputFieldValues.onTagChanged,
                           // 입력 완료되었을 때
                           onSubmitted: (String tag) {
-                            String concatenatedTags = concatenateTags(_stringTagController.getTags!);
+                            String concatenatedTags =
+                                concatenateTags(_stringTagController.getTags!);
                             controller.multiroom.roomTag = concatenatedTags;
                             print(controller.info.roomTag);
                             print('아 제발 쫌 쫌 쫌 !!!!!!!!! :$concatenatedTags');

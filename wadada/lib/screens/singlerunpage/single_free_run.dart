@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 // import 'package:flutter/rendering.dart';
 import 'package:wadada/common/const/colors.dart';
@@ -110,6 +111,8 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
   Future<void> sendLocationToServer() async {
     final startLocation = myMap.startLocation;
     final dio = Dio();
+    final storage = FlutterSecureStorage();
+    String? accessToken = await storage.read(key: 'accessToken');
     int recordMode = widget.time > 0 ? 2 : 1;
 
 
@@ -132,7 +135,8 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
           options: Options(headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
-            'authorization': accessToken,
+            'authorization': accessToken ??
+                'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNDYzNDMxNDUzIiwiYXV0aCI6IlJPTEVfU09DSUFMIiwiZXhwIjoxNzE1NDA1MzkzfQ.dmjUkVX1sFe9EpYhT3SGO3uC7q1dLIoddBvzhoOSisM',
           }),
         );
 
@@ -231,11 +235,6 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
     //     if (paceInSecondsPerKm == 0) return 0.0; // 0으로 나누는 오류 방지
     //     return 3600 / paceInSecondsPerKm;
     // }
-    // // 초 단위의 페이스를 km/h로 변환
-    // double convertPaceToKmPerHour(double paceInSecondsPerKm) {
-    //     if (paceInSecondsPerKm == 0) return 0.0; // 0으로 나누는 오류 방지
-    //     return 3600 / paceInSecondsPerKm;
-    // }
 
     double averageSpeed = calculateAverageSpeed(distanceSpeed);
     double averagePaceInSecondsPerKm = calculateAveragePace(distancePace);
@@ -244,17 +243,28 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
     averageSpeed = double.parse(averageSpeed.toStringAsFixed(2)) * 1000;
     // averagePaceInSecondsPerKm = double.parse(averagePaceInSecondsPerKm.toStringAsFixed(2)) * 1000;
     // double formattedDistanceInMeters = double.parse(formattedDistance) * 1000;
-    averageSpeed = double.parse(averageSpeed.toStringAsFixed(2)) * 1000;
-    // averagePaceInSecondsPerKm = double.parse(averagePaceInSecondsPerKm.toStringAsFixed(2)) * 1000;
-    // double formattedDistanceInMeters = double.parse(formattedDistance) * 1000;
 
+    if (averageSpeed.isNaN || averageSpeed.isInfinite) {
+      averageSpeed = 0.0; // Set a default value or handle the NaN case
+    } else {
+      averageSpeed = double.parse(averageSpeed.toStringAsFixed(2)) * 1000;
+    }
+
+    if (averagePaceInSecondsPerKm.isNaN ||
+        averagePaceInSecondsPerKm.isInfinite) {
+      averagePaceInSecondsPerKm =
+          0.0; // Set a default value or handle the NaN case
+    } else {
+      // You can uncomment this line if you want to handle pace as well
+      averagePaceInSecondsPerKm =
+          double.parse(averagePaceInSecondsPerKm.toStringAsFixed(2)) * 1000;
+    }
+
+// Convert to integers
     int intaveragespeed = averageSpeed.toInt();
     int intaveragepaceinkmperhour = averagePaceInSecondsPerKm.toInt();
     // int intformatteddistanceinmeters = formattedDistanceInMeters.toInt();
 
-    // print('평균 속도 $intaveragespeed');
-    // print('평균 페이스 $intaveragepaceinkmperhour');
-    // print('총 거리 $totalDistance');
     // print('평균 속도 $intaveragespeed');
     // print('평균 페이스 $intaveragepaceinkmperhour');
     // print('총 거리 $totalDistance');
@@ -277,13 +287,16 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
     });
 
     try {
+      final storage = FlutterSecureStorage();
+      String? accessToken = await storage.read(key: 'accessToken');
       final response = await dio.post(
         url.toString(),
         data: requestBody,
         options: Options(headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
-          'authorization': accessToken,
+          'authorization': accessToken ??
+              'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNDYzNDMxNDUzIiwiYXV0aCI6IlJPTEVfU09DSUFMIiwiZXhwIjoxNzE1NDA1MzkzfQ.dmjUkVX1sFe9EpYhT3SGO3uC7q1dLIoddBvzhoOSisM',
         }),
       );
 
@@ -324,23 +337,7 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
 
       print('스피드 - $distanceSpeed');
       print('페이스 - $distancePace');
-      print('스피드 - $distanceSpeed');
-      print('페이스 - $distancePace');
 
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => SingleResult(
-            elapsedTime: elapsedTime,
-            coordinates: coordinates,
-            startLocation: coordinates.first,
-            endLocation: coordinates.last,
-            totaldist: formattedDistance,
-            distanceSpeed: distanceSpeed,
-            distancePace: distancePace,
-          ),
-        ),
-      );
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -482,19 +479,6 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
       // double elapsedTimeInSeconds = elapsedTime.inSeconds.toDouble();
       // progressBar = TimeBar(initialTime: widget.time);
 
-      // progressBar = ValueListenableBuilder<Duration>(
-      //     valueListenable: elapsedTimeNotifier,
-      //     builder: (context, elapsedDuration, _) {
-      //         // Convert Duration to double
-      //         double elapsedTimeInSeconds = elapsedDuration.inSeconds.toDouble();
-
-      //         // Pass the elapsed time in seconds to TimeBar
-      //         return TimeBar(
-      //             initialTime: widget.time,
-      //             elapsedTime: elapsedTimeInSeconds,
-      //         );
-      //     },
-      // );
       // progressBar = ValueListenableBuilder<Duration>(
       //     valueListenable: elapsedTimeNotifier,
       //     builder: (context, elapsedDuration, _) {

@@ -8,7 +8,7 @@ import 'package:wadada/models/mypage.dart';
 import 'package:wadada/provider/mypageProvider.dart';
 import 'package:wadada/repository/mypageRepo.dart';
 
-class temp extends chartData {
+class temp extends ChartData {
   temp(super.distance, super.numerics);
 }
 
@@ -27,9 +27,95 @@ class MyRecords extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Get.put(MypageController(
+    MypageController controller = Get.put(MypageController(
         mypageRepository: MypageRepository(mypageAPI: MypageAPI())));
+    String date = '';
+    String distance = '';
+    String recordTypeString = '';
+    String recordMode = '';
+    Duration duration = Duration();
+    List<ChartData> phase = [];
+    List<ChartData> speed = [];
+    List<ChartData> heartRate = [];
+    print('recordSeq');
+    print(recordSeq);
+    print('recordType');
+    print(recordType);
+    if (int.parse(recordType) == 1) {
+      //거리, 시간 담는
+      recordMode = '';
+      recordTypeString = '싱글';
+      controller.fetchSingleDetail(
+          RecordRequest(recordSeq: recordSeq, recordType: recordType));
 
+      SingleDetail singleDetail = controller.singleDetail;
+
+      DateTime createdAt = singleDetail.recordCreatedAt;
+      date = '${createdAt.year}-${createdAt.month}-${createdAt.day}';
+      distance =
+          singleDetail.recordDist.toString(); // Assuming recordDist is a String
+      duration =
+          singleDetail.recordTime; // Assuming recordTime is already a Duration
+      phase = singleDetail.recordPace;
+      speed = singleDetail.recordSpeed;
+      heartRate = singleDetail.recordHeartbeat;
+    } else if (int.parse(recordType) == 2) {
+      recordMode = '';
+      recordTypeString = '멀티';
+      controller.fetchMultiDetail(
+          RecordRequest(recordSeq: recordSeq, recordType: recordType));
+      MultiDetail multiDetail = controller.multiDetail;
+      print(multiDetail);
+      DateTime createdAt = multiDetail.recordCreatedAt;
+      date = '${createdAt.year}-${createdAt.month}-${createdAt.day}';
+      distance =
+          multiDetail.recordDist.toString(); // Assuming recordDist is a String
+      duration =
+          multiDetail.recordTime; // Assuming recordTime is already a Duration
+      phase = multiDetail.recordPace;
+      speed = multiDetail.recordSpeed;
+      heartRate = multiDetail.recordHeartbeat;
+      // Assuming datadate = '${createdAt.year}-${createdAt.month}-${createdAt.day}'; assignment for multiDetail if needed
+    } else {
+      recordMode = '';
+      recordTypeString = '마라톤';
+      controller.fetchMarathonDetail(
+          RecordRequest(recordSeq: recordSeq, recordType: recordType));
+      MarathonDetail marathonDetail = controller.marathonDetail;
+      print(marathonDetail);
+      DateTime createdAt = marathonDetail.recordCreatedAt;
+      date = '${createdAt.year}-${createdAt.month}-${createdAt.day}';
+      distance = marathonDetail.recordDist
+          .toString(); // Assuming recordDist is a String
+      duration = marathonDetail
+          .recordTime; // Assuming recordTime is already a Duration
+      phase = marathonDetail.recordPace;
+      speed = marathonDetail.recordSpeed;
+      heartRate = marathonDetail.recordHeartbeat;
+      // Assuming data assignment for marathon
+      //
+      //Detail if needed
+    }
+
+    String _formatTime(int value) {
+      return value.toString().padLeft(2, '0');
+    }
+
+    List<String> _splitTime(String timePart) {
+      return timePart.split('');
+    }
+
+    int hours = duration.inHours % 24;
+    int minutes = duration.inMinutes % 60;
+    int seconds = duration.inSeconds % 60;
+
+    String formattedHours = _formatTime(hours);
+    String formattedMinutes = _formatTime(minutes);
+    String formattedSeconds = _formatTime(seconds);
+
+    List<String> splithours = _splitTime(formattedHours);
+    List<String> splitminutes = _splitTime(formattedMinutes);
+    List<String> splitseconds = _splitTime(formattedSeconds);
     return Scaffold(
         appBar: AppBar(
           title: Text('나의 기록'),
@@ -40,59 +126,86 @@ class MyRecords extends StatelessWidget {
           children: [
             SizedBox(
                 width: MediaQuery.of(context).size.width * 0.9,
-                child: GetBuilder<MypageController>(
-                    builder: (MypageController mypagecontroller) {
-                  RecordRequest req = RecordRequest(
-                      recordSeq: recordSeq, recordType: recordType);
-                  mypagecontroller.fetchDetail(req);
-                  return ListView(
-                    shrinkWrap: true,
-                    children: <Widget>[
-                      SizedBox(
-                        height: 40,
+                child: ListView(
+                  shrinkWrap: true,
+                  children: <Widget>[
+                    SizedBox(
+                      height: 40,
+                    ),
+                    SimpleContainer(title: '날짜', content: date),
+                    SizedBox(
+                      height: 40,
+                    ),
+                    SimpleContainer(title: '이동거리', content: distance),
+                    SizedBox(
+                      height: 40,
+                    ),
+                    TypeContainer(
+                        title: '게임 종류',
+                        content: recordMode,
+                        type: recordTypeString),
+                    SizedBox(
+                      height: 40,
+                    ),
+                    Text(
+                      '걸린 시간',
+                      style: mainTextStyle,
+                    ),
+                    SizedBox(height: 20),
+                    Row(
+                      children: [
+                        TimeContainer(splithours[0]),
+                        SizedBox(width: 5),
+                        TimeContainer(splithours[1]),
+                        SizedBox(width: 7),
+                        Text(':',
+                            style: TextStyle(
+                                color: GREEN_COLOR,
+                                fontSize: 30,
+                                fontWeight: FontWeight.bold)),
+                        SizedBox(width: 7),
+                        TimeContainer(splitminutes[0]),
+                        SizedBox(width: 5),
+                        TimeContainer(splitminutes[1]),
+                        SizedBox(width: 7),
+                        Text(':',
+                            style: TextStyle(
+                                color: GREEN_COLOR,
+                                fontSize: 30,
+                                fontWeight: FontWeight.bold)),
+                        SizedBox(width: 7),
+                        TimeContainer(splitseconds[0]),
+                        SizedBox(width: 5),
+                        TimeContainer(splitseconds[1]),
+                      ],
+                    ),
+                    SizedBox(
+                      height: 40,
+                    ),
+                    RouteContainer(
+                      title: '나의 경로',
+                      content: Image.asset(
+                        'assets/images/temp_map.png',
+                        width: MediaQuery.of(context).size.width * 0.9,
                       ),
-                      SimpleContainer(title: '날짜', content: '2024-01-01'),
-                      SizedBox(
-                        height: 40,
-                      ),
-                      SimpleContainer(title: '이동거리', content: '1.23 km'),
-                      SizedBox(
-                        height: 40,
-                      ),
-                      TypeContainer(
-                          title: '게임 종류', content: '거리 모드', type: '멀티'),
-                      SizedBox(
-                        height: 40,
-                      ),
-                      SimpleContainer(title: '소요 시간', content: '추후 반영 예정'),
-                      SizedBox(
-                        height: 40,
-                      ),
-                      RouteContainer(
-                        title: '나의 경로',
-                        content: Image.asset(
-                          'assets/images/temp_map.png',
-                          width: MediaQuery.of(context).size.width * 0.9,
-                        ),
-                      ),
-                      ChartContainer(
-                        title: '페이스',
-                        data: chartData,
-                      ),
-                      ChartContainer(
-                        title: '속도',
-                        data: chartData,
-                      ),
-                      ChartContainer(
-                        title: '심박수',
-                        data: chartData,
-                      ),
-                      SizedBox(
-                        height: 80,
-                      )
-                    ],
-                  );
-                }))
+                    ),
+                    ChartContainer(
+                      title: '페이스',
+                      data: phase,
+                    ),
+                    ChartContainer(
+                      title: '속도',
+                      data: speed,
+                    ),
+                    ChartContainer(
+                      title: '심박수',
+                      data: heartRate,
+                    ),
+                    SizedBox(
+                      height: 80,
+                    )
+                  ],
+                ))
           ],
         ));
   }
@@ -192,7 +305,7 @@ class TypeContainer extends StatelessWidget {
 }
 
 class ChartContainer extends StatelessWidget {
-  final List<temp> data;
+  final List<ChartData> data;
   final String title;
   const ChartContainer({super.key, required this.data, required this.title});
   @override
@@ -217,7 +330,7 @@ class ChartContainer extends StatelessWidget {
               SizedBox(
                 height: 20,
               ),
-              LineChart<temp>(
+              LineChart<ChartData>(
                 chartData: data,
                 metrics: 'hz',
                 graphType: 'speed',
@@ -228,4 +341,25 @@ class ChartContainer extends StatelessWidget {
       ),
     );
   }
+}
+
+Widget TimeContainer(String digit) {
+  return Container(
+    decoration: BoxDecoration(
+      color: OATMEAL_COLOR,
+      borderRadius: BorderRadius.circular(10),
+    ),
+    width: 54,
+    height: 65,
+    child: Center(
+      child: Text(
+        digit,
+        style: TextStyle(
+          fontSize: 30,
+          fontWeight: FontWeight.bold,
+          color: GREEN_COLOR,
+        ),
+      ),
+    ),
+  );
 }
