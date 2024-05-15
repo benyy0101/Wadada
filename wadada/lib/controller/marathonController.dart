@@ -38,11 +38,12 @@ class MarathonController extends GetxController {
   ).obs;
 
   void fetchList() async {
+    print("---------------fetchList------------");
     marathonList.value = await repo.getMarathonList();
   }
 
-  void attendMarathon(String marathonSeq) async {
-    isAttend.value = await repo.attendMarathon(marathonSeq);
+  Future<bool> attendMarathon(String marathonSeq) async {
+    return await repo.attendMarathon(marathonSeq);
   }
 
   void endMarathon() async {

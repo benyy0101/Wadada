@@ -161,88 +161,96 @@ class _MarathonMainState extends State<MarathonMain> {
             SizedBox(
               height: 40,
             ),
-            if (controller.marathonList.value.length == 0)
-              const Text(
-                '진행 예정인 마라톤이 없습니다.',
-                style: TextStyle(
-                  color: GRAY_400,
-                  fontSize: 19,
-                ),
-              )
-            else
-              Container(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      '진행 예정인 마라톤',
-                      style: TextStyle(
-                        color: GRAY_400,
-                        fontSize: 19,
-                      ),
-                    ),
-                    SizedBox(height: 20),
-                    ...controller.marathonList.value
-                        .where((marathon) => marathon.isDeleted == -1)
-                        .map((marathon) {
-                      // coming 배열에 있는 카드를 클릭할 때 이동할 페이지
-                      void handleTap(SimpleMarathon marathon, bool isPast) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => MarathonInfo(
-                              marathon: marathon,
-                              isPast: isPast,
-                            ),
-                          ),
-                        );
-                      }
-
-                      return Column(
-                        children: [
-                          MarathonCard(
-                            marathon: marathon,
-                            isPast: false,
-                            onTap: () => handleTap(marathon, false), // 클릭 이벤트
-                          ),
-                          SizedBox(height: 15),
-                        ],
-                      );
-                    }),
-                  ],
-                ),
-              ),
-            SizedBox(height: 30),
-            Container(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '지난 마라톤',
+            Obx(
+              () {
+                if (controller.marathonList.value.length == 0) {
+                  controller.fetchList();
+                  return const Text(
+                    '진행 예정인 마라톤이 없습니다.',
                     style: TextStyle(
                       color: GRAY_400,
                       fontSize: 19,
                     ),
-                  ),
-                  SizedBox(height: 20),
-                  ...controller.marathonList.value
-                      .where((marathon) => marathon.isDeleted != -1)
-                      .map((marathon) {
-                    // coming 배열에 있는 카드를 클릭할 때 이동할 페이지
-
-                    return Column(
+                  );
+                }
+                return Column(children: [
+                  Container(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        MarathonCard(
-                          marathon: marathon,
-                          isPast: true,
+                        Text(
+                          '진행 예정인 마라톤',
+                          style: TextStyle(
+                            color: GRAY_400,
+                            fontSize: 19,
+                          ),
                         ),
-                        SizedBox(height: 25),
+                        SizedBox(height: 20),
+                        ...controller.marathonList.value
+                            .where((marathon) => marathon.isDeleted == false)
+                            .map((marathon) {
+                          // coming 배열에 있는 카드를 클릭할 때 이동할 페이지
+                          void handleTap(SimpleMarathon marathon, bool isPast) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => MarathonInfo(
+                                  marathon: marathon,
+                                  isPast: isPast,
+                                ),
+                              ),
+                            );
+                          }
+
+                          return Column(
+                            children: [
+                              MarathonCard(
+                                marathon: marathon,
+                                isPast: false,
+                                onTap: () =>
+                                    handleTap(marathon, false), // 클릭 이벤트
+                              ),
+                              SizedBox(height: 15),
+                            ],
+                          );
+                        }),
                       ],
-                    );
-                  }),
-                ],
-              ),
-            ),
+                    ),
+                  ),
+                  SizedBox(height: 30),
+                  Container(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '지난 마라톤',
+                          style: TextStyle(
+                            color: GRAY_400,
+                            fontSize: 19,
+                          ),
+                        ),
+                        SizedBox(height: 20),
+                        ...controller.marathonList.value
+                            .where((marathon) => marathon.isDeleted == true)
+                            .map((marathon) {
+                          // coming 배열에 있는 카드를 클릭할 때 이동할 페이지
+
+                          return Column(
+                            children: [
+                              MarathonCard(
+                                marathon: marathon,
+                                isPast: true,
+                              ),
+                              SizedBox(height: 25),
+                            ],
+                          );
+                        }),
+                      ],
+                    ),
+                  ),
+                ]);
+              },
+            )
           ],
         ),
       ),

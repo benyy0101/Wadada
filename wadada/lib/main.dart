@@ -10,8 +10,6 @@ import 'package:kakao_flutter_sdk_common/kakao_flutter_sdk_common.dart';
 import 'package:wadada/common/component/tabbars.dart';
 import 'package:wadada/screens/mainpage/layout.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:wadada/screens/marathoninfopage/marathoninfopage.dart';
-import 'package:wadada/screens/marathonmainpage/marathonmainpage.dart';
 //import 'package:wadada/common/pages/mainpage.dart';
 import 'package:wadada/screens/mypage/layout.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -85,26 +83,26 @@ class _MyHomePageState extends State<MyHomePage> {
     String? accessToken = await FlutterSecureStorage().read(key: 'accessToken');
     String? nickName = await FlutterSecureStorage().read(key: 'kakaoNickname');
     // print(nickName == '임시');
-    // if (accessToken != null && nickName != "임시") {
-    //   setState(() {
-    //     //print('WHERE');
-    //     _homeWidget = MainLayout();
-    //   });
-    // } else if (nickName == "임시") {
-    //   setState(() {
-    //     _homeWidget = ProfileReady();
-    //     print("HIT");
-    //   });
-    // } else {
-    //   setState(() {
-    //     // print("WHAT");
-    //     _homeWidget = MainPageLayout();
-    //   });
-    // }
-    setState(() {
-      _homeWidget = MarathonMain();
-    });
-    print(_homeWidget);
+    if (accessToken != null && nickName != "임시") {
+      setState(() {
+        //print('WHERE');
+        _homeWidget = MainLayout();
+      });
+    } else if (nickName == "임시") {
+      setState(() {
+        _homeWidget = ProfileReady();
+        print("HIT");
+      });
+    } else {
+      setState(() {
+        // print("WHAT");
+        _homeWidget = MainPageLayout();
+      });
+    }
+    // setState(() {
+    //   _homeWidget = MultiMain();
+    // });
+    // print(_homeWidget);
   }
 
   @override

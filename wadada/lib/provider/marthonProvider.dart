@@ -25,9 +25,8 @@ class MarathonProvider {
   //MARAHTON-001
   Future<Response<dynamic>> marathonGetRoom() async {
     await setAuth();
-    final response = await _dio.get(
-      '',
-    );
+
+    final response = await _dio.get('');
     return response;
   }
 
@@ -41,6 +40,7 @@ class MarathonProvider {
     return response;
   }
 
+  //MARATHON-003
   Future<Response<dynamic>> marathonRank(String marathonSeq) async {
     await setAuth();
     final response = await _dio.get(
@@ -50,7 +50,7 @@ class MarathonProvider {
     return response;
   }
 
-  //MARAHTON-004: DEAD API
+  //MARAHTON-005
   Future<Response<dynamic>> attendMarathon(String marathonSeq) async {
     await setAuth();
     final response = await _dio.get(

@@ -28,19 +28,26 @@ class MarathonRepository extends AbstractMarathonRepository {
 
   @override
   Future<List<SimpleMarathon>> getMarathonList() async {
+    print("----------Marathon repo-----------");
     Response res = await provider.marathonGetRoom();
-    final List<SimpleMarathon> marathonList = res.data.map((item) {
-      return SimpleMarathon.fromJson(item);
-    }).toList();
-    return marathonList;
+    print(res.data);
+    List<SimpleMarathon> temp = [];
+    res.data.forEach((item) {
+      temp.add(SimpleMarathon.fromJson(item));
+    });
+
+    return temp;
   }
 
   @override
   Future<List<MarathonParticipant>> getParticipant(String marathonSeq) async {
     Response res = await provider.marathonGetParticipant(marathonSeq);
-    final List<MarathonParticipant> pList = res.data.map((item) {
-      return MarathonParticipant.fromJson(item);
-    }).toList();
+    final List<MarathonParticipant> pList = [];
+    print("---------------participants-------------------");
+    print(res.data);
+    res.data.forEach((item) {
+      pList.add(MarathonParticipant.fromJson(item));
+    });
     return pList;
   }
 

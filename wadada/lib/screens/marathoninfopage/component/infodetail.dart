@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:wadada/common/const/colors.dart';
+import 'package:wadada/controller/marathonController.dart';
 import 'package:wadada/models/marathon.dart';
 
 class InfoDetail extends StatelessWidget {
@@ -12,6 +14,27 @@ class InfoDetail extends StatelessWidget {
   Widget build(BuildContext context) {
     final textColor = isPast ? GRAY_400 : Colors.black;
     final cardColor = isPast ? Color(0xffF2F2F2) : OATMEAL_COLOR;
+    MarathonController controller = Get.put(MarathonController());
+    String _formatDateTime(DateTime dateTime) {
+      if (dateTime.minute != 0) {
+        String formattedDateTime =
+            '${dateTime.year}년 ${dateTime.month}월 ${dateTime.day}일 ${dateTime.hour}시 ${dateTime.minute}분';
+        return formattedDateTime;
+      } else {
+        String formattedDateTime =
+            '${dateTime.year}년 ${dateTime.month}월 ${dateTime.day}일 ${dateTime.hour}시';
+        return formattedDateTime;
+      }
+    }
+
+    String calculateDday(DateTime targetDate) {
+      Duration diff = targetDate.difference(DateTime.now());
+      if (diff.inDays == 0) {
+        return 'DAY';
+      } else {
+        return diff.inDays.toString();
+      }
+    }
 
     return Container(
       padding: EdgeInsets.all(45),
@@ -37,7 +60,7 @@ class InfoDetail extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
-                  isPast ? '종료' : 'D-${DateTime.now()}',
+                  isPast ? '종료' : 'D-${calculateDday(marathon.marathonStart)}',
                   style: TextStyle(
                     fontSize: 16,
                     color: Colors.white,
@@ -65,7 +88,7 @@ class InfoDetail extends StatelessWidget {
               SizedBox(width: 58),
               Expanded(
                 child: Text(
-                  '${marathon.marathonStart} ~ ${marathon.marathonEnd}',
+                  '${_formatDateTime(marathon.marathonStart)} ~\n${_formatDateTime(marathon.marathonEnd)}',
                   style: TextStyle(
                     fontSize: 17,
                     color: textColor,
@@ -126,9 +149,16 @@ class InfoDetail extends StatelessWidget {
           ),
           SizedBox(height: 40),
           GestureDetector(
-            // onTap: () {
-            //   _showEndModal(context);
-            // },
+            onTap: () async {
+              if (await controller
+                  .attendMarathon(marathon.marathonSeq.toString())) {
+                ScaffoldMessenger.of(context)
+                    .showSnackBar(SnackBar(content: Text("성공적으로 참여했습니다!🥳")));
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text("서버가 아파요. 다시 시도해 주세요😡")));
+              }
+            },
             child: Container(
               width: double.maxFinite,
               decoration: BoxDecoration(

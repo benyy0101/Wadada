@@ -93,7 +93,7 @@ class SimpleMarathon {
   int marathonParticipate;
   DateTime marathonStart;
   DateTime marathonEnd;
-  int isDeleted;
+  bool isDeleted;
 
   SimpleMarathon({
     required this.marathonSeq,
@@ -200,4 +200,3 @@ class MyMarathonRecord {
     );
   }
 }
-

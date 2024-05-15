@@ -14,6 +14,27 @@ class MarathonCard extends StatelessWidget {
     this.onTap,
   });
 
+  String _formatDateTime(DateTime dateTime) {
+    if (dateTime.minute != 0) {
+      String formattedDateTime =
+          '${dateTime.year}년 ${dateTime.month}월 ${dateTime.day}일 ${dateTime.hour}시 ${dateTime.minute}분';
+      return formattedDateTime;
+    } else {
+      String formattedDateTime =
+          '${dateTime.year}년 ${dateTime.month}월 ${dateTime.day}일 ${dateTime.hour}시';
+      return formattedDateTime;
+    }
+  }
+
+  String calculateDday(DateTime targetDate) {
+    Duration diff = targetDate.difference(DateTime.now());
+    if (diff.inDays == 0) {
+      return 'DAY';
+    } else {
+      return diff.inDays.toString();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final cardColor = isPast ? Color(0xffF2F2F2) : OATMEAL_COLOR;
@@ -69,7 +90,9 @@ class MarathonCard extends StatelessWidget {
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
-                          isPast ? '종료' : 'D-${DateTime.now().day}',
+                          isPast
+                              ? '종료'
+                              : 'D-${calculateDday(marathon.marathonStart)}',
                           style: TextStyle(
                             fontSize: 16,
                             color: Colors.white,
@@ -98,7 +121,7 @@ class MarathonCard extends StatelessWidget {
                       SizedBox(width: 58),
                       Expanded(
                         child: Text(
-                          '${marathon.marathonStart} ~ ${marathon.marathonEnd}',
+                          '${_formatDateTime(marathon.marathonStart)} ~ ${_formatDateTime(marathon.marathonEnd)}',
                           style: TextStyle(
                             fontSize: 17,
                             color: textColor,
