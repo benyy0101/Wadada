@@ -50,6 +50,8 @@ dependencies:
   fl_chart:
   lottie: ^3.1.0
   stomp_dart_client: ^2.0.0
+  flutter_blue_plus: ^1.30.8
+  watch_connectivity: ^0.2.0
   
 
 flutter_launcher_icons:

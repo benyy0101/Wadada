@@ -1,5 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+import 'package:watch_connectivity/watch_connectivity.dart';
 import 'package:get/get.dart';
 // import 'package:flutter/rendering.dart';
 import 'package:wadada/common/const/colors.dart';
@@ -14,6 +17,8 @@ import 'package:dio/dio.dart';
 
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+
+
 
 class SingleFreeRun extends StatefulWidget {
   final double time;
@@ -44,6 +49,11 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
   late Clock clock;
 
   late MyMap myMap;
+  
+  get platformService => null;
+
+
+
 
   @override
   void initState() {
@@ -171,8 +181,12 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
     return '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
   }
 
+  
+
+
+
   // 기록을 서버에 전송하는 함수
-  Future<void> _sendRecordToServer() async {
+  Future<void> sendRecordToServer() async {
     final startLocation = myMap.startLocation;
     final endLocation = myMap.endLocation;
     final url = Uri.parse('https://k10a704.p.ssafy.io/Single/result');
@@ -268,7 +282,7 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
           'authorization':
-              'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNDYzNDMxNDUzIiwiYXV0aCI6IlJPTEVfU09DSUFMIiwiZXhwIjoxNzE1NDA1MzkzfQ.dmjUkVX1sFe9EpYhT3SGO3uC7q1dLIoddBvzhoOSisM',
+              'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNDUyNzIxNzM3IiwiYXV0aCI6IlJPTEVfU09DSUFMIiwiZXhwIjoxNzE1NzcyMTI2fQ._6qbh9r_WNT2OfU8nARD4A9Lz_015yhTgqXZVbqSdU0',
         }),
       );
 
@@ -283,12 +297,12 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
         print('서버 요청 실패: ${response.statusCode}');
       }
     } catch (e) {
-      print('요청 처리 중 에러 발생: $e');
+      print('요청 처리 중 에러 발생zzzzzzzzzz: $e');
     }
     print(jsonDecode(requestBody));
   }
 
-  void _handleEndButtonPress(BuildContext context) {
+  void handleEndButtonPress(BuildContext context) {
     if (_clockKey.currentState != null) {
       // Duration elapsedTime = _clockKey.currentState!.elapsed;
       double elapsedSeconds = _clockKey.currentState!.getElapsedSeconds();
@@ -303,7 +317,7 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
 
       // final formattedElapsedTime = formatElapsedTime(elapsedTime);
 
-      _sendRecordToServer();
+      sendRecordToServer();
 
       print('스피드 - $distanceSpeed');
       print('페이스 - $distancePace');
@@ -326,8 +340,10 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
 
     // Navigator.push(context, MaterialPageRoute(builder: (context) => SingleResult()));
   }
+  
 
-  void _showEndModal(BuildContext context) {
+  
+  void showEndModal(BuildContext context) {
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
@@ -374,7 +390,7 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
                       // Duration elapsedTime = _clockKey.currentState?.elapsed ?? Duration.zero;
                       // 종료 시 실행할 작업
                       // elapsedTime을 endlocation으로 넘겨주는 로직 추가
-                      _handleEndButtonPress(context);
+                      handleEndButtonPress(context);
                     },
                     child: Container(
                       width: double.maxFinite,
@@ -431,6 +447,8 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
     );
   }
 
+
+
   @override
   Widget build(BuildContext context) {
     Widget progressBar = Container();
@@ -473,6 +491,9 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
 
     // double totalDistance = myMap.getTotalDistance();
     // String formattedDistance = totalDistance.toStringAsFixed(2);
+
+    PlatformService platformService = PlatformService();
+
 
     return Scaffold(
         backgroundColor: Colors.white,
@@ -545,7 +566,15 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
                           ValueListenableBuilder<double>(
                               valueListenable: myMap.paceNotifier,
                               builder: (context, pace, _) {
+                                // 페이스 변경될 때 블루투스 통해서 전송 슛
+                                // sendPaceOverBluetooth(pace);
                                 String formattedPace = formatPace(pace);
+                                platformService.sendDataToKotlin(
+                                  formattedPace: formattedPace,
+                                  splitHours: '',
+                                  splitMinutes: '',
+                                  splitSeconds: '',
+                                );
                                 return Text(formattedPace,
                                     style: TextStyle(
                                       color: GREEN_COLOR,
@@ -600,7 +629,7 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
                 // 종료 버튼
                 GestureDetector(
                   onTap: () {
-                    _showEndModal(context);
+                    showEndModal(context);
                   },
                   child: Container(
                     width: double.maxFinite,
@@ -672,4 +701,31 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
             ),
         ]));
   }
+}
+
+
+class PlatformService {
+  // 채널 이름을 정의합니다. 양쪽 플랫폼에서 동일해야 합니다.
+  static const platformChannel = MethodChannel('com.example/data_channel');
+
+  // Kotlin으로 데이터를 보내는 함수
+  Future<void> sendDataToKotlin({
+    required String formattedPace,
+    required String splitHours,
+    required String splitMinutes,
+    required String splitSeconds,
+  }) async {
+    try {
+      final String result = await platformChannel.invokeMethod('sendDataToKotlin', {
+        'formattedPace': formattedPace,
+        'splitHours': splitHours,
+        'splitMinutes': splitMinutes,
+        'splitSeconds': splitSeconds,
+      });
+      print(result); // Kotlin으로부터 받은 응답 출력
+    } on PlatformException catch (e) {
+      print("Failed to send data: '${e.message}'.");
+    }
+  }
+
 }

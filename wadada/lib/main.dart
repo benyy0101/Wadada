@@ -55,12 +55,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Widget homeWidget;
-    if (storage.read(key: 'accessToken') != null) {
-      homeWidget = MainLayout();
-    } else {
-      homeWidget = MainPageLayout();
-    }
-    return homeWidget;
+    homeWidget = MainLayout();
+      return homeWidget;
   }
 }
 

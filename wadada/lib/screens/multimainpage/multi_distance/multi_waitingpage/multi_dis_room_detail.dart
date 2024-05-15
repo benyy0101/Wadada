@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:ffi';
+// import 'dart:ffi';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -59,11 +59,11 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
   void splitTags() {
     List<String> temp = roomInfo.roomTag!.split('#');
 
-    temp.forEach((item) {
+    for (var item in temp) {
       if (item != '') {
-        tags.add("#" + item);
+        tags.add("#$item");
       }
-    });
+    }
   }
 
   void setRoomInfo() {
@@ -326,7 +326,7 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                       SizedBox(height: 30),
                       Obx(() {
                         final members = controller.members;
-                        if (members == null || members.isEmpty) {
+                        if (members.isEmpty) {
                           // Show a loading indicator or a placeholder
                           return Center(
                             child:
@@ -487,7 +487,7 @@ class PlayerCondition extends StatelessWidget {
 }
 
 class GameOwner extends StatelessWidget {
-  GameOwner({super.key});
+  const GameOwner({super.key});
 
   @override
   Widget build(BuildContext context) {
