@@ -1,5 +1,7 @@
 package org.api.wadada.multi.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.api.wadada.multi.dto.GameRoomDto;
 import org.api.wadada.multi.dto.GameRoomManager;
 import jakarta.transaction.Transactional;
@@ -273,12 +275,31 @@ public class RoomServiceImpl implements RoomService {
                 CompletableFuture.runAsync(this::waitSeconds, executor)
         ).thenRun(() -> {  //하나라도 성공하면
             if (roomDto.getRoomPoints().size()==0){
-                messagingTemplate.convertAndSend("/sub/attend/" + roomIdx, "사용자 위치정보가 없습니다");
+                String error = GameMessage.GAME_FLAG_ERROR.toJson();
+                messagingTemplate.convertAndSend("/sub/attend/" + roomIdx,  error);
             }
             else{
+                ObjectMapper mapper = new ObjectMapper();
+                HashMap<String, Object> pointMessage = new HashMap<>();
+                HashMap<String, Object> responseHeader = new HashMap<>();
+                responseHeader.put("status", 200);
+                responseHeader.put("statusText", "OK");
                 FlagPointRes point = calculatePoint(roomDto.getRoomPoints());
+                HashMap<String, Object> responseBody = new HashMap<>();
+                responseBody.put("latitude", point.getLatitude());
+                responseBody.put("longitude", point.getLongitude());
+
+                pointMessage.put("header", responseHeader);
+                pointMessage.put("body", responseBody);
+                String res = null; // HashMap을 JSON 문자열로 변환
+                try {
+                    res = mapper.writeValueAsString(pointMessage);
+                } catch (JsonProcessingException e) {
+                    throw new RuntimeException(e);
+                }
+
 //                FlagPointRes point = geneticAlgorithmService.findOptimalPoint(roomDto.getRoomPoints());
-                messagingTemplate.convertAndSend("/sub/attend/" + roomIdx, point);
+                messagingTemplate.convertAndSend("/sub/attend/" + roomIdx, res);
             }
 
             roomDto.getRoomPoints().clear();
