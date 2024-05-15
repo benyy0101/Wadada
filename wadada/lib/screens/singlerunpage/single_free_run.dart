@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:watch_connectivity/watch_connectivity.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 // import 'package:flutter/rendering.dart';
 import 'package:wadada/common/const/colors.dart';
@@ -115,6 +116,8 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
   Future<void> sendLocationToServer() async {
     final startLocation = myMap.startLocation;
     final dio = Dio();
+    final storage = FlutterSecureStorage();
+    String? accessToken = await storage.read(key: 'accessToken');
     int recordMode = widget.time > 0 ? 2 : 1;
 
     if (startLocation != null) {
@@ -133,7 +136,7 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
           options: Options(headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
-            'authorization':
+            'authorization': accessToken ??
                 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNDYzNDMxNDUzIiwiYXV0aCI6IlJPTEVfU09DSUFMIiwiZXhwIjoxNzE1NDA1MzkzfQ.dmjUkVX1sFe9EpYhT3SGO3uC7q1dLIoddBvzhoOSisM',
           }),
         );
@@ -246,6 +249,23 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
     // averagePaceInSecondsPerKm = double.parse(averagePaceInSecondsPerKm.toStringAsFixed(2)) * 1000;
     // double formattedDistanceInMeters = double.parse(formattedDistance) * 1000;
 
+    if (averageSpeed.isNaN || averageSpeed.isInfinite) {
+      averageSpeed = 0.0; // Set a default value or handle the NaN case
+    } else {
+      averageSpeed = double.parse(averageSpeed.toStringAsFixed(2)) * 1000;
+    }
+
+    if (averagePaceInSecondsPerKm.isNaN ||
+        averagePaceInSecondsPerKm.isInfinite) {
+      averagePaceInSecondsPerKm =
+          0.0; // Set a default value or handle the NaN case
+    } else {
+      // You can uncomment this line if you want to handle pace as well
+      averagePaceInSecondsPerKm =
+          double.parse(averagePaceInSecondsPerKm.toStringAsFixed(2)) * 1000;
+    }
+
+// Convert to integers
     int intaveragespeed = averageSpeed.toInt();
     int intaveragepaceinkmperhour = averagePaceInSecondsPerKm.toInt();
     // int intformatteddistanceinmeters = formattedDistanceInMeters.toInt();
@@ -275,14 +295,16 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
     });
 
     try {
+      final storage = FlutterSecureStorage();
+      String? accessToken = await storage.read(key: 'accessToken');
       final response = await dio.post(
         url.toString(),
         data: requestBody,
         options: Options(headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
-          'authorization':
-              'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNDUyNzIxNzM3IiwiYXV0aCI6IlJPTEVfU09DSUFMIiwiZXhwIjoxNzE1NzcyMTI2fQ._6qbh9r_WNT2OfU8nARD4A9Lz_015yhTgqXZVbqSdU0',
+          'authorization': accessToken ??
+              'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNDYzNDMxNDUzIiwiYXV0aCI6IlJPTEVfU09DSUFMIiwiZXhwIjoxNzE1NDA1MzkzfQ.dmjUkVX1sFe9EpYhT3SGO3uC7q1dLIoddBvzhoOSisM',
         }),
       );
 
@@ -313,7 +335,6 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
       List<Map<String, double>> distancePace = myMap.getdistancePace();
 
       Duration elapsedTime = Duration(seconds: elapsedSeconds.round());
-      String formattedElapsedTime = formatElapsedTime(elapsedTime);
 
       // final formattedElapsedTime = formatElapsedTime(elapsedTime);
 

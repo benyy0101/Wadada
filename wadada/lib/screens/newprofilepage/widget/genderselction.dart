@@ -2,7 +2,10 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:wadada/common/const/colors.dart';
+import 'package:wadada/controller/profileController.dart';
+import 'package:wadada/repository/profileRepo.dart';
 
 class GenderSelectionWidget extends StatefulWidget {
   const GenderSelectionWidget({super.key});
@@ -15,6 +18,8 @@ class GenderSelectionWidget extends StatefulWidget {
 class _GenderSelectionWidgetState extends State<GenderSelectionWidget> {
   // 성별 선택 상태를 저장하는 변수
   String? selectedGender;
+  ProfileController profileController =
+      Get.put(ProfileController(repo: ProfileRepository()));
 
   @override
   Widget build(BuildContext context) {
@@ -25,17 +30,23 @@ class _GenderSelectionWidgetState extends State<GenderSelectionWidget> {
           onPressed: () {
             setState(() {
               selectedGender = "여성";
+              profileController.profile.value.memberGender = 'F';
+              print(
+                  "------------profileController.profile.value.memberGender--------------");
+              print(profileController.profile.value.memberGender);
+              print(profileController.profile.value.memberProfileImage);
             });
           },
           style: ElevatedButton.styleFrom(
             foregroundColor: Colors.white,
-            backgroundColor: selectedGender == "여성" ? GREEN_COLOR : OATMEAL_COLOR,
+            backgroundColor:
+                selectedGender == "여성" ? GREEN_COLOR : OATMEAL_COLOR,
             elevation: 5,
             shadowColor: Colors.black,
             minimumSize: const Size(100, 60),
           ),
           child: const Text(
-            "여성", 
+            "여성",
             style: TextStyle(
               fontSize: 20,
             ),
@@ -45,17 +56,22 @@ class _GenderSelectionWidgetState extends State<GenderSelectionWidget> {
           onPressed: () {
             setState(() {
               selectedGender = "남성";
+              profileController.profile.value.memberGender = 'M';
+              print(
+                  "------------profileController.profile.value.memberGender--------------");
+              print(profileController.profile.value.memberGender);
             });
           },
           style: ElevatedButton.styleFrom(
             foregroundColor: Colors.white,
-            backgroundColor: selectedGender == "남성" ? GREEN_COLOR : OATMEAL_COLOR,
+            backgroundColor:
+                selectedGender == "남성" ? GREEN_COLOR : OATMEAL_COLOR,
             elevation: 5,
             shadowColor: Colors.black,
             minimumSize: const Size(100, 60),
           ),
           child: const Text(
-            "남성", 
+            "남성",
             style: TextStyle(
               fontSize: 20,
             ),

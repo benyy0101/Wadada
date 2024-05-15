@@ -2,13 +2,16 @@ import 'dart:io';
 
 import 'package:get/get_rx/src/rx_types/rx_types.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
+import 'package:intl/intl.dart';
 import 'package:wadada/models/mypage.dart';
 import 'package:wadada/repository/mypageRepo.dart';
 
 class MypageController extends GetxController {
   final MypageRepository mypageRepository;
-  MonthlyRecord records = MonthlyRecord(monthlyRecord: []);
-  // Rx 타입으로 변경
+  RxBool isLoading = true.obs;
+  Rx<MonthlyRecord> records = MonthlyRecord(monthlyRecord: []).obs;
+  RxMap<String, List<SimpleRecord>> groupedRecords =
+      <String, List<SimpleRecord>>{}.obs;
   SingleDetail singleDetail = SingleDetail(
       recordType: '',
       recordRank: -1,
@@ -64,7 +67,23 @@ class MypageController extends GetxController {
   //mypage001
   void fetchMonthlyRecords() async {
     try {
-      records = await mypageRepository.getMonthlyRecord(DateTime.now());
+      records.value = await mypageRepository.getMonthlyRecord(DateTime.now());
+      records.value.monthlyRecord.forEach((record) {
+        final formattedDate =
+            DateFormat('yyyy-MM-dd').format(record.recordCreatedAt);
+        if (!groupedRecords.containsKey(formattedDate)) {
+          groupedRecords[formattedDate] = [record];
+        } else {
+          bool flag = false;
+          groupedRecords[formattedDate]!.forEach((item) {
+            if (item.recordSeq == record.recordSeq) flag = true;
+          });
+          if (flag == false) groupedRecords[formattedDate]!.add(record);
+        }
+      });
+      isLoading.value = false;
+      print(isLoading);
+      // print(groupedRecords.value);
     } catch (e) {
       print(e);
     }
@@ -74,6 +93,7 @@ class MypageController extends GetxController {
   void fetchSingleDetail(RecordRequest req) async {
     try {
       singleDetail = await mypageRepository.getSingleDetail(req.recordSeq);
+      print("repo");
     } catch (e) {
       print(e);
     }
@@ -82,22 +102,26 @@ class MypageController extends GetxController {
   //mypage003
   void fetchMultiDetail(RecordRequest req) async {
     try {
+      isLoading = true.obs;
       multiDetail = await mypageRepository.getMultiDetail(req.recordSeq);
+      isLoading = false.obs;
     } catch (e) {
       print(e);
     }
   }
 
   //mypage004
-  void fetchMarathonDetail(String req) async {
+  void fetchMarathonDetail(RecordRequest req) async {
     try {
-      marathonDetail = await mypageRepository.getMarathonDetail(req.hashCode);
+      marathonDetail = await mypageRepository.getMarathonDetail(req.recordSeq);
     } catch (e) {
       print(e);
     }
   }
 
   fetchDetail(RecordRequest req) async {
+    print("recordtype");
+    print(req);
     try {
       if (req.recordType == '1') {
         singleDetail = await mypageRepository.getSingleDetail(req.recordSeq);
@@ -113,9 +137,9 @@ class MypageController extends GetxController {
     }
   }
 
-  void uploadImage(File file) async {
+  void uploadImage(String path) async {
     try {
-      String temp = await mypageRepository.uploadImage(file);
+      String temp = await mypageRepository.uploadImage(path);
       print(temp);
     } catch (e) {
       print(e);

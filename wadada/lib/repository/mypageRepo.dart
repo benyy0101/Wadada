@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/src/response.dart';
@@ -10,7 +11,7 @@ abstract class AbstractMypageRepository {
   Future<SingleDetail> getSingleDetail(int req);
   Future<MultiDetail> getMultiDetail(int req);
   Future<MarathonDetail> getMarathonDetail(int req);
-  Future<String> uploadImage(File file);
+  Future<String> uploadImage(String path);
 }
 
 class MypageRepository implements AbstractMypageRepository {
@@ -35,7 +36,8 @@ class MypageRepository implements AbstractMypageRepository {
   Future<MonthlyRecord> getMonthlyRecord(DateTime date) async {
     try {
       Response res = await mypageAPI.getMonthlyRecord(date);
-
+      // print('-------------res-------------');
+      // print(res.data);
       return MonthlyRecord.fromJson(res.data);
     } catch (e) {
       print("ERROR: $e");
@@ -47,6 +49,8 @@ class MypageRepository implements AbstractMypageRepository {
   Future<MultiDetail> getMultiDetail(int req) async {
     try {
       Response res = await mypageAPI.getMultiDetail(req);
+      print("print(res.data);");
+      print(res.data);
       return MultiDetail.fromJson(res.data);
     } catch (e) {
       print("ERROR: $e");
@@ -58,6 +62,8 @@ class MypageRepository implements AbstractMypageRepository {
   Future<SingleDetail> getSingleDetail(int req) async {
     try {
       Response res = await mypageAPI.getSingleDetail(req);
+      print("res");
+      print(res.data.runtimeType);
       return SingleDetail.fromJson(res.data);
     } catch (e) {
       print("ERROR: $e");
@@ -66,10 +72,10 @@ class MypageRepository implements AbstractMypageRepository {
   }
 
   @override
-  Future<String> uploadImage(File file) async {
+  Future<String> uploadImage(String path) async {
     try {
-      Response res = await mypageAPI.imageUpload(file);
-      return res.data['child_picture'];
+      Response res = await mypageAPI.imageUpload(path);
+      return res.data;
     } catch (e) {
       print(e);
       rethrow;
