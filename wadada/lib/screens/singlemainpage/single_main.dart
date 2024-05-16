@@ -82,7 +82,7 @@ class SingleMain extends StatelessWidget {
               height: 25,
             ),
             SelectMode(
-              icon: 'assets/images/clock_2.png',
+              icon: 'assets/images/clock.png',
               name: '시간모드',
               des: '목표한 시간만큼 달려보세요.',
               btn: '28',

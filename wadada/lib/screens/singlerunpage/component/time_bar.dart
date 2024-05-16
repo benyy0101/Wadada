@@ -5,7 +5,7 @@ import 'package:percent_indicator/percent_indicator.dart';
 class TimeBar extends StatefulWidget{
   // final double dist;
   // const ProgressBar({super.key, required this.dist});
-  final double initialTime;
+  final int initialTime;
   final double elapsedTime;
 
   const TimeBar({super.key, required this.initialTime, required this.elapsedTime});

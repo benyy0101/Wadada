@@ -27,6 +27,7 @@ class _SingleRecordState extends State<SingleRecord> {
     final url = Uri.parse('https://k10a704.p.ssafy.io/Single');
     final storage = FlutterSecureStorage();
     String? accessToken = await storage.read(key: 'accessToken');
+    print('토큰 $accessToken');
     final dio = Dio();
 
     try {

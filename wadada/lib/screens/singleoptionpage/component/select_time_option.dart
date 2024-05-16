@@ -18,7 +18,7 @@ class SelectTimeOption extends StatefulWidget{
 }
 
 class SelectTimeOptionState extends State<SelectTimeOption> {
-  double time = 0.0;
+  int time = 0;
   int selectnum = 0;
   final TextEditingController controller = TextEditingController(text: "0");
   String? errorText;
@@ -39,7 +39,6 @@ class SelectTimeOptionState extends State<SelectTimeOption> {
     }
 
     setState(() {});
-    time = double.tryParse(value) ?? 0.0;
 
     if (widget.onStateUpdated != null) {
       widget.onStateUpdated!(this);
