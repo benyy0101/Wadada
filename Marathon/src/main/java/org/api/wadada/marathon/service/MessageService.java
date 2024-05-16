@@ -3,7 +3,9 @@ package org.api.wadada.marathon.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.api.wadada.marathon.dto.MarathonGameManager;
+import org.api.wadada.marathon.dto.MarathonRoomManager;
 import org.api.wadada.marathon.dto.MessageDto;
+import org.api.wadada.marathon.dto.req.RequestDataReq;
 import org.api.wadada.marathon.interceptor.DefaultListener;
 import org.api.wadada.util.DynamicRabbitMqConfigurer;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -27,6 +29,7 @@ public class MessageService {
     private final DefaultListener defaultListener;
     private final DynamicRabbitMqConfigurer dynamicRabbitMqConfigurer;
 
+    private final MarathonGameManager marathonGameManager;
     /**
      * Queue로 메시지를 발행
      *
@@ -35,6 +38,10 @@ public class MessageService {
     public void sendMessage(MessageDto messageDto) {
         log.info("message sent: {}", messageDto.toString());
         rabbitTemplate.convertAndSend(exchangeName, routingKey, messageDto);
+    }
+    public void sendMarathonMessage(RequestDataReq requestDataReq) {
+        log.info("message sent: {}", requestDataReq.toString());
+        rabbitTemplate.convertAndSend(exchangeName, routingKey+requestDataReq.getRoomSeq(), requestDataReq);
     }
 
     /**

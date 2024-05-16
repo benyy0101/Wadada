@@ -6,6 +6,7 @@ import org.api.wadada.marathon.dto.MessageDto;
 import org.api.wadada.marathon.dto.req.MarathonCreateReq;
 import org.api.wadada.marathon.dto.req.MarathonGameEndReq;
 import org.api.wadada.marathon.dto.req.MarathonGameStartReq;
+import org.api.wadada.marathon.dto.req.RequestDataReq;
 import org.api.wadada.marathon.dto.res.*;
 import org.api.wadada.marathon.service.MarathonService;
 import org.api.wadada.marathon.service.MessageService;
@@ -109,11 +110,15 @@ public class MarathonController {
      * @return ResponseEntity 객체로 응답을 반환
      */
     @PostMapping("/post")
-    public ResponseEntity<?> sendMessage(@RequestBody MessageDto messageDto) {
-        messageService.sendMessage(messageDto);
+    public ResponseEntity<?> sendMessage(@RequestBody RequestDataReq requestDataReq) {
+        messageService.sendMarathonMessage(requestDataReq);
         return ResponseEntity.ok("Message sent to RabbitMQ!");
     }
-
+//    @PostMapping("/post")
+//    public ResponseEntity<?> sendMessage(@RequestBody MessageDto messageDto) {
+//        messageService.sendMessage(messageDto);
+//        return ResponseEntity.ok("Message sent to RabbitMQ!");
+//    }
     @PostMapping("/receive")
     public ResponseEntity<?> receiveMessage(@RequestBody MessageDto messageDto) {
         messageService.receiveMessage(messageDto);

@@ -7,7 +7,9 @@ import lombok.Setter;
 import org.api.wadada.error.errorcode.CustomErrorCode;
 import org.api.wadada.error.exception.RestApiException;
 import org.api.wadada.marathon.entity.Member;
+import org.api.wadada.util.DynamicRabbitMqConfigurer;
 import org.geolatte.geom.M;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +33,15 @@ public class MarathonRoomManager {
     private int REAL_cur_Person;
     private SimpMessagingTemplate messagingTemplate;
     private ExecutorService executor = Executors.newCachedThreadPool();
+    private DynamicRabbitMqConfigurer dynamicRabbitMqConfigurer;
+    @Value("${rabbitmq.marathon.name")
+    private String queueName;
+
+    @Value("${rabbitmq.exchange.name}")
+    private String exchangeName;
+
+    @Value("${rabbitmq.routing.key}")
+    private String routingKey;
 
     public MarathonRoomManager() {
         this.rooms = new ArrayList<>(MAX_ROOMS);
@@ -39,8 +50,9 @@ public class MarathonRoomManager {
         }
     }
 
-    public MarathonRoomManager(SimpMessagingTemplate messagingTemplate) {
+    public MarathonRoomManager(SimpMessagingTemplate messagingTemplate, DynamicRabbitMqConfigurer dynamicRabbitMqConfigurer) {
         this.messagingTemplate = messagingTemplate;
+        this.dynamicRabbitMqConfigurer = dynamicRabbitMqConfigurer;
         this.rooms = new ArrayList<>(MAX_ROOMS);
         for (int i = 0; i < MAX_ROOMS; i++) {
             rooms.add(null);
@@ -49,6 +61,8 @@ public class MarathonRoomManager {
 
     private int addRoom(MarathonRoomDto room) throws Exception {
         rooms.set(++curRooms, room);
+        dynamicRabbitMqConfigurer.bindExistingQueueToExchange(queueName+(curRooms+1),exchangeName,routingKey+(curRooms+1));
+
         return curRooms;
     }
 
@@ -158,4 +172,6 @@ public class MarathonRoomManager {
             rooms.get(i).makeSentence();
         }
     }
+
+
 }
