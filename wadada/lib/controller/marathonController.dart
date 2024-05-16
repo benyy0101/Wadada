@@ -42,7 +42,7 @@ class MarathonController extends GetxController {
     marathonList.value = await repo.getMarathonList();
   }
 
-  Future<bool> attendMarathon(String marathonSeq) async {
+  Future<int> attendMarathon(String marathonSeq) async {
     return await repo.attendMarathon(marathonSeq);
   }
 
@@ -56,5 +56,12 @@ class MarathonController extends GetxController {
 
   void getRank(String marathonSeq) async {
     marathonRecord.value = await repo.getRank(marathonSeq);
+  }
+
+  Future<bool> startMarathon(String lat, String long) async {
+    String point = "POINT(${lat} ${long})";
+    int dead = 0;
+    return await repo.startMarathon(
+        MarathonStart(marathonRecordStart: point, marathonSeq: dead));
   }
 }

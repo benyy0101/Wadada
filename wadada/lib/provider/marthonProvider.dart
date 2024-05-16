@@ -62,7 +62,7 @@ class MarathonProvider {
   //MARAHTON-005:
   Future<Response<dynamic>> marathonStart(MarathonStart start) async {
     await setAuth();
-    final response = await _dio.post('/start', data: start);
+    final response = await _dio.post('/start', data: jsonEncode(start));
     return response;
   }
 

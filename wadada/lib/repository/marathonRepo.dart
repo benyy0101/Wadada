@@ -6,7 +6,7 @@ abstract class AbstractMarathonRepository {
   Future<List<SimpleMarathon>> getMarathonList();
   Future<List<MarathonParticipant>> getParticipant(String marathonSeq);
   Future<MyMarathonRecord> getRank(String marathonSeq);
-  Future<bool> attendMarathon(String marathonSeq);
+  Future<int> attendMarathon(String marathonSeq);
   Future<bool> startMarathon(MarathonStart start);
   Future<int> endMarathon(Marathon marathon);
 }
@@ -14,7 +14,7 @@ abstract class AbstractMarathonRepository {
 class MarathonRepository extends AbstractMarathonRepository {
   MarathonProvider provider = MarathonProvider();
   @override
-  Future<bool> attendMarathon(String marathonSeq) async {
+  Future<int> attendMarathon(String marathonSeq) async {
     Response res = await provider.attendMarathon(marathonSeq);
 
     return res.data;

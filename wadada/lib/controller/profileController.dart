@@ -82,8 +82,8 @@ class ProfileController extends GetxController {
   void uploadImage(String path) async {
     try {
       String? s3url = await mypageRepo.uploadImage(path);
-      // print("-----------------s3url0--------------");
-      // print(s3url);
+      print("-----------------s3url0--------------");
+      print(s3url);
       profile.value.memberProfileImage = s3url;
     } catch (e) {
       print(e);

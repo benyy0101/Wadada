@@ -183,10 +183,9 @@ class MyMapState extends State<MyMap> {
             offsetX: 15, // width의 절반 값을 지정합니다.
             offsetY: 15,
             markerImageSrc:
-              'https://github.com/jjeong41/t/assets/103355863/5ff2a217-8cbc-4e41-b6c2-0ff12103b40b',
+                'https://github.com/jjeong41/t/assets/103355863/5ff2a217-8cbc-4e41-b6c2-0ff12103b40b',
             zIndex: 10,
           ));
-          
 
           setState(() {});
         });

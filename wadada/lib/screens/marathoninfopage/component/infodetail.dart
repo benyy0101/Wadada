@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:wadada/common/const/colors.dart';
 import 'package:wadada/controller/marathonController.dart';
+import 'package:wadada/controller/stompController.dart';
 import 'package:wadada/models/marathon.dart';
 
 class InfoDetail extends StatelessWidget {
@@ -150,10 +151,14 @@ class InfoDetail extends StatelessWidget {
           SizedBox(height: 40),
           GestureDetector(
             onTap: () async {
-              if (await controller
-                  .attendMarathon(marathon.marathonSeq.toString())) {
+              int idx = await controller
+                  .attendMarathon(marathon.marathonSeq.toString());
+              StompController stompController =
+                  Get.put(StompController(roomIdx: idx));
+              if (idx != -1) {
                 ScaffoldMessenger.of(context)
                     .showSnackBar(SnackBar(content: Text("성공적으로 참여했습니다!🥳")));
+                stompController.attendMarathon(idx);
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text("서버가 아파요. 다시 시도해 주세요😡")));

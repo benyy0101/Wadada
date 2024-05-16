@@ -8,9 +8,13 @@ import 'package:get/get_core/src/get_main.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:kakao_flutter_sdk_common/kakao_flutter_sdk_common.dart';
 import 'package:wadada/common/component/tabbars.dart';
+import 'package:wadada/controller/marathonController.dart';
+import 'package:wadada/controller/stompController.dart';
+import 'package:wadada/models/marathon.dart';
 import 'package:wadada/screens/firststartpage/firststartpage.dart';
 import 'package:wadada/screens/mainpage/layout.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:wadada/screens/marathonrunpage/marathonRun.dart';
 //import 'package:wadada/common/pages/mainpage.dart';
 import 'package:wadada/screens/mypage/layout.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -85,26 +89,42 @@ class _MyHomePageState extends State<MyHomePage> {
     String? accessToken = await FlutterSecureStorage().read(key: 'accessToken');
     String? nickName = await FlutterSecureStorage().read(key: 'kakaoNickname');
     // print(nickName == '임시');
-    if (accessToken != null && nickName != "임시") {
-      setState(() {
-        //print('WHERE');
-        _homeWidget = MainLayout();
-      });
-    } else if (nickName == "임시") {
-      setState(() {
-        _homeWidget = ProfileReady();
-        print("HIT");
-      });
-    } else {
-      setState(() {
-        // print("WHAT");
-        _homeWidget = MainPageLayout();
-      });
-    }
-    // setState(() {
-    //   _homeWidget = MultiMain();
-    // });
-    // print(_homeWidget);
+    // if (accessToken != null && nickName != "임시") {
+    //   setState(() {
+    //     //print('WHERE');
+    //     _homeWidget = MainLayout();
+    //   });
+    // } else if (nickName == "임시") {
+    //   setState(() {
+    //     _homeWidget = ProfileReady();
+    //     print("HIT");
+    //   });
+    // } else {
+    //   setState(() {
+    //     // print("WHAT");
+    //     _homeWidget = MainPageLayout();
+    //   });
+    // }
+    setState(() {
+      MarathonController marathonController = Get.put(MarathonController());
+      StompController stompController = Get.put(StompController(roomIdx: 100));
+      _homeWidget = MarathonRun(
+        time: -1,
+        dist: 10,
+        appKey: '',
+        controller: stompController,
+        marathonController: marathonController,
+        roomInfo: SimpleMarathon(
+            marathonSeq: -1,
+            marathonRound: -1,
+            marathonDist: 20,
+            marathonParticipate: 20,
+            marathonStart: DateTime.now(),
+            marathonEnd: DateTime.now(),
+            isDeleted: false),
+      );
+    });
+    print(_homeWidget);
   }
 
   @override

@@ -8,10 +8,14 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:stomp_dart_client/stomp_dart_client.dart';
+import 'package:wadada/controller/marathonController.dart';
+import 'package:wadada/models/marathon.dart';
 import 'package:wadada/models/multiroom.dart';
 import 'package:wadada/models/stomp.dart';
 import 'package:wadada/provider/multiProvider.dart';
+import 'package:wadada/repository/marathonRepo.dart';
 import 'package:wadada/repository/multiRepo.dart';
+import 'package:wadada/screens/marathonrunpage/marathonRun.dart';
 import 'package:wadada/screens/multimainpage/multi_main.dart';
 import 'package:wadada/screens/multirunpage/multirunpage.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -46,6 +50,7 @@ class StompController extends GetxController {
   late dynamic unsubscribeFn;
   RxList<CurrentMember> members = <CurrentMember>[].obs;
   MultiRepository repo = MultiRepository(provider: MultiProvider());
+  MarathonRepository mrepo = MarathonRepository();
   bool isStart = false;
   bool get1 = false;
   bool getflag = false;
@@ -78,7 +83,7 @@ class StompController extends GetxController {
     // bool unsubscribed = false;
     client = StompClient(
       config: StompConfig.sockJS(
-        url: dotenv.env['STOMP_URL']!,
+        url: dotenv.env['MULTI_URL']!,
         onConnect: (p0) {
           client.subscribe(
             destination: '/sub/attend/$roomIdx',
@@ -156,8 +161,12 @@ class StompController extends GetxController {
                   int newRoomSeq = res['body']['roomSeq'];
                   print('roomSeq $newRoomSeq');
 
-                  setupNewSubscription(newRoomSeq);
+                  // setupNewSubscription(newRoomSeq);
+                  // client.deactivate();
                   client.deactivate();
+                  await Future.delayed(Duration(seconds: 2));
+
+                  setupNewSubscription(newRoomSeq);
 
                   return;
                 }
@@ -218,6 +227,82 @@ class StompController extends GetxController {
     });
   }
 
+  void attendMarathon(int roomIdx) async {
+    print("-------------attend-------------");
+    String? accessToken = await storage.read(key: 'accessToken');
+    // bool unsubscribed = false;
+    client = StompClient(
+      config: StompConfig.sockJS(
+        url: dotenv.env['MARATHON_URL']!,
+        onConnect: (p0) {
+          client.subscribe(
+            destination: '/sub/attend/$roomIdx',
+            headers: {
+              'Authorization': accessToken ??
+                  'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNDYzNDMxNDUzIiwiYXV0aCI6IlJPTEVfU09DSUFMIiwiZXhwIjoxNzE1NDA1MzkzfQ.dmjUkVX1sFe9EpYhT3SGO3uC7q1dLIoddBvzhoOSisM'
+            },
+            callback: (frame) async {
+              try {
+                print("Incoming Messages:--------------------");
+                //에러메세지: 해당방에 입장해 있거나, 이미 나간 방일때
+                Map<String, dynamic> res = jsonDecode(frame.body!);
+                print('-----res[body]-----------------');
+                print(res['body']);
+
+                //1
+                if (res['body']['action'] == '1') {
+                } else if ((res['body']['action'] == '/Marathon/start')) {
+                  String point = "POINT(${0} ${0})";
+                  int dead = 0;
+                  // 내 위치 정보 POST
+                  bool temp = await mrepo.startMarathon(MarathonStart(
+                      marathonRecordStart: point, marathonSeq: dead));
+                  print(temp);
+                  //메세지를 기다림
+                } else if ((res['body']['message'] ==
+                    '/Marathon/game/rank/{roomSeq}')) {
+                  // Get.to(MarathonRun(time: time, dist: dist, appKey: appKey, controller: controller, multiController: multiController, roomInfo: roomInfo));
+                  //게임 페이지로 이동
+                } else if ((res['body']['message'] == '')) {
+                } else if ((res['body']['message'] == '')) {
+                } else if ((res['body']['message'] == '')) {}
+              } catch (e) {
+                print(e);
+                rethrow;
+              }
+            },
+          );
+        },
+// Pass the onConnect method as a callback here
+        webSocketConnectHeaders: {
+          "transports": ["websocket"],
+          'Authorization': accessToken ??
+              'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNDYzNDMxNDUzIiwiYXV0aCI6IlJPTEVfU09DSUFMIiwiZXhwIjoxNzE1NDA1MzkzfQ.dmjUkVX1sFe9EpYhT3SGO3uC7q1dLIoddBvzhoOSisM'
+        },
+        stompConnectHeaders: {
+          'Authorization': accessToken ??
+              'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNDYzNDMxNDUzIiwiYXV0aCI6IlJPTEVfU09DSUFMIiwiZXhwIjoxNzE1NDA1MzkzfQ.dmjUkVX1sFe9EpYhT3SGO3uC7q1dLIoddBvzhoOSisM'
+        },
+        onWebSocketError: (dynamic error) => print(error.toString()),
+      ),
+    );
+
+    client.activate();
+
+    // Future.delayed(Duration(milliseconds: 2000), () {
+    //   try {
+    //     if (client.isActive) {
+    //       client.send(destination: '/pub/attend/$roomIdx');
+    //       print("--------------published $roomIdx------------------");
+    //     } else {
+    //       throw Exception("서버가 준비되어 있지 않습니다.");
+    //     }
+    //   } catch (e) {
+    //     print(e);
+    //   }
+    // });
+  }
+
   //  void sendFlagRequest(int roomIdx) {
   //     client.send(destination: 'https://k10a704.p.ssafy.io/Multi/ws/pub/flag/$roomIdx');
   //     print('목적지 추천 버튼이 눌렸으므로 깃발 요청을 보냅니다.');
@@ -232,7 +317,7 @@ class StompController extends GetxController {
     String? accessToken = await storage.read(key: 'accessToken');
     newclient = StompClient(
       config: StompConfig.sockJS(
-        url: dotenv.env['STOMP_URL']!,
+        url: dotenv.env['MULTI_URL']!,
         onConnect: (p0) {
           newclient.subscribe(
             destination: '/sub/game/$newRoomSeq',
