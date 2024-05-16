@@ -26,7 +26,7 @@ class runTime extends StatelessWidget {
             // countdown  값 받아오기
             const Text(
               '00:01:50',
-              style: TextStyle(color: GREEN_COLOR, fontSize: 35, fontWeight: FontWeight.bold))
+              style: TextStyle(color: GREEN_COLOR, fontSize: 35, fontWeight: FontWeight.bold)),
           ],
         ),
       )

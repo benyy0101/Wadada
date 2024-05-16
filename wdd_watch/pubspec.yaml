@@ -36,6 +36,8 @@ dependencies:
   cupertino_icons: ^1.0.2
   wear: ^1.1.0
   square_percent_indicater: ^0.1.0
+  flutter_blue_plus: ^1.32.6
+
 
 dev_dependencies:
   flutter_test:

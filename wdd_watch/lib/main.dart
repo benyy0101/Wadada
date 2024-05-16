@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData.dark(useMaterial3: true),
       // home: const HomeScreen(),
       // home: const RunStartScreen(),
-      home: const ProceedingScreen(),
+      home: ProceedingScreen(),
       // home: const runPace(),
     );
   }

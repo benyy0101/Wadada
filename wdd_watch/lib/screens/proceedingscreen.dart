@@ -8,7 +8,11 @@ import 'package:watch_app/screens/components/time.dart';
 // 진행 중 화면
 
 class ProceedingScreen extends StatefulWidget {
-  const ProceedingScreen({super.key});
+  // final bool connected;
+  const ProceedingScreen({
+    // required this.connected,
+    super.key
+  });
 
   @override
   State<ProceedingScreen> createState() => _ProceedingScreenState();
@@ -25,7 +29,39 @@ class _ProceedingScreenState extends State<ProceedingScreen>
     super.initState();
     _pageViewController = PageController();
     _tabController = TabController(length: 4, vsync: this);
+    // _initWear();
   }
+
+  // void _initWear() {
+  //   _watch.messageStream.listen(
+  //     (message) => setState(
+  //       () {
+  //         if (message.containsKey('runningDistance')) {
+  //           _runningDistance = message['runningDistance'].toString();
+  //         }
+  //         if (message.containsKey('runningTime')) {
+  //           _runningTime = message['runningTime'];
+  //         }
+  //         if (message.containsKey('userPace')) {
+  //           _userPace = message['userPace'];
+  //         }
+  //         if (message.containsKey('userCalories')) {
+  //           _userCalories = message['userCalories'].toString();
+  //         }
+  //         if (message.containsKey('isStart')) {
+  //           isStart = message['isStart'];
+  //         }
+  //         if (message.containsKey('stop')) {
+  //           toStop();
+  //         }
+  //       },
+  //     ),
+  //   );
+  // }
+
+  // void _send(message) {
+  //   _watch.sendMessage(message);
+  // }
 
   @override
   void dispose() {
