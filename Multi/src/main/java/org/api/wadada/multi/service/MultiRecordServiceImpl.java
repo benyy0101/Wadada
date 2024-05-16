@@ -162,7 +162,7 @@ public class MultiRecordServiceImpl implements MultiRecordService {
             }
         }
         // 다 끊어진 경우 게임 종료
-        if(cnt == roomDto.getCurPeople()){
+        if(cnt/2 == roomDto.getCurPeople()){
             stopPlayerRankUpdates(roomSeq);
         }
 
