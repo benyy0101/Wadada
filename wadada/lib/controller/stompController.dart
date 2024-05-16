@@ -20,6 +20,45 @@ import 'package:wadada/screens/multimainpage/multi_main.dart';
 import 'package:wadada/screens/multirunpage/multirunpage.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
+class MarathonRankings {
+  String memberImage;
+  String memberName;
+  int memberDist;
+  int memberTime;
+  int memberRank;
+
+  MarathonRankings(
+      {required this.memberImage,
+      required this.memberName,
+      required this.memberDist,
+      required this.memberTime,
+      required this.memberRank});
+
+  factory MarathonRankings.fromJson(Map<String, dynamic> json) {
+    return MarathonRankings(
+        memberImage: json['memberImage'] as String,
+        memberName: json['memberName'] as String,
+        memberDist: json['memberDist'] as int,
+        memberTime: json['memberTime'] as int,
+        memberRank: json['memberRank'] as int);
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'memberImage': memberImage,
+      'memberName': memberName,
+      'memberDist': memberDist,
+      'memberTime': memberTime,
+      'memberRank': memberRank
+    };
+  }
+
+  @override
+  String toString() {
+    return 'MarathonRankings(memberImage: $memberImage, memberName: $memberName, memberDist: $memberDist, memberTime: $memberTime, memberRank: $memberRank)';
+  }
+}
+
 class StompController extends GetxController {
   StompClient client = StompClient(config: StompConfig(url: ''));
   StompClient newclient = StompClient(config: StompConfig(url: ''));
@@ -65,6 +104,7 @@ class StompController extends GetxController {
       memberReady: false,
       manager: false);
   final storage = FlutterSecureStorage();
+  RxList<MarathonRankings> rankingList = <MarathonRankings>[].obs;
   StompController({required this.roomIdx});
   // late SimpleRoom roomInfo;
 
@@ -259,7 +299,7 @@ class StompController extends GetxController {
                       marathonRecordStart: point, marathonSeq: dead));
                   print(temp);
                   //메세지를 기다림
-                } else if ((res['body']['message'] ==
+                } else if ((res['body']['action'] ==
                     '/Marathon/game/rank/{roomSeq}')) {
                   // Get.to(MarathonRun(time: time, dist: dist, appKey: appKey, controller: controller, multiController: multiController, roomInfo: roomInfo));
                   //게임 페이지로 이동

@@ -11,6 +11,7 @@ import 'package:wadada/controller/stompController.dart';
 import 'package:wadada/models/marathon.dart';
 import 'package:wadada/models/multiroom.dart';
 import 'package:wadada/provider/multiProvider.dart';
+import 'package:wadada/repository/marathonRepo.dart';
 import 'package:wadada/repository/multiRepo.dart';
 import 'package:wadada/screens/multirankpage/multirankpage.dart';
 import 'package:wadada/screens/multiresultpage/multiresultpage.dart';
@@ -63,7 +64,6 @@ class _MarathonState extends State<MarathonRun> {
   double totalDistance = 0.0;
   int totalDistanceInt = 0;
   String formattedDistance = '0.00';
-  List<dynamic>? rankingData = [];
   ValueNotifier<Duration> elapsedTimeNotifier =
       ValueNotifier<Duration>(Duration.zero);
   final GlobalKey<ClockState> _clockKey = GlobalKey<ClockState>();
@@ -95,70 +95,54 @@ class _MarathonState extends State<MarathonRun> {
 
     // widget.controller.gamego.addListener(_onGameGoChanged);
     startGameGoTimer();
-    print('ㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠ: ${widget.controller.gameStartResponse.value}');
-
-    // clock = Clock(
-    //   key: _clockKey,
-    //   time: widget.time,
-    //   elapsedTimeNotifier: elapsedTimeNotifier,
-    // );
-
-    // widget.controller.requestinfo.addListener(() {
-    //   sendrequestInfo();
-    // });
-
-    widget.controller.ranking.addListener(() {
-      rankingData = widget.controller.ranking.value;
-      updateRankingData(rankingData);
-    });
     _subscribeToTotalDistance();
   }
 
-  void updateRankingData(List<dynamic>? newRankingData) async {
-    if (newRankingData == null || newRankingData.isEmpty) return;
+  // void updateRankingData(List<dynamic>? newRankingData) async {
+  //   if (newRankingData == null || newRankingData.isEmpty) return;
 
-    final exceedingMembers = rankingData!
-        .where((member) => member['memberDist'] >= (widget.dist * 1000))
-        .toList();
-    print('거리 초과하는 사람 $exceedingMembers');
+  //   final exceedingMembers = rankingData!
+  //       .where((member) => member['memberDist'] >= (widget.dist * 1000))
+  //       .toList();
+  //   print('거리 초과하는 사람 $exceedingMembers');
 
-    if (exceedingMembers.isNotEmpty) {
-      final storage = FlutterSecureStorage();
-      String? username1 = await storage.read(key: 'kakaoNickname');
-      final myRank = rankingData!
-          .indexWhere((member) => member['memberNickname'] == username1);
-      List<dynamic>? endranking = newRankingData;
+  //   if (exceedingMembers.isNotEmpty) {
+  //     final storage = FlutterSecureStorage();
+  //     String? username1 = await storage.read(key: 'kakaoNickname');
+  //     final myRank = rankingData!
+  //         .indexWhere((member) => member['memberNickname'] == username1);
+  //     List<dynamic>? endranking = newRankingData;
 
-      double elapsedSeconds = _clockKey.currentState!.getElapsedSeconds();
-      _clockKey.currentState!.setRunning(false);
+  //     double elapsedSeconds = _clockKey.currentState!.getElapsedSeconds();
+  //     _clockKey.currentState!.setRunning(false);
 
-      List<LatLng> coordinates = myMap.getCoordinates();
-      List<Map<String, double>> distanceSpeed = myMap.getdistanceSpeed();
-      List<Map<String, double>> distancePace = myMap.getdistancePace();
+  //     List<LatLng> coordinates = myMap.getCoordinates();
+  //     List<Map<String, double>> distanceSpeed = myMap.getdistanceSpeed();
+  //     List<Map<String, double>> distancePace = myMap.getdistancePace();
 
-      Duration elapsedTime = Duration(seconds: elapsedSeconds.round());
-      String formattedElapsedTime = formatElapsedTime(elapsedTime);
+  //     Duration elapsedTime = Duration(seconds: elapsedSeconds.round());
+  //     String formattedElapsedTime = formatElapsedTime(elapsedTime);
 
-      // 게임 결과 페이지로 이동
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => MultiRank(
-            elapsedTime: elapsedTime,
-            coordinates: coordinates,
-            startLocation: coordinates.first,
-            endLocation: coordinates.last,
-            totaldist: formattedDistance,
-            distanceSpeed: distanceSpeed,
-            distancePace: distancePace,
-            myRank: myRank + 1,
-            endRank: endranking,
-            controller: widget.controller,
-          ),
-        ),
-      );
-    }
-  }
+  //     // 게임 결과 페이지로 이동
+  //     Navigator.push(
+  //       context,
+  //       MaterialPageRoute(
+  //         builder: (context) => MultiRank(
+  //           elapsedTime: elapsedTime,
+  //           coordinates: coordinates,
+  //           startLocation: coordinates.first,
+  //           endLocation: coordinates.last,
+  //           totaldist: formattedDistance,
+  //           distanceSpeed: distanceSpeed,
+  //           distancePace: distancePace,
+  //           myRank: myRank + 1,
+  //           endRank: endranking,
+  //           controller: widget.controller,
+  //         ),
+  //       ),
+  //     );
+  //   }
+  // }
 
   void _subscribeToTotalDistance() {
     myMap.totalDistanceNotifier.addListener(() {
@@ -170,61 +154,6 @@ class _MarathonState extends State<MarathonRun> {
       });
     });
   }
-
-  // Future<void> sendrequestInfo() async {
-  //   final dio = Dio();
-  //   final url = Uri.parse('https://k10a704.p.ssafy.io/Multi/game/data');
-  //   final storage = FlutterSecureStorage();
-  //   String? accessToken = await storage.read(key: 'accessToken');
-  //   String? username1 = await storage.read(key: 'kakaoNickname');
-  //   // int totalDistance11 = 0;
-
-  //   // myMap.totalDistanceNotifier.addListener(() {
-  //   //   setState(() {
-  //   //     totalDistance1 = myMap.totalDistanceNotifier.value;
-  //   //     totalDistance11 = totalDistance1.round();
-  //   //     // double distanceInKm = totalDistance / 1000.0;
-  //   //     // formattedDistance = distanceInKm.toStringAsFixed(2);
-  //   //   });
-  //   // });
-
-  //   double elapsedSeconds = _clockKey.currentState!.getElapsedSeconds();
-  //   int intelapsedseconds = elapsedSeconds.toInt();
-
-  //   // int totalDistance1 = totalDistance.toInt();
-
-  //   final requestBody = jsonEncode({
-  //     "roomSeq": widget.controller.receivedRoomSeq,
-  //     "userDist": totalDistanceInt,
-  //     "userTime": intelapsedseconds,
-  //     "userName": username1,
-  //   });
-
-  //   print('roomSeq111111: ${widget.controller.receivedRoomSeq}');
-  //   print('userTime: $intelapsedseconds');
-  //   print('userDist: $totalDistanceInt');
-  //   print('userName: $username1');
-
-  //   try {
-  //     final response = await dio.post(
-  //       url.toString(),
-  //       data: requestBody,
-  //       options: Options(headers: {
-  //         'Content-Type': 'application/json',
-  //         'Accept': 'application/json',
-  //         'authorization': accessToken,
-  //       }),
-  //     );
-
-  //     if (response.statusCode == 200) {
-  //       print('현재 정보 전송 성공: ${response.data}');
-  //     } else {
-  //       print('서버 요청 실패: ${response.statusCode}');
-  //     }
-  //   } catch (e) {
-  //     print('거리 보내기 - 요청 처리 중 에러 발생: $e');
-  //   }
-  // }
 
   void startTimers() {
     Timer(Duration(seconds: 3), () {
@@ -267,14 +196,6 @@ class _MarathonState extends State<MarathonRun> {
     });
   }
 
-  // void _onGameGoChanged() {
-  //   // bool response = widget.controller.gamego.value;
-  //   if (widget.controller.gamego.value) {
-  //     // 게임 시작 처리 로직을 여기에 추가합니다.
-  //     closeLoadingAndStartCountdown();
-  //   }
-  // }
-
   void onPageLoaded() {
     if (widget.controller.gameStartResponse.value) {
       myMap.startLocationNotifier.addListener(() {
@@ -292,25 +213,6 @@ class _MarathonState extends State<MarathonRun> {
         closeLoadingAndStartCountdown();
       }
     });
-
-    // myMap.startLocationNotifier.addListener(() {
-    //   if (myMap.startLocation != null) {
-    //       sendLocationToServer();
-    //   }
-    // });
-
-    // myMap.startLocationNotifier.addListener(() {
-    //   if (myMap.startLocation != null) {
-    //       print("ㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇ");
-    //   }
-    // });
-
-    // // 30초 후에 로딩 창이 닫히도록 타이머 설정
-    // Timer(Duration(seconds: 30), () {
-    //   print('30초 지남');
-    //   // 30초 후에 로딩 창 닫기 및 카운트다운 시작
-    //   closeLoadingAndStartCountdown();
-    // });
   }
 
   void closeLoadingAndStartCountdown() {
@@ -320,67 +222,6 @@ class _MarathonState extends State<MarathonRun> {
     });
     startTimers();
   }
-
-  // 008 controller
-  // Future<void> sendLocationToServer() async {
-  //   final startLocation = myMap.startLocation;
-
-  //   double lat = startLocation!.latitude;
-  //   double long = startLocation.longitude;
-  //   int roomIdx = widget.controller.receivedRoomSeq;
-  //   int people = widget.roomInfo.roomPeople;
-
-  //   controller.sendStartLocation(lat, long, roomIdx, people);
-  //   print('ㅇㅇ');
-  // }
-
-  // Future<void> sendLocationToServer() async {
-  //   final startLocation = myMap.startLocation;
-  //   final dio = Dio();
-  //   int recordMode = widget.time > 0 ? 2 : 1;
-
-  //   if (startLocation != null) {
-  //     final url = Uri.parse('https://k10a704.p.ssafy.io/Multi/start');
-  //     final storage = FlutterSecureStorage();
-  //     String? accessToken = await storage.read(key: 'accessToken');
-
-  //     final requestBody = jsonEncode({
-  //       // "recordMode": recordMode,
-  //       "recordStartLocation":
-  //           "POINT(${startLocation.latitude} ${startLocation.longitude})",
-  //       "recordPeople": widget.roomInfo.marathonParticipate,
-  //       // "roomSeq": widget.controller.receivedRoomSeq,
-  //       "roomSeq": widget.controller.receivedRoomSeq,
-  //     });
-
-  //     try {
-  //       final response = await dio.post(
-  //         url.toString(),
-  //         data: requestBody,
-  //         options: Options(headers: {
-  //           'Content-Type': 'application/json',
-  //           'Accept': 'application/json',
-  //           'authorization': accessToken,
-  //         }),
-  //       );
-
-  //       if (response.statusCode == 200) {
-  //         // recordSeq = response.data;
-  //         final responseData = response.data as Map<String, dynamic>;
-  //         recordSeq = responseData['recordSeq'] as int?;
-  //         print('서버 요청 성공: $recordSeq');
-  //       } else {
-  //         print('서버 요청 실패: ${response.statusCode}');
-  //       }
-  //     } catch (e) {
-  //       print(widget.controller.receivedRoomSeq);
-  //       print(widget.roomInfo.marathonParticipate);
-  //       print('요청 처리 중 에러 발생: $e');
-  //     }
-  //   } else {
-  //     print("초기 위치를 찾을 수 없습니다.");
-  //   }
-  // }
 
   String formatPace(double paceInSecondsPerKm) {
     int minutes = (paceInSecondsPerKm / 60).floor();
@@ -440,101 +281,12 @@ class _MarathonState extends State<MarathonRun> {
     multiController.endGame();
   }
 
-  // Future<void> _sendRecordToServer() async {
-  //   final startLocation = myMap.startLocation;
-  //   final endLocation = myMap.endLocation;
-  //   final url = Uri.parse('https://k10a704.p.ssafy.io/Multi/result');
-  //   final dio = Dio();
-
-  //   int recordMode = widget.time > 0 ? 2 : 1;
-
-  //   // final elapsedTime = _clockKey.currentState?.elapsed ?? Duration.zero;
-  //   // final formattedElapsedTime = formatElapsedTime(elapsedTime);
-  //   // print(formattedElapsedTime);
-  //   double elapsedSeconds = _clockKey.currentState!.getElapsedSeconds();
-  //   int intelapsedseconds = elapsedSeconds.toInt();
-  //   print('초 시간? $intelapsedseconds');
-  //   Duration elapsedTime = Duration(seconds: elapsedSeconds.round());
-  //   String formattedElapsedTime = formatElapsedTime(elapsedTime);
-  //   print(formattedElapsedTime);
-
-  //   List<LatLng> coordinates = myMap.getCoordinates();
-  //   List<Map<String, double>> distanceSpeed = myMap.getdistanceSpeed();
-  //   List<Map<String, double>> distancePace = myMap.getdistancePace();
-
-  //   // 평균 속도 계산
-  //   double calculateAverageSpeed(List<Map<String, double>> distanceSpeed) {
-  //       double totalSpeed = 0.0;
-  //       for (Map<String, double> entry in distanceSpeed) {
-  //           totalSpeed += entry['speed'] ?? 0.0;
-  //       }
-  //       double averageSpeed = totalSpeed / distanceSpeed.length;
-  //       return averageSpeed;
-  //   }
-
-  //   // 평균 페이스 계산
-  //   double calculateAveragePace(List<Map<String, double>> distancePace) {
-  //       double totalPace = 0.0;
-  //       for (Map<String, double> entry in distancePace) {
-  //           totalPace += entry['pace'] ?? 0.0;
-  //       }
-  //       double averagePace = totalPace / distancePace.length;
-  //       return averagePace;
-  //   }
-
-  // double averageSpeed = calculateAverageSpeed(distanceSpeed);
-  // double averagePaceInSecondsPerKm = calculateAveragePace(distancePace);
-  // averageSpeed = double.parse(averageSpeed.toStringAsFixed(2)) * 1000;
-
-  // int intaveragespeed = averageSpeed.toInt();
-  // int intaveragepaceinkmperhour = averagePaceInSecondsPerKm.toInt();
-
-  //   final requestBody = jsonEncode({
-  //       "recordMode": recordMode,
-  //       "singleRecordSeq": recordSeq,
-  //       "recordImage": 'https://github.com/jjeong41/t/assets/103355863/4e6d205d-694e-458c-b992-8ea7c27b85b1',
-  //       "recordDist": totalDistance, // int
-  //       "recordTime": intelapsedseconds, // int
-  //       "recordStartLocation": "POINT(${startLocation?.latitude} ${startLocation?.longitude})",
-  //       "recordEndLocation": "POINT(${endLocation?.latitude} ${endLocation?.longitude})",
-  //       "recordWay": jsonEncode(coordinates),
-  //       "recordSpeed": jsonEncode(distanceSpeed),
-  //       "recordPace": jsonEncode(distancePace),
-  //       "recordHeartbeat": jsonEncode(distancePace),
-  //       "recordRank": 2,
-  //       "recordMeanSpeed": intaveragespeed, // int
-  //       "recordMeanPace": intaveragepaceinkmperhour, // int
-  //       "recordMeanHeartbeat": 0 // int
-  //   });
-
-  //   try {
-  //     final response = await dio.patch(
-  //       url.toString(),
-  //       data: requestBody,
-  //       options: Options(headers: {
-  //         'Content-Type': 'application/json',
-  //         'Accept': 'application/json',
-  //         'authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNDUyNzIxNzM3IiwiYXV0aCI6IlJPTEVfU09DSUFMIiwiZXhwIjoxNzE0ODgzODg1fQ.7nS18Nv6vBsmIIzOh03-_RYS1UHcXDLygj9PUwDN1Vo',
-  //       }),
-  //     );
-
-  //     if (response.statusCode == 200) {
-  //       print('responseData type: ${response.data.runtimeType}');
-  //       print('서버 요청 성공 - 결과 저장');
-  //     } else {
-  //       print('서버 요청 실패: ${response.statusCode}');
-  //     }
-  //   } catch (e) {
-  //     print('요청 처리 중 에러 발생: $e');
-  //   }
-  //   print(jsonDecode(requestBody));
-  // }
-
   void _handleEndButtonPress(BuildContext context) {
     StompController stompController =
         Get.put(StompController(roomIdx: widget.roomInfo.marathonSeq));
-
-    
+    MarathonRepository repo = MarathonRepository();
+    stompController.client.deactivate();
+    // print(stompController.client.isActive);
     if (_clockKey.currentState != null) {
       // Duration elapsedTime = _clockKey.currentState!.elapsed;
       double elapsedSeconds = _clockKey.currentState!.getElapsedSeconds();
@@ -545,10 +297,25 @@ class _MarathonState extends State<MarathonRun> {
       List<Map<String, double>> distancePace = myMap.getdistancePace();
 
       Duration elapsedTime = Duration(seconds: elapsedSeconds.round());
-      String formattedElapsedTime = formatElapsedTime(elapsedTime);
 
       // _sendRecordToServer();
-
+      Marathon result = Marathon(
+          marathonSeq: 0,
+          marathonRecordRank: 1,
+          marathonRecordStart: 'POINT(1 1)',
+          marathonRecordWay: '',
+          marathonRecordEnd: 'POINT(2 2)',
+          marathonRecordDist: totalDistanceInt,
+          marathonRecordTime: elapsedSeconds.toInt(),
+          marathonRecordImage: '',
+          marathonRecordPace: '',
+          marathonRecordMeanPace: -1,
+          marathonRecordSpeed: '',
+          marathonRecordMeanSpeed: -1,
+          marathonRecordHeartbeat: '',
+          marathonRecordMeanHeartbeat: -1,
+          marathonRecordIsWin: true);
+      repo.endMarathon(result);
       print('스피드 - $distanceSpeed');
       print('페이스 - $distancePace');
 
@@ -915,7 +682,7 @@ class _MarathonState extends State<MarathonRun> {
                           const EdgeInsets.only(left: 20, right: 20, top: 10),
                       width: 400,
                       height: 200,
-                      child: rankingData!.isEmpty
+                      child: stompController.rankingList!.isEmpty
                           ? Center(
                               child: Text(
                                 '곧 실시간 순위가 나타납니다',
@@ -926,9 +693,12 @@ class _MarathonState extends State<MarathonRun> {
                             )
                           : Column(
                               children: [
-                                Expanded(
-                                  child: PageView.builder(
-                                    itemCount: (rankingData!.length / 3).ceil(),
+                                Expanded(child: Obx(() {
+                                  return PageView.builder(
+                                    itemCount:
+                                        (stompController.rankingList!.length /
+                                                3)
+                                            .ceil(),
                                     onPageChanged: (pageIndex) {
                                       setState(() {
                                         currentPageIndex = pageIndex;
@@ -936,9 +706,10 @@ class _MarathonState extends State<MarathonRun> {
                                     },
                                     itemBuilder: (context, pageIndex) {
                                       final startIndex = pageIndex * 3;
-                                      final endIndex = (startIndex + 3)
-                                          .clamp(0, rankingData!.length);
-                                      final currentPageData = rankingData!
+                                      final endIndex = (startIndex + 3).clamp(0,
+                                          stompController.rankingList!.length);
+                                      final currentPageData = stompController
+                                          .rankingList!
                                           .sublist(startIndex, endIndex);
 
                                       return Column(
@@ -949,7 +720,7 @@ class _MarathonState extends State<MarathonRun> {
                                             child: Row(
                                               children: [
                                                 Text(
-                                                  '${ranking['memberRank']}',
+                                                  '${ranking.memberRank}',
                                                   style: TextStyle(
                                                     color: DARK_GREEN_COLOR,
                                                     fontSize: 23,
@@ -957,14 +728,12 @@ class _MarathonState extends State<MarathonRun> {
                                                   ),
                                                 ),
                                                 SizedBox(width: 20),
-                                                if (ranking['memberProfile'] !=
-                                                        null &&
-                                                    ranking['memberProfile']
-                                                        .isNotEmpty)
+                                                if (ranking
+                                                    .memberImage.isNotEmpty)
                                                   CircleAvatar(
                                                     backgroundImage:
-                                                        NetworkImage(ranking[
-                                                            'memberProfile']),
+                                                        NetworkImage(ranking
+                                                            .memberImage),
                                                     radius: 20,
                                                   )
                                                 else
@@ -979,7 +748,7 @@ class _MarathonState extends State<MarathonRun> {
                                                   ),
                                                 SizedBox(width: 15),
                                                 Text(
-                                                  '${ranking['memberNickname']}',
+                                                  ranking.memberName,
                                                   style: TextStyle(
                                                     color: Colors.black,
                                                     fontSize: 20,
@@ -987,7 +756,7 @@ class _MarathonState extends State<MarathonRun> {
                                                 ),
                                                 Spacer(),
                                                 Text(
-                                                  '${(ranking['memberDist'] / 1000).toStringAsFixed(2)} km',
+                                                  '${(ranking.memberDist / 1000).toStringAsFixed(2)} km',
                                                   style: TextStyle(
                                                     color: DARK_GREEN_COLOR,
                                                     fontSize: 23,
@@ -1000,8 +769,8 @@ class _MarathonState extends State<MarathonRun> {
                                         }).toList(),
                                       );
                                     },
-                                  ),
-                                ),
+                                  );
+                                })),
 
                                 // 페이지 인덱스를 나타내는 동그라미들
                                 Padding(
@@ -1010,8 +779,9 @@ class _MarathonState extends State<MarathonRun> {
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: List.generate(
-                                        (rankingData!.length / 3).ceil(),
-                                        (index) {
+                                        (stompController.rankingList!.length /
+                                                3)
+                                            .ceil(), (index) {
                                       return GestureDetector(
                                         onTap: () {
                                           setState(() {
