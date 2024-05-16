@@ -21,6 +21,11 @@ class StompController extends GetxController {
   StompClient newclient = StompClient(config: StompConfig(url: ''));
   StompClient flagclient = StompClient(config: StompConfig(url: ''));
   bool isNewClientActivated = false;
+  RxBool isRecommendButtonPressed = false.obs;
+  // RxDouble userlatitude = 0.0.obs;
+  // RxDouble userlongitude = 0.0.obs;
+  RxBool isFlagRequested = false.obs;
+  ValueNotifier<bool> flagrequested = ValueNotifier<bool>(false);
   final int roomIdx;
 
   String accessToken = '';
@@ -34,6 +39,9 @@ class StompController extends GetxController {
   ValueNotifier<List<dynamic>> ranking = ValueNotifier<List<dynamic>>([]);
   ValueNotifier<List<dynamic>> memberInfoList = ValueNotifier<List<dynamic>>([]);
   ValueNotifier<Set<dynamic>> multiflag = ValueNotifier<Set<dynamic>>({});
+  ValueNotifier<List<dynamic>> centerplace = ValueNotifier<List<dynamic>>([]);
+  ValueNotifier<double> userlatitude = ValueNotifier<double>(0.0);
+  ValueNotifier<double> userlongitude = ValueNotifier<double>(0.0);
   late dynamic unsubscribeFn;
   RxList<CurrentMember> members = <CurrentMember>[].obs;
   MultiRepository repo = MultiRepository(provider: MultiProvider());
@@ -52,6 +60,7 @@ class StompController extends GetxController {
       manager: false);
   final storage = FlutterSecureStorage();
   StompController({required this.roomIdx});
+  // late SimpleRoom roomInfo;
 
   @override
   Future<void> onInit() async {
@@ -63,6 +72,7 @@ class StompController extends GetxController {
   }
 
   void attend(int roomIdx) async {
+
     print("-------------attend-------------");
     String? accessToken = await storage.read(key: 'accessToken');
     // bool unsubscribed = false;
@@ -77,6 +87,7 @@ class StompController extends GetxController {
                   'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNDYzNDMxNDUzIiwiYXV0aCI6IlJPTEVfU09DSUFMIiwiZXhwIjoxNzE1NDA1MzkzfQ.dmjUkVX1sFe9EpYhT3SGO3uC7q1dLIoddBvzhoOSisM'
             },
             callback: (frame) async {
+              
               try {
                 print("Incoming Messages:--------------------");
 
@@ -91,8 +102,44 @@ class StompController extends GetxController {
                   res['body'] = jsonDecode(res['body']);
                 }
 
-                print(res['body'][roomIdx.toString()]);
+                ever(isRecommendButtonPressed, (isPressed) {
+                  // print("@@@@@@@@@@@@@@ $isPressed");
+                  // print("////////////////// $isRecommendButtonPressed");
+                  isPressed = isRecommendButtonPressed.value;
+                  if (isPressed) {
+                    client.send(destination: '/pub/flag/$roomIdx');
+                    print('목적지 추천 버튼이 눌렸으므로 깃발 요청을 보냅니다.');
+                    isRecommendButtonPressed.value = false; // 상태 변수 초기화
+                    // print(isRecommendButtonPressed);
+                    // print(isRecommendButtonPressed);
+                  }
 
+                });
+
+                print('깃발 요청 오면 여깅 ${res['body']}');
+
+                // print(res['body'][roomIdx.toString()]);
+
+                // 깃발
+                if (res['body']['message'] == "깃발요청") {
+                  flagrequested.value = true;
+                  print('나 방장임? $isOwner');
+                }
+
+                if (res['body']['message'] == "사용자 위치 정보가 없습니다") {
+                  flagrequested.value = false;
+                }
+
+                if (res['body']['latitude'] != null) {
+                  flagrequested.value = false;
+                  print('깃발 위치 받아옴 ${res['body']}');
+                  userlatitude.value = res['body']['latitude'];
+                  print('${userlatitude.value}');
+                  userlongitude.value = res['body']['longitude'];
+                  print('방장인지 아닌지 확인 $isOwner');
+                }
+
+                // attend
                 if (res['body'] == null) {
                   print("null임");
                   return;
@@ -110,7 +157,7 @@ class StompController extends GetxController {
 
                     int newRoomSeq = res['body']['roomSeq'];
                     print('roomSeq $newRoomSeq');
-
+                    
                     setupNewSubscription(newRoomSeq);
                     client.deactivate();
 
@@ -172,6 +219,12 @@ class StompController extends GetxController {
       }
     });
   }
+
+  //  void sendFlagRequest(int roomIdx) {
+  //     client.send(destination: 'https://k10a704.p.ssafy.io/Multi/ws/pub/flag/$roomIdx');
+  //     print('목적지 추천 버튼이 눌렸으므로 깃발 요청을 보냅니다.');
+  //     isRecommendButtonPressed = false.obs; // 상태 변수 초기화
+  // }
 
   void setupNewSubscription(int newRoomSeq) async {
     // client.deactivate();
@@ -276,80 +329,195 @@ class StompController extends GetxController {
     );
 
     newclient.activate();
-  // }
   }
 
+//   void flaginfo(int roomIdx) {
+//   try {
+//     if (client.isActive) {
+//       client.send(destination: 'https://k10a704.p.ssafy.io/Multi/ws/pub/flag/$roomIdx');
+//       print("--------------깃발 요청-----------------");
+//     } else {
+//       throw Exception("깃발 요청 x");
+//     }
+//   } catch (e) {
+//     print(e);
+//   }
+// }
+
+//   void flaginfo(int roomIdx) async {
+//   try {
+//     if (client.isActive) {
+//       String? accessToken = await storage.read(key: 'accessToken');
+      
+//       client.subscribe(
+//         destination: '/sub/flag/$roomIdx',
+//         headers: {
+//           'Authorization': accessToken ??
+//               'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNDYzNDMxNDUzIiwiYXV0aCI6IlJPTEVfU09DSUFMIiwiZXhwIjoxNzE1NDA1MzkzfQ.dmjUkVX1sFe9EpYhT3SGO3uC7q1dLIoddBvzhoOSisM'
+//         },
+//         callback: (frame) async {
+//           try {
+//             Map<String, dynamic> res = jsonDecode(frame.body!);
+//             if (res['body'].runtimeType == String &&
+//                 res['statusCodeValue'] != 200) {
+//               throw Exception(jsonDecode(frame.body!)['body']);
+//             } else if (res['body'].runtimeType == String) {
+//               res['body'] = jsonDecode(res['body']);
+//             }
+
+//             print("응답 수신: ${res['body']}");
+
+//             // 응답 처리 로직 추가
+//             if (res['body']['message'] == "깃발요청") {
+//               if (!getflag) {
+//                 final url = Uri.parse('https://k10a704.p.ssafy.io/Multi/flag');
+//                 final requestBody = jsonEncode({
+//                   "roomIdx": roomIdx,
+//                 });
+
+//                 final dio = Dio();
+//                 var response = await dio.post(
+//                   url.toString(),
+//                   data: requestBody,
+//                   options: Options(headers: {
+//                     'Content-Type': 'application/json',
+//                     'Accept': 'application/json',
+//                     'authorization': accessToken,
+//                   }),
+//                 );
+
+//                 print("깃발 요청 전송: $response");
+
+//                 getflag = true;
+//               }
+//             }
+
+//             if (res['body'] == "사용자 위치 정보가 없습니다") {
+//               getflag = false;
+//               multiflag.value = {};
+//             }
+
+//             if (res['body']['latitude'] != null) {
+//               getflag = false;
+//               multiflag.value = res['body'];
+//             }
+//           } catch (e) {
+//             print("깃발 요청 응답 처리 중 에러 발생: $e");
+//           }
+//         },
+//       );
+
+//       client.send(destination: '/pub/flag/$roomIdx');
+//       print("--------------깃발 요청-----------------");
+//     } else {
+//       throw Exception("깃발 요청 x");
+//     }
+//   } catch (e) {
+//     print(e);
+//   }
+// }
+
+  // void flaginfo(int roomIdx) {
+  //   try {
+  //     if (client.isActive) {
+  //        Map<String, dynamic> resp = jsonDecode(frame.body!);
+  //         if (resp['body'].runtimeType == String &&
+  //             resp['statusCodeValue'] != 200) {
+  //           throw Exception(jsonDecode(frame.body!)['body']);
+  //         } else if (resp['body'].runtimeType == String) {
+  //           resp['body'] = jsonDecode(resp['body']);
+  //         }
+  //       client.send(destination: 'https://k10a704.p.ssafy.io/Multi/ws/pub/flag/$roomIdx');
+  //       print("--------------깃발 요청-----------------");
+  //       print(res['body']);
+  //       // print(response);
+  //     } else {
+  //       throw Exception("깃발 요청 x");
+  //     }
+  //   } catch (e) {
+  //     print(e);
+  //   }
+  // }
+
   // void flaginfo(int roomIdx) async {
-  //   // client.deactivate();
-  //   // if (client.isActive) {
-  //   //   client.deactivate();
-  //   // }
+  //   print('Subscribing to flag info for roomIdx: $roomIdx');
   //   String? accessToken = await storage.read(key: 'accessToken');
   //   flagclient = StompClient(
   //     config: StompConfig.sockJS(
   //       url: dotenv.env['STOMP_URL']!,
   //       onConnect: (p0) {
-  //         flagclient.subscribe(
-  //           destination: '/Multi/ws/pub/flag/$roomIdx',
-  //           headers: {
-  //             'Authorization': accessToken ??
-  //                 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNDYzNDMxNDUzIiwiYXV0aCI6IlJPTEVfU09DSUFMIiwiZXhwIjoxNzE1NDA1MzkzfQ.dmjUkVX1sFe9EpYhT3SGO3uC7q1dLIoddBvzhoOSisM'
-  //           },
-  //           callback: (frame) async {
-  //             try {
-  //               Map<String, dynamic> res = jsonDecode(frame.body!);
-  //               if (res['body'].runtimeType == String &&
-  //                   res['statusCodeValue'] != 200) {
-  //                 throw Exception(jsonDecode(frame.body!)['body']);
-  //               } else if (res['body'].runtimeType == String) {
-  //                 res['body'] = jsonDecode(res['body']);
-  //               }
-
-  //               final url = Uri.parse('https://k10a704.p.ssafy.io/Multi/flag');
-  //               final storage = FlutterSecureStorage();
-  //               String? accessToken = await storage.read(key: 'accessToken');
-  //               final dio = Dio();
-  //               dynamic response;
-
-  //               if (res['body']['message'] == "깃발요청") {
-  //                 if (getflag == false) {
-  //                   final requestBody = jsonEncode({
-  //                     "roomIdx": roomIdx,
-  //                     // "latitude": totalDistanceInt,
-  //                     // "longitude": intelapsedseconds,
-  //                   });
-
-  //                   response = await dio.post(
-  //                     url.toString(),
-  //                     data: requestBody,
-  //                     options: Options(headers: {
-  //                       'Content-Type': 'application/json',
-  //                       'Accept': 'application/json',
-  //                       'authorization': accessToken,
-  //                     }),
-  //                   );
-
-  //                   getflag = true;
-  //                 }
-  //               }
-
-  //               if (res['body'] == "사용자 위치 정보가 없습니다") {
-  //                 multiflag.value = {};
-  //               }
-
-  //               if (res['body']['latitude'] != null) {
-  //                 multiflag.value = res['body'];
-  //               }
-                
-  //               } catch(e) {
-  //                 print(e);
-  //               }
-
-  //             // } catch(e) {
-  //             //   print(e);
+  //         if (client.isActive) {
+  //           flagclient.subscribe(
+  //             destination: '/pub/flag/$roomIdx',
+  //             headers: {
+  //               'Authorization': accessToken ??
+  //                   'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNDYzNDMxNDUzIiwiYXV0aCI6IlJPTEVfU09DSUFMIiwiZXhwIjoxNzE1NDA1MzkzfQ.dmjUkVX1sFe9EpYhT3SGO3uC7q1dLIoddBvzhoOSisM'
   //             },
-  //           // },
-  //         );
+  //             callback: (frame) async {
+  //               try {
+
+  //                 Map<String, dynamic> res = jsonDecode(frame.body!);
+  //                 if (res['body'].runtimeType == String &&
+  //                     res['statusCodeValue'] != 200) {
+  //                   throw Exception(jsonDecode(frame.body!)['body']);
+  //                 } else if (res['body'].runtimeType == String) {
+  //                   res['body'] = jsonDecode(res['body']);
+  //                 }
+
+  //                 print(res['body']);
+
+  //                 final url = Uri.parse('https://k10a704.p.ssafy.io/Multi/flag');
+  //                 final storage = FlutterSecureStorage();
+  //                 String? accessToken = await storage.read(key: 'accessToken');
+  //                 final dio = Dio();
+  //                 dynamic response;
+
+  //                 if (res['body']['message'] == "깃발요청") {
+  //                   if (getflag == false) {
+  //                     final requestBody = jsonEncode({
+  //                       "roomIdx": roomIdx,
+  //                       // "latitude": totalDistanceInt,
+  //                       // "longitude": intelapsedseconds,
+  //                     });
+
+  //                     response = await dio.post(
+  //                       url.toString(),
+  //                       data: requestBody,
+  //                       options: Options(headers: {
+  //                         'Content-Type': 'application/json',
+  //                         'Accept': 'application/json',
+  //                         'authorization': accessToken,
+  //                       }),
+  //                     );
+
+  //                     print("요청보냄");
+
+  //                     getflag = true;
+  //                   }
+  //                 }
+
+  //                 if (res['body'] == "사용자 위치 정보가 없습니다") {
+  //                   getflag = false;
+  //                   multiflag.value = {};
+  //                 }
+
+  //                 if (res['body']['latitude'] != null) {
+
+  //                   getflag = false;
+  //                   multiflag.value = res['body'];
+  //                 }
+                  
+  //                 } catch(e) {
+  //                   print(e);
+  //                 }
+
+  //               // } catch(e) {
+  //               //   print(e);
+  //               },
+  //             // },
+  //           );
+  //           client.send(destination: 'https://k10a704.p.ssafy.io/Multi/ws/pub/flag/$roomIdx');
+  //         }
   //       },
   //       webSocketConnectHeaders: {
   //         "transports": ["websocket"],
@@ -365,7 +533,6 @@ class StompController extends GetxController {
   //   );
 
   //   flagclient.activate();
-  // // }
   // }
 
   void fromJson(List<dynamic> list) {
@@ -402,6 +569,7 @@ class StompController extends GetxController {
   }
 
   void ready(int roomIdx) {
+    print('레디');
     client.send(destination: '/pub/change/ready/$roomIdx');
   }
 

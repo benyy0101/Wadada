@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:ffi'; 
 import 'dart:math';
 
@@ -20,7 +21,10 @@ import 'package:wadada/screens/multimainpage/multi_main.dart';
 import 'package:wadada/screens/multirunpage/multirunpage.dart';
 import 'package:wadada/screens/singlemainpage/single_main.dart';
 import 'package:wadada/screens/singlerunpage/single_free_run.dart';
+import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:dio/dio.dart';
+import 'package:http/http.dart' as http;
 
 class MultiRoomDetail extends StatefulWidget {
   SimpleRoom roomInfo;
@@ -36,15 +40,22 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
   SimpleRoom roomInfo;
   late StompController controller;
   late MultiController multiController;
+  KakaoMapController? mapController;
   List<String> tags = [];
   String titleText = '';
   String optionMetric = '';
   String roomOption = '';
   final storage = FlutterSecureStorage();
+  ValueNotifier<bool> centerloading = ValueNotifier<bool>(false);
 
   bool isHost = false;
   bool isButtonPressed = false;
   bool toStart = false;
+  bool showMap = false;
+
+  Set<Marker> markers = {};
+  double centerlat = 0.0;
+  double centerlong = 0.0;
 
   _MultiRoomDetailState({
     required this.roomInfo,
@@ -100,6 +111,22 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
     //     _checkAndRequestLocationPermissionForAllParticipants();
     //   }
     // });
+    AuthRepository.initialize(
+      appKey: 'f508d67320677608aea64e5d6a9a3005',
+      // baseUrl: widget.baseUrl,
+    );
+
+    // if (centerlat == 0.0 && centerlong == 0.0) {
+    //   setState(() {
+    //     toStart = false;
+    //   });
+    // }
+
+    // 컨트롤러 초기화
+    // initControllers();
+
+    // // 방 정보 설정
+    // setRoomInfo();
 
     controller.gameStartResponse.addListener(() {
       bool value = controller.gameStartResponse.value;
@@ -108,7 +135,120 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
       }
       // print('Gamego value changed: $value');
     });
+
+    controller.flagrequested.addListener(() {
+      bool value = controller.flagrequested.value;
+      if (value == true) {
+        sendlocationforflag();
+        centerloading.value = true;
+        print("활성화 true");
+      } else {
+        centerloading.value = false;
+        print("활성화 false");
+      }
+    });
+
+    controller.userlatitude.addListener(() {
+      double userlat = controller.userlatitude.value;
+      // setState(() {
+        // 특정 변수를 업데이트
+        // 예를 들어, 목적지 추천 버튼 옆에 보여줄 변수를 업데이트
+        // centerlat = userlat;
+        if (mounted) {
+          setState(() {
+            centerlat = userlat;
+          });
+        }
+    });
+
+    controller.userlongitude.addListener(() {
+      double userlong = controller.userlongitude.value;
+      // setState(() {
+        // 특정 변수를 업데이트
+        // 예를 들어, 목적지 추천 버튼 옆에 보여줄 변수를 업데이트
+        // centerlong = userlong;
+        if (mounted) {
+          setState(() {
+            centerlong = userlong;
+          });
+        }
+    });
+    // controller.attend(roomInfo.roomIdx, isRecommendButtonPressed);
   }
+
+  Future<void> sendlocationforflag() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    // 위치 서비스가 활성화되어 있는지 확인
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      // 위치 서비스가 비활성화되어 있으면 사용자에게 위치 서비스를 활성화하도록 요청
+      serviceEnabled = await Geolocator.openLocationSettings();
+      if (!serviceEnabled) {
+        // 사용자가 위치 서비스를 활성화하지 않으면 앱을 종료
+        return;
+      }
+    }
+
+    // 현재 위치 권한 확인
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.deniedForever) {
+      // 사용자가 위치 권한을 영구적으로 거부한 경우 설정 앱으로 이동하여 사용자가 권한을 변경할 수 있도록 안내
+      await Geolocator.openAppSettings();
+      return;
+    }
+
+    if (permission == LocationPermission.denied) {
+      // 사용자가 위치 권한을 거부한 경우 권한을 요청
+      permission = await Geolocator.requestPermission();
+      if (permission != LocationPermission.whileInUse &&
+          permission != LocationPermission.always) {
+        return;
+      }
+    }
+
+    Position position = await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.high);
+
+    String appKey = dotenv.env['APP_KEY'] ?? '';
+
+    final dio = Dio();
+      final url = Uri.parse('https://k10a704.p.ssafy.io/Multi/flag');
+      final storage = FlutterSecureStorage();
+      String? accessToken = await storage.read(key: 'accessToken');
+
+      final requestBody = jsonEncode({
+        "roomIdx" : roomInfo.roomIdx,
+        "latitude" : position.latitude,
+        "longitude" : position.longitude,
+      });
+
+      try {
+        final response = await dio.post(
+          url.toString(),
+          data: requestBody,
+          options: Options(headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'authorization': accessToken,
+          }),
+        );
+
+        // 응답 확인
+        if (response.statusCode == 200) {
+          // 요청이 성공적으로 처리되었을 때의 동작
+          print('Location sent successfully');
+        } else {
+          // 요청이 실패했을 때의 동작
+          print('Failed to send location. Status code: ${response.statusCode}');
+        }
+      } catch (error) {
+        // 오류 처리
+        print('Error sending location: $error');
+      }
+  }
+
 
   Future<void> _checkAndRequestLocationPermission() async {
     bool serviceEnabled;
@@ -226,6 +366,7 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                   ),
                 ),
               ),
+              // ElevatedButton(onPressed: null, child: Text('테스트')),
               // 방 정보
               Container(
                 width: double.infinity,
@@ -267,12 +408,14 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                           Column(
                             children: [
                               SizedBox(height: 10),
-                              Icon(
-                                Icons.location_on,
-                                color: DARK_GREEN_COLOR,
-                                size: 28,
-                              ),
-                              SizedBox(height: 20),
+                              if (roomInfo.roomMode != 3)
+                                Icon(
+                                  Icons.location_on,
+                                  color: DARK_GREEN_COLOR,
+                                  size: 28,
+                                ),
+                              if (roomInfo.roomMode != 3)
+                                SizedBox(height: 20),
                               Icon(
                                 Icons.people,
                                 color: DARK_GREEN_COLOR,
@@ -294,14 +437,16 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               SizedBox(height: 5),
-                              Text(
-                                roomOption,
-                                style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                    color: DARK_GREEN_COLOR),
-                              ),
-                              SizedBox(height: 20),
+                              if (roomInfo.roomMode != 3)
+                                Text(
+                                  roomOption,
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: DARK_GREEN_COLOR),
+                                ),
+                              if (roomInfo.roomMode != 3)
+                                SizedBox(height: 20),
                               Text(
                                 '참여 인원',
                                 style: TextStyle(
@@ -325,14 +470,16 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               SizedBox(height: 5),
-                              Text(
-                                '${roomInfo.roomDist} $optionMetric',
-                                style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                    color: DARK_GREEN_COLOR),
-                              ),
-                              SizedBox(height: 20),
+                              if (roomInfo.roomMode != 3)
+                                Text(
+                                  '${roomInfo.roomDist} $optionMetric',
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: DARK_GREEN_COLOR),
+                                ),
+                              if (roomInfo.roomMode != 3)
+                                SizedBox(height: 20),
                               //현재인원 받아와야 하는 곳
                               Obx(
                                 () => Text(
@@ -426,15 +573,122 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                         ],
                       ),
                       SizedBox(height: 20),
-                      // ElevatedButton(
-                      //   onPressed: () {
-                      //     controller.flaginfo(roomInfo.roomIdx);
-                      //   },
-                      //   style: ElevatedButton.styleFrom(
-                      //     backgroundColor: DARK_GREEN_COLOR, // Background color
-                      //   ),
-                      //   child: Text("목적지 추천"),
-                      // ),
+                      Visibility(
+                        visible: roomInfo.roomMode == 3,
+                        child: Column(
+                          children: [
+                            Row(
+                              children: [
+                                ValueListenableBuilder<bool>(
+                                  valueListenable: centerloading,
+                                  builder: (context, isButtonEnabled, _) {
+                                    return ElevatedButton(
+                                      onPressed: isButtonEnabled
+                                          ? null
+                                          : () {
+                                              print('Flag info button pressed');
+                                              print('활성화 $isButtonEnabled');
+                                              if (!isButtonEnabled) {
+                                                controller.isRecommendButtonPressed.value = true;
+                                                // if (showMap == true) {
+                                                //   setState(() {
+                                                //     showMap = false;
+                                                //   });
+                                                // }
+                                                setState(() {
+                                                  showMap = false;
+                                                });
+                                              }
+                                            },
+                                      style: ButtonStyle(
+                                        backgroundColor: MaterialStateProperty.resolveWith<Color>((states) {
+                                          if (isButtonEnabled) {
+                                            return Colors.grey;
+                                          } else {
+                                            return DARK_GREEN_COLOR;
+                                          }
+                                        }),
+                                        shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                                          RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(10),
+                                          ),
+                                        ),
+                                        padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
+                                          EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                                        ),
+                                      ),
+                                      child: const Text(
+                                        '목적지 추천',
+                                        style: TextStyle(fontSize: 18, color: Colors.white),
+                                      ),
+                                    );
+                                  },
+                                ),
+                                SizedBox(width: 50),
+                                ValueListenableBuilder<bool>(
+                        valueListenable: centerloading,
+                        builder: (context, isMapButtonVisible, _) {
+                          return Visibility(
+                            visible: !isMapButtonVisible && (controller.userlatitude.value != 0.0 || controller.userlongitude.value != 0.0),
+                            child: GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  showMap = !showMap;
+                                });
+                              },
+                              child: Container(
+                                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                                child: Text(
+                                  showMap ? '지도 닫기' : '지도 보기',
+                                  style: TextStyle(fontSize: 18, color: Colors.black),
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                              ],
+                            ),
+                            SizedBox(height: 10),
+                            Visibility(
+                              visible: showMap && !centerloading.value,
+                              child: ValueListenableBuilder<double>(
+                                valueListenable: controller.userlatitude,
+                                builder: (context, centerlat, _) {
+                                  return ValueListenableBuilder<double>(
+                                    valueListenable: controller.userlongitude,
+                                    builder: (context, centerlong, _) {
+                                      return SizedBox(
+                                        width: 400,
+                                        height: 230,
+                                        child: KakaoMap(
+                                          onMapCreated: (mapcontroller) {
+                                            mapController = mapcontroller;
+                                            markers.add(Marker(
+                                              markerId: 'flag',
+                                              latLng: LatLng(centerlat, centerlong),
+                                              width: 50,
+                                              height: 54,
+                                              offsetX: 15,
+                                              offsetY: 44,
+                                              markerImageSrc: 'https://github.com/jjeong41/t/assets/103355863/37743a13-bbd0-4744-9e7c-7ef262fc14c0',
+                                            ));
+                                            setState(() {});
+                                          },
+                                          markers: markers.toList(),
+                                          center: LatLng(centerlat, centerlong),
+                                        ),
+                                      );
+                                    },
+                                  );
+                                },
+                              ),
+                            ),
+                          ]
+                        ),
+                      ),
+
+                      SizedBox(height: 10),
                       Obx(() {
                         final members = controller.members;
                         if (members.isEmpty) {
@@ -591,7 +845,7 @@ class PlayerCondition extends StatelessWidget {
       ),
       child: Text(
         isReady ? '준비완료' : '대기중',
-        style: TextStyle(fontSize: 15, color: Colors.white),
+        style: TextStyle(fontSize: 18, color: Colors.white),
       ),
     );
   }
@@ -610,7 +864,7 @@ class GameOwner extends StatelessWidget {
       ),
       child: Text(
         "방장",
-        style: TextStyle(fontSize: 15, color: Colors.white),
+        style: TextStyle(fontSize: 18, color: Colors.white),
       ),
     );
   }
