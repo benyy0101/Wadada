@@ -21,9 +21,11 @@ import org.api.wadada.marathon.exception.NotFoundMemberException;
 import org.api.wadada.marathon.repository.MarathonRecordRepository;
 import org.api.wadada.marathon.repository.MemberRepository;
 import org.api.wadada.marathon.repository.MarathonRepository;
+import org.springframework.context.event.EventListener;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.socket.messaging.SessionConnectEvent;
 
 import java.security.Principal;
 import java.time.LocalDateTime;
@@ -255,5 +257,25 @@ public class MarathonServiceImpl implements MarathonService {
             }
         }
     }
+
+
+    @EventListener
+    public void isConnected(SessionConnectEvent sessionConnectEvent){
+        MarathonRoomManager marathonRoomManager = marathonGameManager.GetMarathonRoomManager();
+        int[] seqList = new int[marathonRoomManager.getCurRooms()+1];
+        List<String> topics = new ArrayList<>();
+        for(int i:seqList){
+            topics.add("/sub/attend/"+i);
+        }
+        ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+        executorService.schedule(() -> {
+            for (String topic : topics) {
+                String message = topic + "에 연결되었습니다";
+                marathonRoomManager.getMessagingTemplate().convertAndSend(topic, message);
+            }
+        }, 1, TimeUnit.SECONDS);
+        executorService.shutdown();
+    }
+
 
 }

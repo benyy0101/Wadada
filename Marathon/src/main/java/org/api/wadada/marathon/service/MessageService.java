@@ -2,6 +2,7 @@ package org.api.wadada.marathon.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.api.wadada.marathon.dto.MarathonGameManager;
 import org.api.wadada.marathon.dto.MessageDto;
 import org.api.wadada.marathon.interceptor.DefaultListener;
 import org.api.wadada.util.DynamicRabbitMqConfigurer;
@@ -33,8 +34,6 @@ public class MessageService {
      */
     public void sendMessage(MessageDto messageDto) {
         log.info("message sent: {}", messageDto.toString());
-        dynamicRabbitMqConfigurer.bindExistingQueueToExchange("test01queue","test01","ssafy704!");
-        System.out.println("ㅔㅌ스트중");
         rabbitTemplate.convertAndSend(exchangeName, routingKey, messageDto);
     }
 
