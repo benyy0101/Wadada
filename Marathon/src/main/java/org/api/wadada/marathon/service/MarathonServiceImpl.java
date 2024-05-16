@@ -274,7 +274,7 @@ public class MarathonServiceImpl implements MarathonService {
         ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
         executorService.schedule(() -> {
             for (String topic : topics) {
-                String tempmessage = String.valueOf(GameMessage.MARATHON_CONNECTED);
+                String tempmessage = GameMessage.MARATHON_CONNECTED.toJson();
                 String message = topic + "에 연결되었습니다";
                 marathonRoomManager.getMessagingTemplate().convertAndSend(topic, tempmessage);
             }
