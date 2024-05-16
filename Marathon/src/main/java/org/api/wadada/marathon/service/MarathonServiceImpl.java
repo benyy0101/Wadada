@@ -263,6 +263,10 @@ public class MarathonServiceImpl implements MarathonService {
     public void isConnected(SessionConnectEvent sessionConnectEvent){
         MarathonRoomManager marathonRoomManager = marathonGameManager.GetMarathonRoomManager();
         int[] seqList = new int[marathonRoomManager.getCurRooms()+1];
+
+        for(int i=0; i<=marathonRoomManager.getCurRooms(); i++)
+            seqList[i] = i;
+
         List<String> topics = new ArrayList<>();
         for(int i:seqList){
             topics.add("/sub/attend/"+i);
