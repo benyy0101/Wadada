@@ -92,6 +92,7 @@ public class MarathonServiceImpl implements MarathonService {
                 System.out.println("delay = " + delay);
                 System.out.println("LocalDateTime.now() = " + LocalDateTime.now());
                 scheduledExecutor.schedule(() -> {
+                    System.out.println("LocalDateTime.now() = " + LocalDateTime.now());
                     marathonRoomManager.sendStartMessage();
                     CompletableFuture<Void> tasks = CompletableFuture.anyOf(
                             //모든사람이 들어왔으면 시작
@@ -279,7 +280,7 @@ public class MarathonServiceImpl implements MarathonService {
                 marathonRoomManager.getMessagingTemplate().convertAndSend(topic, tempmessage);
             }
         }, 1, TimeUnit.SECONDS);
-        
+
         //executorService.shutdown();
     }
 
