@@ -76,6 +76,9 @@ public class MarathonRoomManager {
 
 
     public boolean InsertMember(MemberInfo memberInfo) throws Exception {
+        if(memberInfoMap.containsKey(memberInfo.getMemberSeq()))
+            return false;
+
         //현재 방(채널)에 100명이 찼으면
         if (++curPerson % 100 == 0) {
             //방 만들고
@@ -105,7 +108,12 @@ public class MarathonRoomManager {
             messagingTemplate.convertAndSend("/sub/attend/" + i, message);
         }
     }
-
+    public void sendStartMessage() {
+        String message = GameMessage.GAME_START_INFO_REQUEST.toJson();
+        for (int i = 0; i <= curRooms; i++) {
+            messagingTemplate.convertAndSend("/sub/attend/" + i, message);
+        }
+    }
     public void sendEndMessage() {
         for (int i = 0; i <= curRooms; i++) {
             messagingTemplate.convertAndSend("/sub/attend/" + i, rooms.get(i).getSentence());

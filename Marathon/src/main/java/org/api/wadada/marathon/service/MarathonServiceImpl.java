@@ -86,10 +86,11 @@ public class MarathonServiceImpl implements MarathonService {
                 marathonGameManager.CreateNewMarathonGame();
                 MarathonRoomManager marathonRoomManager = marathonGameManager.GetMarathonRoomManager();
 
-                long delay = LocalDateTime.now().until(marathonCreateReq.getMarathonEnd(), ChronoUnit.MILLIS);
-
+                long delay = LocalDateTime.now().until(marathonCreateReq.getMarathonStart(), ChronoUnit.MILLIS);
+                System.out.println("delay = " + delay);
+                System.out.println("LocalDateTime.now() = " + LocalDateTime.now());
                 scheduledExecutor.schedule(() -> {
-
+                    marathonRoomManager.sendStartMessage();
                     CompletableFuture<Void> tasks = CompletableFuture.anyOf(
                             //모든사람이 들어왔으면 시작
                             CompletableFuture.runAsync(() -> {
@@ -229,15 +230,11 @@ public class MarathonServiceImpl implements MarathonService {
     }
 
     public void updatePlayRank(int roomSeq){
-        ObjectMapper mapper = new ObjectMapper();
+
         MarathonRoomManager marathonRoomManager = marathonGameManager.GetMarathonRoomManager();
-        // 게임 방 정보 가져오기
         marathonRoomManager.sortMember();
         marathonRoomManager.makeSentence();
         marathonRoomManager.sendEndMessage();
-
-
-
     }
     // 종료 조건
     // (curConnection == MaxConnection) 자동 End API 호출  완주해도 늘어나고, 연결이 끊겨도 늘어남
