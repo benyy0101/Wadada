@@ -16,7 +16,6 @@ import 'package:wadada/provider/multiProvider.dart';
 import 'package:wadada/controller/stompController.dart';
 import 'package:wadada/repository/loginRepo.dart';
 import 'package:wadada/repository/multiRepo.dart';
-<<<<<<< HEAD
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:wadada/screens/multimainpage/multi_main.dart';
 import 'package:wadada/screens/multirunpage/multirunpage.dart';
@@ -26,9 +25,7 @@ import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:dio/dio.dart';
 import 'package:http/http.dart' as http;
-=======
 import 'package:wadada/screens/multimainpage/multi_distance/multi_waitingpage/multi_dis_waitroom.dart';
->>>>>>> front
 
 class MultiRoomDetail extends StatefulWidget {
   SimpleRoom roomInfo;

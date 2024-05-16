@@ -217,14 +217,10 @@ class _MultiDisWait extends State<MultiDisWait> {
                 ),
 
                 Obx(() {
-<<<<<<< HEAD
                   if (controller.roomList.isEmpty) {
-=======
-                  if (controller.roomList.length == 0) {
                     controller.getMultiRoomsByMode(roomMode);
                   }
-                  if (controller.roomList.length == 0) {
->>>>>>> front
+                  if (controller.roomList.isEmpty) {
                     return Column(children: const [
                       SizedBox(
                         height: 30,

@@ -48,27 +48,17 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
   late Clock clock;
 
   late MyMap myMap;
-<<<<<<< HEAD
-  // late MyMap1 myMap1;
-
-=======
   final GlobalKey<MyMapState> myMapStateKey = GlobalKey<MyMapState>();
->>>>>>> front
   @override
   void initState() {
     super.initState();
 
     startTimers();
 
-<<<<<<< HEAD
-    myMap = MyMap(appKey: widget.appKey);
-    // myMap1 = MyMap1(appKey: widget.appKey);
-=======
     myMap = MyMap(
       appKey: widget.appKey,
       key: myMapStateKey,
     );
->>>>>>> front
 
     myMap.startLocationNotifier.addListener(() {
       if (myMap.startLocationNotifier.value != null) {
