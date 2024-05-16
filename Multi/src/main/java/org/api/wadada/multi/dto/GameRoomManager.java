@@ -31,7 +31,7 @@ public class GameRoomManager {
 //        roomSeqTable.put(room.getRoomIdx(),roomSeq);
         Optional<Integer> emptyIndex = getEmptyIndex();
         if (emptyIndex.isPresent()) {
-            roomSeqTable.put(emptyIndex.get(), roomSeq);
+            roomSeqTable.put(roomSeq, emptyIndex.get() );
             roomSeqList[emptyIndex.get()] = roomSeq;
             room.setListeners(new ArrayList<>());
             playrooms.set(emptyIndex.get(), room);
