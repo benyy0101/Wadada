@@ -159,7 +159,7 @@ class StompController extends GetxController {
                     print('roomSeq $newRoomSeq');
 
                     client.deactivate();
-                    await Future.delayed(Duration(seconds: 2));
+                    // await Future.delayed(Duration(seconds: 2));
 
                     setupNewSubscription(newRoomSeq);
                     // client.deactivate();

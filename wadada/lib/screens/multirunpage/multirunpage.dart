@@ -433,8 +433,15 @@ class _MultiRunState extends State<MultiRun> {
   }
 
   String formatPace(double paceInSecondsPerKm) {
-    int minutes = (paceInSecondsPerKm / 60).floor();
-    int seconds = (paceInSecondsPerKm % 60).round();
+    int minutes = 0;
+    int seconds = 0;
+    if (paceInSecondsPerKm.isNaN || paceInSecondsPerKm.isInfinite) {
+      minutes = 0;
+      seconds = 0;
+    } else {
+      minutes = (paceInSecondsPerKm / 60).floor();
+      seconds = (paceInSecondsPerKm % 60).round();
+    }
 
     return "$minutes'${seconds.toString().padLeft(2, '0')}''";
   }
