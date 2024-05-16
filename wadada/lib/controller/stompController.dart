@@ -37,7 +37,8 @@ class StompController extends GetxController {
   ValueNotifier<bool> gamego = ValueNotifier<bool>(false);
   ValueNotifier<String> requestinfo = ValueNotifier<String>('');
   ValueNotifier<List<dynamic>> ranking = ValueNotifier<List<dynamic>>([]);
-  ValueNotifier<List<dynamic>> memberInfoList = ValueNotifier<List<dynamic>>([]);
+  ValueNotifier<List<dynamic>> memberInfoList =
+      ValueNotifier<List<dynamic>>([]);
   ValueNotifier<Set<dynamic>> multiflag = ValueNotifier<Set<dynamic>>({});
   ValueNotifier<List<dynamic>> centerplace = ValueNotifier<List<dynamic>>([]);
   ValueNotifier<double> userlatitude = ValueNotifier<double>(0.0);
@@ -72,7 +73,6 @@ class StompController extends GetxController {
   }
 
   void attend(int roomIdx) async {
-
     print("-------------attend-------------");
     String? accessToken = await storage.read(key: 'accessToken');
     // bool unsubscribed = false;
@@ -87,7 +87,6 @@ class StompController extends GetxController {
                   'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNDYzNDMxNDUzIiwiYXV0aCI6IlJPTEVfU09DSUFMIiwiZXhwIjoxNzE1NDA1MzkzfQ.dmjUkVX1sFe9EpYhT3SGO3uC7q1dLIoddBvzhoOSisM'
             },
             callback: (frame) async {
-              
               try {
                 print("Incoming Messages:--------------------");
 
@@ -113,7 +112,6 @@ class StompController extends GetxController {
                     // print(isRecommendButtonPressed);
                     // print(isRecommendButtonPressed);
                   }
-
                 });
 
                 print('깃발 요청 오면 여깅 ${res['body']}');
@@ -152,14 +150,14 @@ class StompController extends GetxController {
                   // print('방장인지 아닌지 $isOwner');
 
                   // if (isOwner) {
-                    // client.deactivate();
-                    // print('여기까지는 됨');
+                  // client.deactivate();
+                  // print('여기까지는 됨');
 
-                    int newRoomSeq = res['body']['roomSeq'];
-                    print('roomSeq $newRoomSeq');
-                    
-                    setupNewSubscription(newRoomSeq);
-                    client.deactivate();
+                  int newRoomSeq = res['body']['roomSeq'];
+                  print('roomSeq $newRoomSeq');
+
+                  setupNewSubscription(newRoomSeq);
+                  client.deactivate();
 
                   return;
                 }
@@ -228,9 +226,9 @@ class StompController extends GetxController {
 
   void setupNewSubscription(int newRoomSeq) async {
     // client.deactivate();
-    if (client.isActive) {
-      client.deactivate();
-    }
+    // if (client.isActive) {
+    //   client.deactivate();
+    // }
     String? accessToken = await storage.read(key: 'accessToken');
     newclient = StompClient(
       config: StompConfig.sockJS(
@@ -245,7 +243,8 @@ class StompController extends GetxController {
             callback: (frame) async {
               try {
                 if (isOwner.value) {
-                  final url = Uri.parse('https://k10a704.p.ssafy.io/Multi/game/rank/$newRoomSeq');
+                  final url = Uri.parse(
+                      'https://k10a704.p.ssafy.io/Multi/game/rank/$newRoomSeq');
                   final storage = FlutterSecureStorage();
                   String? accessToken = await storage.read(key: 'accessToken');
                   final dio = Dio();
@@ -264,52 +263,51 @@ class StompController extends GetxController {
                     // print('확인 ${response.data}');
 
                     // if (response.statusCode == 200) {
-                      Map<String, dynamic> resp = jsonDecode(frame.body!);
-                      if (resp['body'].runtimeType == String &&
-                          resp['statusCodeValue'] != 200) {
-                        throw Exception(jsonDecode(frame.body!)['body']);
-                      } else if (resp['body'].runtimeType == String) {
-                        resp['body'] = jsonDecode(resp['body']);
-                      }
-                      print('최종 ${resp['body']}');
+                    Map<String, dynamic> resp = jsonDecode(frame.body!);
+                    if (resp['body'].runtimeType == String &&
+                        resp['statusCodeValue'] != 200) {
+                      throw Exception(jsonDecode(frame.body!)['body']);
+                    } else if (resp['body'].runtimeType == String) {
+                      resp['body'] = jsonDecode(resp['body']);
+                    }
+                    print('최종 ${resp['body']}');
 
-                      if (resp['body']['message'] == "멤버INFO요청") {
-                        requestinfo.value = resp['body']['message'];
-                        requestinfo.value = '';
-                      }
+                    if (resp['body']['message'] == "멤버INFO요청") {
+                      requestinfo.value = resp['body']['message'];
+                      requestinfo.value = '';
+                    }
 
-                      if (resp['body']['memberInfo'] != null) {
-                        ranking.value = resp['body']['memberInfo'];
-                        print('랭킹 ${ranking.value}');
-                      }
+                    if (resp['body']['memberInfo'] != null) {
+                      ranking.value = resp['body']['memberInfo'];
+                      print('랭킹 ${ranking.value}');
+                    }
 
-                      // requestinfo.value = resp['body']['action'];
-                      // requestinfo.value = '';
-                      // ranking.value = resp['body']['memberInfo'];
-                      // print('body ${resp['body']}');
-                      // print('랭킹 ${ranking.value}');
-                      // print('랭킹 타입 ${ranking.value.runtimeType}');
+                    // requestinfo.value = resp['body']['action'];
+                    // requestinfo.value = '';
+                    // ranking.value = resp['body']['memberInfo'];
+                    // print('body ${resp['body']}');
+                    // print('랭킹 ${ranking.value}');
+                    // print('랭킹 타입 ${ranking.value.runtimeType}');
 
-                      // final data = response.data as Map<String, dynamic>;
-                      // final jsonData = jsonDecode(response.data);
-                      // print('제발요 ${response.data.runtimeType}');
-                      // print('디코딩된 JSON 데이터: $jsonData');
-                      // print('방장 통신 성공');
-                      // return data;
-                  //   } else if (response.statusCode == 204) {
-                  //     print('204');
-                  //     // return {};
-                  //   } else {
-                  //     print('서버 요청 실패: ${response.statusCode}');
-                  //     // return {};
-                  //   }
+                    // final data = response.data as Map<String, dynamic>;
+                    // final jsonData = jsonDecode(response.data);
+                    // print('제발요 ${response.data.runtimeType}');
+                    // print('디코딩된 JSON 데이터: $jsonData');
+                    // print('방장 통신 성공');
+                    // return data;
+                    //   } else if (response.statusCode == 204) {
+                    //     print('204');
+                    //     // return {};
+                    //   } else {
+                    //     print('서버 요청 실패: ${response.statusCode}');
+                    //     // return {};
+                    //   }
                   } catch (e) {
                     print('ㅇㅇ 요청 처리 중 에러 발생: $e');
                     // return {};
                   }
                 }
-
-              } catch(e) {
+              } catch (e) {
                 print(e);
               }
             },
@@ -348,7 +346,7 @@ class StompController extends GetxController {
 //   try {
 //     if (client.isActive) {
 //       String? accessToken = await storage.read(key: 'accessToken');
-      
+
 //       client.subscribe(
 //         destination: '/sub/flag/$roomIdx',
 //         headers: {
@@ -506,7 +504,7 @@ class StompController extends GetxController {
   //                   getflag = false;
   //                   multiflag.value = res['body'];
   //                 }
-                  
+
   //                 } catch(e) {
   //                   print(e);
   //                 }
