@@ -67,7 +67,7 @@ public class ChannelInboundInterceptor  implements ChannelInterceptor {
             for(GameRoomDto dto: list){
                 if(dto.getPlayerInfo().containsKey(userName)){
                     // 연결끊긴 유저 true로 바꿔주기
-                    dto.getDisconnected().put(userName,true);
+                    dto.getDisconnected().put(userName,!dto.getDisconnected().get(userName));
                 }
             }
         }
