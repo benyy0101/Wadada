@@ -39,7 +39,7 @@ class SelectMode extends StatelessWidget{
           child: Row(
             children: [
               SizedBox(
-                width: 80,
+                width: 70,
                 child: Image.asset(icon),
               ),
               SizedBox(width:15),
@@ -50,7 +50,7 @@ class SelectMode extends StatelessWidget{
                     name,
                     style: TextStyle(
                       color: GREEN_COLOR,
-                      fontSize: 25,
+                      fontSize: 22,
                       fontWeight: FontWeight.w900,
                     )
                   ),
@@ -59,14 +59,14 @@ class SelectMode extends StatelessWidget{
                     des,
                     style: TextStyle(
                       color: Colors.black45,
-                      fontSize: 16,
+                      fontSize: 13,
                     )
                   ),
                 ],
               ),
               SizedBox(width: double.parse(btn)),
               SizedBox(
-                width: 20,
+                width: 15,
                 child: Image.asset('assets/images/mode_select_btn.png'),
               ),
             ],

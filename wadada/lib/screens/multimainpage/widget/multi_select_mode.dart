@@ -39,7 +39,7 @@ class MultiSelectMode extends StatelessWidget{
           child: Row(
             children: [
               SizedBox(
-                width: 80,
+                width: 60,
                 child: Image.asset(icon),
               ),
               SizedBox(width:15),
@@ -51,7 +51,7 @@ class MultiSelectMode extends StatelessWidget{
                     style: TextStyle(
                       color: GREEN_COLOR,
                       fontSize: 25,
-                      fontWeight: FontWeight.w900,
+                      fontWeight: FontWeight.w600,
                     )
                   ),
                   SizedBox(height:5),

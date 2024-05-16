@@ -253,7 +253,7 @@ class _MyMapState extends State<MyMap> {
 
     return SizedBox(
         width: 400,
-        height: 230,
+        height: 150,
         child: KakaoMap(
           onMapCreated: (controller) {
           mapController = controller;

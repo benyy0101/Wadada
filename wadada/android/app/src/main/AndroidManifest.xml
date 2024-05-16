@@ -2,12 +2,17 @@
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    
 
 
     <!--블루투스 어쩌고-->
     <uses-permission android:name="android.permission.BLUETOOTH"/>
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
-    <uses-feature android:name="android.hardware.bluetooth_le" android:required="true"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+
 
     <!-- 인터넷 사용 권한 설정-->
     <uses-permission android:name="android.permission.INTERNET"/>
@@ -25,6 +30,7 @@
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
             android:hardwareAccelerated="true"
             android:windowSoftInputMode="adjustResize">
+            
             <!-- Specifies an Android theme to apply to this Activity as soon as
                  the Android process has started. This theme is visible to the user
                  while the Flutter UI initializes. After that, this theme continues
@@ -39,10 +45,14 @@
             </intent-filter>
         </activity>
         <activity android:name="com.kakao.sdk.flutter.AuthCodeCustomTabsActivity">
-	<intent-filter android:label="flutter_web_auth">
+	    <intent-filter android:label="flutter_web_auth">
 		<action android:name="android.intent.action.VIEW" />
 		<category android:name="android.intent.category.DEFAULT" />
 		<category android:name="android.intent.category.BROWSABLE" />
+        <!-- "kakao${YOUR_NATIVE_APP_KEY}://${PRODUCT_NAME}" 형식의 앱 실행 스킴 설정 -->
+        <!-- 카카오톡 공유, 카카오톡 메시지 -->
+        <data android:host="kakaolink"
+            android:scheme="kakao9430c9bd5cf24477bf3ccb0cde068f16" />
     
 		<!-- Redirect URI, "kakao${YOUR_NATIVE_APP_KEY}://oauth" 형식 -->
 		<data android:scheme="kakao9430c9bd5cf24477bf3ccb0cde068f16" android:host="oauth"/>

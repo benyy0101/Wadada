@@ -49,7 +49,7 @@ class _SingleRecordState extends State<SingleRecord> {
         return {};
       }
     } catch (e) {
-      print('요청 처리 중 에러 발생ㅂㅂㅂㅂㅂㅂㅂㅂㅂㅂㅂㅂㅂㅂㅂㅂ: $e');
+      print('요청 처리 중 에러 발생 싱글레코드: $e');
       return {};
     }
   }

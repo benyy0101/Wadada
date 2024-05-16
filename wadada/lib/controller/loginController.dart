@@ -1,8 +1,10 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
+import 'package:wadada/common/component/tabbars.dart';
 import 'package:wadada/repository/loginRepo.dart';
 import 'package:wadada/screens/multimainpage/multi_main.dart';
 import 'package:wadada/screens/newprofilepage/layout.dart';
+import 'package:wadada/screens/singlemainpage/single_main.dart';
 
 class LoginController extends GetxController {
   final LoginRepository loginRepository;
@@ -32,7 +34,7 @@ class LoginController extends GetxController {
       if (loginInfo.kakao_nickname == '임시') {
         Get.to(NewProfileLayout());
       } else {
-        Get.to(MultiMain());
+        Get.to(MainLayout());
       }
     } catch (e) {
       print(e);
