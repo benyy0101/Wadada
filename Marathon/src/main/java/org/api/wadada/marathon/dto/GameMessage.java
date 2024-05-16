@@ -13,7 +13,7 @@ public enum GameMessage {
     GAME_FLAG_INFO_REQUEST("깃발요청", "/Marathon/flag"),
     GAME_FLAG_ERROR("사용자 위치정보가 없습니다",""),
 
-    MARATHON_CONNECTED("웹소켓이 연결되었습니다","");
+    MARATHON_CONNECTED("웹소켓연결","1");
 
     private final String message; // Java 변수명은 소문자로 시작하는 것이 관례입니다.
     private final String actionEndpoint; // 클라이언트가 호출해야 할 API 엔드포인트
