@@ -67,7 +67,7 @@ class _MarathonState extends State<MarathonRun> {
   ValueNotifier<Duration> elapsedTimeNotifier =
       ValueNotifier<Duration>(Duration.zero);
   final GlobalKey<ClockState> _clockKey = GlobalKey<ClockState>();
-  late Clock clock;
+  // late Clock clock;
   late MyMap myMap;
   late dynamic unsubscribeFn;
 
@@ -97,15 +97,15 @@ class _MarathonState extends State<MarathonRun> {
     startGameGoTimer();
     print('ㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠ: ${widget.controller.gameStartResponse.value}');
 
-    clock = Clock(
-      key: _clockKey,
-      time: widget.time,
-      elapsedTimeNotifier: elapsedTimeNotifier,
-    );
+    // clock = Clock(
+    //   key: _clockKey,
+    //   time: widget.time,
+    //   elapsedTimeNotifier: elapsedTimeNotifier,
+    // );
 
-    widget.controller.requestinfo.addListener(() {
-      sendrequestInfo();
-    });
+    // widget.controller.requestinfo.addListener(() {
+    //   sendrequestInfo();
+    // });
 
     widget.controller.ranking.addListener(() {
       rankingData = widget.controller.ranking.value;
@@ -171,60 +171,60 @@ class _MarathonState extends State<MarathonRun> {
     });
   }
 
-  Future<void> sendrequestInfo() async {
-    final dio = Dio();
-    final url = Uri.parse('https://k10a704.p.ssafy.io/Multi/game/data');
-    final storage = FlutterSecureStorage();
-    String? accessToken = await storage.read(key: 'accessToken');
-    String? username1 = await storage.read(key: 'kakaoNickname');
-    // int totalDistance11 = 0;
+  // Future<void> sendrequestInfo() async {
+  //   final dio = Dio();
+  //   final url = Uri.parse('https://k10a704.p.ssafy.io/Multi/game/data');
+  //   final storage = FlutterSecureStorage();
+  //   String? accessToken = await storage.read(key: 'accessToken');
+  //   String? username1 = await storage.read(key: 'kakaoNickname');
+  //   // int totalDistance11 = 0;
 
-    // myMap.totalDistanceNotifier.addListener(() {
-    //   setState(() {
-    //     totalDistance1 = myMap.totalDistanceNotifier.value;
-    //     totalDistance11 = totalDistance1.round();
-    //     // double distanceInKm = totalDistance / 1000.0;
-    //     // formattedDistance = distanceInKm.toStringAsFixed(2);
-    //   });
-    // });
+  //   // myMap.totalDistanceNotifier.addListener(() {
+  //   //   setState(() {
+  //   //     totalDistance1 = myMap.totalDistanceNotifier.value;
+  //   //     totalDistance11 = totalDistance1.round();
+  //   //     // double distanceInKm = totalDistance / 1000.0;
+  //   //     // formattedDistance = distanceInKm.toStringAsFixed(2);
+  //   //   });
+  //   // });
 
-    double elapsedSeconds = _clockKey.currentState!.getElapsedSeconds();
-    int intelapsedseconds = elapsedSeconds.toInt();
+  //   double elapsedSeconds = _clockKey.currentState!.getElapsedSeconds();
+  //   int intelapsedseconds = elapsedSeconds.toInt();
 
-    // int totalDistance1 = totalDistance.toInt();
+  //   // int totalDistance1 = totalDistance.toInt();
 
-    final requestBody = jsonEncode({
-      "roomSeq": widget.controller.receivedRoomSeq,
-      "userDist": totalDistanceInt,
-      "userTime": intelapsedseconds,
-      "userName": username1,
-    });
+  //   final requestBody = jsonEncode({
+  //     "roomSeq": widget.controller.receivedRoomSeq,
+  //     "userDist": totalDistanceInt,
+  //     "userTime": intelapsedseconds,
+  //     "userName": username1,
+  //   });
 
-    print('roomSeq111111: ${widget.controller.receivedRoomSeq}');
-    print('userTime: $intelapsedseconds');
-    print('userDist: $totalDistanceInt');
-    print('userName: $username1');
+  //   print('roomSeq111111: ${widget.controller.receivedRoomSeq}');
+  //   print('userTime: $intelapsedseconds');
+  //   print('userDist: $totalDistanceInt');
+  //   print('userName: $username1');
 
-    try {
-      final response = await dio.post(
-        url.toString(),
-        data: requestBody,
-        options: Options(headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'authorization': accessToken,
-        }),
-      );
+  //   try {
+  //     final response = await dio.post(
+  //       url.toString(),
+  //       data: requestBody,
+  //       options: Options(headers: {
+  //         'Content-Type': 'application/json',
+  //         'Accept': 'application/json',
+  //         'authorization': accessToken,
+  //       }),
+  //     );
 
-      if (response.statusCode == 200) {
-        print('현재 정보 전송 성공: ${response.data}');
-      } else {
-        print('서버 요청 실패: ${response.statusCode}');
-      }
-    } catch (e) {
-      print('거리 보내기 - 요청 처리 중 에러 발생: $e');
-    }
-  }
+  //     if (response.statusCode == 200) {
+  //       print('현재 정보 전송 성공: ${response.data}');
+  //     } else {
+  //       print('서버 요청 실패: ${response.statusCode}');
+  //     }
+  //   } catch (e) {
+  //     print('거리 보내기 - 요청 처리 중 에러 발생: $e');
+  //   }
+  // }
 
   void startTimers() {
     Timer(Duration(seconds: 3), () {
@@ -531,6 +531,10 @@ class _MarathonState extends State<MarathonRun> {
   // }
 
   void _handleEndButtonPress(BuildContext context) {
+    StompController stompController =
+        Get.put(StompController(roomIdx: widget.roomInfo.marathonSeq));
+
+    
     if (_clockKey.currentState != null) {
       // Duration elapsedTime = _clockKey.currentState!.elapsed;
       double elapsedSeconds = _clockKey.currentState!.getElapsedSeconds();
@@ -676,30 +680,10 @@ class _MarathonState extends State<MarathonRun> {
     Widget progressBar = Container();
     int currentPageIndex = 0;
 
-    if (widget.dist > 0) {
-      progressBar = DistBar(
-          dist: widget.dist,
-          formattedDistance: double.parse(formattedDistance));
-    } else if (widget.time > 0) {
-      double elapsedSeconds =
-          _clockKey.currentState?.getElapsedSeconds() ?? 0.0;
-      double elapsedTimeInSeconds = elapsedSeconds;
+    progressBar = DistBar(
+        dist: widget.dist, formattedDistance: double.parse(formattedDistance));
 
-      progressBar = ValueListenableBuilder<Duration>(
-        valueListenable: elapsedTimeNotifier,
-        builder: (context, elapsedDuration, _) {
-          // Convert Duration to double
-          double elapsedTimeInSeconds = elapsedDuration.inSeconds.toDouble();
-
-          // Pass the elapsed time in seconds to TimeBar
-          return TimeBar(
-            initialTime: widget.time,
-            elapsedTime: elapsedTimeInSeconds,
-          );
-        },
-      );
-    }
-
+    StompController stompController = Get.put(StompController(roomIdx: 100));
     Clock clockWidget = Clock(
       key: _clockKey,
       time: widget.time,

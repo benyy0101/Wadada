@@ -4,6 +4,7 @@ import 'package:wadada/common/const/colors.dart';
 import 'package:wadada/controller/marathonController.dart';
 import 'package:wadada/controller/stompController.dart';
 import 'package:wadada/models/marathon.dart';
+import 'package:wadada/screens/marathonrunpage/marathonRun.dart';
 
 class InfoDetail extends StatelessWidget {
   final SimpleMarathon marathon;
@@ -153,12 +154,32 @@ class InfoDetail extends StatelessWidget {
             onTap: () async {
               int idx = await controller
                   .attendMarathon(marathon.marathonSeq.toString());
+              print('------------------------');
+              print(idx);
               StompController stompController =
-                  Get.put(StompController(roomIdx: idx));
+                  Get.put(StompController(roomIdx: 100));
+              MarathonController marathonController =
+                  Get.put(MarathonController());
               if (idx != -1) {
                 ScaffoldMessenger.of(context)
                     .showSnackBar(SnackBar(content: Text("성공적으로 참여했습니다!🥳")));
                 stompController.attendMarathon(idx);
+
+                Get.to(MarathonRun(
+                  time: -1,
+                  dist: 10,
+                  appKey: '',
+                  controller: stompController,
+                  marathonController: marathonController,
+                  roomInfo: SimpleMarathon(
+                      marathonSeq: -1,
+                      marathonRound: -1,
+                      marathonDist: 20,
+                      marathonParticipate: 20,
+                      marathonStart: DateTime.now(),
+                      marathonEnd: DateTime.now(),
+                      isDeleted: false),
+                ));
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text("서버가 아파요. 다시 시도해 주세요😡")));
