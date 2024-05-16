@@ -4,6 +4,7 @@ package org.api.wadada.marathon.dto;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @NoArgsConstructor
@@ -17,12 +18,19 @@ public class MemberInfo {
     private LocalDateTime registTime;
     private int curRoom;
     private int curIndex;
-
+    private int dist;
+    private String image;
+    @Setter
+    private int time;
     private List<MarathonRankingInfoDetailDto> rankings;
 
     public void updatememberLocation(int curRoom, int curIndex){
         this.curIndex=curIndex;
         this.curRoom=curRoom;
+    }
+
+    public void resetRankings(){
+        rankings = new ArrayList<>();
     }
 
 }

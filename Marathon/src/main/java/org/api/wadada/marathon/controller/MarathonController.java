@@ -87,6 +87,21 @@ public class MarathonController {
 
 
 
+    @GetMapping("/game/rank/{roomSeq}")
+//    @SendTo("/sub/game/{roomSeq}")
+    public ResponseEntity<?> getPlayerRank(@PathVariable int roomSeq){
+        log.info("roomSeq"+ roomSeq);
+        marathonService.getPlayerRank(roomSeq);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+    @GetMapping("/game/end/{roomSeq}")
+//    @SendTo("/sub/game/{roomSeq}")
+    public ResponseEntity<?> gameEnd(@PathVariable int roomSeq){
+        log.info("roomSeq"+ roomSeq);
+        marathonService.stopPlayerRankUpdates(roomSeq);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
     /**
      * Queue로 메시지를 발행
      *

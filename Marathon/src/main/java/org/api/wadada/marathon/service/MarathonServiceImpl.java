@@ -1,5 +1,7 @@
 package org.api.wadada.marathon.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.Synchronized;
 import lombok.extern.slf4j.Slf4j;
@@ -10,6 +12,7 @@ import org.api.wadada.marathon.dto.*;
 import org.api.wadada.marathon.dto.req.MarathonCreateReq;
 import org.api.wadada.marathon.dto.req.MarathonGameEndReq;
 import org.api.wadada.marathon.dto.req.MarathonGameStartReq;
+import org.api.wadada.marathon.dto.req.RequestDataReq;
 import org.api.wadada.marathon.dto.res.*;
 import org.api.wadada.marathon.entity.Marathon;
 import org.api.wadada.marathon.entity.MarathonRecord;
@@ -25,10 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.*;
 
 @Service
@@ -42,6 +42,7 @@ public class MarathonServiceImpl implements MarathonService {
     private final MemberRepository memberRepository;
    private  ScheduledExecutorService scheduledExecutor = Executors.newScheduledThreadPool(1);
     private ExecutorService executor = Executors.newCachedThreadPool();
+    private Map<Integer, ScheduledExecutorService> roomSchedulers = new ConcurrentHashMap<>();
 
     @Override
     @Transactional
@@ -212,6 +213,49 @@ public class MarathonServiceImpl implements MarathonService {
             return true;
         } catch (RestApiException e) {
             throw new RestApiException(CustomErrorCode.NO_ROOM);
+        }
+    }
+
+    @Override
+    public void savePlayerData(Principal principal, RequestDataReq requestDataReq) {
+
+    }
+
+
+    @Override
+    public void getPlayerRank(int roomSeq) {
+        roomSchedulers.computeIfAbsent(roomSeq, k -> Executors.newScheduledThreadPool(1))
+                .scheduleAtFixedRate(() -> updatePlayRank(roomSeq), 0, 6, TimeUnit.SECONDS);
+    }
+
+    public void updatePlayRank(int roomSeq){
+        ObjectMapper mapper = new ObjectMapper();
+        MarathonRoomManager marathonRoomManager = marathonGameManager.GetMarathonRoomManager();
+        // 게임 방 정보 가져오기
+        marathonRoomManager.sortMember();
+        marathonRoomManager.makeSentence();
+        marathonRoomManager.sendEndMessage();
+
+
+
+    }
+    // 종료 조건
+    // (curConnection == MaxConnection) 자동 End API 호출  완주해도 늘어나고, 연결이 끊겨도 늘어남
+    // || 누가 End API 호출
+    public void stopPlayerRankUpdates(int roomSeq) {
+        log.info(roomSeq+"게임이 종료되었습니다");
+        //게임이 종료 되기 전 방 지우기
+        marathonGameManager.CreateNewMarathonGame();
+        ScheduledExecutorService scheduler = roomSchedulers.remove(roomSeq);
+        if (scheduler != null) {
+            scheduler.shutdown();
+            try {
+                if (!scheduler.awaitTermination(1, TimeUnit.SECONDS)) {
+                    scheduler.shutdownNow();
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
         }
     }
 
