@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 import 'package:wadada/common/component/lineChart.dart';
+import 'package:wadada/common/component/tabbars.dart';
 import 'package:wadada/common/const/colors.dart';
 import 'package:wadada/controller/stompController.dart';
+import 'package:wadada/screens/mainpage/layout.dart';
 import 'package:wadada/screens/singlemainpage/single_main.dart';
 // import 'package:fl_chart/fl_chart.dart';
 
@@ -206,7 +208,7 @@ class _MultiResultState extends State<MultiResult> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => SingleMain(),
+                            builder: (context) => MainLayout(),
                           ),
                         );
                       },
@@ -299,7 +301,7 @@ class _MultiResultState extends State<MultiResult> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => SingleMain(),
+                              builder: (context) => MainLayout(),
                             ),
                           );
                         },

@@ -316,6 +316,8 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
             controller: controller,
             multiController: multiController,
             roomInfo: roomInfo,
+            centerlat: centerlat,
+            centerlong: centerlong,
           ),
         ),
       ).then((_) {
@@ -770,7 +772,8 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                 } else {
                   return TextButton(
                     onPressed:
-                        controller.numReady == controller.members.length - 1
+                        // controller.numReady == controller.members.length - 1 && (centerlat != 0.0 && centerlong != 0.0)
+                          controller.numReady == controller.members.length - 1
                             ? () {
                                 controller.gameStart();
                               }

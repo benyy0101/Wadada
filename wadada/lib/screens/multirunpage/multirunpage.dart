@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:stomp_dart_client/stomp_dart_client.dart';
 // import 'package:flutter/rendering.dart';
@@ -9,6 +10,7 @@ import 'package:wadada/controller/stompController.dart';
 import 'package:wadada/models/multiroom.dart';
 import 'package:wadada/provider/multiProvider.dart';
 import 'package:wadada/repository/multiRepo.dart';
+import 'package:wadada/screens/multiendpage/multiendpage.dart';
 import 'package:wadada/screens/multirankpage/multirankpage.dart';
 import 'package:wadada/screens/multiresultpage/multiresultpage.dart';
 import 'package:wadada/screens/singleresultpage/singleresultpage.dart';
@@ -34,8 +36,20 @@ class MultiRun extends StatefulWidget{
   final String appKey;
   final StompController controller;
   final MultiController multiController;
+  final double centerlat;
+  final double centerlong;
   SimpleRoom roomInfo;
-  MultiRun({super.key, required this.time, required this.dist, required this.appKey, required this.controller, required this.multiController, required this.roomInfo});
+  MultiRun({
+    super.key, 
+    required this.time, 
+    required this.dist, 
+    required this.appKey, 
+    required this.controller, 
+    required this.multiController, 
+    required this.roomInfo,
+    required this.centerlat,
+    required this.centerlong,
+  });
   
   @override
   _MultiRunState createState() => _MultiRunState();
@@ -68,7 +82,7 @@ class _MultiRunState extends State<MultiRun> {
     setState(() {
       currentTab = index;
     });
-  }
+  } 
 
 
   @override
@@ -76,10 +90,11 @@ class _MultiRunState extends State<MultiRun> {
     super.initState();
 
     print('설정한 거리 ${widget.dist}');
+    int moderoom = widget.roomInfo.roomMode;
 
     // _initWebSocketListener();
 
-    myMap = MyMap(appKey: widget.appKey);
+    myMap = MyMap(appKey: widget.appKey, centerplace: LatLng(widget.centerlat, widget.centerlong), moderoom: moderoom);
     onPageLoaded();
     // _onGameGoChanged();
     
@@ -98,7 +113,57 @@ class _MultiRunState extends State<MultiRun> {
       updateRankingData(rankingData);
       });
     _subscribeToTotalDistance();
+
+    myMap.currentLocationNotifier.addListener(() {
+      if (myMap.currentLocationNotifier.value != null) {
+        updateFlagRanking(myMap.currentLocationNotifier.value);
+      }
+    });
   }
+
+  Future<void> updateFlagRanking(LatLng? currentLocation) async {
+      double distance = Geolocator.distanceBetween(
+        currentLocation!.latitude,
+        currentLocation.longitude,
+        widget.centerlat,
+        widget.centerlong,
+      );
+
+      if (distance < 3) {
+        print('ㅇㅇ');
+        // print('ㅇㅇ');
+        final dio = Dio();
+        final url = Uri.parse('https://k10a704.p.ssafy.io/Multi/game/end/${widget.controller.receivedRoomSeq}');
+        final storage = FlutterSecureStorage();
+        String? accessToken = await storage.read(key: 'accessToken');
+        // String? username1 = await storage.read(key: 'kakaoNickname');
+
+        try {
+          final response = await dio.get(url.toString(),
+            options: Options(headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+              'authorization': accessToken
+            }));
+
+          if (response.statusCode == 200) {
+            final data = response.data as Map<String, dynamic>;
+            print('깃발 끝 통신 성공');
+            // return data;
+          } else if (response.statusCode == 204) {
+            print('204');
+            // return {};
+          } else {
+            print('서버 요청 실패: ${response.statusCode}');
+            // return {};
+          }
+        } catch (e) {
+          print('요청 처리 중 에러 발생: $e');
+          // return {};
+        }  
+      }
+    }
+
 
   void updateRankingData(List<dynamic>? newRankingData) async {
     if (newRankingData == null || newRankingData.isEmpty) return;
@@ -490,7 +555,7 @@ class _MultiRunState extends State<MultiRun> {
   //   });
 
   //   try {
-  //     final response = await dio.patch(
+  //     final response = await dio.post(
   //       url.toString(),
   //       data: requestBody,
   //       options: Options(headers: {
@@ -533,7 +598,7 @@ class _MultiRunState extends State<MultiRun> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => SingleResult(
+            builder: (context) => MultiEnd(
                 elapsedTime: elapsedTime,
                 coordinates: coordinates,
                 startLocation: coordinates.first,
@@ -541,7 +606,7 @@ class _MultiRunState extends State<MultiRun> {
                 totaldist: formattedDistance,
                 distanceSpeed: distanceSpeed,
                 distancePace: distancePace,
-                // controller: widget.controller,
+                controller: widget.controller,
                 // myRank: -1,
                 // endRank: const [],
             ),

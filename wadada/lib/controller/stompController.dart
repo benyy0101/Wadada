@@ -35,7 +35,7 @@ class StompController extends GetxController {
   // RxBool gamego = false.obs;
   ValueNotifier<bool> gameStartResponse = ValueNotifier<bool>(false);
   ValueNotifier<bool> gamego = ValueNotifier<bool>(false);
-  ValueNotifier<String> requestinfo = ValueNotifier<String>('');
+  ValueNotifier<int> requestinfo = ValueNotifier<int>(0);
   ValueNotifier<List<dynamic>> ranking = ValueNotifier<List<dynamic>>([]);
   ValueNotifier<List<dynamic>> memberInfoList = ValueNotifier<List<dynamic>>([]);
   ValueNotifier<Set<dynamic>> multiflag = ValueNotifier<Set<dynamic>>({});
@@ -157,9 +157,12 @@ class StompController extends GetxController {
 
                     int newRoomSeq = res['body']['roomSeq'];
                     print('roomSeq $newRoomSeq');
-                    
-                    setupNewSubscription(newRoomSeq);
+
                     client.deactivate();
+                    await Future.delayed(Duration(seconds: 2));
+
+                    setupNewSubscription(newRoomSeq);
+                    // client.deactivate();
 
                   return;
                 }
@@ -228,9 +231,9 @@ class StompController extends GetxController {
 
   void setupNewSubscription(int newRoomSeq) async {
     // client.deactivate();
-    if (client.isActive) {
-      client.deactivate();
-    }
+    // if (client.isActive) {
+    //   client.deactivate();
+    // }
     String? accessToken = await storage.read(key: 'accessToken');
     newclient = StompClient(
       config: StompConfig.sockJS(
@@ -244,7 +247,6 @@ class StompController extends GetxController {
             },
             callback: (frame) async {
               try {
-                if (isOwner.value) {
                   final url = Uri.parse('https://k10a704.p.ssafy.io/Multi/game/rank/$newRoomSeq');
                   final storage = FlutterSecureStorage();
                   String? accessToken = await storage.read(key: 'accessToken');
@@ -252,14 +254,16 @@ class StompController extends GetxController {
 
                   try {
                     dynamic response;
-                    if (get1 == false) {
-                      response = await dio.get(url.toString(),
-                          options: Options(headers: {
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json',
-                            'authorization': accessToken
-                          }));
-                      get1 = true;
+                    if (isOwner.value) {
+                      if (get1 == false) {
+                        response = await dio.get(url.toString(),
+                            options: Options(headers: {
+                              'Content-Type': 'application/json',
+                              'Accept': 'application/json',
+                              'authorization': accessToken
+                            }));
+                        get1 = true;
+                      }
                     }
                     // print('확인 ${response.data}');
 
@@ -274,8 +278,9 @@ class StompController extends GetxController {
                       print('최종 ${resp['body']}');
 
                       if (resp['body']['message'] == "멤버INFO요청") {
-                        requestinfo.value = resp['body']['message'];
-                        requestinfo.value = '';
+                        requestinfo.value += 1 ;
+                        // requestinfo.value = '';
+                        print('dd');
                       }
 
                       if (resp['body']['memberInfo'] != null) {
@@ -307,9 +312,7 @@ class StompController extends GetxController {
                     print('ㅇㅇ 요청 처리 중 에러 발생: $e');
                     // return {};
                   }
-                }
-
-              } catch(e) {
+                } catch(e) {
                 print(e);
               }
             },
