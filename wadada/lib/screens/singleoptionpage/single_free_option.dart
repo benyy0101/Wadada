@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:wadada/screens/multirunpage/multirunpage.dart';
 import 'package:wadada/screens/singleoptionpage/component/select_dist_option.dart';
 import 'package:wadada/screens/singleoptionpage/component/select_time_option.dart';
 import 'package:wadada/screens/singlerunpage/single_free_run.dart';
@@ -80,7 +81,7 @@ class SingleFreeModeState extends State<SingleOption> {
         }
 
         if (selectedTimeOptionState != null) {
-            double time = selectedTimeOptionState.time ?? 0.0;
+            int time = selectedTimeOptionState.time ?? 0;
             String appKey = dotenv.env['APP_KEY'] ?? '';
             Navigator.push(
               context,
@@ -89,7 +90,7 @@ class SingleFreeModeState extends State<SingleOption> {
               ),
             );
         } else if (selectedDistOptionState != null) {
-            double dist = selectedDistOptionState.dist ?? 0.0;
+            int dist = selectedDistOptionState.dist ?? 0;
             String appKey = dotenv.env['APP_KEY'] ?? '';
             Navigator.push(
               context,

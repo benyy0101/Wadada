@@ -15,7 +15,7 @@ import 'package:wadada/screens/multimainpage/multi_distance/multi_waitingpage/mu
 class MultiDisWait extends StatefulWidget {
   int roomMode;
 
-  MultiDisWait({required this.roomMode});
+  MultiDisWait({super.key, required this.roomMode});
 
   @override
   _MultiDisWait createState() => _MultiDisWait(roomMode: roomMode);
@@ -35,7 +35,7 @@ class _MultiDisWait extends State<MultiDisWait> {
   }
 
   void validatePassword(SimpleRoom room, BuildContext context) {
-    final _formKey = GlobalKey<FormState>();
+    final formKey = GlobalKey<FormState>();
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -70,7 +70,7 @@ class _MultiDisWait extends State<MultiDisWait> {
                 ),
                 SizedBox(height: 50),
                 Form(
-                  key: _formKey,
+                  key: formKey,
                   child: TextFormField(
                     obscuringCharacter: '*',
                     maxLength: 4,
@@ -127,7 +127,7 @@ class _MultiDisWait extends State<MultiDisWait> {
                     minimumSize: Size(400, 40),
                   ),
                   onPressed: () {
-                    final formKeyState = _formKey.currentState!;
+                    final formKeyState = formKey.currentState!;
                     print("+++++++++++++++++++++");
                     formKeyState.validate();
                     if (formKeyState.validate()) {
@@ -217,10 +217,10 @@ class _MultiDisWait extends State<MultiDisWait> {
                 ),
 
                 Obx(() {
-                  if (controller.roomList.length == 0) {
+                  if (controller.roomList.isEmpty) {
                     controller.getMultiRoomsByMode(roomMode);
                   }
-                  if (controller.roomList.length == 0) {
+                  if (controller.roomList.isEmpty) {
                     return Column(children: const [
                       SizedBox(
                         height: 30,
@@ -268,10 +268,10 @@ class CustomSearchField extends StatefulWidget {
   final String hintText;
 
   const CustomSearchField({
-    Key? key,
+    super.key,
     required this.controller,
     this.hintText = 'Enter your search query',
-  }) : super(key: key);
+  });
 
   @override
   _CustomSearchFieldState createState() => _CustomSearchFieldState();

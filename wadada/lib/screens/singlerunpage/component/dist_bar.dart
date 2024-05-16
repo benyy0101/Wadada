@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:wadada/common/const/colors.dart';
 import 'package:percent_indicator/percent_indicator.dart';
+import 'dart:math';
 
 class DistBar extends StatefulWidget{
   // final double dist;
   // const ProgressBar({super.key, required this.dist});
-  final double dist;
+  final int dist;
   final double formattedDistance;
 
   const DistBar({super.key, required this.dist, required this.formattedDistance});
@@ -19,7 +20,7 @@ class ProgressBarState extends State<DistBar>{
   @override
   Widget build(BuildContext context) {
     // double percent = 0.15;
-    double percent = widget.formattedDistance / widget.dist;
+    double percent = min(widget.formattedDistance / widget.dist, 1.0);
 
     return Column(
         children: [

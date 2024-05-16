@@ -55,13 +55,14 @@ class TestButton extends StatelessWidget {
           roomSecret: 1111,
           roomTag: '#싸피',
           roomTime: 3,
-          roomTitle: 'test');
+          roomTitle: 'test',
+          roomSeq: -1);
       //StompProvider provider = StompProvider(roomIdx: 0);
       return ElevatedButton(
         onPressed: () {
           try {
             //controller.getMultiRoomsByMode(1);
-            controller.sendStartLocation('0', '0', 3, 3);
+            controller.sendStartLocation(0.0, 0.0, 3, 3);
             //print(controller.roomList.toString());
           } catch (error) {
             // 로그아웃 실패 시 처리

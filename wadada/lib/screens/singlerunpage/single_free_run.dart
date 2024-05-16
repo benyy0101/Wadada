@@ -9,7 +9,9 @@ import 'package:wadada/screens/singleresultpage/singleresultpage.dart';
 import 'package:wadada/screens/singlerunpage/component/clock.dart';
 import 'package:wadada/screens/singlerunpage/component/map.dart';
 import 'package:wadada/screens/singlerunpage/component/dist_bar.dart';
+import 'package:wadada/screens/singlerunpage/component/testmap.dart';
 import 'package:wadada/screens/singlerunpage/component/time_bar.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 import 'package:dio/dio.dart';
 
@@ -17,8 +19,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class SingleFreeRun extends StatefulWidget {
-  final double time;
-  final double dist;
+  final int time;
+  final int dist;
   final String appKey;
   const SingleFreeRun(
       {super.key,
@@ -32,6 +34,7 @@ class SingleFreeRun extends StatefulWidget {
 
 class _SingleFreeRunState extends State<SingleFreeRun> {
   bool isLoading = true;
+  bool isLocked = false;
   int countdown = 5;
   Timer? countdownTimer;
   bool showCountdown = false;
@@ -94,7 +97,7 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
 
           WidgetsBinding.instance.addPostFrameCallback((_) {
             _clockKey.currentState?.start();
-          });
+        });
         }
       });
     });
@@ -114,14 +117,18 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
     String? accessToken = await storage.read(key: 'access37Token');
     int recordMode = widget.time > 0 ? 2 : 1;
 
+
     if (startLocation != null) {
       final url = Uri.parse('https://k10a704.p.ssafy.io/Single/start');
+      final storage = FlutterSecureStorage();
+      String? accessToken = await storage.read(key: 'accessToken');
 
       final requestBody = jsonEncode({
         "recordMode": recordMode,
         "recordStartLocation":
             "POINT(${startLocation.latitude} ${startLocation.longitude})"
       });
+
 
       try {
         final response = await dio.post(
@@ -134,6 +141,7 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
                 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNDYzNDMxNDUzIiwiYXV0aCI6IlJPTEVfU09DSUFMIiwiZXhwIjoxNzE1NDA1MzkzfQ.dmjUkVX1sFe9EpYhT3SGO3uC7q1dLIoddBvzhoOSisM',
           }),
         );
+
 
         if (response.statusCode == 200) {
           // 서버 응답 성공 처리
@@ -183,9 +191,12 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
     final startLocation = myMap.startLocation;
     final endLocation = myMap.endLocation;
     final url = Uri.parse('https://k10a704.p.ssafy.io/Single/result');
+    final storage = FlutterSecureStorage();
+    String? accessToken = await storage.read(key: 'accessToken');
     final dio = Dio();
 
     int recordMode = widget.time > 0 ? 2 : 1;
+
 
     // final elapsedTime = _clockKey.currentState?.elapsed ?? Duration.zero;
     // final formattedElapsedTime = formatElapsedTime(elapsedTime);
@@ -231,10 +242,6 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
     double averagePaceInSecondsPerKm = calculateAveragePace(distancePace);
     // double averagePaceInKmPerHour = convertPaceToKmPerHour(averagePaceInSecondsPerKm);
 
-    print('km 거리 $formattedDistance');
-    print('km 평균 속도 $averageSpeed');
-    print('km 평균 페이스 $averagePaceInSecondsPerKm');
-
     averageSpeed = double.parse(averageSpeed.toStringAsFixed(2)) * 1000;
     // averagePaceInSecondsPerKm = double.parse(averagePaceInSecondsPerKm.toStringAsFixed(2)) * 1000;
     // double formattedDistanceInMeters = double.parse(formattedDistance) * 1000;
@@ -265,23 +272,20 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
     // print('총 거리 $totalDistance');
 
     final requestBody = jsonEncode({
-      "recordMode": recordMode,
-      "singleRecordSeq": recordSeq,
-      "recordImage":
-          'https://github.com/jjeong41/t/assets/103355863/4e6d205d-694e-458c-b992-8ea7c27b85b1',
-      "recordDist": totalDistance, // int
-      "recordTime": intelapsedseconds, // int
-      "recordStartLocation":
-          "POINT(${startLocation?.latitude} ${startLocation?.longitude})",
-      "recordEndLocation":
-          "POINT(${endLocation?.latitude} ${endLocation?.longitude})",
-      "recordWay": jsonEncode(coordinates),
-      "recordSpeed": jsonEncode(distanceSpeed),
-      "recordPace": jsonEncode(distancePace),
-      "recordHeartbeat": jsonEncode(distancePace),
-      "recordMeanSpeed": intaveragespeed, // int
-      "recordMeanPace": intaveragepaceinkmperhour, // int
-      "recordMeanHeartbeat": 0 // int
+        "recordMode": recordMode,
+        "singleRecordSeq": recordSeq,
+        "recordImage": 'https://github.com/jjeong41/t/assets/103355863/4e6d205d-694e-458c-b992-8ea7c27b85b1',
+        "recordDist": totalDistance,
+        "recordTime": intelapsedseconds, // int
+        "recordStartLocation": "POINT(${startLocation?.latitude} ${startLocation?.longitude})",
+        "recordEndLocation": "POINT(${endLocation?.latitude} ${endLocation?.longitude})",
+        "recordWay": jsonEncode(coordinates),
+        "recordSpeed": jsonEncode(distanceSpeed),
+        "recordPace": jsonEncode(distancePace),
+        "recordHeartbeat": jsonEncode(distancePace),
+        "recordMeanSpeed": intaveragespeed, // int
+        "recordMeanPace": intaveragepaceinkmperhour, // int
+        "recordMeanHeartbeat": 0 // int
     });
 
     try {
@@ -325,7 +329,10 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
       List<Map<String, double>> distancePace = myMap.getdistancePace();
 
       Duration elapsedTime = Duration(seconds: elapsedSeconds.round());
+      String formattedElapsedTime = formatElapsedTime(elapsedTime);
+      // final formattedElapsedTime = formatElapsedTime(elapsedTime);
 
+      _sendRecordToServer();
       // final formattedElapsedTime = formatElapsedTime(elapsedTime);
 
       _sendRecordToServer();
@@ -473,6 +480,7 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
       // Duration elapsedTime = Duration(seconds: elapsedSeconds.round());
       // Duration elapsedTime = _clockKey.currentState?.elapsed ?? Duration.zero;
       // double elapsedTimeInSeconds = elapsedTime.inSeconds.toDouble();
+      // progressBar = TimeBar(initialTime: widget.time);
 
       // progressBar = ValueListenableBuilder<Duration>(
       //     valueListenable: elapsedTimeNotifier,
@@ -500,156 +508,211 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
     // double totalDistance = myMap.getTotalDistance();
     // String formattedDistance = totalDistance.toStringAsFixed(2);
 
-    return Scaffold(
+    void onLockButtonPressed() {
+        setState(() {
+            isLocked = !isLocked;
+        });
+    }
+
+    void onUnlockButtonPressed() {
+        setState(() {
+            isLocked = false;
+        });
+    }
+
+    return PopScope(
+      canPop: false,
+      child: Stack(
+      children: [
+        Scaffold(
         backgroundColor: Colors.white,
-        body: Stack(children: [
-          Container(
-            padding: EdgeInsets.only(left: 30, right: 30),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(
-                  height: 60,
+        appBar: AppBar(
+          leading: null,
+          actions: [
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 0),
+              child: Text(
+                isLocked
+                    ? '잠금을 풀려면 2초 이상 누르세요.는 시도해봤는데 아직 안됨'
+                    : '화면을 잠글 수 있습니다',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 14,
                 ),
-                progressBar,
-                SizedBox(
-                  height: 45,
-                ),
-                // 나의경로
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('나의 경로',
+              ),
+            ),
+            IconButton(
+              icon: Icon(isLocked ? Icons.lock : Icons.lock_open),
+              onPressed: onLockButtonPressed,
+            ),
+          ],
+          automaticallyImplyLeading: false,
+          backgroundColor: Colors.white,
+        ),
+        body: Stack(
+            children: [
+              AbsorbPointer(
+                absorbing: isLocked,
+            child: Container(
+              padding: EdgeInsets.only(left: 30, right: 30),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  progressBar,
+                  SizedBox(
+                      height: 45,
+                  ),
+                  // 나의경로
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('나의 경로',
                         style: TextStyle(
                           color: GRAY_500,
                           fontSize: 19,
-                        )),
-                    SizedBox(height: 10),
-                    myMap,
-                  ],
-                ),
-                SizedBox(height: 35),
-                // 이동거리, 현재 페이스
-                // formattedDistance = totalDistance.toStringAsFixed(2);
-                Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('이동거리',
+                        )
+                      ),
+                      SizedBox(height: 10),
+                      myMap,
+                      // myMap1,
+                    ],
+                  ),
+                  SizedBox(height: 35),
+                  // 이동거리, 현재 페이스
+                      // formattedDistance = totalDistance.toStringAsFixed(2);
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('이동거리',
                               style: TextStyle(
-                                color: GRAY_500,
-                                fontSize: 19,
-                              )),
-                          SizedBox(height: 5),
-                          ValueListenableBuilder<double>(
+                                  color: GRAY_500,
+                                  fontSize: 19,
+                              )
+                            ),
+                            SizedBox(height: 5),
+                            ValueListenableBuilder<double>(
                               valueListenable: myMap.totalDistanceNotifier,
                               builder: (context, totalDistance, _) {
                                 // double distanceInKm = totalDistance / 1000.0;
                                 // formattedDistance = distanceInKm.toStringAsFixed(2);
                                 return Text('$formattedDistance km',
-                                    style: TextStyle(
-                                      color: GREEN_COLOR,
-                                      fontSize: 30,
-                                      fontWeight: FontWeight.w700,
-                                    ));
-                              }),
-                        ],
+                                  style: TextStyle(
+                                    color: GREEN_COLOR,
+                                    fontSize: 30,
+                                    fontWeight: FontWeight.w700,
+                                  )
+                                );
+                              }
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('현재 페이스',
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('현재 페이스',
                               style: TextStyle(
-                                color: GRAY_500,
-                                fontSize: 19,
-                              )),
-                          SizedBox(height: 5),
-                          ValueListenableBuilder<double>(
+                                  color: GRAY_500,
+                                  fontSize: 19,
+                              )
+                            ),
+                            SizedBox(height: 5),
+                            ValueListenableBuilder<double>(
                               valueListenable: myMap.paceNotifier,
                               builder: (context, pace, _) {
                                 String formattedPace = formatPace(pace);
                                 return Text(formattedPace,
-                                    style: TextStyle(
-                                      color: GREEN_COLOR,
-                                      fontSize: 30,
-                                      fontWeight: FontWeight.w700,
-                                    ));
-                              }),
-                        ],
-                      ),
+                                  style: TextStyle(
+                                    color: GREEN_COLOR,
+                                    fontSize: 30,
+                                    fontWeight: FontWeight.w700,
+                                  )
+                                );
+                              }
+                            ),
+                          ],
+                        ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-                SizedBox(height: 30),
-                // 소요 시간
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(widget.time == 0 ? '소요 시간' : '남은 시간',
+                  SizedBox(height: 30),
+                  // 소요 시간
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(widget.time == 0? '소요 시간' : '남은 시간',
                         style: TextStyle(
                           color: GRAY_500,
                           fontSize: 19,
-                        )),
-                    SizedBox(height: 10),
-                    // Clock(time: widget.time),
-                    clockWidget,
-                  ],
-                ),
-                SizedBox(height: 30),
-                // 현재 속도
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('현재 속도',
+                        )
+                      ),
+                      SizedBox(height: 10),
+                      // Clock(time: widget.time),
+                      clockWidget,
+                    ],
+                  ),
+                  SizedBox(height: 30),
+                  // 현재 속도
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('현재 속도',
                         style: TextStyle(
                           color: GRAY_500,
                           fontSize: 19,
-                        )),
-                    SizedBox(height: 5),
-                    ValueListenableBuilder<double>(
+                        )
+                      ),
+                      SizedBox(height: 5),
+                      ValueListenableBuilder<double>(
                         valueListenable: myMap.speedNotifier,
                         builder: (context, speed, _) {
                           return Text('${speed.toStringAsFixed(2)} km/h',
-                              style: TextStyle(
-                                color: GREEN_COLOR,
-                                fontSize: 30,
-                                fontWeight: FontWeight.w700,
-                              ));
-                        }),
-                  ],
-                ),
-                SizedBox(height: 50),
-                // 종료 버튼
-                GestureDetector(
-                  onTap: () {
-                    _showEndModal(context);
-                  },
-                  child: Container(
-                    width: double.maxFinite,
-                    decoration: BoxDecoration(
-                      color: GREEN_COLOR,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Padding(
+                            style: TextStyle(
+                              color: GREEN_COLOR,
+                              fontSize: 30,
+                              fontWeight: FontWeight.w700,
+                            )
+                          );
+                        }
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 50),
+                  // 종료 버튼
+                  GestureDetector(
+                    onTap: () {
+                      _showEndModal(context);
+                    },
+                    child: Container(
+                      width:double.maxFinite,
+                      decoration: BoxDecoration(
+                        color: GREEN_COLOR,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Padding(
                         padding: EdgeInsets.symmetric(
                           vertical: 15,
                         ),
                         child: Text('종료하기',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 19,
-                              fontWeight: FontWeight.bold,
-                            ))),
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 19,
+                            fontWeight: FontWeight.bold,
+                          )
+                        )
+                      ),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
+              
 
           // if (isLoading)
           //   Positioned.fill(
@@ -662,11 +725,32 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
           //       ),
           //   ),
 
-          if (isLoading)
+          if (isLocked)
+            GestureDetector(
+                onLongPress: onUnlockButtonPressed,
+                child: Container(
+                    color: Colors.black.withOpacity(0),
+                    child: Center(
+                      // child: Text(
+                      //     '잠금을 해제하려면\n화면을 몇 초 동안 누르세요.',
+                      //     style: TextStyle(
+                      //         color: Colors.white,
+                      //         fontSize: 20,
+                      //         fontWeight: FontWeight.bold,
+                      //     ),
+                      //     textAlign: TextAlign.center,
+                      // ),
+                    ),
+                ),
+            ),
+          ]
+        ), 
+      ),
+      if (isLoading)
             Positioned.fill(
-              child: Container(
-                color: OATMEAL_COLOR,
-                child: Center(
+              child: Scaffold(
+                backgroundColor: OATMEAL_COLOR,
+                body: Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -696,6 +780,8 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
                 ),
               ),
             ),
-        ]));
+        ]
+      )
+    );
   }
 }

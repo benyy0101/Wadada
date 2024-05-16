@@ -50,6 +50,11 @@ dependencies:
   fl_chart:
   lottie: ^3.1.0
   stomp_dart_client: ^2.0.0
+  location: ^6.0.2
+  flutter_local_notifications: ^17.1.2
+  flutter_mobx: ^2.2.1+1
+  web_socket_channel: ^2.4.5
+  
 
 flutter_launcher_icons:
   android: "launcher_icon"
