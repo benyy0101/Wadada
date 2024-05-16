@@ -40,9 +40,6 @@ public class GameRoomManager {
     }
 
     public void removeRoom(int index) {
-        if (index < 0 || index >= MAX_ROOMS) {
-            throw new IndexOutOfBoundsException("잘못된 방 인덱스");
-        }
         GameRoomDto room = playrooms.get(index);
         // 해당 방 멤버 모두 삭제
         if(room != null){
