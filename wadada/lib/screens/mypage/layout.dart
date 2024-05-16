@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:wadada/common/component/logout.dart';
 import 'package:wadada/common/const/colors.dart';
 import 'package:wadada/screens/mypage/avartar.dart';
+import 'package:wadada/screens/mypage/editProfile.dart';
 import 'package:wadada/screens/mypage/recordList.dart';
 import 'package:wadada/screens/mypage/smallNav.dart';
 
@@ -12,6 +13,7 @@ import 'package:wadada/screens/mypage/smallNav.dart';
 import 'package:flutter/material.dart';
 import 'package:wadada/common/const/colors.dart';
 import 'package:wadada/screens/mypage/smallNav.dart';
+import 'package:wadada/screens/newprofilepage/layout.dart';
 
 class MyPageLayout extends StatefulWidget {
   const MyPageLayout({super.key});
@@ -94,11 +96,7 @@ class _MyPageLayoutState extends State<MyPageLayout>
                 height: 100,
                 child: TabBarView(
                   controller: _tabController,
-                  children: [
-                    RecordList(),
-                    avatarWidget(),
-                    Text("3"),
-                  ],
+                  children: [RecordList(), avatarWidget(), EditProfile()],
                 ),
               ),
             ),

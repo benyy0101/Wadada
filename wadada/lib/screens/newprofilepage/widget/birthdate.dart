@@ -2,6 +2,7 @@
 // ignore: use_key_in_widget_constructors
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:wadada/common/const/colors.dart';
 import 'package:wadada/controller/profileController.dart';
 import 'package:wadada/repository/profileRepo.dart';
@@ -29,7 +30,7 @@ class CalendarState extends State<Calendar> {
           style: TextButton.styleFrom(
             backgroundColor: GREEN_COLOR,
             padding:
-                const EdgeInsets.symmetric(vertical: 13.0, horizontal: 60.0),
+                const EdgeInsets.symmetric(vertical: 13.0, horizontal: 30.0),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(4.0),
             ),
@@ -48,7 +49,7 @@ class CalendarState extends State<Calendar> {
             }
           },
           child: Text(
-            date.toString().substring(0, 10),
+            DateFormat('yyyy년 MM월 dd일').format(date),
             style: const TextStyle(
               color: Colors.white,
               fontSize: 20.0,

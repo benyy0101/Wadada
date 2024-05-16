@@ -20,8 +20,8 @@ class StompController extends GetxController {
   RxList<CurrentMember> members = <CurrentMember>[].obs;
   MultiRepository repo = MultiRepository(provider: MultiProvider());
   bool isStart = false;
-  late bool isOwner = false;
-  late int numReady = 0;
+  RxBool isOwner = false.obs;
+  int numReady = 0;
   CurrentMember itMe = CurrentMember(
       memberNickname: 'memberNickname',
       memberGender: 'memberGender',
@@ -181,7 +181,7 @@ class StompController extends GetxController {
     members.forEach((element) {
       // print(element.memberId);
       if (element.memberId == kakaoId && element.manager == true) {
-        isOwner = true;
+        isOwner.value = true;
       }
     });
     print('isOwner------------------------------');

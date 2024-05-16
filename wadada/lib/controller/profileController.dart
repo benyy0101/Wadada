@@ -23,6 +23,15 @@ class ProfileController extends GetxController {
 
   ProfileController({required this.repo});
 
+  @override
+  void onInit() async {
+    super.onInit();
+    final storage = FlutterSecureStorage();
+    profile.value.memberNickname = (profile.value.memberNickname != ''
+        ? await storage.read(key: 'kakaoNickname')
+        : profile.value.memberNickname)!;
+  }
+
   //PROFILE-003
   void patchProfile(Profile newProfile) async {
     try {

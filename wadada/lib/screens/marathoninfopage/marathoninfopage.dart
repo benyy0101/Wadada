@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wadada/common/const/colors.dart';
+import 'package:wadada/models/marathon.dart';
 import 'package:wadada/screens/marathoninfopage/component/infodetail.dart';
 import 'package:wadada/screens/marathoninfopage/component/people.dart';
 import 'package:wadada/screens/singleoptionpage/single_free_option.dart';
@@ -9,7 +10,7 @@ import 'package:wadada/screens/singlemainpage/component/single_record.dart';
 import 'package:dio/dio.dart';
 
 class MarathonInfo extends StatefulWidget{
-  final Map<String, dynamic> marathon;
+  final SimpleMarathon marathon;
   final bool isPast;
 
   const MarathonInfo({super.key, required this.marathon, required this.isPast});

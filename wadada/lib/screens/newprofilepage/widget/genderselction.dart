@@ -26,7 +26,7 @@ class _GenderSelectionWidgetState extends State<GenderSelectionWidget> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        ElevatedButton(
+        TextButton(
           onPressed: () {
             setState(() {
               selectedGender = "여성";
@@ -41,7 +41,6 @@ class _GenderSelectionWidgetState extends State<GenderSelectionWidget> {
             foregroundColor: Colors.white,
             backgroundColor:
                 selectedGender == "여성" ? GREEN_COLOR : OATMEAL_COLOR,
-            elevation: 5,
             shadowColor: Colors.black,
             minimumSize: const Size(100, 60),
           ),
@@ -52,7 +51,7 @@ class _GenderSelectionWidgetState extends State<GenderSelectionWidget> {
             ),
           ),
         ),
-        ElevatedButton(
+        TextButton(
           onPressed: () {
             setState(() {
               selectedGender = "남성";
@@ -66,7 +65,6 @@ class _GenderSelectionWidgetState extends State<GenderSelectionWidget> {
             foregroundColor: Colors.white,
             backgroundColor:
                 selectedGender == "남성" ? GREEN_COLOR : OATMEAL_COLOR,
-            elevation: 5,
             shadowColor: Colors.black,
             minimumSize: const Size(100, 60),
           ),
