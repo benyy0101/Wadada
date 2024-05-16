@@ -13,7 +13,7 @@ import org.locationtech.jts.geom.Point;
 @Builder
 @Getter
 public class GameEndReq {
-    private Integer roomIdx;
+    private Integer roomSeq;
     private String recordImage;
     private Integer recordDist;
     private Integer recordTime;

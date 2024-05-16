@@ -82,7 +82,7 @@ public class MultiRecordServiceImpl implements MultiRecordService {
             throw new NullPointerException("멤버를 찾을 수 없습니다");
         }
 
-        Optional<MultiRecord> optional = multiRecordRepository.findByMemberIdandRoomSeq(optionalMember.get().getMemberSeq(),gameEndReq.getRoomIdx());
+        Optional<MultiRecord> optional = multiRecordRepository.findByMemberIdandRoomSeq(optionalMember.get().getMemberSeq(),gameEndReq.getRoomSeq());
         if(optional.isEmpty()){
             throw new NullPointerException("기록을 찾을 수 없습니다");
         }
