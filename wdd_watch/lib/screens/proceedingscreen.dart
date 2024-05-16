@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:watch_app/screens/components/heartbeat.dart';
 import 'package:watch_app/screens/components/pace.dart';
 import 'package:watch_app/screens/components/pageindicator.dart';
@@ -23,6 +24,8 @@ class _ProceedingScreenState extends State<ProceedingScreen>
   late PageController _pageViewController;
   late TabController _tabController;
   int _currentPageIndex = 0;
+
+  static const platform = MethodChannel('com.example.watch_app/ambient');
 
   @override
   void initState() {
