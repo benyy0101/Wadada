@@ -62,5 +62,8 @@ public class SingleRecord extends BaseEntity {
     @Column(name = "single_record_mean_speed")
     private Integer singleRecordMeanSpeed;
 
+    @Column(name = "single_record_mode")
+    private Integer singleRecordMode;
+
 
 }

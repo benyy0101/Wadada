@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static org.api.wadada.app.mypage.Entity.QRoom.room;
+
 @Repository
 @AllArgsConstructor
 public class MyPageRepositoryImpl {
@@ -33,7 +35,8 @@ public class MyPageRepositoryImpl {
                     QSingleRecord.singleRecord.singleRecordSeq,
                     Expressions.constant("1"), // 'type' 필드에 대한 임의의 값 "1"을 설정
                     QSingleRecord.singleRecord.singleRecordDist,
-                    QSingleRecord.singleRecord.createdAt))
+                    QSingleRecord.singleRecord.createdAt,
+                    QSingleRecord.singleRecord.singleRecordMode))
             .from(QSingleRecord.singleRecord)
             .where(QSingleRecord.singleRecord.memberSeq.eq(memberSeq)
                     .and(QSingleRecord.singleRecord.createdAt.between(startDateTime, endDateTime)))
@@ -43,8 +46,10 @@ public class MyPageRepositoryImpl {
                         QMultiRecord.multiRecord.multiRecordSeq,
                         Expressions.constant("2"), // 'type' 필드에 대한 임의의 값 "1"을 설정
                         QMultiRecord.multiRecord.multiRecordDist,
-                        QMultiRecord.multiRecord.createdAt))
+                        QMultiRecord.multiRecord.createdAt,
+                        room.roomMode))
                 .from(QMultiRecord.multiRecord)
+                        .join(room).on(QMultiRecord.multiRecord.roomSeq.eq(room.roomSeq))
                 .where(QMultiRecord.multiRecord.memberSeq.eq(memberSeq)
                         .and(QMultiRecord.multiRecord.createdAt.between(startDateTime, endDateTime)))
                 .fetch());
@@ -53,7 +58,8 @@ public class MyPageRepositoryImpl {
                         QMarathonRecord.marathonRecord.marathonRecordSeq,
                         Expressions.constant("3"), // 'type' 필드에 대한 임의의 값 "1"을 설정
                         QMarathonRecord.marathonRecord.marathonRecordDist,
-                        QMarathonRecord.marathonRecord.createdAt))
+                        QMarathonRecord.marathonRecord.createdAt,
+                        Expressions.constant(-1)))
                 .from(QMarathonRecord.marathonRecord)
                 .where(QMarathonRecord.marathonRecord.memberSeq.eq(memberSeq)
                         .and(QMarathonRecord.marathonRecord.createdAt.between(startDateTime, endDateTime)))

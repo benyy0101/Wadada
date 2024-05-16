@@ -13,4 +13,5 @@ public class RecordDto {
     private String recordType;
     private Integer recordDist;
     private LocalDateTime recordCreatedAt;
+    private Integer recordMode;
 }
