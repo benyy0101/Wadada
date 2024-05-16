@@ -1,4 +1,4 @@
-name: watch_app
+name: wadada
 description: A new Flutter project.
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -36,12 +36,24 @@ dependencies:
   cupertino_icons: ^1.0.2
   wear: ^1.1.0
   square_percent_indicater: ^0.1.0
-<<<<<<< HEAD
-  flutter_blue_plus: ^1.32.6
 
-=======
+  # 워치랑 호환
+  flutter_smart_watch: ^1.0.0
+  # 워치간 수신 및 발신
+  watch_connectivity: ^0.1.5
+
+  flutter_blue_plus: ^1.32.6
+  is_wear: ^0.0.1+1
+  # wear:
+  #   git:
+  #     url: https://github.com/ju851zel/flutter_wear_plugin
+  #     ref: upgrade-versions
+
+  collection: ^1.16.0
+  flutter_sensors: ^1.0.1
+
+
   permission_handler: ^11.3.1
->>>>>>> 712b23aba874bcf29481b67fe88675335686e84f
 
 dev_dependencies:
   flutter_test:

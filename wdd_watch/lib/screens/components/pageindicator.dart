@@ -1,6 +1,6 @@
 // 현재 페이지 나타냄
 import 'package:flutter/material.dart';
-import 'package:watch_app/commons/const/colors.dart';
+import 'package:wadada/commons/const/colors.dart';
 
 class PageIndicator extends StatelessWidget {
   const PageIndicator({

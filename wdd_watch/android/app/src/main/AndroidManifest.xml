@@ -1,16 +1,19 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.watch_app">
+    package="com.ssafy.wadada">
 
-    <uses-permission android:name="android.permission.BLUETOOTH" />
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-    <uses-feature android:name="android.hardware.bluetooth_le" android:required="true"/>
+    <uses-permission android:name="android.permission.BLUETOOTH"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
 
     <uses-permission android:name="android.permission.BODY_SENSORS"/>
     <uses-permission android:name="android.permission.BODY_SENSORS_BACKGROUND"/>
 
 
    <application
-        android:label="watch_app"
+        android:label="wadada"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

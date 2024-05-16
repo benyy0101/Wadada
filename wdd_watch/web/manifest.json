@@ -1,6 +1,6 @@
 {
-    "name": "watch_app",
-    "short_name": "watch_app",
+    "name": "wadada",
+    "short_name": "wadada",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

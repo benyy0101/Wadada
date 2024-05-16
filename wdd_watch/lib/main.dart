@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:watch_app/screens/components/pace.dart';
-import 'package:watch_app/screens/homescreen.dart';
-import 'package:watch_app/screens/proceedingscreen.dart';
-import 'package:watch_app/screens/runstartscreen.dart';
+import 'package:wadada/screens/components/pace.dart';
+import 'package:wadada/screens/homescreen.dart';
+import 'package:wadada/screens/proceedingscreen.dart';
+import 'package:wadada/screens/runstartscreen.dart';
 
 void main() {
   runApp(const MyApp());

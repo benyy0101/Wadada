@@ -1,10 +1,12 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:watch_app/screens/components/heartbeat.dart';
-import 'package:watch_app/screens/components/pace.dart';
-import 'package:watch_app/screens/components/pageindicator.dart';
-import 'package:watch_app/screens/components/time.dart';
+import 'package:wadada/screens/components/heartbeat.dart';
+import 'package:wadada/screens/components/pace.dart';
+import 'package:wadada/screens/components/pageindicator.dart';
+import 'package:wadada/screens/components/time.dart';
+import 'package:watch_connectivity/watch_connectivity.dart';
+
 
 // 진행 중 화면
 
@@ -25,45 +27,56 @@ class _ProceedingScreenState extends State<ProceedingScreen>
   late TabController _tabController;
   int _currentPageIndex = 0;
 
-  static const platform = MethodChannel('com.example.watch_app/ambient');
+  final _log = <String>[];
+
+  String _formattedPace = '';
+  final String _splitHours = '';
+  final String _splitMinutes = '';
+  final String _splitSeconds = '';
+  final _watch = WatchConnectivity();
 
   @override
   void initState() {
     super.initState();
     _pageViewController = PageController();
     _tabController = TabController(length: 4, vsync: this);
-    // _initWear();
+    _initWear();
   }
 
-  // void _initWear() {
-  //   _watch.messageStream.listen(
-  //     (message) => setState(
-  //       () {
-  //         if (message.containsKey('runningDistance')) {
-  //           _runningDistance = message['runningDistance'].toString();
-  //         }
-  //         if (message.containsKey('runningTime')) {
-  //           _runningTime = message['runningTime'];
-  //         }
-  //         if (message.containsKey('userPace')) {
-  //           _userPace = message['userPace'];
-  //         }
-  //         if (message.containsKey('userCalories')) {
-  //           _userCalories = message['userCalories'].toString();
-  //         }
-  //         if (message.containsKey('isStart')) {
-  //           isStart = message['isStart'];
-  //         }
-  //         if (message.containsKey('stop')) {
-  //           toStop();
-  //         }
-  //       },
-  //     ),
-  //   );
-  // }
+  void _initWear() {
+    _watch.messageStream.listen(
+      (message) => setState(
+        () {
+          if (message.containsKey('formattedPace')) {
+            _formattedPace = message['formattedPace'].toString();
+          }
+          // if (message.containsKey('splitHours')) {
+          //   _splitHours = message['splitHours'];
+          // }
+          // if (message.containsKey('splitMinutes')) {
+          //   _splitMinutes = message['splitMinutes'];
+          // }
+          // if (message.containsKey('splitSeconds')) {
+          //   _splitSeconds = message['splitSeconds'].toString();
+          // }
+        },
+      ),
+    );
+  }
 
-  // void _send(message) {
-  //   _watch.sendMessage(message);
+  void sendMessage(formattedPace) {
+    final message = {
+      'formattedPace': formattedPace,
+    };
+    _watch.sendMessage(message);
+    setState(() => _log.add('메세지: $message'));
+
+  }
+
+  // void sendContext(formattedPace) {
+  //   final context = {'formattedPace': formattedPace};
+  //   _watch.updateApplicationContext(context);
+  //   setState(() => _log.add('보내진 context: $context'));
   // }
 
   @override
@@ -85,10 +98,10 @@ class _ProceedingScreenState extends State<ProceedingScreen>
           onPageChanged: _handlePageViewChanged,
           children: <Widget>[
             const Center(
-              child: runTime(),
+              child: runPace(),
             ),
             const Center(
-              child: runPace(),
+              child: runTime(),
             ),
             const Center(
               child: runHeart(),

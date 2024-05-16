@@ -1,4 +1,4 @@
-package com.example.watch_app
+package com.ssafy.wadada
 
 import android.os.Bundle
 import android.content.Context
@@ -32,7 +32,7 @@ class MainActivity: FlutterActivity(), SensorEventListener {
         const val REQUESTED_PERMISSION = Manifest.permission.BODY_SENSORS
         const val REQUEST_PERMISSION_CODE = 1
         // 추가
-        const val CHANNEL_HEARTRATE = "com.example.watch_app/heart_rate"
+        const val CHANNEL_HEARTRATE = "com.ssafy.wadada/heart_rate"
         // const val CHANNEL = "com.example/data_channel"
     }
 

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:watch_app/commons/const/colors.dart';
+import 'package:wadada/commons/const/colors.dart';
 
 // 달리기 시작 알림 화면
 class RunStartScreen extends StatefulWidget {

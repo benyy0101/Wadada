@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:watch_app/commons/const/colors.dart';
+import 'package:wadada/commons/const/colors.dart';
 import 'dart:async';
 
 class runHeart extends StatefulWidget {
@@ -11,7 +11,7 @@ class runHeart extends StatefulWidget {
 }
 
 class _runHeartState extends State<runHeart> {
-  static const MethodChannel _channel = MethodChannel('com.example.watch_app/heart_rate');
+  static const MethodChannel _channel = MethodChannel('com.ssafy.wadada/heart_rate');
   // 초기 심박수 일단 설정을 ??로 해두고
   String _heartRate = '??';
   // 컨트롤러 슛
