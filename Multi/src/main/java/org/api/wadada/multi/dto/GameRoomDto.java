@@ -42,8 +42,8 @@ public class GameRoomDto {
 
     private ConcurrentMap<String,PlayerInfo> playerInfo;
 
-    private HashMap<String,Boolean> disconnected;
-    private HashMap<String,Boolean> finished;
+    private HashMap<String,Integer> disconnected;
+    private HashMap<String,Integer> finished;
 
     public void addMember(PlayerInfo member) {
         if (playerInfo.containsKey(member.getName())) {
@@ -103,14 +103,14 @@ public class GameRoomDto {
         this.playerInfo.put(memberId,info);
     }
 
-    public boolean getDisconnected(String memberId) {
-        Boolean value = this.disconnected.get(memberId);
-        return value != null ? value : false;
+    public int getDisconnected(String memberId) {
+        int value = this.disconnected.get(memberId);
+        return value;
     }
 
-    public boolean getFinished(String memberId) {
-        Boolean value = this.finished.get(memberId);
-        return value != null ? value : false;
+    public int getFinished(String memberId) {
+        int value = this.finished.get(memberId);
+        return value;
     }
 
 

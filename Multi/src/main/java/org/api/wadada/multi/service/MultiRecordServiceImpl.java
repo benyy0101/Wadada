@@ -157,7 +157,8 @@ public class MultiRecordServiceImpl implements MultiRecordService {
         //끊어진 사람 수 세기
         int cnt = 0;
         for(PlayerInfo playerInfo: playerInfos){
-            if(!roomDto.getDisconnected(playerInfo.getMemberId())){
+            log.info(playerInfo.getName()+"   "+roomDto.getDisconnected(playerInfo.getMemberId()));
+            if(4 ==roomDto.getDisconnected(playerInfo.getMemberId())){
                 cnt++;
             }
         }

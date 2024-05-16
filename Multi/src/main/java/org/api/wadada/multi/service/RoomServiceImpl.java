@@ -345,8 +345,8 @@ public class RoomServiceImpl implements RoomService {
     public void startGame(int roomIdx) {
         RoomDto curRoom = roomManager.getAllRooms().get(roomIdx);
         ConcurrentMap<String, PlayerInfo> infoConcurrentMap = new ConcurrentHashMap<>();
-        HashMap<String,Boolean> disconnected = new HashMap<>();
-        HashMap<String,Boolean> finished = new HashMap<>();
+        HashMap<String,Integer> disconnected = new HashMap<>();
+        HashMap<String,Integer> finished = new HashMap<>();
 
         for(RoomMemberRes member :curRoom.getMembers().values()){
             PlayerInfo playerInfo = PlayerInfo.builder()
@@ -356,8 +356,8 @@ public class RoomServiceImpl implements RoomService {
                     .memberId(member.getMemberId())
                     .build();
             infoConcurrentMap.put(member.getMemberId(),playerInfo);
-            disconnected.put(member.getMemberId(),false);
-            finished.put(member.getMemberId(),false);
+            disconnected.put(member.getMemberId(),0);
+            finished.put(member.getMemberId(),0);
         }
 
 
