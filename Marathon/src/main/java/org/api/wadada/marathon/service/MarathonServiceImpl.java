@@ -279,7 +279,8 @@ public class MarathonServiceImpl implements MarathonService {
                 marathonRoomManager.getMessagingTemplate().convertAndSend(topic, tempmessage);
             }
         }, 1, TimeUnit.SECONDS);
-        executorService.shutdown();
+        
+        //executorService.shutdown();
     }
 
 
