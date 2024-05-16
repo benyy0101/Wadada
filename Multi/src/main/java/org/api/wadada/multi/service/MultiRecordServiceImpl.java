@@ -157,12 +157,12 @@ public class MultiRecordServiceImpl implements MultiRecordService {
         //끊어진 사람 수 세기
         int cnt = 0;
         for(PlayerInfo playerInfo: playerInfos){
-            log.info(playerInfo.getName()+"   "+roomDto.getDisconnected(playerInfo.getMemberId()));
-            if(4 ==roomDto.getDisconnected(playerInfo.getMemberId())){
+            log.info(roomSeq+"번째 방 "+playerInfo.getName()+"   "+roomDto.getDisconnected(playerInfo.getMemberId()));
+            if(4 == roomDto.getDisconnected(playerInfo.getMemberId())){
                 cnt++;
             }
         }
-        log.info("끊어진 사람 수 count@@@@@@@@        "+cnt);
+        log.info("끊어진 사람 수 count@@@@@@@@        "+cnt+"   현재 참여인원@@@@@"+ roomDto.getCurPeople());
         // 다 끊어진 경우 게임 종료
         if(cnt == roomDto.getCurPeople()){
             stopPlayerRankUpdates(roomSeq);
