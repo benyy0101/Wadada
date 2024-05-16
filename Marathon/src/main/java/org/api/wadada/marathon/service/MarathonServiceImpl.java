@@ -91,6 +91,9 @@ public class MarathonServiceImpl implements MarathonService {
                 long delay = LocalDateTime.now().until(marathonCreateReq.getMarathonStart(), ChronoUnit.MILLIS);
                 System.out.println("delay = " + delay);
                 System.out.println("LocalDateTime.now() = " + LocalDateTime.now());
+
+
+
                 scheduledExecutor.schedule(() -> {
                     System.out.println("LocalDateTime.now() = " + LocalDateTime.now());
                     marathonRoomManager.sendStartMessage();
@@ -281,7 +284,7 @@ public class MarathonServiceImpl implements MarathonService {
             }
         }, 1, TimeUnit.SECONDS);
 
-        //executorService.shutdown();
+        executorService.shutdown();
     }
 
 
