@@ -27,9 +27,11 @@ class ProfileController extends GetxController {
   void onInit() async {
     super.onInit();
     final storage = FlutterSecureStorage();
-    profile.value.memberNickname = (profile.value.memberNickname != ''
-        ? await storage.read(key: 'kakaoNickname')
-        : profile.value.memberNickname)!;
+    String? temp = await storage.read(key: 'kakaoNickname');
+    print('-------------------------');
+    print(temp);
+    profile.value.memberNickname =
+        await storage.read(key: 'kakaoNickname') ?? "";
   }
 
   //PROFILE-003
