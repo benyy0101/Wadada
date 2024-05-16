@@ -4,8 +4,9 @@ import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:wadada/common/const/colors.dart';
 
-class MyMap extends StatefulWidget{
+class MyMap extends StatefulWidget {
   // const SingleFreeRun({super.key, required this.time, required this.dist});
+
   final String appKey;
   LatLng? startLocation;
   LatLng? endLocation;
@@ -39,10 +40,17 @@ class MyMap extends StatefulWidget{
   }
 
   @override
-  State<MyMap> createState() => _MyMapState();
+  State<MyMap> createState() => MyMapState();
+
+  void disposeState(GlobalKey<MyMapState> key) {
+    final MyMapState? state = key.currentState;
+    print("dispose");
+    print(state);
+    state?.dispose();
+  }
 }
 
-class _MyMapState extends State<MyMap> {
+class MyMapState extends State<MyMap> {
   double? currentLatitude;
   double? currentLongitude;
 
@@ -70,7 +78,7 @@ class _MyMapState extends State<MyMap> {
     );
 
     startTime = DateTime.now();
-
+    print("-----------initState------------------");
     _startTrackingLocation();
     _subscribeToRealTimeLocationUpdates();
   }
@@ -93,15 +101,18 @@ class _MyMapState extends State<MyMap> {
       accuracy: LocationAccuracy.high,
       distanceFilter: 5,
     );
-
-    positionStream = Geolocator.getPositionStream(locationSettings: locationSettings).listen((Position? position) {
+    print("--------start Tracking-----------------------");
+    positionStream =
+        Geolocator.getPositionStream(locationSettings: locationSettings)
+            .listen((Position? position) {
       if (position != null) {
+        print("--------position start----------------");
         setState(() {
           previousLatitude = currentLatitude;
           previousLongitude = currentLongitude;
           currentLatitude = position.latitude;
           currentLongitude = position.longitude;
-          
+
           if (widget.startLocation == null) {
             widget.startLocation = LatLng(currentLatitude!, currentLongitude!);
             widget.startLocationNotifier.value = widget.startLocation;
@@ -116,10 +127,11 @@ class _MyMapState extends State<MyMap> {
               currentLatitude!,
               currentLongitude!,
             );
-            
+
             totalDistance += distance;
             Duration timeDiff = DateTime.now().difference(previousTime!);
-            double totalTime = DateTime.now().difference(startTime).inSeconds.toDouble();
+            double totalTime =
+                DateTime.now().difference(startTime).inSeconds.toDouble();
             // double totalDistanceKm = totalDistance / 1000;
             // double roundedTotalDistanceKm = double.parse(totalDistanceKm.toStringAsFixed(2));
 
@@ -135,13 +147,13 @@ class _MyMapState extends State<MyMap> {
             widget._updateTotalDistance(distance);
 
             widget.distanceSpeed.add({
-                "dist": totalDistance,
-                "speed": currentSpeed,
+              "dist": totalDistance,
+              "speed": currentSpeed,
             });
 
             widget.distancePace.add({
-                "dist": totalDistance,
-                "pace": paceInSecondsPerKm,
+              "dist": totalDistance,
+              "pace": paceInSecondsPerKm,
             });
           }
           previousTime = DateTime.now();
@@ -180,9 +192,9 @@ class _MyMapState extends State<MyMap> {
     //   if (position != null) {
     //     setState(() {
     //       LatLng newLocation = LatLng(position.latitude, position.longitude);
-          
+
     //       markers.removeWhere((marker) => marker.markerId == 'currentLocationMarker');
-          
+
     //       markers.add(Marker(
     //           markerId: 'currentLocationMarker',
     //           latLng: newLocation,
@@ -190,7 +202,7 @@ class _MyMapState extends State<MyMap> {
     //           height: 30,
     //           markerImageSrc: 'https://github.com/jjeong41/t/assets/103355863/5ff2a217-8cbc-4e41-b6c2-0ff12103b40b',
     //       ));
-          
+
     //       mapController?.setCenter(newLocation);
 
     //       setState(() {});
@@ -212,33 +224,41 @@ class _MyMapState extends State<MyMap> {
         LatLng newLocation = LatLng(position.latitude, position.longitude);
 
         _updateMapWithNewLocation(newLocation);
+      } else {
+        print("-------------------no position found------------------------");
       }
     });
   }
 
   void _updateMapWithNewLocation(LatLng newLocation) {
     markers.removeWhere((marker) => marker.markerId == 'currentLocationMarker');
-    
+
     markers.add(Marker(
-        markerId: 'currentLocationMarker',
-        latLng: newLocation,
-        width: 30,
-        height: 30,
-        markerImageSrc: 'https://github.com/jjeong41/t/assets/103355863/5ff2a217-8cbc-4e41-b6c2-0ff12103b40b',
+      markerId: 'currentLocationMarker',
+      latLng: newLocation,
+      width: 30,
+      height: 30,
+      markerImageSrc:
+          'https://github.com/jjeong41/t/assets/103355863/5ff2a217-8cbc-4e41-b6c2-0ff12103b40b',
     ));
-    
+
     mapController?.setCenter(newLocation);
     setState(() {});
   }
 
-
-
   @override
   void dispose() {
     // 스트림 구독 해제
+    print("really cancelling positions?");
     realTimePositionStream?.cancel();
     positionStream?.cancel();
     super.dispose();
+  }
+
+  @override
+  void didPop() {
+    // Your logic when MyWidget is popped from the navigation stack
+    print('MyWidget popped from the navigation stack');
   }
 
   @override
@@ -252,10 +272,10 @@ class _MyMapState extends State<MyMap> {
     }
 
     return SizedBox(
-        width: 400,
-        height: 230,
-        child: KakaoMap(
-          onMapCreated: (controller) {
+      width: 400,
+      height: 230,
+      child: KakaoMap(
+        onMapCreated: (controller) {
           mapController = controller;
 
           markers.add(Marker(
@@ -266,8 +286,8 @@ class _MyMapState extends State<MyMap> {
             offsetX: 15,
             offsetY: 44,
             markerImageSrc:
-              // 'https://w7.pngwing.com/pngs/96/889/png-transparent-marker-map-interesting-places-the-location-on-the-map-the-location-of-the-thumbnail.png',
-              'https://github.com/jjeong41/t/assets/103355863/955c2700-e829-426d-a4a0-4806d3f5c085',
+                // 'https://w7.pngwing.com/pngs/96/889/png-transparent-marker-map-interesting-places-the-location-on-the-map-the-location-of-the-thumbnail.png',
+                'https://github.com/jjeong41/t/assets/103355863/955c2700-e829-426d-a4a0-4806d3f5c085',
           ));
 
           markers.add(Marker(
@@ -278,8 +298,8 @@ class _MyMapState extends State<MyMap> {
             // offsetX: 15,
             // offsetY: 44,
             markerImageSrc:
-              // 'https://w7.pngwing.com/pngs/96/889/png-transparent-marker-map-interesting-places-the-location-on-the-map-the-location-of-the-thumbnail.png',
-              'https://github.com/jjeong41/t/assets/103355863/955c2700-e829-426d-a4a0-4806d3f5c085',
+                // 'https://w7.pngwing.com/pngs/96/889/png-transparent-marker-map-interesting-places-the-location-on-the-map-the-location-of-the-thumbnail.png',
+                'https://github.com/jjeong41/t/assets/103355863/955c2700-e829-426d-a4a0-4806d3f5c085',
           ));
 
           polylines.add(
@@ -293,14 +313,15 @@ class _MyMapState extends State<MyMap> {
             ),
           );
 
-            setState(() {});
-          },
+          setState(() {});
+        },
 
-          polylines: polylines.toList(),
-          markers: markers.toList(),
-          center: LatLng(currentLatitude ?? 37.501307, currentLongitude ?? 127.039622),
-          // center: currentLocation,
-        ),
-      );
-    }
+        polylines: polylines.toList(),
+        markers: markers.toList(),
+        center: LatLng(
+            currentLatitude ?? 37.501307, currentLongitude ?? 127.039622),
+        // center: currentLocation,
+      ),
+    );
+  }
 }

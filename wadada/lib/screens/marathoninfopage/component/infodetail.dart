@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:wadada/common/const/colors.dart';
+import 'package:wadada/controller/marathonController.dart';
+import 'package:wadada/models/marathon.dart';
 
 class InfoDetail extends StatelessWidget {
-  final Map<String, dynamic> marathon;
+  final SimpleMarathon marathon;
   final bool isPast;
 
   const InfoDetail({super.key, required this.marathon, required this.isPast});
@@ -11,31 +14,53 @@ class InfoDetail extends StatelessWidget {
   Widget build(BuildContext context) {
     final textColor = isPast ? GRAY_400 : Colors.black;
     final cardColor = isPast ? Color(0xffF2F2F2) : OATMEAL_COLOR;
+    MarathonController controller = Get.put(MarathonController());
+    String _formatDateTime(DateTime dateTime) {
+      if (dateTime.minute != 0) {
+        String formattedDateTime =
+            '${dateTime.year}년 ${dateTime.month}월 ${dateTime.day}일 ${dateTime.hour}시 ${dateTime.minute}분';
+        return formattedDateTime;
+      } else {
+        String formattedDateTime =
+            '${dateTime.year}년 ${dateTime.month}월 ${dateTime.day}일 ${dateTime.hour}시';
+        return formattedDateTime;
+      }
+    }
+
+    String calculateDday(DateTime targetDate) {
+      Duration diff = targetDate.difference(DateTime.now());
+      if (diff.inDays == 0) {
+        return 'DAY';
+      } else {
+        return diff.inDays.toString();
+      }
+    }
 
     return Container(
       padding: EdgeInsets.all(45),
       // color: cardColor,
       child: Column(
         children: [
-          if (marathon.containsKey('image'))
-              Image.network(
-                marathon['image'],
-                height: 220,
-                width: double.infinity,
-                fit: BoxFit.cover,
-              ),
-          SizedBox(height: 40),
+          // if (marathon.containsKey('image'))
+          //     Image.network(
+          //       marathon['image'],
+          //       height: 220,
+          //       width: double.infinity,
+          //       fit: BoxFit.cover,
+          //     ),
+          // SizedBox(height: 40),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 13, vertical: 2),
                 decoration: BoxDecoration(
-                  color: isPast ? GRAY_400 : (isPast ? Colors.grey : GREEN_COLOR),
+                  color:
+                      isPast ? GRAY_400 : (isPast ? Colors.grey : GREEN_COLOR),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
-                  isPast ? '종료' : 'D-${marathon['daysLeft']}',
+                  isPast ? '종료' : 'D-${calculateDday(marathon.marathonStart)}',
                   style: TextStyle(
                     fontSize: 16,
                     color: Colors.white,
@@ -63,7 +88,7 @@ class InfoDetail extends StatelessWidget {
               SizedBox(width: 58),
               Expanded(
                 child: Text(
-                  '${marathon['date']} ${marathon['startTime']} ~ ${marathon['endTime']}',
+                  '${_formatDateTime(marathon.marathonStart)} ~\n${_formatDateTime(marathon.marathonEnd)}',
                   style: TextStyle(
                     fontSize: 17,
                     color: textColor,
@@ -88,7 +113,7 @@ class InfoDetail extends StatelessWidget {
               SizedBox(width: 58),
               Expanded(
                 child: Text(
-                  '${marathon['distance']} km',
+                  '${marathon.marathonDist} km',
                   style: TextStyle(
                     fontSize: 17,
                     color: textColor,
@@ -113,7 +138,7 @@ class InfoDetail extends StatelessWidget {
               SizedBox(width: 20),
               Expanded(
                 child: Text(
-                  '${marathon['participants']}명',
+                  '${marathon.marathonDist}명',
                   style: TextStyle(
                     fontSize: 17,
                     color: textColor,
@@ -124,29 +149,33 @@ class InfoDetail extends StatelessWidget {
           ),
           SizedBox(height: 40),
           GestureDetector(
-            // onTap: () {
-            //   _showEndModal(context);
-            // },
+            onTap: () async {
+              if (await controller
+                  .attendMarathon(marathon.marathonSeq.toString())) {
+                ScaffoldMessenger.of(context)
+                    .showSnackBar(SnackBar(content: Text("성공적으로 참여했습니다!🥳")));
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text("서버가 아파요. 다시 시도해 주세요😡")));
+              }
+            },
             child: Container(
-              width:double.maxFinite,
+              width: double.maxFinite,
               decoration: BoxDecoration(
-                color: isPast? GRAY_400 : GREEN_COLOR,
+                color: isPast ? GRAY_400 : GREEN_COLOR,
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Padding(
-                padding: EdgeInsets.symmetric(
-                  vertical: 15,
-                ),
-                child: Text(
-                  isPast? '종료된 마라톤입니다.' : '참여하기',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 17,
-                    fontWeight: FontWeight.bold,
-                  )
-                )
-              ),
+                  padding: EdgeInsets.symmetric(
+                    vertical: 15,
+                  ),
+                  child: Text(isPast ? '종료된 마라톤입니다.' : '참여하기',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 17,
+                        fontWeight: FontWeight.bold,
+                      ))),
             ),
           ),
         ],
