@@ -148,6 +148,7 @@ public class MarathonServiceImpl implements MarathonService {
 
         //해당 게임에 Member 넣을 수 있으면 true 없으면 false
         if(marathonRoomManager.InsertMember(memberInfo)){
+            System.out.println("멤버 넣었숨");
             return marathonRoomManager.getCurRooms();
         }
         return -1;
@@ -175,7 +176,8 @@ public class MarathonServiceImpl implements MarathonService {
             MarathonRoomManager marathonRoomManager = marathonGameManager.GetMarathonRoomManager();
 
             marathonRoomManager.increaseRealCurPerson();
-
+            System.out.println("marathonRoomManager.getREAL_cur_Person() = " + marathonRoomManager.getREAL_cur_Person());
+            System.out.println("marathonRoomManager.getREAL_max_Person() = " + marathonRoomManager.getREAL_max_Person());
 
             return new MarathonGameStartRes(freshRecord.getMarathonRecordSeq());
         } else {

@@ -7,12 +7,15 @@ import org.api.wadada.marathon.dto.MarathonGameManager;
 import org.api.wadada.marathon.dto.MarathonRoomManager;
 import org.api.wadada.marathon.dto.MemberInfo;
 import org.api.wadada.marathon.dto.MessageDto;
+import org.api.wadada.marathon.dto.req.RabbitRequestDataReq;
+import org.api.wadada.marathon.dto.req.RequestDataReq;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.support.AmqpHeaders;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Component;
 
+import java.security.Principal;
 import java.util.LinkedHashMap;
 
 @Component
@@ -34,10 +37,11 @@ public class DefaultListener {
 
     @RabbitListener(queues = "${rabbitmq.marathon1.name}")
     @RabbitHandler
-    public void marathon1(MessageDto message) {
+    public void marathon1(RabbitRequestDataReq requestDataReq) {
         try {
             MarathonRoomManager marathonRoomManager = marathonGameManager.GetMarathonRoomManager();
-            MemberInfo memberInfo = marathonRoomManager.FindMember(1);
+            MemberInfo memberInfo = marathonRoomManager.FindMember(requestDataReq.getMemberSeq());
+
             if(marathonRoomManager.getRooms().get(memberInfo.getCurRoom()).updateMember(memberInfo)){
                 System.out.println("업데이트 성공");
             }
@@ -50,10 +54,10 @@ public class DefaultListener {
     }
     @RabbitListener(queues = "${rabbitmq.marathon2.name}")
     @RabbitHandler
-    public void marathon2(MessageDto message) {
+    public void marathon2(RabbitRequestDataReq requestDataReq) {
         try {
             MarathonRoomManager marathonRoomManager = marathonGameManager.GetMarathonRoomManager();
-            MemberInfo memberInfo = marathonRoomManager.FindMember(2);
+            MemberInfo memberInfo = marathonRoomManager.FindMember(requestDataReq.getMemberSeq());
             if(marathonRoomManager.getRooms().get(memberInfo.getCurRoom()).updateMember(memberInfo)){
                 System.out.println("업데이트 성공");
             }
@@ -66,10 +70,10 @@ public class DefaultListener {
     }
     @RabbitListener(queues = "${rabbitmq.marathon3.name}")
     @RabbitHandler
-    public void marathon3(MessageDto message) {
+    public void marathon3(RabbitRequestDataReq requestDataReq) {
         try {
             MarathonRoomManager marathonRoomManager = marathonGameManager.GetMarathonRoomManager();
-            MemberInfo memberInfo = marathonRoomManager.FindMember(3);
+            MemberInfo memberInfo = marathonRoomManager.FindMember(requestDataReq.getMemberSeq());
             if(marathonRoomManager.getRooms().get(memberInfo.getCurRoom()).updateMember(memberInfo)){
                 System.out.println("업데이트 성공");
             }

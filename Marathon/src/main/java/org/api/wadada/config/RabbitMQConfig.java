@@ -1,5 +1,6 @@
 package org.api.wadada.config;
 
+import lombok.Getter;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.DirectExchange;
@@ -21,6 +22,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @EnableRabbit
+@Getter
 public class RabbitMQConfig {
 
     @Value("${spring.rabbitmq.host}")

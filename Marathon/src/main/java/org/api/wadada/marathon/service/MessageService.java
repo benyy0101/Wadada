@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.api.wadada.marathon.dto.MarathonGameManager;
 import org.api.wadada.marathon.dto.MarathonRoomManager;
 import org.api.wadada.marathon.dto.MessageDto;
+import org.api.wadada.marathon.dto.req.RabbitRequestDataReq;
 import org.api.wadada.marathon.dto.req.RequestDataReq;
 import org.api.wadada.marathon.interceptor.DefaultListener;
 import org.api.wadada.util.DynamicRabbitMqConfigurer;
@@ -12,6 +13,8 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import java.security.Principal;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -39,9 +42,14 @@ public class MessageService {
         log.info("message sent: {}", messageDto.toString());
         rabbitTemplate.convertAndSend(exchangeName, routingKey, messageDto);
     }
-    public void sendMarathonMessage(RequestDataReq requestDataReq) {
+    public void sendMarathonMessage(Principal principal,RequestDataReq requestDataReq) {
+
+
         log.info("message sent: {}", requestDataReq.toString());
-        rabbitTemplate.convertAndSend(exchangeName, routingKey+requestDataReq.getRoomSeq(), requestDataReq);
+        System.out.println("exchangeName = " + exchangeName);
+        System.out.println("routingKey = " + routingKey);
+
+        rabbitTemplate.convertAndSend(exchangeName, routingKey+(requestDataReq.getRoomSeq()+1), requestDataReq);
     }
 
     /**

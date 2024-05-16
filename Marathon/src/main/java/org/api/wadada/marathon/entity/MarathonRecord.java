@@ -72,7 +72,7 @@ public class MarathonRecord extends BaseEntity {
     @Column(name = "marathon_record_mean_heartbeat", nullable = true, columnDefinition = "tinyint default 0")
     private Byte marathonRecordMeanHeartbeat;
 
-    @Column(name = "marathon_record_is_win", nullable = false)
+    @Column(name = "marathon_record_is_win")
     private Boolean marathonRecordIsWin;
 
     @ManyToOne(fetch = FetchType.LAZY)

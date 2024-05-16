@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import org.api.wadada.config.RabbitMQConfig;
 import org.api.wadada.error.errorcode.CustomErrorCode;
 import org.api.wadada.error.exception.RestApiException;
 import org.api.wadada.marathon.entity.Member;
@@ -34,14 +35,11 @@ public class MarathonRoomManager {
     private SimpMessagingTemplate messagingTemplate;
     private ExecutorService executor = Executors.newCachedThreadPool();
     private DynamicRabbitMqConfigurer dynamicRabbitMqConfigurer;
-    @Value("${rabbitmq.marathon.name")
-    private String queueName;
 
-    @Value("${rabbitmq.exchange.name}")
-    private String exchangeName;
 
-    @Value("${rabbitmq.routing.key}")
-    private String routingKey;
+    private  String queueName;
+    private  String exchangeName;
+    private  String routingKey;
 
     public MarathonRoomManager() {
         this.rooms = new ArrayList<>(MAX_ROOMS);
@@ -50,9 +48,12 @@ public class MarathonRoomManager {
         }
     }
 
-    public MarathonRoomManager(SimpMessagingTemplate messagingTemplate, DynamicRabbitMqConfigurer dynamicRabbitMqConfigurer) {
+    public MarathonRoomManager(SimpMessagingTemplate messagingTemplate,RabbitMQConfig rabbitMQConfig,DynamicRabbitMqConfigurer dynamicRabbitMqConfigurer) {
         this.messagingTemplate = messagingTemplate;
         this.dynamicRabbitMqConfigurer = dynamicRabbitMqConfigurer;
+        this.queueName = rabbitMQConfig.getQueueName();
+        this.exchangeName = rabbitMQConfig.getExchangeName();
+        this.routingKey = rabbitMQConfig.getRoutingKey();
         this.rooms = new ArrayList<>(MAX_ROOMS);
         for (int i = 0; i < MAX_ROOMS; i++) {
             rooms.add(null);
@@ -61,6 +62,10 @@ public class MarathonRoomManager {
 
     private int addRoom(MarathonRoomDto room) throws Exception {
         rooms.set(++curRooms, room);
+
+        System.out.println("queueName = " + queueName);
+        System.out.println("exchangeName = " + exchangeName);
+        System.out.println("routingKey = " + routingKey);
         dynamicRabbitMqConfigurer.bindExistingQueueToExchange(queueName+(curRooms+1),exchangeName,routingKey+(curRooms+1));
 
         return curRooms;
@@ -124,6 +129,7 @@ public class MarathonRoomManager {
     }
     public void sendStartMessage() {
         String message = GameMessage.GAME_START_INFO_REQUEST.toJson();
+        System.out.println("curRooms = " + curRooms);
         for (int i = 0; i <= curRooms; i++) {
             messagingTemplate.convertAndSend("/sub/attend/" + i, message);
         }
