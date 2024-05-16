@@ -31,6 +31,8 @@ public class GameRoomManager {
 //        roomSeqTable.put(room.getRoomIdx(),roomSeq);
         Optional<Integer> emptyIndex = getEmptyIndex();
         if (emptyIndex.isPresent()) {
+            roomSeqTable.put(emptyIndex.get(), roomSeq);
+            roomSeqList[emptyIndex.get()] = roomSeq;
             room.setListeners(new ArrayList<>());
             playrooms.set(emptyIndex.get(), room);
             return emptyIndex.get();
@@ -39,13 +41,14 @@ public class GameRoomManager {
         }
     }
 
-    public void removeRoom(int index) {
-        GameRoomDto room = playrooms.get(index);
+    public void removeRoom(int roomSeq) {
+        int roomIdx = roomSeqTable.get(roomSeq);
+        GameRoomDto room = playrooms.get(roomIdx);
         // 해당 방 멤버 모두 삭제
         if(room != null){
             room.removeAllMembers();
         }
-        playrooms.set(index, null);
+        playrooms.set(roomIdx, null);
     }
 
     public Optional<Integer> getEmptyIndex() {
