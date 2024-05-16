@@ -470,7 +470,7 @@ class _MultiRunState extends State<MultiRun> {
     int totalDistanceInt = totalDistance.floor();
 
     MultiRoomGameEnd gameEndData = MultiRoomGameEnd(
-      roomIdx: 1, // 수정 필요
+      roomSeq: widget.controller.receivedRoomSeq, // 수정 필요
       recordImage: 'your_record_image',
       recordDist: totalDistanceInt,
       recordTime: intelapsedseconds,

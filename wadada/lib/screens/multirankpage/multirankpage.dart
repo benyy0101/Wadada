@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:wadada/common/component/tabbars.dart';
 import 'package:wadada/common/const/colors.dart';
 import 'package:wadada/controller/stompController.dart';
 import 'package:wadada/screens/mainpage/layout.dart';
@@ -158,7 +159,7 @@ class _MultiRankState extends State<MultiRank> {
               SizedBox(height: 20),
               GestureDetector(
                   onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => SingleMain()));
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => MainLayout()));
                   },
                   child: Container(
                     width:double.maxFinite,
