@@ -48,8 +48,8 @@ class StompController extends GetxController {
   bool isStart = false;
   bool get1 = false;
   bool getflag = false;
-  late bool isOwner = false;
-  late int numReady = 0;
+  RxBool isOwner = false.obs;
+  int numReady = 0;
   CurrentMember itMe = CurrentMember(
       memberNickname: 'memberNickname',
       memberGender: 'memberGender',
@@ -244,7 +244,7 @@ class StompController extends GetxController {
             },
             callback: (frame) async {
               try {
-                if (isOwner) {
+                if (isOwner.value) {
                   final url = Uri.parse('https://k10a704.p.ssafy.io/Multi/game/rank/$newRoomSeq');
                   final storage = FlutterSecureStorage();
                   String? accessToken = await storage.read(key: 'accessToken');
@@ -597,7 +597,7 @@ class StompController extends GetxController {
     for (var element in members) {
       // print(element.memberId);
       if (element.memberId == kakaoId && element.manager == true) {
-        isOwner = true;
+        isOwner.value = true;
       }
     }
     print('isOwner------------------------------');

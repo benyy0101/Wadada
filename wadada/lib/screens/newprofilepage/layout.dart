@@ -31,6 +31,64 @@ class _NewProfileState extends State<NewProfileLayout> {
   Uint8List? _image;
   File? selectedImage;
 
+  void showImagePickerOption(BuildContext context) {
+    showModalBottomSheet(
+        backgroundColor: OATMEAL_COLOR,
+        context: context,
+        builder: (builder) {
+          return SizedBox(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height / 6,
+            child: Row(
+              children: [
+                Expanded(
+                  child: InkWell(
+                    onTap: () {
+                      _pickImageFromGallery();
+                    },
+                    child: const Padding(
+                      padding: EdgeInsets.all(18.0),
+                      child: SizedBox(
+                        child: Column(
+                          children: [
+                            Icon(
+                              Icons.image,
+                              size: 70,
+                            ),
+                            Text("갤러리")
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: InkWell(
+                    onTap: () {
+                      _pickImageFromCamera();
+                    },
+                    child: const Padding(
+                      padding: EdgeInsets.all(18.0),
+                      child: SizedBox(
+                        child: Column(
+                          children: [
+                            Icon(
+                              Icons.camera_alt,
+                              size: 70,
+                            ),
+                            Text("갤러리")
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -150,61 +208,6 @@ class _NewProfileState extends State<NewProfileLayout> {
         ),
       ),
     );
-  }
-
-  void showImagePickerOption(BuildContext context) {
-    showModalBottomSheet(
-        backgroundColor: GREEN_COLOR,
-        context: context,
-        builder: (builder) {
-          return SizedBox(
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height / 4.5,
-            child: Row(
-              children: [
-                Expanded(
-                  child: InkWell(
-                    onTap: () {
-                      _pickImageFromGallery();
-                    },
-                    child: const Padding(
-                      padding: EdgeInsets.all(18.0),
-                      child: SizedBox(
-                        child: Column(
-                          children: [
-                            Icon(
-                              Icons.image,
-                              size: 70,
-                            ),
-                            Text("Gallery")
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: InkWell(
-                    onTap: () {
-                      _pickImageFromCamera();
-                    },
-                    child: const SizedBox(
-                      child: Column(
-                        children: [
-                          Icon(
-                            Icons.camera_alt,
-                            size: 70,
-                          ),
-                          Text("Camera")
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          );
-        });
   }
 
 // 갤러리

@@ -48,16 +48,27 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
   late Clock clock;
 
   late MyMap myMap;
+<<<<<<< HEAD
   // late MyMap1 myMap1;
 
+=======
+  final GlobalKey<MyMapState> myMapStateKey = GlobalKey<MyMapState>();
+>>>>>>> front
   @override
   void initState() {
     super.initState();
 
     startTimers();
 
+<<<<<<< HEAD
     myMap = MyMap(appKey: widget.appKey);
     // myMap1 = MyMap1(appKey: widget.appKey);
+=======
+    myMap = MyMap(
+      appKey: widget.appKey,
+      key: myMapStateKey,
+    );
+>>>>>>> front
 
     myMap.startLocationNotifier.addListener(() {
       if (myMap.startLocationNotifier.value != null) {
@@ -105,6 +116,7 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
   @override
   void dispose() {
     countdownTimer?.cancel();
+    myMapStateKey.currentState?.dispose();
     super.dispose();
   }
 
@@ -112,7 +124,7 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
     final startLocation = myMap.startLocation;
     final dio = Dio();
     final storage = FlutterSecureStorage();
-    String? accessToken = await storage.read(key: 'accessToken');
+    String? accessToken = await storage.read(key: 'access37Token');
     int recordMode = widget.time > 0 ? 2 : 1;
 
 
@@ -404,6 +416,7 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
                       // Duration elapsedTime = _clockKey.currentState?.elapsed ?? Duration.zero;
                       // 종료 시 실행할 작업
                       // elapsedTime을 endlocation으로 넘겨주는 로직 추가
+                      dispose();
                       _handleEndButtonPress(context);
                     },
                     child: Container(

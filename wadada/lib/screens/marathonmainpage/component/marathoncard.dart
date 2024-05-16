@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:wadada/common/const/colors.dart';
+import 'package:wadada/models/marathon.dart';
 
 class MarathonCard extends StatelessWidget {
-  final Map<String, dynamic> marathon;
+  final SimpleMarathon marathon;
   final bool isPast;
   final VoidCallback? onTap;
 
@@ -12,6 +13,27 @@ class MarathonCard extends StatelessWidget {
     required this.isPast,
     this.onTap,
   });
+
+  String _formatDateTime(DateTime dateTime) {
+    if (dateTime.minute != 0) {
+      String formattedDateTime =
+          '${dateTime.year}년 ${dateTime.month}월 ${dateTime.day}일 ${dateTime.hour}시 ${dateTime.minute}분';
+      return formattedDateTime;
+    } else {
+      String formattedDateTime =
+          '${dateTime.year}년 ${dateTime.month}월 ${dateTime.day}일 ${dateTime.hour}시';
+      return formattedDateTime;
+    }
+  }
+
+  String calculateDday(DateTime targetDate) {
+    Duration diff = targetDate.difference(DateTime.now());
+    if (diff.inDays == 0) {
+      return 'DAY';
+    } else {
+      return diff.inDays.toString();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,19 +60,19 @@ class MarathonCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (marathon.containsKey('image') && !isPast)
-              ClipRRect(
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(20),
-                  topRight: Radius.circular(20),
-                ),
-                child: Image.network(
-                  marathon['image'],
-                  height: 200,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                ),
-              ),
+            // if (marathon.containsKey('image') && !isPast)
+            //   ClipRRect(
+            //     borderRadius: BorderRadius.only(
+            //       topLeft: Radius.circular(20),
+            //       topRight: Radius.circular(20),
+            //     ),
+            //     child: Image.network(
+            //       marathon['image'],
+            //       height: 200,
+            //       width: double.infinity,
+            //       fit: BoxFit.cover,
+            //     ),
+            //   ),
             Container(
               padding: EdgeInsets.all(30),
               child: Column(
@@ -59,13 +81,18 @@ class MarathonCard extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Container(
-                        padding: EdgeInsets.symmetric(horizontal: 13, vertical: 2),
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 13, vertical: 2),
                         decoration: BoxDecoration(
-                          color: isPast ? GRAY_400 : (isPast ? Colors.grey : GREEN_COLOR),
+                          color: isPast
+                              ? GRAY_400
+                              : (isPast ? Colors.grey : GREEN_COLOR),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
-                          isPast ? '종료' : 'D-${marathon['daysLeft']}',
+                          isPast
+                              ? '종료'
+                              : 'D-${calculateDday(marathon.marathonStart)}',
                           style: TextStyle(
                             fontSize: 16,
                             color: Colors.white,
@@ -74,7 +101,8 @@ class MarathonCard extends StatelessWidget {
                           ),
                         ),
                       ),
-                      Icon(Icons.arrow_forward_ios, color: isPast ? GRAY_400 : GREEN_COLOR),
+                      Icon(Icons.arrow_forward_ios,
+                          color: isPast ? GRAY_400 : GREEN_COLOR),
                     ],
                   ),
                   SizedBox(height: 20),
@@ -93,7 +121,7 @@ class MarathonCard extends StatelessWidget {
                       SizedBox(width: 58),
                       Expanded(
                         child: Text(
-                          '${marathon['date']} ${marathon['startTime']} ~ ${marathon['endTime']}',
+                          '${_formatDateTime(marathon.marathonStart)} ~ ${_formatDateTime(marathon.marathonEnd)}',
                           style: TextStyle(
                             fontSize: 17,
                             color: textColor,
@@ -118,7 +146,7 @@ class MarathonCard extends StatelessWidget {
                       SizedBox(width: 58),
                       Expanded(
                         child: Text(
-                          '${marathon['distance']} km',
+                          '${marathon.marathonDist} km',
                           style: TextStyle(
                             fontSize: 17,
                             color: textColor,
@@ -143,7 +171,7 @@ class MarathonCard extends StatelessWidget {
                       SizedBox(width: 20),
                       Expanded(
                         child: Text(
-                          '${marathon['participants']}명',
+                          '${marathon.marathonParticipate}명',
                           style: TextStyle(
                             fontSize: 17,
                             color: textColor,

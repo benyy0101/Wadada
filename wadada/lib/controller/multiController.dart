@@ -75,7 +75,7 @@ class MultiController extends GetxController {
     }
   }
 
-  void getMultiRoomsByMode(int mode) async {
+  Future<void> getMultiRoomsByMode(int mode) async {
     print("call");
     try {
       roomList.clear();
