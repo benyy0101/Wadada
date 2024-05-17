@@ -218,6 +218,7 @@ public class MarathonServiceImpl implements MarathonService {
     public boolean isEndGame(int RoomSeq) {
         try {
             MarathonRoomManager marathonRoomManager = marathonGameManager.GetMarathonRoomManager();
+
             marathonRoomManager.removeRoom(RoomSeq);
             return true;
         } catch (RestApiException e) {
