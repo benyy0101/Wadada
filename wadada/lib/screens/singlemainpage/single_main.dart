@@ -15,19 +15,13 @@ class SingleMain extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Padding(
-          padding: EdgeInsets.all(0),
-          child: Text('WADADA'),
-        ),
-      ),
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         padding: EdgeInsets.only(left: 20, right: 20),
         child: Column(
           children: [
             SizedBox(
-              height: 45,
+              height: 10,
             ),
             Container(
               child: Row(
@@ -67,7 +61,7 @@ class SingleMain extends StatelessWidget {
               },
             ),
             SizedBox(
-              height: 25,
+              height: 20,
             ),
             SelectMode(
               icon: 'assets/images/clock.png',
@@ -86,7 +80,7 @@ class SingleMain extends StatelessWidget {
               },
             ),
             SizedBox(
-              height: 25,
+              height: 20,
             ),
             SelectMode(
               icon: 'assets/images/map.png',
@@ -104,12 +98,8 @@ class SingleMain extends StatelessWidget {
                 );
               },
             ),
-            SizedBox(
-              height: 30,
-            ),
             // LogoutButton(),
             // TestButton(),
-
           ],
         ),
       ),

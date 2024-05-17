@@ -39,7 +39,7 @@ void main() async {
     javaScriptAppKey: javaScriptAppKey,
   );
 
-  print(await KakaoSdk.origin); 
+  print(await KakaoSdk.origin);
 
   HttpOverrides.global = MyHttpOverrides();
 

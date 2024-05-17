@@ -7,16 +7,6 @@ import 'package:wadada/repository/profileRepo.dart';
 import 'package:wadada/screens/mypage/avartar.dart';
 import 'package:wadada/screens/mypage/editProfile.dart';
 import 'package:wadada/screens/mypage/recordList.dart';
-import 'package:wadada/screens/mypage/smallNav.dart';
-
-import 'package:flutter/material.dart';
-import 'package:wadada/common/const/colors.dart';
-import 'package:wadada/screens/mypage/smallNav.dart';
-
-import 'package:flutter/material.dart';
-import 'package:wadada/common/const/colors.dart';
-import 'package:wadada/screens/mypage/smallNav.dart';
-import 'package:wadada/screens/newprofilepage/layout.dart';
 
 class MyPageLayout extends StatefulWidget {
   const MyPageLayout({super.key});
@@ -51,15 +41,6 @@ class _MyPageLayoutState extends State<MyPageLayout>
       body: Container(
         child: Column(
           children: [
-            SizedBox(
-              height: 45,
-            ),
-            Text('멀티모드',
-                style: TextStyle(
-                  color: Colors.black87,
-                  fontSize: 30,
-                  fontWeight: FontWeight.w600,
-                )),
             PreferredSize(
               preferredSize:
                   Size.fromHeight(100), // Specify the preferred height

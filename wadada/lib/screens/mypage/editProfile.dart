@@ -25,6 +25,10 @@ class _EditProfileState extends State<EditProfile> {
     ProfileController profileController =
         Get.put(ProfileController(repo: ProfileRepository()));
     Uint8List? _image;
+
+    TextEditingController textEditingController = TextEditingController(
+        text: profileController.profile.value.memberNickname);
+
     Future _pickImageFromGallery() async {
       final returnImage =
           await ImagePicker().pickImage(source: ImageSource.gallery);
@@ -98,7 +102,7 @@ class _EditProfileState extends State<EditProfile> {
                                 Icons.camera_alt,
                                 size: 70,
                               ),
-                              Text("갤러리")
+                              Text("카메라")
                             ],
                           ),
                         ),
@@ -134,10 +138,12 @@ class _EditProfileState extends State<EditProfile> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 70.0),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // 닉네임 입력
-                const Row(
+                const Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _NickName(),
                     _SubTitle(),
@@ -145,6 +151,7 @@ class _EditProfileState extends State<EditProfile> {
                 ),
                 const SizedBox(height: 20),
                 CustomTextFormField(
+                  controller: textEditingController,
                   hintText: '닉네임을 입력하세요',
                   onChanged: (String value) {
                     if (value != '') {
@@ -227,7 +234,7 @@ class _NickName extends StatelessWidget {
       '닉네임',
       // ignore: prefer_const_constructors
       style: TextStyle(
-        fontSize: 21,
+        fontSize: 20,
         fontWeight: FontWeight.w500,
         color: Colors.black,
       ),
@@ -245,7 +252,7 @@ class _SubTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     // ignore: prefer_const_constructors
     return Text(
-      '       2자 이상 14자 이하의 닉네임을 정해주세요',
+      ' 2자 이상 14자 이하의 닉네임을 정해주세요',
       // ignore: prefer_const_constructors
       style: TextStyle(
         fontSize: 11,
@@ -268,7 +275,7 @@ class _Gender extends StatelessWidget {
       '성별',
       // ignore: prefer_const_constructors
       style: TextStyle(
-        fontSize: 21,
+        fontSize: 20,
         fontWeight: FontWeight.w500,
         color: Colors.black,
       ),
@@ -289,7 +296,7 @@ class _Birthdate extends StatelessWidget {
       '생년월일',
       // ignore: prefer_const_constructors
       style: TextStyle(
-        fontSize: 21,
+        fontSize: 20,
         fontWeight: FontWeight.w500,
         color: Colors.black,
       ),
@@ -320,7 +327,7 @@ class _MyButton extends StatelessWidget {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20),
             ),
-            minimumSize: const Size(400, 60),
+            minimumSize: const Size(350, 60),
           ),
           child: const Text(
             '수정하기',
@@ -330,7 +337,7 @@ class _MyButton extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(height: 30),
+        const SizedBox(height: 20),
         TextButton(
           onPressed: () {
             //여기 수정 버튼 필요
@@ -340,7 +347,7 @@ class _MyButton extends StatelessWidget {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20),
             ),
-            minimumSize: const Size(400, 60),
+            minimumSize: const Size(350, 60),
           ),
           child: const Text(
             "로그아웃",
@@ -350,7 +357,7 @@ class _MyButton extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(height: 30),
+        const SizedBox(height: 20),
         TextButton(
           onPressed: () {
             //여기 수정 버튼 필요
@@ -360,7 +367,7 @@ class _MyButton extends StatelessWidget {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20),
             ),
-            minimumSize: const Size(400, 60),
+            minimumSize: const Size(350, 60),
           ),
           child: const Text(
             "탈퇴하기",

@@ -26,72 +26,6 @@ class _MarathonMainState extends State<MarathonMain> {
   @override
   void initState() {
     super.initState();
-    tempData();
-  }
-
-  void tempData() {
-    List<Map<String, dynamic>> marathons = [
-      {
-        'date': '2024-05-11',
-        'startTime': '10:00',
-        'endTime': '15:00',
-        'distance': 5,
-        'participants': 100,
-        'image':
-            'https://github.com/jjeong41/t/assets/103355863/e3eb9518-0f43-4577-ab50-bbfbe6fbe4fa',
-        'type': 'upcoming',
-      },
-      {
-        'date': '2024-05-05',
-        'startTime': '15:00',
-        'endTime': '18:00',
-        'distance': 10,
-        'participants': 200,
-        'image':
-            'https://github.com/jjeong41/t/assets/103355863/7ba67d84-a297-44c8-9999-d45a34b4f785',
-        'type': 'past',
-      },
-      {
-        'date': '2024-05-03',
-        'startTime': '08:00',
-        'endTime': '11:00',
-        'distance': 3,
-        'participants': 50,
-        'image':
-            'https://github.com/jjeong41/t/assets/103355863/7ba67d84-a297-44c8-9999-d45a34b4f785',
-        'type': 'past',
-      },
-    ];
-
-    // 현재 날짜
-    DateTime currentDateTime = DateTime.now();
-
-    setState(() {
-      coming = marathons.where((marathon) {
-        DateTime startDateTime =
-            DateTime.parse('${marathon['date']}T${marathon['startTime']}');
-        DateTime endDateTime =
-            DateTime.parse('${marathon['date']}T${marathon['endTime']}');
-
-        int daysLeft = startDateTime.difference(currentDateTime).inDays;
-        marathon['daysLeft'] = daysLeft;
-
-        return startDateTime.isAfter(currentDateTime) ||
-            (currentDateTime.isAfter(startDateTime) &&
-                    currentDateTime.isBefore(endDateTime)) &&
-                marathon['type'] == 'coming';
-      }).toList();
-
-      past = marathons.where((marathon) {
-        DateTime startDateTime =
-            DateTime.parse('${marathon['date']}T${marathon['startTime']}');
-        DateTime endDateTime =
-            DateTime.parse('${marathon['date']}T${marathon['endTime']}');
-
-        return endDateTime.isBefore(currentDateTime) &&
-            marathon['type'] == 'past';
-      }).toList();
-    });
   }
 
   // Future<Map<String, dynamic>> fetchData() async {
@@ -141,25 +75,7 @@ class _MarathonMainState extends State<MarathonMain> {
         child: Column(
           children: [
             SizedBox(
-              height: 45,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: const [
-                Column(
-                  children: [
-                    Text('마라톤',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 30,
-                          fontWeight: FontWeight.w600,
-                        )),
-                  ],
-                )
-              ],
-            ),
-            SizedBox(
-              height: 40,
+              height: 20,
             ),
             Obx(
               () {

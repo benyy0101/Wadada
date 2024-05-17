@@ -49,7 +49,7 @@ class ProfileController extends GetxController {
   }
 
   //PROFILE-003
-  void patchProfile(Profile newProfile) async {
+  patchProfile(Profile newProfile) async {
     try {
       await repo.profilePatch(newProfile);
       await storage.write(

@@ -141,11 +141,11 @@ class _SingleRecordState extends State<SingleRecord> {
             ),
             width: MediaQuery.of(context).size.width * 0.9,
             child: Padding(
-                padding: const EdgeInsets.only(left: 30, bottom: 30, right: 30),
+                padding: const EdgeInsets.all(30),
                 child: GridView(
                   shrinkWrap: true,
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      childAspectRatio: 1.3,
+                      childAspectRatio: 1.7,
                       crossAxisCount: 2,
                       mainAxisSpacing: 5,
                       crossAxisSpacing: 5),

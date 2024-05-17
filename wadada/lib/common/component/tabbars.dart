@@ -14,6 +14,14 @@ class MainLayout extends StatelessWidget {
     return DefaultTabController(
       length: 4,
       child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          automaticallyImplyLeading: false,
+          title: Padding(
+            padding: EdgeInsets.all(0),
+            child: Text('WADADA'),
+          ),
+        ),
         bottomNavigationBar: BottomAppBar(
           color: OATMEAL_COLOR,
           child: TabBar(

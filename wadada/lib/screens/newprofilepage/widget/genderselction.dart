@@ -26,55 +26,63 @@ class _GenderSelectionWidgetState extends State<GenderSelectionWidget> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        TextButton(
-          onPressed: () {
-            setState(() {
-              selectedGender = "여성";
-              profileController.profile.value.memberGender = 'F';
-              print(
-                  "------------profileController.profile.value.memberGender--------------");
-              print(profileController.profile.value.memberGender);
-              print(profileController.profile.value.memberProfileImage);
-            });
-          },
-          style: ElevatedButton.styleFrom(
-            foregroundColor: Colors.white,
-            backgroundColor:
-                selectedGender == "여성" ? GREEN_COLOR : OATMEAL_COLOR,
-            shadowColor: Colors.black,
-            minimumSize: const Size(100, 60),
-          ),
-          child: const Text(
-            "여성",
-            style: TextStyle(
-              fontSize: 20,
+        Obx(() {
+          return TextButton(
+            onPressed: () {
+              setState(() {
+                selectedGender = "여성";
+                profileController.profile.value.memberGender = 'F';
+                print(
+                    "------------profileController.profile.value.memberGender--------------");
+                print(profileController.profile.value.memberGender);
+                print(profileController.profile.value.memberProfileImage);
+              });
+            },
+            style: ElevatedButton.styleFrom(
+              foregroundColor: Colors.white,
+              backgroundColor:
+                  profileController.profile.value.memberGender == "F"
+                      ? GREEN_COLOR
+                      : OATMEAL_COLOR,
+              shadowColor: Colors.black,
+              minimumSize: const Size(100, 60),
             ),
-          ),
-        ),
-        TextButton(
-          onPressed: () {
-            setState(() {
-              selectedGender = "남성";
-              profileController.profile.value.memberGender = 'M';
-              print(
-                  "------------profileController.profile.value.memberGender--------------");
-              print(profileController.profile.value.memberGender);
-            });
-          },
-          style: ElevatedButton.styleFrom(
-            foregroundColor: Colors.white,
-            backgroundColor:
-                selectedGender == "남성" ? GREEN_COLOR : OATMEAL_COLOR,
-            shadowColor: Colors.black,
-            minimumSize: const Size(100, 60),
-          ),
-          child: const Text(
-            "남성",
-            style: TextStyle(
-              fontSize: 20,
+            child: const Text(
+              "여성",
+              style: TextStyle(
+                fontSize: 20,
+              ),
             ),
-          ),
-        ),
+          );
+        }),
+        Obx(() {
+          return TextButton(
+            onPressed: () {
+              setState(() {
+                selectedGender = "남성";
+                profileController.profile.value.memberGender = 'M';
+                print(
+                    "------------profileController.profile.value.memberGender--------------");
+                print(profileController.profile.value.memberGender);
+              });
+            },
+            style: ElevatedButton.styleFrom(
+              foregroundColor: Colors.white,
+              backgroundColor:
+                  profileController.profile.value.memberGender == "M"
+                      ? GREEN_COLOR
+                      : OATMEAL_COLOR,
+              shadowColor: Colors.black,
+              minimumSize: const Size(100, 60),
+            ),
+            child: const Text(
+              "남성",
+              style: TextStyle(
+                fontSize: 20,
+              ),
+            ),
+          );
+        })
       ],
     );
   }
