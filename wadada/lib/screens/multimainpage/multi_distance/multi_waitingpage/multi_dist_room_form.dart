@@ -55,7 +55,10 @@ class MultiDistanceRoomFormState extends State<MultiDistanceRoomForm> {
       return Scaffold(
         appBar: AppBar(
           title: const Text('거리모드 - 멀티',
-              style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
+              style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black54)),
           backgroundColor: Colors.white,
           elevation: 0,
           centerTitle: true,
@@ -138,12 +141,6 @@ class MultiDistanceRoomFormState extends State<MultiDistanceRoomForm> {
                             Get.to(MultiRoomDetail(
                               roomInfo: controller.cur,
                             ));
-                            //print(controller.multiroom.toString());
-                            // Navigator.push(
-                            //   context,
-                            //   MaterialPageRoute(
-                            //       builder: (context) =>  MultiRoomDetail(roomIdx: item.roomIdx, roomDist: , roomPeople: , roomSecret: , roomTag: , roomTitle: )),
-                            // );
                           } catch (error) {
                             print(error);
                             rethrow;
@@ -169,6 +166,7 @@ class MultiDistanceRoomFormState extends State<MultiDistanceRoomForm> {
                     ),
                   ],
                 ),
+                SizedBox(height: 100),
               ],
             ),
           ),

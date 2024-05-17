@@ -107,8 +107,6 @@ class InfoDetail extends StatelessWidget {
               Text(
                 '거리',
                 style: TextStyle(
-                  fontSize: 17,
-                  fontWeight: FontWeight.bold,
                   color: textColor,
                 ),
               ),

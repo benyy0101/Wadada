@@ -330,7 +330,7 @@ class StompController extends GetxController {
                 } else if ((res['body']['action'] ==
                     '/Marathon/game/rank/{roomSeq}')) {
                   //임시로 넘기기
-                  Get.to(marathonInfo.value);
+                  Get.to(MarathonRun(roomInfo: marathonInfo.value));
                   //게임 페이지로 이동
                 } else if ((res['body']['action'] == '2')) {
                   //사람들 정보를 받으면 랭킹에 업데이트

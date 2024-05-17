@@ -2,10 +2,11 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:wadada/common/const/colors.dart';
 
-class Clock extends StatefulWidget{
+class Clock extends StatefulWidget {
   final int time;
   final ValueNotifier<Duration> elapsedTimeNotifier;
-  const Clock({super.key, required this.time, required this.elapsedTimeNotifier});
+  const Clock(
+      {super.key, required this.time, required this.elapsedTimeNotifier});
 
   @override
   State<Clock> createState() => ClockState();
@@ -13,11 +14,12 @@ class Clock extends StatefulWidget{
 
 class ClockState extends State<Clock> {
   Duration _elapsed = Duration.zero;
-  ValueNotifier<Duration> elapsedTimeNotifier = ValueNotifier<Duration>(Duration.zero);
+  ValueNotifier<Duration> elapsedTimeNotifier =
+      ValueNotifier<Duration>(Duration.zero);
   ValueNotifier<Duration> endTimeNotifier = ValueNotifier(Duration.zero);
   Duration get elapsed => _elapsed;
   bool _isRunning = false;
-  
+
   List<String> savetimes = [];
   late Timer _timer;
 
@@ -29,12 +31,12 @@ class ClockState extends State<Clock> {
     if (widget.time > 0) {
       int timerDurationInSeconds = (widget.time * 60).round();
       _elapsed = Duration(seconds: timerDurationInSeconds);
-      
+
       _timer = Timer.periodic(Duration(milliseconds: 100), (timer) {
         if (_isRunning) {
           setState(() {
             _elapsed -= Duration(milliseconds: 100);
-            
+
             if (_elapsed <= Duration.zero) {
               _isRunning = false;
               _timer.cancel();
@@ -44,17 +46,17 @@ class ClockState extends State<Clock> {
         }
       });
     } else {
-        // 넘어온 값 0이면 스톱워치
-        _timer = Timer.periodic(Duration(milliseconds: 100), _onTick);
-      }
+      // 넘어온 값 0이면 스톱워치
+      _timer = Timer.periodic(Duration(milliseconds: 100), _onTick);
+    }
   }
 
-   void start() {
-      setState(() {
-          _isRunning = true;
-      });
-    }
-  
+  void start() {
+    setState(() {
+      _isRunning = true;
+    });
+  }
+
   void setRunning(bool isRunning) {
     print('setRunning called with: $isRunning');
     setState(() {
@@ -86,18 +88,18 @@ class ClockState extends State<Clock> {
       // });
 
       setState(() {
-                if (widget.time > 0) {
-                    _elapsed -= Duration(milliseconds: 100);
-                    if (_elapsed <= Duration.zero) {
-                        _isRunning = false;
-                        _elapsed = Duration.zero;
-                        _timer.cancel();
-                    }
-                } else {
-                    _elapsed += Duration(milliseconds: 100);
-                }
-                widget.elapsedTimeNotifier.value = _elapsed;
-            });
+        if (widget.time > 0) {
+          _elapsed -= Duration(milliseconds: 100);
+          if (_elapsed <= Duration.zero) {
+            _isRunning = false;
+            _elapsed = Duration.zero;
+            _timer.cancel();
+          }
+        } else {
+          _elapsed += Duration(milliseconds: 100);
+        }
+        widget.elapsedTimeNotifier.value = _elapsed;
+      });
     }
   }
 
@@ -118,7 +120,8 @@ class ClockState extends State<Clock> {
       width: 54,
       height: 65,
       child: Center(
-        child: Text(digit,
+        child: Text(
+          digit,
           style: TextStyle(
             fontSize: 30,
             fontWeight: FontWeight.bold,
@@ -144,36 +147,29 @@ class ClockState extends State<Clock> {
     List<String> splitseconds = _splitTime(formattedSeconds);
 
     return Container(
+      width: MediaQuery.of(context).size.width * 0.9,
       child: Row(
         children: [
           TimeContainer(splithours[0]),
           SizedBox(width: 5),
           TimeContainer(splithours[1]),
-
           SizedBox(width: 7),
-          Text(':', 
-            style: TextStyle(
-              color: GREEN_COLOR,
-              fontSize: 30, 
-              fontWeight: FontWeight.bold
-            )
-          ),
+          Text(':',
+              style: TextStyle(
+                  color: GREEN_COLOR,
+                  fontSize: 30,
+                  fontWeight: FontWeight.bold)),
           SizedBox(width: 7),
-          
           TimeContainer(splitminutes[0]),
           SizedBox(width: 5),
           TimeContainer(splitminutes[1]),
-
           SizedBox(width: 7),
           Text(':',
-            style: TextStyle(
-              color: GREEN_COLOR,
-              fontSize: 30, 
-              fontWeight: FontWeight.bold
-            )
-          ),
+              style: TextStyle(
+                  color: GREEN_COLOR,
+                  fontSize: 30,
+                  fontWeight: FontWeight.bold)),
           SizedBox(width: 7),
-
           TimeContainer(splitseconds[0]),
           SizedBox(width: 5),
           TimeContainer(splitseconds[1]),
