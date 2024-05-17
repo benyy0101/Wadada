@@ -42,6 +42,7 @@ class StompController extends GetxController {
   ValueNotifier<List<dynamic>> centerplace = ValueNotifier<List<dynamic>>([]);
   ValueNotifier<double> userlatitude = ValueNotifier<double>(0.0);
   ValueNotifier<double> userlongitude = ValueNotifier<double>(0.0);
+  ValueNotifier<List<dynamic>> flagend = ValueNotifier<List<dynamic>>([]);
   late dynamic unsubscribeFn;
   RxList<CurrentMember> members = <CurrentMember>[].obs;
   MultiRepository repo = MultiRepository(provider: MultiProvider());
@@ -288,26 +289,9 @@ class StompController extends GetxController {
                         print('랭킹 ${ranking.value}');
                       }
 
-                      // requestinfo.value = resp['body']['action'];
-                      // requestinfo.value = '';
-                      // ranking.value = resp['body']['memberInfo'];
-                      // print('body ${resp['body']}');
-                      // print('랭킹 ${ranking.value}');
-                      // print('랭킹 타입 ${ranking.value.runtimeType}');
-
-                      // final data = response.data as Map<String, dynamic>;
-                      // final jsonData = jsonDecode(response.data);
-                      // print('제발요 ${response.data.runtimeType}');
-                      // print('디코딩된 JSON 데이터: $jsonData');
-                      // print('방장 통신 성공');
-                      // return data;
-                  //   } else if (response.statusCode == 204) {
-                  //     print('204');
-                  //     // return {};
-                  //   } else {
-                  //     print('서버 요청 실패: ${response.statusCode}');
-                  //     // return {};
-                  //   }
+                      // if (resp['body']['message'] == "ㅇㅇ") {
+                        // flagend.value = resp['body']['memberInfo'];
+                      // }
                   } catch (e) {
                     print('ㅇㅇ 요청 처리 중 에러 발생: $e');
                     // return {};

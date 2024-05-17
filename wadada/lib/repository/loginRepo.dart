@@ -62,6 +62,8 @@ class LoginRepository implements AbstractLoginRepository {
   @override
   Future<LoginDto> loginToServer() async {
     try {
+      // print(await KakaoSdk.origin);
+
       OAuthToken token;
       // 카카오톡 실행 가능 여부 확인 (앱설치되어 있으면 )
       if (await isKakaoTalkInstalled()) {

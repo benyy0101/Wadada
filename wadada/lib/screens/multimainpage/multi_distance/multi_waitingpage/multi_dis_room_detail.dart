@@ -105,13 +105,6 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
   void initState() {
     super.initState();
 
-    // // 게임 시작 응답을 감시하여 처리
-    // ever(controller.gameStartResponse.value, (bool response) {
-    //   if (response) {
-    //     // 게임 시작 응답을 받았을 때 처리할 로직을 여기에 작성
-    //     _checkAndRequestLocationPermissionForAllParticipants();
-    //   }
-    // });
     AuthRepository.initialize(
       appKey: 'f508d67320677608aea64e5d6a9a3005',
       // baseUrl: widget.baseUrl,
@@ -122,12 +115,6 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
     //     toStart = false;
     //   });
     // }
-
-    // 컨트롤러 초기화
-    // initControllers();
-
-    // // 방 정보 설정
-    // setRoomInfo();
 
     controller.gameStartResponse.addListener(() {
       bool value = controller.gameStartResponse.value;
@@ -304,13 +291,14 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
     //   controller.client.deactivate();
     // });
     // 위치 권한이 허용된 경우, 멀티런 페이지로 이동
+
     if (mounted) {
       String appKey = dotenv.env['APP_KEY'] ?? '';
       Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) => MultiRun(
-            time: 0,
+            time: roomInfo.roomTime,
             dist: roomInfo.roomDist,
             appKey: appKey,
             controller: controller,
@@ -321,9 +309,6 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
           ),
         ),
       );
-      // ).then((_) {
-      //   controller.client.deactivate();
-      // });
     }
   }
 
@@ -474,7 +459,7 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               SizedBox(height: 5),
-                              if (roomInfo.roomMode != 3)
+                              if (roomInfo.roomMode == 1)
                                 Text(
                                   '${roomInfo.roomDist} $optionMetric',
                                   style: TextStyle(
@@ -482,6 +467,14 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                                       fontWeight: FontWeight.bold,
                                       color: DARK_GREEN_COLOR),
                                 ),
+                              if (roomInfo.roomMode == 2)
+                                Text(
+                                    '${roomInfo.roomTime} $optionMetric',
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                        color: DARK_GREEN_COLOR),
+                                  ),
                               if (roomInfo.roomMode != 3)
                                 SizedBox(height: 20),
                               //현재인원 받아와야 하는 곳
@@ -586,8 +579,9 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                                 ValueListenableBuilder<bool>(
                                   valueListenable: centerloading,
                                   builder: (context, isButtonEnabled, _) {
+                                    bool isOwner = controller.isOwner.value;
                                     return ElevatedButton(
-                                      onPressed: isButtonEnabled
+                                      onPressed: isButtonEnabled && isOwner
                                           ? null
                                           : () {
                                               print('Flag info button pressed');

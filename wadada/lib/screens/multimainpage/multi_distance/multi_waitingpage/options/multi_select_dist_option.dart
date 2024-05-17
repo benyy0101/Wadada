@@ -212,9 +212,17 @@ class MultiSelectDistOptionState extends State<MultiSelectDistOption> {
                           onChanged: (value) {
                             setState(() {
                               distselectnum = int.tryParse(value) ?? 0;
-                              controller.multiroom.roomDist = distselectnum;
-                              print('거리 ${controller.multiroom.roomDist}');
-                              print('거리 value $value');
+                              if (widget.option_dis == '거리') {
+                                controller.multiroom.roomDist = distselectnum;
+                                print('거리 ${controller.multiroom.roomDist}');
+                                print('거리 value $value');
+                              } else if (widget.option_dis == '시간') {
+                                controller.multiroom.roomTime = distselectnum;
+                                print('시간 ${controller.multiroom.roomDist}');
+                                print('시간 value $value');
+                              }
+                              // print('거리 ${controller.multiroom.roomDist}');
+                              // print('거리 value $value');
                               distupdateErrorText();
                             });
                           },

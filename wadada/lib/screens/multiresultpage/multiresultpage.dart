@@ -52,15 +52,15 @@ class _MultiResultState extends State<MultiResult> {
   @override
   void initState() {
     super.initState();
-    if (widget.controller.client.isActive) {
-      widget.controller.client.deactivate();
-      print('client 구독 끊음');
-    }
+    // if (widget.controller.client.isActive) {
+    //   widget.controller.client.deactivate();
+    //   print('client 구독 끊음');
+    // }
 
-    if (widget.controller.newclient.isActive) {
-      widget.controller.newclient.deactivate();
-      print('newclient 구독 끊음');
-    }
+    // if (widget.controller.newclient.isActive) {
+    //   widget.controller.newclient.deactivate();
+    //   print('newclient 구독 끊음');
+    // }
   }
 
   @override

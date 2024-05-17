@@ -76,8 +76,10 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
       key: _clockKey,
       time: widget.time,
       elapsedTimeNotifier: elapsedTimeNotifier,
+      onTimerEnd: _onTimerEnd,
     );
     _subscribeToTotalDistance();
+    myMapStateKey.currentState?.startGame();
     // sendLocationToServer();
   }
 
@@ -344,6 +346,7 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
 
       print('스피드 - $distanceSpeed');
       print('페이스 - $distancePace');
+      myMapStateKey.currentState?.endGame();
 
       Navigator.push(
         context,
@@ -469,6 +472,10 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
     );
   }
 
+  void _onTimerEnd() {
+    // 타이머가 종료되었을 때 실행할 로직
+  }
+
   @override
   Widget build(BuildContext context) {
     Widget progressBar = Container();
@@ -508,6 +515,7 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
       key: _clockKey,
       time: widget.time,
       elapsedTimeNotifier: elapsedTimeNotifier,
+      onTimerEnd: _onTimerEnd,
     );
 
     // double totalDistance = myMap.getTotalDistance();
