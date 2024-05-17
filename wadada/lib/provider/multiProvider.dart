@@ -68,7 +68,7 @@ class MultiProvider {
   //MULTI-007
   Future<Response<dynamic>> multiRoomGameEnd(MultiRoomGameEnd endInfo) async {
     await setAuth();
-    final response = await _dio.patch('/result', data: endInfo.toJson());
+    final response = await _dio.post('/result', data: endInfo.toJson());
     return response;
   }
 }

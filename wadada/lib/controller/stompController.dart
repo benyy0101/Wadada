@@ -79,7 +79,7 @@ class StompController extends GetxController {
   // RxBool gamego = false.obs;
   ValueNotifier<bool> gameStartResponse = ValueNotifier<bool>(false);
   ValueNotifier<bool> gamego = ValueNotifier<bool>(false);
-  ValueNotifier<String> requestinfo = ValueNotifier<String>('');
+  ValueNotifier<int> requestinfo = ValueNotifier<int>(0);
   ValueNotifier<List<dynamic>> ranking = ValueNotifier<List<dynamic>>([]);
   ValueNotifier<List<dynamic>> memberInfoList =
       ValueNotifier<List<dynamic>>([]);
@@ -87,6 +87,7 @@ class StompController extends GetxController {
   ValueNotifier<List<dynamic>> centerplace = ValueNotifier<List<dynamic>>([]);
   ValueNotifier<double> userlatitude = ValueNotifier<double>(0.0);
   ValueNotifier<double> userlongitude = ValueNotifier<double>(0.0);
+  ValueNotifier<List<dynamic>> flagend = ValueNotifier<List<dynamic>>([]);
   late dynamic unsubscribeFn;
   RxList<CurrentMember> members = <CurrentMember>[].obs;
   MultiRepository repo = MultiRepository(provider: MultiProvider());
@@ -210,15 +211,14 @@ class StompController extends GetxController {
                   // client.deactivate();
                   // print('여기까지는 됨');
 
-                  int newRoomSeq = res['body']['roomSeq'];
-                  print('roomSeq $newRoomSeq');
+                    int newRoomSeq = res['body']['roomSeq'];
+                    print('roomSeq $newRoomSeq');
 
-                  // setupNewSubscription(newRoomSeq);
-                  // client.deactivate();
-                  client.deactivate();
-                  await Future.delayed(Duration(seconds: 2));
+                    client.deactivate();
+                    // await Future.delayed(Duration(seconds: 2));
 
-                  setupNewSubscription(newRoomSeq);
+                    setupNewSubscription(newRoomSeq);
+                    // client.deactivate();
 
                   return;
                 }
@@ -389,23 +389,23 @@ class StompController extends GetxController {
             },
             callback: (frame) async {
               try {
-                if (isOwner.value) {
-                  final url = Uri.parse(
-                      'https://k10a704.p.ssafy.io/Multi/game/rank/$newRoomSeq');
+                  final url = Uri.parse('https://k10a704.p.ssafy.io/Multi/game/rank/$newRoomSeq');
                   final storage = FlutterSecureStorage();
                   String? accessToken = await storage.read(key: 'accessToken');
                   final dio = Dio();
 
                   try {
                     dynamic response;
-                    if (get1 == false) {
-                      response = await dio.get(url.toString(),
-                          options: Options(headers: {
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json',
-                            'authorization': accessToken
-                          }));
-                      get1 = true;
+                    if (isOwner.value) {
+                      if (get1 == false) {
+                        response = await dio.get(url.toString(),
+                            options: Options(headers: {
+                              'Content-Type': 'application/json',
+                              'Accept': 'application/json',
+                              'authorization': accessToken
+                            }));
+                        get1 = true;
+                      }
                     }
                     // print('확인 ${response.data}');
 
@@ -419,42 +419,25 @@ class StompController extends GetxController {
                     }
                     print('최종 ${resp['body']}');
 
-                    if (resp['body']['message'] == "멤버INFO요청") {
-                      requestinfo.value = resp['body']['message'];
-                      requestinfo.value = '';
-                    }
+                      if (resp['body']['message'] == "멤버INFO요청") {
+                        requestinfo.value += 1 ;
+                        // requestinfo.value = '';
+                        print('dd');
+                      }
 
                     if (resp['body']['memberInfo'] != null) {
                       ranking.value = resp['body']['memberInfo'];
                       print('랭킹 ${ranking.value}');
                     }
 
-                    // requestinfo.value = resp['body']['action'];
-                    // requestinfo.value = '';
-                    // ranking.value = resp['body']['memberInfo'];
-                    // print('body ${resp['body']}');
-                    // print('랭킹 ${ranking.value}');
-                    // print('랭킹 타입 ${ranking.value.runtimeType}');
-
-                    // final data = response.data as Map<String, dynamic>;
-                    // final jsonData = jsonDecode(response.data);
-                    // print('제발요 ${response.data.runtimeType}');
-                    // print('디코딩된 JSON 데이터: $jsonData');
-                    // print('방장 통신 성공');
-                    // return data;
-                    //   } else if (response.statusCode == 204) {
-                    //     print('204');
-                    //     // return {};
-                    //   } else {
-                    //     print('서버 요청 실패: ${response.statusCode}');
-                    //     // return {};
-                    //   }
+                      // if (resp['body']['message'] == "ㅇㅇ") {
+                        // flagend.value = resp['body']['memberInfo'];
+                      // }
                   } catch (e) {
                     print('ㅇㅇ 요청 처리 중 에러 발생: $e');
                     // return {};
                   }
-                }
-              } catch (e) {
+                } catch(e) {
                 print(e);
               }
             },

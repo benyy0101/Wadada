@@ -137,10 +137,10 @@ class MultiRoomGameEnd {
   String recordHeartbeat; // JSON
   String recordPace; // JSON
   int recordRank;
-  int roomIdx;
+  int roomSeq;
 
   MultiRoomGameEnd({
-    required this.roomIdx,
+    required this.roomSeq,
     required this.recordImage,
     required this.recordDist,
     required this.recordTime,
@@ -155,7 +155,7 @@ class MultiRoomGameEnd {
 
   factory MultiRoomGameEnd.fromJson(Map<String, dynamic> json) {
     return MultiRoomGameEnd(
-      roomIdx: json['roomIdx'] as int,
+      roomSeq: json['roomSeq'] as int,
       recordImage: json['recordImage'] as String,
       recordDist: json['recordDist'] as int,
       recordTime: json['recordTime'] as int,
@@ -170,7 +170,7 @@ class MultiRoomGameEnd {
   }
 
   Map<String, dynamic> toJson() => {
-        'roomIdx': roomIdx,
+        'roomSeq': roomSeq,
         'recordImage': recordImage,
         'recordDist': recordDist,
         'recordTime': recordTime,
@@ -185,7 +185,7 @@ class MultiRoomGameEnd {
 
   @override
   String toString() {
-    return 'MultiRoomGameEnd(roomIdx: $roomIdx, recordImage: $recordImage, recordDist: $recordDist, recordTime: $recordTime, recordStartLocation: $recordStartLocation, recordEndLocation: $recordEndLocation, recordWay: $recordWay, recordSpeed: $recordSpeed, recordHeartbeat: $recordHeartbeat, recordPace: $recordPace, recordRank: $recordRank)';
+    return 'MultiRoomGameEnd(roomSeq: $roomSeq, recordImage: $recordImage, recordDist: $recordDist, recordTime: $recordTime, recordStartLocation: $recordStartLocation, recordEndLocation: $recordEndLocation, recordWay: $recordWay, recordSpeed: $recordSpeed, recordHeartbeat: $recordHeartbeat, recordPace: $recordPace, recordRank: $recordRank)';
   }
 }
 

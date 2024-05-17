@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 import 'package:wadada/common/component/lineChart.dart';
+import 'package:wadada/common/component/tabbars.dart';
 import 'package:wadada/common/const/colors.dart';
 import 'package:wadada/controller/stompController.dart';
+import 'package:wadada/screens/mainpage/layout.dart';
 import 'package:wadada/screens/singlemainpage/single_main.dart';
 // import 'package:fl_chart/fl_chart.dart';
 
@@ -45,6 +47,20 @@ class _MultiResultState extends State<MultiResult> {
     setState(() {
       currentTab = index;
     });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    // if (widget.controller.client.isActive) {
+    //   widget.controller.client.deactivate();
+    //   print('client 구독 끊음');
+    // }
+
+    // if (widget.controller.newclient.isActive) {
+    //   widget.controller.newclient.deactivate();
+    //   print('newclient 구독 끊음');
+    // }
   }
 
   @override
@@ -206,7 +222,7 @@ class _MultiResultState extends State<MultiResult> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => SingleMain(),
+                            builder: (context) => MainLayout(),
                           ),
                         );
                       },
@@ -299,7 +315,7 @@ class _MultiResultState extends State<MultiResult> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => SingleMain(),
+                              builder: (context) => MainLayout(),
                             ),
                           );
                         },
