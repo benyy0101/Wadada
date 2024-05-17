@@ -238,10 +238,10 @@ class _MultiDisWait extends State<MultiDisWait> {
                         itemBuilder: (context, idx) {
                           return GestureDetector(
                               onTap: () {
-                                validatePassword(
-                                    controller.roomList[idx], context);
-                                // Get.to(() => MultiRoomDetail(
-                                //     roomInfo: controller.roomList[idx]));
+                                // validatePassword(
+                                //     controller.roomList[idx], context);
+                                Get.to(() => MultiRoomDetail(
+                                    roomInfo: controller.roomList[idx]));
                               },
                               child: Column(children: [
                                 const SizedBox(height: 30),
