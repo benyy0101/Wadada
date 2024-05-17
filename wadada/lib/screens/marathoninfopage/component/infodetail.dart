@@ -20,11 +20,11 @@ class InfoDetail extends StatelessWidget {
     String _formatDateTime(DateTime dateTime) {
       if (dateTime.minute != 0) {
         String formattedDateTime =
-            '${dateTime.year}년 ${dateTime.month}월 ${dateTime.day}일 ${dateTime.hour}시 ${dateTime.minute}분';
+            '${dateTime.month}월 ${dateTime.day}일 ${dateTime.hour}시 ${dateTime.minute}분';
         return formattedDateTime;
       } else {
         String formattedDateTime =
-            '${dateTime.year}년 ${dateTime.month}월 ${dateTime.day}일 ${dateTime.hour}시';
+            '${dateTime.month}월 ${dateTime.day}일 ${dateTime.hour}시';
         return formattedDateTime;
       }
     }
@@ -51,6 +51,10 @@ class InfoDetail extends StatelessWidget {
           //       fit: BoxFit.cover,
           //     ),
           // SizedBox(height: 40),
+          Image.asset(
+            'assets/images/sports_medal_3d.png',
+            height: 250,
+          ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -90,7 +94,7 @@ class InfoDetail extends StatelessWidget {
               SizedBox(width: 58),
               Expanded(
                 child: Text(
-                  '${_formatDateTime(marathon.marathonStart)} ~\n${_formatDateTime(marathon.marathonEnd)}',
+                  '${_formatDateTime(marathon.marathonStart)}\n ~\n${_formatDateTime(marathon.marathonEnd)}',
                   style: TextStyle(
                     fontSize: 17,
                     color: textColor,

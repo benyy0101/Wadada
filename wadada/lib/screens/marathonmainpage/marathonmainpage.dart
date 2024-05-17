@@ -28,40 +28,6 @@ class _MarathonMainState extends State<MarathonMain> {
     super.initState();
   }
 
-  // Future<Map<String, dynamic>> fetchData() async {
-  //   final url = Uri.parse('https://k10a704.p.ssafy.io/Marathon');
-
-  //   final dio = Dio();
-
-  //   try {
-  //     final response = await dio.get(
-  //       url.toString(),
-  //       options: Options(headers: {
-  //         'Content-Type': 'application/json',
-  //         'Accept': 'application/json',
-  //         'authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNDUyNzIxNzM3IiwiYXV0aCI6IlJPTEVfU09DSUFMIiwiZXhwIjoxNzE0NjgxNTkwfQ.zvrnuEckvfBuhc7kjMDf6HYHTt8RpJIUOifcc6o1Fk8',
-  //       }),
-  //     );
-
-  //     if (response.statusCode == 200) {
-  //           // 성공적으로 응답을 받았을 때
-  //           final data = response.data as Map<String, dynamic>;
-  //           print('통신 성공');
-  //           return data;
-  //       } else if (response.statusCode == 204) {
-  //           // 204 상태 코드 (No Content)
-  //           print('204');
-  //           return {};
-  //       } else {
-  //           print('서버 요청 실패: ${response.statusCode}');
-  //           return {};
-  //     }
-  //   } catch (e) {
-  //     print('요청 처리 중 에러 발생: $e');
-  //     return {};
-  //   }
-  // }
-
   @override
   Widget build(BuildContext context) {
     MarathonController controller = Get.put(MarathonController());
@@ -95,10 +61,10 @@ class _MarathonMainState extends State<MarathonMain> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '진행 예정인 마라톤',
+                          '진행 예정 마라톤',
                           style: TextStyle(
                             color: GRAY_400,
-                            fontSize: 19,
+                            fontSize: 18,
                           ),
                         ),
                         SizedBox(height: 20),
