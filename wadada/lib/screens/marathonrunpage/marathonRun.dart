@@ -79,7 +79,7 @@ class _MarathonState extends State<MarathonRun> {
 
     // _initWebSocketListener();
 
-    myMap = MyMap(appKey: dotenv.env['APP_KEY']!);
+    myMap = MyMap(appKey: dotenv.env['APP_KEY']!, centerplace: LatLng(0, 0), moderoom: 1,);
     onPageLoaded();
     // _onGameGoChanged();
 
@@ -255,7 +255,7 @@ class _MarathonState extends State<MarathonRun> {
     int totalDistanceInt = totalDistance.floor();
 
     MultiRoomGameEnd gameEndData = MultiRoomGameEnd(
-      roomIdx: 1, // 수정 필요
+      roomSeq: 1, // 수정 필요
       recordImage: 'your_record_image',
       recordDist: totalDistanceInt,
       recordTime: intelapsedseconds,
@@ -448,7 +448,8 @@ class _MarathonState extends State<MarathonRun> {
     Clock clockWidget = Clock(
       key: _clockKey,
       time: remainingTime,
-      elapsedTimeNotifier: elapsedTimeNotifier,
+      elapsedTimeNotifier: elapsedTimeNotifier, 
+      onTimerEnd: () {  },
     );
 
     return Scaffold(
@@ -676,7 +677,7 @@ class _MarathonState extends State<MarathonRun> {
                           const EdgeInsets.only(left: 20, right: 20, top: 10),
                       width: 400,
                       height: 200,
-                      child: stompController.rankingList!.isEmpty
+                      child: stompController.rankingList.isEmpty
                           ? Center(
                               child: Text(
                                 '곧 실시간 순위가 나타납니다',
@@ -690,7 +691,7 @@ class _MarathonState extends State<MarathonRun> {
                                 Expanded(child: Obx(() {
                                   return PageView.builder(
                                     itemCount:
-                                        (stompController.rankingList!.length /
+                                        (stompController.rankingList.length /
                                                 3)
                                             .ceil(),
                                     onPageChanged: (pageIndex) {
@@ -701,9 +702,9 @@ class _MarathonState extends State<MarathonRun> {
                                     itemBuilder: (context, pageIndex) {
                                       final startIndex = pageIndex * 3;
                                       final endIndex = (startIndex + 3).clamp(0,
-                                          stompController.rankingList!.length);
+                                          stompController.rankingList.length);
                                       final currentPageData = stompController
-                                          .rankingList!
+                                          .rankingList
                                           .sublist(startIndex, endIndex);
 
                                       return Column(
@@ -773,7 +774,7 @@ class _MarathonState extends State<MarathonRun> {
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: List.generate(
-                                        (stompController.rankingList!.length /
+                                        (stompController.rankingList.length /
                                                 3)
                                             .ceil(), (index) {
                                       return GestureDetector(

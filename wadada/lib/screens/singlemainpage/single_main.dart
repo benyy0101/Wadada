@@ -17,7 +17,7 @@ class SingleMain extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
-        padding: EdgeInsets.only(left: 30, right: 30),
+        padding: EdgeInsets.only(left: 20, right: 20),
         child: Column(
           children: [
             SizedBox(
@@ -105,6 +105,7 @@ class SingleMain extends StatelessWidget {
             ),
             // LogoutButton(),
             // TestButton(),
+
           ],
         ),
       ),

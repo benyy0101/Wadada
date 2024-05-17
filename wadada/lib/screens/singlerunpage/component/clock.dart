@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:wadada/common/const/colors.dart';
+import 'package:watch_connectivity/watch_connectivity.dart';
 
 class Clock extends StatefulWidget {
   final int time;
@@ -23,10 +25,19 @@ class ClockState extends State<Clock> {
   List<String> savetimes = [];
   late Timer _timer;
 
+  // 워치랑
+  final WatchConnectivityBase _watch = WatchConnectivity();
+  final MethodChannel channel = MethodChannel('watch_connectivity');
+  var _supported = false;
+  var _paired = false;
+  var _reachable = false;
+  bool _connected = false;
+  final _log = <String>[];
+  
+  
   @override
   void initState() {
     super.initState();
-
     // 넘어온 값 0 이상이면 타이머
     if (widget.time > 0) {
       int timerDurationInSeconds = (widget.time * 60).round();
@@ -47,17 +58,63 @@ class ClockState extends State<Clock> {
         }
       });
     } else {
-      // 넘어온 값 0이면 스톱워치
-      _timer = Timer.periodic(Duration(milliseconds: 100), _onTick);
-    }
+        // 넘어온 값 0이면 스톱워치
+        _timer = Timer.periodic(Duration(milliseconds: 100), _onTick);
+      }
+    
+    initPlatformState();
+    // 워치 초기화
+    _initWear();
+
+    // 
+
   }
 
-  void start() {
+  // 워치 관련코드
+  void _initWear() {
+    _watch.messageStream.listen((message) => setState(() {
+      _connected = true;
+    }));
+  }
+  
+  // sendMessage  워치한테 보내는 함수(실행해야 메세지가 전송됨 -> 주기적으로 호출)
+  void sendMessage(formattedHours, formattedMinutes, formattedSeconds) {
+    final message = {
+      'formattedHours': formattedHours,
+      'formattedMinutes': formattedMinutes,
+      'formattedSeconds': formattedSeconds,
+    };
+    _watch.sendMessage(message);
+    setState(() => _log.add('메세지: $message'));
+
+  }
+
+  void sendContext(formattedHours, formattedMinutes, formattedSeconds) {
+    final context = {
+      'formattedHours': formattedHours,
+      'formattedMinutes': formattedMinutes,
+      'formattedSeconds': formattedSeconds,
+    };
+    _watch.updateApplicationContext(context);
+    setState(() => _log.add('보내진 context: $context'));
+  }
+
+  void initPlatformState() async {
+    _supported = await _watch.isSupported;
+    _paired = await _watch.isPaired;
+    _reachable = await _watch.isReachable;
     setState(() {
-      _isRunning = true;
+
     });
   }
 
+
+  void start() {
+    setState(() {
+        _isRunning = true;
+    });
+  }
+  
   void setRunning(bool isRunning) {
     print('setRunning called with: $isRunning');
     setState(() {
@@ -101,8 +158,21 @@ class ClockState extends State<Clock> {
                     _elapsed += Duration(milliseconds: 100);
                 }
                 widget.elapsedTimeNotifier.value = _elapsed;
+
+                // 시간, 분, 초 업데이트 메소드 호출
+                sendTimeUpdate();
             });
     }
+  }
+
+
+  // 시간, 분, 초 업데이트 
+  void sendTimeUpdate() {
+    final hours = _elapsed.inHours.toString().padLeft(2, '0');
+    final minutes = (_elapsed.inMinutes % 60).toString().padLeft(2, '0');
+    final seconds = (_elapsed.inSeconds % 60).toString().padLeft(2, '0');
+    // sendMessage 호출
+    sendMessage(hours, minutes, seconds);
   }
 
   String _formatTime(int value) {
@@ -119,8 +189,8 @@ class ClockState extends State<Clock> {
         color: OATMEAL_COLOR,
         borderRadius: BorderRadius.circular(10),
       ),
-      width: 54,
-      height: 65,
+      width: 40,
+      height: 50,
       child: Center(
         child: Text(
           digit,
