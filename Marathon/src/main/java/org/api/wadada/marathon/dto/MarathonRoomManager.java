@@ -151,24 +151,38 @@ public class MarathonRoomManager {
 
 
         // Collections.sort 메서드와 커스텀 Comparator를 사용하여 List<MemberInfo> 정렬
-        Collections.sort(allList, new Comparator<MemberInfo>() {
-            @Override
-            public int compare(MemberInfo o1, MemberInfo o2) {
-                // memberSeq를 기준으로 오름차순 정렬
-                if (o1.getDist() == o2.getDist())
-                    return o1.getTime() - o2.getTime();
-                return o2.getDist() - o1.getDist();
+        // 람다 표현식 사용
+        Collections.sort(allList, (o1, o2) -> {
+            // 거리 내림차순
+            if (o1.getDist() != o2.getDist()) {
+                return Integer.compare(o2.getDist(), o1.getDist());
             }
+            // 시간이 같으면 시간 오름차순
+            return Integer.compare(o1.getTime(), o2.getTime());
         });
 
         for (int i = 0; i < allList.size(); i++) {
             MemberInfo curMemberInfo = allList.get(i);
-            curMemberInfo.resetRankings();
-            int start = i - 2 >= 0 ? i - 2 : 0;
-            int end = i + 2 < allList.size() ? i + 2 : allList.size() - 1;
-            curMemberInfo.setMemberRank(i+1);
+            curMemberInfo.resetRankings(); // 랭킹 초기화
+
+            int start = Math.max(i - 2, 0); // 시작 인덱스
+            int end = Math.min(i + 2, allList.size() - 1); // 종료 인덱스
+
+            curMemberInfo.setMemberRank(i + 1); // 현재 멤버의 랭크 설정
+
+            // 디버깅을 위한 출력문 추가
+            System.out.println("Member: " + curMemberInfo.getMemberName() + ", Rank: " + (i + 1));
+            System.out.println("Rankings from " + start + " to " + end);
+
             for (int k = start; k <= end; k++) {
-                curMemberInfo.getRankings().add(new MarathonRankingInfoDetailDto(curMemberInfo.getImage(), curMemberInfo.getMemberName(), curMemberInfo.getDist(), curMemberInfo.getTime(),k+1));
+                MemberInfo neighborMemberInfo = allList.get(k);
+                curMemberInfo.getRankings().add(new MarathonRankingInfoDetailDto(
+                        neighborMemberInfo.getImage(),
+                        neighborMemberInfo.getMemberName(),
+                        neighborMemberInfo.getDist(),
+                        neighborMemberInfo.getTime(),
+                        k + 1
+                ));
             }
         }
 
