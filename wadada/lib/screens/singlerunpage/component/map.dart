@@ -192,7 +192,6 @@ class MyMapState extends State<MyMap> {
               'https://github.com/jjeong41/t/assets/103355863/5ff2a217-8cbc-4e41-b6c2-0ff12103b40b',
             zIndex: 15,
           ));
-          
 
           setState(() {});
         });

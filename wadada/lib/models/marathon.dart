@@ -2,7 +2,30 @@ class MarathonStart {
   String marathonRecordStart;
   int marathonSeq;
 
+  // Constructor
   MarathonStart({required this.marathonRecordStart, required this.marathonSeq});
+
+  // toString method
+  @override
+  String toString() {
+    return 'MarathonStart(marathonRecordStart: $marathonRecordStart, marathonSeq: $marathonSeq)';
+  }
+
+  // fromJson method
+  factory MarathonStart.fromJson(Map<String, dynamic> json) {
+    return MarathonStart(
+      marathonRecordStart: json['marathonRecordStart'],
+      marathonSeq: json['marathonSeq'],
+    );
+  }
+
+  // toJson method
+  Map<String, dynamic> toJson() {
+    return {
+      'marathonRecordStart': marathonRecordStart,
+      'marathonSeq': marathonSeq,
+    };
+  }
 }
 
 class Marathon {

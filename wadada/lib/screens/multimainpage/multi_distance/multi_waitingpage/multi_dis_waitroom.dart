@@ -90,7 +90,7 @@ class _MultiDisWait extends State<MultiDisWait> {
                       } else if (value.length != 4 ||
                           !RegExp(r'^[0-9]+$').hasMatch(value)) {
                         return '비밀번호는 4자리 입니다';
-                      } else if (value != room.roomSecret) {
+                      } else if (value != room.roomSecret.toString()) {
                         return '비밀번호가 일치하지 않습니다';
                       } else {
                         Navigator.pop(context);

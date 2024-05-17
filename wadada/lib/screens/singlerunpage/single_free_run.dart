@@ -119,7 +119,7 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
     final startLocation = myMap.startLocation;
     final dio = Dio();
     final storage = FlutterSecureStorage();
-    String? accessToken = await storage.read(key: 'access37Token');
+    String? accessToken = await storage.read(key: 'accessToken');
     int recordMode = widget.time > 0 ? 2 : 1;
 
 

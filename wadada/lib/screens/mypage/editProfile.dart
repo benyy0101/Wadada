@@ -25,13 +25,11 @@ class _EditProfileState extends State<EditProfile> {
     ProfileController profileController =
         Get.put(ProfileController(repo: ProfileRepository()));
     Uint8List? _image;
-    File? selectedImage;
     Future _pickImageFromGallery() async {
       final returnImage =
           await ImagePicker().pickImage(source: ImageSource.gallery);
       if (returnImage == null) return;
       setState(() {
-        selectedImage = File(returnImage.path);
         _image = File(returnImage.path).readAsBytesSync();
         profileController.uploadImage(returnImage.path);
       });
@@ -46,7 +44,7 @@ class _EditProfileState extends State<EditProfile> {
           await ImagePicker().pickImage(source: ImageSource.camera);
       if (returnImage == null) return;
       setState(() {
-        selectedImage = File(returnImage.path);
+        print('--------------************');
         _image = File(returnImage.path).readAsBytesSync();
         profileController.uploadImage(returnImage.path);
       });
@@ -119,19 +117,16 @@ class _EditProfileState extends State<EditProfile> {
         children: [
           Stack(
             children: [
-              GestureDetector(
-                onTap: () {
-                  showImagePickerOption(context);
-                },
-                child: CircleAvatar(
+              GestureDetector(onTap: () {
+                showImagePickerOption(context);
+              }, child: Obx(() {
+                return CircleAvatar(
                   radius: 100,
-                  backgroundImage: _image != null
-                      ? MemoryImage(_image!)
-                      : const NetworkImage(
-                              "https://www.studiopeople.kr/common/img/default_profile.png")
-                          as ImageProvider,
-                ),
-              ),
+                  backgroundImage: NetworkImage(
+                          profileController.profile.value.memberProfileImage)
+                      as ImageProvider,
+                );
+              })),
             ],
           ),
           const SizedBox(height: 20),
