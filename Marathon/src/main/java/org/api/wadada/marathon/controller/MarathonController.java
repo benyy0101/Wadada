@@ -110,8 +110,8 @@ public class MarathonController {
      * @return ResponseEntity 객체로 응답을 반환
      */
     @PostMapping("/post")
-    public ResponseEntity<?> sendMessage(Principal principal,@RequestBody RequestDataReq requestDataReq) {
-        messageService.sendMarathonMessage(principal,requestDataReq);
+    public ResponseEntity<?> sendMessage(@RequestBody RequestDataReq requestDataReq) {
+        messageService.sendMarathonMessage(requestDataReq);
         return ResponseEntity.ok("Message sent to RabbitMQ!");
     }
 //    @PostMapping("/post")
@@ -119,11 +119,11 @@ public class MarathonController {
 //        messageService.sendMessage(messageDto);
 //        return ResponseEntity.ok("Message sent to RabbitMQ!");
 //    }
-    @PostMapping("/receive")
-    public ResponseEntity<?> receiveMessage(@RequestBody MessageDto messageDto) {
-        messageService.receiveMessage(messageDto);
-        return ResponseEntity.ok("Message sent to RabbitMQ!");
-    }
+//    @PostMapping("/receive")
+//    public ResponseEntity<?> receiveMessage(@RequestBody MessageDto messageDto) {
+//        messageService.receiveMessage(messageDto);
+//        return ResponseEntity.ok("Message sent to RabbitMQ!");
+//    }
 
 
 }

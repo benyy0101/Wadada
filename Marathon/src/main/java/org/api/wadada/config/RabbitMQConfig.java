@@ -37,7 +37,7 @@ public class RabbitMQConfig {
     @Value("${spring.rabbitmq.password}")
     private String rabbitmqPassword;
 
-    @Value("${rabbitmq.queue.name}")
+    @Value("${rabbitmq.marathon.name}")
     private String queueName;
 
     @Value("${rabbitmq.exchange.name}")

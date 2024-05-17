@@ -1,8 +1,10 @@
 package org.api.wadada.marathon.dto.req;
 
+import lombok.Builder;
 import lombok.Data;
 
 @Data
+@Builder
 public class RequestDataReq {
 
     private int roomSeq;

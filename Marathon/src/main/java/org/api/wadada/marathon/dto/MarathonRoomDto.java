@@ -14,7 +14,7 @@ public class MarathonRoomDto {
 
     private int RoomSeq;
     private final int MAX_ROOM_SIZE = 100;
-    private Map<Integer,MemberInfo> marathonMap;
+    private Map<String,MemberInfo> marathonMap;
     private SimpMessagingTemplate messagingTemplate;
     private int curMember = -1;
     private String sentence;
@@ -57,19 +57,19 @@ public class MarathonRoomDto {
         this.messagingTemplate = simpMessagingTemplate;
     }
     public boolean insertMember(MemberInfo memberInfo){
-        if(marathonMap.containsKey(memberInfo.getMemberSeq())){
+        if(marathonMap.containsKey(memberInfo.getMemberName())){
             return false;
         }
-        marathonMap.put(memberInfo.getMemberSeq(),memberInfo);
+        marathonMap.put(memberInfo.getMemberName(),memberInfo);
         curMember++;
         return true;
     }
 
     public boolean updateMember(MemberInfo memberInfo){
-        if(!marathonMap.containsKey(memberInfo.getMemberSeq())){
+        if(!marathonMap.containsKey(memberInfo.getMemberName())){
             return false;
         }
-        marathonMap.put(memberInfo.getMemberSeq(),memberInfo);
+        marathonMap.put(memberInfo.getMemberName(),memberInfo);
         return true;
     }
     public void removeAllMembers(){

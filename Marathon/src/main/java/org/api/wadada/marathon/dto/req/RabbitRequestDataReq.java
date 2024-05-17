@@ -11,5 +11,5 @@ public class RabbitRequestDataReq {
     private int userDist;
     private int userTime;
 
-    private int memberSeq;
+    private String memberSeq;
 }

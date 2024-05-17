@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 @Getter
 @Builder
 public class MarathonRoomManager {
-    private Map<Integer, MemberInfo> memberInfoMap = new HashMap<>();
+    private Map<String, MemberInfo> memberInfoMap = new HashMap<>();
     private final List<MarathonRoomDto> rooms;
     private static final int MAX_ROOMS = 40;
     private int curRooms = -1;
@@ -63,9 +63,10 @@ public class MarathonRoomManager {
     private int addRoom(MarathonRoomDto room) throws Exception {
         rooms.set(++curRooms, room);
 
-        System.out.println("queueName = " + queueName);
+        System.out.println("queueName = " + queueName+(curRooms+1));
         System.out.println("exchangeName = " + exchangeName);
-        System.out.println("routingKey = " + routingKey);
+        System.out.println("routingKey = " + routingKey+(curRooms+1));
+        System.out.println("curRooms = " + curRooms);
         dynamicRabbitMqConfigurer.bindExistingQueueToExchange(queueName+(curRooms+1),exchangeName,routingKey+(curRooms+1));
 
         return curRooms;
@@ -95,7 +96,7 @@ public class MarathonRoomManager {
 
 
     public boolean InsertMember(MemberInfo memberInfo) throws Exception {
-        if(memberInfoMap.containsKey(memberInfo.getMemberSeq()))
+        if(memberInfoMap.containsKey(memberInfo.getMemberName()))
             return false;
 
         //현재 방(채널)에 100명이 찼으면
@@ -104,14 +105,14 @@ public class MarathonRoomManager {
             curRooms = addRoom(new MarathonRoomDto());
             //해당 방에 멤버 넣기
             rooms.get(curRooms).insertMember(memberInfo);
-            memberInfoMap.put(memberInfo.getMemberSeq(),memberInfo);
+            memberInfoMap.put(memberInfo.getMemberName(),memberInfo);
             //방 인덱스 1 증가
         }
         //현재 방(채널)에 100명이 안찼으면
         else {
             //현재 방에 멤버 넣기
             rooms.get(getCurRooms()).insertMember(memberInfo);
-            memberInfoMap.put(memberInfo.getMemberSeq(),memberInfo);
+            memberInfoMap.put(memberInfo.getMemberName(),memberInfo);
         }
         REAL_max_Person++;
         return true;
@@ -136,7 +137,9 @@ public class MarathonRoomManager {
     }
     public void sendEndMessage() {
         for (int i = 0; i <= curRooms; i++) {
-            messagingTemplate.convertAndSend("/sub/attend/" + i, rooms.get(i).getSentence());
+            String message = GameMessage.MARATHON_INFO_SEND.toJson();
+            message += rooms.get(i).getSentence();
+            messagingTemplate.convertAndSend("/sub/attend/" + i, message);
         }
     }
     public void sortMember() {
@@ -161,15 +164,17 @@ public class MarathonRoomManager {
             curMemberInfo.resetRankings();
             int start = i - 2 >= 0 ? i - 2 : 0;
             int end = i + 2 < allList.size() ? i + 2 : allList.size() - 1;
+            curMemberInfo.setMemberRank(i+1);
             for (int k = start; k <= end; k++) {
-                allList.get(i).getRankings().add(new MarathonRankingInfoDetailDto(curMemberInfo.getImage(), curMemberInfo.getMemberName(), curMemberInfo.getDist(), curMemberInfo.getTime()));
+                curMemberInfo.getRankings().add(new MarathonRankingInfoDetailDto(curMemberInfo.getImage(), curMemberInfo.getMemberName(), curMemberInfo.getDist(), curMemberInfo.getTime(),k+1));
             }
         }
 
     }
 
-    public MemberInfo FindMember(int MemberSeq) {
-        return memberInfoMap.get(MemberSeq);
+    public MemberInfo FindMember(String MemberName) {
+        System.out.println("memberInfoMap = " + memberInfoMap.get(MemberName));
+        return memberInfoMap.get(MemberName);
     }
 
 

@@ -12,6 +12,7 @@ import java.util.List;
 @Builder
 @Getter
 @ToString
+@Setter
 public class MemberInfo {
     private int MemberSeq;
     private String MemberName;
@@ -20,9 +21,9 @@ public class MemberInfo {
     private int curIndex;
     private int dist;
     private String image;
-    @Setter
     private int time;
     private List<MarathonRankingInfoDetailDto> rankings;
+    private int memberRank;
 
     public void updatememberLocation(int curRoom, int curIndex){
         this.curIndex=curIndex;

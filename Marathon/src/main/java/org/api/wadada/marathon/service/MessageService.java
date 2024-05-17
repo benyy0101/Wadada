@@ -2,6 +2,7 @@ package org.api.wadada.marathon.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.api.wadada.config.RabbitMQConfig;
 import org.api.wadada.marathon.dto.MarathonGameManager;
 import org.api.wadada.marathon.dto.MarathonRoomManager;
 import org.api.wadada.marathon.dto.MessageDto;
@@ -21,11 +22,8 @@ import java.security.Principal;
 @Service
 public class MessageService {
 
-    @Value("${rabbitmq.exchange.name}")
-    private String exchangeName;
 
-    @Value("${rabbitmq.routing.key}")
-    private String routingKey;
+    private final RabbitMQConfig rabbitMQConfig;
 
     private final RabbitTemplate rabbitTemplate;
 
@@ -40,16 +38,14 @@ public class MessageService {
      */
     public void sendMessage(MessageDto messageDto) {
         log.info("message sent: {}", messageDto.toString());
-        rabbitTemplate.convertAndSend(exchangeName, routingKey, messageDto);
+        rabbitTemplate.convertAndSend(rabbitMQConfig.getExchangeName(), rabbitMQConfig.getRoutingKey(), messageDto);
     }
-    public void sendMarathonMessage(Principal principal,RequestDataReq requestDataReq) {
+    public void sendMarathonMessage(RequestDataReq requestDataReq) {
 
+        System.out.println("exchangeName = " + rabbitMQConfig.getExchangeName());
+        System.out.println("routingKey = " + rabbitMQConfig.getRoutingKey()+(requestDataReq.getRoomSeq()+1));
 
-        log.info("message sent: {}", requestDataReq.toString());
-        System.out.println("exchangeName = " + exchangeName);
-        System.out.println("routingKey = " + routingKey);
-
-        rabbitTemplate.convertAndSend(exchangeName, routingKey+(requestDataReq.getRoomSeq()+1), requestDataReq);
+        rabbitTemplate.convertAndSend(rabbitMQConfig.getExchangeName(), rabbitMQConfig.getRoutingKey()+(requestDataReq.getRoomSeq()+1), requestDataReq);
     }
 
     /**
@@ -57,8 +53,8 @@ public class MessageService {
      *
      * @param messageDto 구독한 메시지를 담고 있는 MessageDto 객체
      */
-    @RabbitListener(queues = "${rabbitmq.queue.name}")
-    public void receiveMessage(MessageDto messageDto) {
-        log.info("Received message: {}", messageDto.toString());
-    }
+//    @RabbitListener(queues = "${rabbitmq.queue.name}")
+//    public void receiveMessage(MessageDto messageDto) {
+//        log.info("Received message: {}", messageDto.toString());
+//    }
 }

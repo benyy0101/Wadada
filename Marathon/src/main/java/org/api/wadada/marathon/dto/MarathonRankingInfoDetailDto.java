@@ -12,4 +12,5 @@ public class MarathonRankingInfoDetailDto {
     private String memberName;
     private int memberDist;
     private int memberTime;
+    private int memberRank;
 }

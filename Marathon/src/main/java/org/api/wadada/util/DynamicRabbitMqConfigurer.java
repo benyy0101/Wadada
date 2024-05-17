@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 public class DynamicRabbitMqConfigurer {
 
     private final RabbitAdmin rabbitAdmin;
+    private final RabbitMQConfig rabbitMQConfig;
 //    public void createQueueAndBindToExchange(String queueName, String exchangeName, String routingKey) {
 //        // Queue 생성
 //        Queue queue = new Queue(queueName, true); // durable: true
@@ -50,7 +51,7 @@ public class DynamicRabbitMqConfigurer {
         DirectExchange exchange = new DirectExchange(exchangeName);
 
         // Binding 객체 생성
-        Binding binding = BindingBuilder.bind(new Queue(queueName)).to(exchange).with(routingKey);
+        Binding binding = BindingBuilder.bind((rabbitMQConfig.queue())).to(exchange).with(routingKey);
 
         // 바인딩 제거
         rabbitAdmin.removeBinding(binding);
