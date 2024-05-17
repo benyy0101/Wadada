@@ -83,7 +83,8 @@ class MyMapState extends State<MyMap> {
 
     startTime = DateTime.now();
     print("-----------initState------------------");
-    _startTrackingLocation();
+    startGame();
+    // _startTrackingLocation();
     // _subscribeToRealTimeLocationUpdates();
   }
 
@@ -256,14 +257,38 @@ class MyMapState extends State<MyMap> {
   //   setState(() {});
   // }
 
+  void _stopTrackingLocation() {
+    positionStream?.cancel();
+    positionStream = null;
+    print("Location tracking stopped.");
+  }
+
+  void startGame() {
+    startTime = DateTime.now();
+    _startTrackingLocation();
+    print('지도 시작');
+  }
+
+  void endGame() {
+    _stopTrackingLocation();
+  }
+
   @override
   void dispose() {
-    // 스트림 구독 해제
     print("really cancelling positions?");
-    // realTimePositionStream?.cancel();
-    positionStream?.cancel();
+    _stopTrackingLocation();
     super.dispose();
   }
+
+  // @override
+  // void dispose() {
+  //   // 스트림 구독 해제
+  //   print("really cancelling positions?");
+  //   // realTimePositionStream?.cancel();
+  //   positionStream?.cancel();
+  //   // _stopTrackingLocation();
+  //   super.dispose();
+  // }
 
   @override
   void didPop() {

@@ -43,10 +43,10 @@ class _MultiResultState extends State<MultiEnd> {
   void initState() {
     super.initState();
 
-    if (widget.controller.client.isActive) {
-      widget.controller.client.deactivate();
-      print('client 구독 끊음');
-    }
+    // if (widget.controller.client.isActive) {
+    //   widget.controller.client.deactivate();
+    //   print('client 구독 끊음');
+    // }
 
     if (widget.controller.newclient.isActive) {
       widget.controller.newclient.deactivate();
