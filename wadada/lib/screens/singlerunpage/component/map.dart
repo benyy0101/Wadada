@@ -3,13 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:wadada/common/const/colors.dart';
+import 'package:wadada/models/multiroom.dart';
 
-class MyMap extends StatefulWidget{
+class MyMap extends StatefulWidget {
   // const SingleFreeRun({super.key, required this.time, required this.dist});
+
   final String appKey;
   LatLng? startLocation;
   LatLng? endLocation;
   List<LatLng> coordinates = [];
+  LatLng centerplace;
+  final int moderoom;
 
   List<LatLng> getCoordinates() {
     return coordinates;
@@ -20,6 +24,7 @@ class MyMap extends StatefulWidget{
   ValueNotifier<double> paceNotifier = ValueNotifier<double>(0.0);
   ValueNotifier<LatLng?> startLocationNotifier = ValueNotifier<LatLng?>(null);
   ValueNotifier<LatLng?> endLocationNotifier = ValueNotifier<LatLng?>(null);
+  ValueNotifier<LatLng?> currentLocationNotifier = ValueNotifier<LatLng?>(null);
 
   List<Map<String, double>> distanceSpeed = [];
   List<Map<String, double>> distancePace = [];
@@ -32,17 +37,24 @@ class MyMap extends StatefulWidget{
     return distancePace;
   }
 
-  MyMap({super.key, required this.appKey});
+  MyMap({super.key, required this.appKey, required this.centerplace, required this.moderoom});
 
   void _updateTotalDistance(double distance) {
     totalDistanceNotifier.value += distance;
   }
 
   @override
-  State<MyMap> createState() => _MyMapState();
+  State<MyMap> createState() => MyMapState();
+
+  // void disposeState(GlobalKey<MyMapState> key) {
+  //   final MyMapState? state = key.currentState;
+  //   print("dispose");
+  //   print(state);
+  //   state?.dispose();
+  // }
 }
 
-class _MyMapState extends State<MyMap> {
+class MyMapState extends State<MyMap> {
   double? currentLatitude;
   double? currentLongitude;
 
@@ -55,7 +67,7 @@ class _MyMapState extends State<MyMap> {
 
   KakaoMapController? mapController;
   StreamSubscription<Position>? positionStream;
-  StreamSubscription<Position>? realTimePositionStream;
+  // StreamSubscription<geolocator.Position>? realTimePositionStream;
   Set<Polyline> polylines = {};
   Set<Marker> markers = {};
   // Set<PolyLine> polylines = {};
@@ -70,9 +82,10 @@ class _MyMapState extends State<MyMap> {
     );
 
     startTime = DateTime.now();
-
-    _startTrackingLocation();
-    _subscribeToRealTimeLocationUpdates();
+    print("-----------initState------------------");
+    startGame();
+    // _startTrackingLocation();
+    // _subscribeToRealTimeLocationUpdates();
   }
 
   Future<void> _startTrackingLocation() async {
@@ -91,23 +104,27 @@ class _MyMapState extends State<MyMap> {
 
     final locationSettings = LocationSettings(
       accuracy: LocationAccuracy.high,
-      distanceFilter: 5,
+      distanceFilter: 1,
     );
-
-    positionStream = Geolocator.getPositionStream(locationSettings: locationSettings).listen((Position? position) {
+    print("--------start Tracking-----------------------");
+    positionStream =
+        Geolocator.getPositionStream(locationSettings: locationSettings)
+            .listen((Position? position) {
       if (position != null) {
+        print("--------position start----------------");
         setState(() {
           previousLatitude = currentLatitude;
           previousLongitude = currentLongitude;
           currentLatitude = position.latitude;
           currentLongitude = position.longitude;
-          
+
           if (widget.startLocation == null) {
             widget.startLocation = LatLng(currentLatitude!, currentLongitude!);
             widget.startLocationNotifier.value = widget.startLocation;
           }
 
           widget.endLocation = LatLng(currentLatitude!, currentLongitude!);
+          widget.currentLocationNotifier.value = LatLng(currentLatitude!, currentLongitude!);
 
           if (previousLatitude != null && previousLongitude != null) {
             double distance = Geolocator.distanceBetween(
@@ -116,10 +133,11 @@ class _MyMapState extends State<MyMap> {
               currentLatitude!,
               currentLongitude!,
             );
-            
+
             totalDistance += distance;
             Duration timeDiff = DateTime.now().difference(previousTime!);
-            double totalTime = DateTime.now().difference(startTime).inSeconds.toDouble();
+            double totalTime =
+                DateTime.now().difference(startTime).inSeconds.toDouble();
             // double totalDistanceKm = totalDistance / 1000;
             // double roundedTotalDistanceKm = double.parse(totalDistanceKm.toStringAsFixed(2));
 
@@ -135,15 +153,17 @@ class _MyMapState extends State<MyMap> {
             widget._updateTotalDistance(distance);
 
             widget.distanceSpeed.add({
-                "dist": totalDistance,
-                "speed": currentSpeed,
+              "dist": totalDistance,
+              "speed": currentSpeed,
             });
 
             widget.distancePace.add({
-                "dist": totalDistance,
-                "pace": paceInSecondsPerKm,
+              "dist": totalDistance,
+              "pace": paceInSecondsPerKm,
             });
           }
+          // }
+
           previousTime = DateTime.now();
 
           void updateLocation(double latitude, double longitude) {
@@ -159,17 +179,19 @@ class _MyMapState extends State<MyMap> {
             existingPolyline.points?.add(newCenter);
           }
 
-          // markers.removeWhere((marker) => marker.markerId == 'currentlocation');
+          markers.removeWhere((marker) => marker.markerId == 'currentlocation');
 
-          // markers.add(Marker(
-          //   markerId: 'currentlocation',
-          //   latLng: LatLng(currentLatitude!, currentLongitude!),
-          //   width: 40,
-          //   height: 40,
-          //   markerImageSrc:
-          //     'https://github.com/jjeong41/t/assets/103355863/608f452a-c1d4-4784-b989-7e8cfdf4a236',
-          //   zIndex: 10,
-          // ));
+          markers.add(Marker(
+            markerId: 'currentlocation',
+            latLng: LatLng(currentLatitude!, currentLongitude!),
+            width: 30,
+            height: 30,
+            offsetX: 15, // width의 절반 값을 지정합니다.
+            offsetY: 15,
+            markerImageSrc:
+              'https://github.com/jjeong41/t/assets/103355863/5ff2a217-8cbc-4e41-b6c2-0ff12103b40b',
+            zIndex: 15,
+          ));
 
           setState(() {});
         });
@@ -180,9 +202,9 @@ class _MyMapState extends State<MyMap> {
     //   if (position != null) {
     //     setState(() {
     //       LatLng newLocation = LatLng(position.latitude, position.longitude);
-          
+
     //       markers.removeWhere((marker) => marker.markerId == 'currentLocationMarker');
-          
+
     //       markers.add(Marker(
     //           markerId: 'currentLocationMarker',
     //           latLng: newLocation,
@@ -190,7 +212,7 @@ class _MyMapState extends State<MyMap> {
     //           height: 30,
     //           markerImageSrc: 'https://github.com/jjeong41/t/assets/103355863/5ff2a217-8cbc-4e41-b6c2-0ff12103b40b',
     //       ));
-          
+
     //       mapController?.setCenter(newLocation);
 
     //       setState(() {});
@@ -199,46 +221,78 @@ class _MyMapState extends State<MyMap> {
     // });
   }
 
-  Future<void> _subscribeToRealTimeLocationUpdates() async {
-    final realTimeLocationSettings = LocationSettings(
-      accuracy: LocationAccuracy.high,
-      distanceFilter: 0,
-    );
+  // Future<void> _subscribeToRealTimeLocationUpdates() async {
+  //   final realTimeLocationSettings = LocationSettings(
+  //     accuracy: LocationAccuracy.high,
+  //     distanceFilter: 0,
+  //   );
 
-    realTimePositionStream = Geolocator.getPositionStream(
-      locationSettings: realTimeLocationSettings,
-    ).listen((Position? position) {
-      if (position != null) {
-        LatLng newLocation = LatLng(position.latitude, position.longitude);
+  //   realTimePositionStream = Geolocator.getPositionStream(
+  //     locationSettings: realTimeLocationSettings,
+  //   ).listen((Position? position) {
+  //     if (position != null) {
+  //       LatLng newLocation = LatLng(position.latitude, position.longitude);
 
-        _updateMapWithNewLocation(newLocation);
-      }
-    });
+  //       _updateMapWithNewLocation(newLocation);
+  //     } else {
+  //       print("-------------------no position found------------------------");
+  //     }
+  //   });
+  // }
+
+  // void _updateMapWithNewLocation(LatLng newLocation) {
+  //   markers.removeWhere((marker) => marker.markerId == 'currentLocationMarker');
+
+  //   markers.add(Marker(
+  //     markerId: 'currentLocationMarker',
+  //     latLng: newLocation,
+  //     width: 30,
+  //     height: 30,
+  //     markerImageSrc:
+  //         'https://github.com/jjeong41/t/assets/103355863/5ff2a217-8cbc-4e41-b6c2-0ff12103b40b',
+  //   ));
+
+  //   mapController?.setCenter(newLocation);
+  //   setState(() {});
+  // }
+
+  void _stopTrackingLocation() {
+    positionStream?.cancel();
+    positionStream = null;
+    print("Location tracking stopped.");
   }
 
-  void _updateMapWithNewLocation(LatLng newLocation) {
-    markers.removeWhere((marker) => marker.markerId == 'currentLocationMarker');
-    
-    markers.add(Marker(
-        markerId: 'currentLocationMarker',
-        latLng: newLocation,
-        width: 30,
-        height: 30,
-        markerImageSrc: 'https://github.com/jjeong41/t/assets/103355863/5ff2a217-8cbc-4e41-b6c2-0ff12103b40b',
-    ));
-    
-    mapController?.setCenter(newLocation);
-    setState(() {});
+  void startGame() {
+    startTime = DateTime.now();
+    _startTrackingLocation();
+    print('지도 시작');
   }
 
-
+  void endGame() {
+    _stopTrackingLocation();
+  }
 
   @override
   void dispose() {
-    // 스트림 구독 해제
-    realTimePositionStream?.cancel();
-    positionStream?.cancel();
+    print("really cancelling positions?");
+    _stopTrackingLocation();
     super.dispose();
+  }
+
+  // @override
+  // void dispose() {
+  //   // 스트림 구독 해제
+  //   print("really cancelling positions?");
+  //   // realTimePositionStream?.cancel();
+  //   positionStream?.cancel();
+  //   // _stopTrackingLocation();
+  //   super.dispose();
+  // }
+
+  @override
+  void didPop() {
+    // Your logic when MyWidget is popped from the navigation stack
+    print('MyWidget popped from the navigation stack');
   }
 
   @override
@@ -252,10 +306,10 @@ class _MyMapState extends State<MyMap> {
     }
 
     return SizedBox(
-        width: 400,
-        height: 150,
-        child: KakaoMap(
-          onMapCreated: (controller) {
+      width: 400,
+      height: 230,
+      child: KakaoMap(
+        onMapCreated: (controller) {
           mapController = controller;
 
           markers.add(Marker(
@@ -266,21 +320,36 @@ class _MyMapState extends State<MyMap> {
             offsetX: 15,
             offsetY: 44,
             markerImageSrc:
-              // 'https://w7.pngwing.com/pngs/96/889/png-transparent-marker-map-interesting-places-the-location-on-the-map-the-location-of-the-thumbnail.png',
-              'https://github.com/jjeong41/t/assets/103355863/955c2700-e829-426d-a4a0-4806d3f5c085',
+                // 'https://w7.pngwing.com/pngs/96/889/png-transparent-marker-map-interesting-places-the-location-on-the-map-the-location-of-the-thumbnail.png',
+                'https://github.com/jjeong41/t/assets/103355863/955c2700-e829-426d-a4a0-4806d3f5c085',
+            zIndex: 12,
           ));
 
-          markers.add(Marker(
-            markerId: 'currentLocationMarker',
-            latLng: LatLng(currentLatitude!, currentLongitude!),
-            width: 30,
-            height: 30,
-            // offsetX: 15,
-            // offsetY: 44,
-            markerImageSrc:
-              // 'https://w7.pngwing.com/pngs/96/889/png-transparent-marker-map-interesting-places-the-location-on-the-map-the-location-of-the-thumbnail.png',
-              'https://github.com/jjeong41/t/assets/103355863/955c2700-e829-426d-a4a0-4806d3f5c085',
-          ));
+          // markers.add(Marker(
+          //   markerId: 'currentLocationMarker',
+          //   latLng: LatLng(currentLatitude!, currentLongitude!),
+          //   width: 30,
+          //   height: 30,
+          //   // offsetX: 15,
+          //   // offsetY: 44,
+          //   markerImageSrc:
+          //     // 'https://w7.pngwing.com/pngs/96/889/png-transparent-marker-map-interesting-places-the-location-on-the-map-the-location-of-the-thumbnail.png',
+          //     'https://github.com/jjeong41/t/assets/103355863/955c2700-e829-426d-a4a0-4806d3f5c085',
+          // ));
+
+          if (widget.moderoom == 3) {
+            markers.add(Marker(
+              markerId: 'flag',
+              latLng: widget.centerplace,
+              width: 50,
+              height: 54,
+              offsetX: 15,
+              offsetY: 44,
+              markerImageSrc:
+                'https://github.com/jjeong41/t/assets/103355863/37743a13-bbd0-4744-9e7c-7ef262fc14c0',
+              zIndex: 10,
+            ));
+          }
 
           polylines.add(
             Polyline(
@@ -293,14 +362,15 @@ class _MyMapState extends State<MyMap> {
             ),
           );
 
-            setState(() {});
-          },
+          setState(() {});
+        },
 
-          polylines: polylines.toList(),
-          markers: markers.toList(),
-          center: LatLng(currentLatitude ?? 37.501307, currentLongitude ?? 127.039622),
-          // center: currentLocation,
-        ),
-      );
-    }
+        polylines: polylines.toList(),
+        markers: markers.toList(),
+        center: LatLng(
+            currentLatitude ?? 37.501307, currentLongitude ?? 127.039622),
+        // center: currentLocation,
+      ),
+    );
+  }
 }

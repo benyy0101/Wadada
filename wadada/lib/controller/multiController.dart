@@ -14,7 +14,8 @@ class MultiController extends GetxController {
       roomSecret: -2,
       roomTag: '',
       roomTime: -1,
-      roomTitle: '');
+      roomTitle: '',
+      roomSeq: -1);
 
   SimpleRoom cur = SimpleRoom(
       roomIdx: -1,
@@ -22,7 +23,9 @@ class MultiController extends GetxController {
       roomPeople: -1,
       roomSecret: -1,
       roomMode: -1,
-      nowRoomPeople: -1);
+      nowRoomPeople: -1,
+      roomDist: -1,
+      roomTime: -1);
 
   MultiRoom multiroom = MultiRoom(
       roomPeople: -1,
@@ -31,18 +34,18 @@ class MultiController extends GetxController {
       roomSecret: -1,
       roomTag: '',
       roomTime: -1,
-      roomTitle: '');
+      roomTitle: '',
+      roomSeq: -1);
 
   RxList<SimpleRoom> roomList = <SimpleRoom>[].obs;
   int recordSeq = -1;
   MultiRoomGameEnd gameEndInfo = MultiRoomGameEnd(
-      roomIdx: -1,
-      recordStartLocation: 'POINT(-1 -1)',
-      recordMode: '',
+      roomSeq: -1,
+      recordStartLocation: '',
       recordImage: '',
       recordDist: -1,
-      recordTime: Duration.zero,
-      recordEndLocation: 'Point(-1 -1)',
+      recordTime: 1,
+      recordEndLocation: '',
       recordWay: '',
       recordSpeed: '',
       recordHeartbeat: '',
@@ -61,6 +64,8 @@ class MultiController extends GetxController {
         roomSecret: info.roomSecret,
         roomMode: info.roomMode,
         nowRoomPeople: 1,
+        roomDist: 0,
+        roomTime: 0,
       );
       return info.roomIdx;
     } catch (e) {
@@ -70,22 +75,21 @@ class MultiController extends GetxController {
     }
   }
 
-  void getMultiRoomsByMode(int mode) async {
+  Future<void> getMultiRoomsByMode(int mode) async {
     print("call");
     try {
       roomList.clear();
       List temp = await repo.multiRoomGet(mode);
-      temp.forEach((item) {
+      for (var item in temp) {
         roomList.add(item);
-      });
-      print(roomList);
+      }
     } catch (e) {
       print(e);
     }
   }
 
   void sendStartLocation(
-      String lat, String long, int roomIdx, int people) async {
+      double lat, double long, int roomIdx, int people) async {
     try {
       recordSeq = await repo.sendStartLocation(lat, long, roomIdx, people);
       update();

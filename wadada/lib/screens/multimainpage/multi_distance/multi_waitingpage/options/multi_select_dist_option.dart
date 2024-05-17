@@ -29,7 +29,7 @@ class MultiSelectDistOption extends StatefulWidget {
 }
 
 class MultiSelectDistOptionState extends State<MultiSelectDistOption> {
-  double dist = 0.0;
+  int dist = 0;
   late int distselectnum = 0;
   late int peopleselectnum = 0;
   late int passwordselectnum = 0;
@@ -91,7 +91,7 @@ class MultiSelectDistOptionState extends State<MultiSelectDistOption> {
     }
 
     setState(() {});
-    dist = double.tryParse(value) ?? 0.0;
+    // dist = double.tryParse(value) ?? 0.0;
   }
 
   // 참여인원 에러 텍스트
@@ -104,7 +104,7 @@ class MultiSelectDistOptionState extends State<MultiSelectDistOption> {
     }
 
     setState(() {});
-    dist = double.tryParse(value) ?? 0.0;
+    // dist = double.tryParse(value) ?? 0.0;
   }
 
   // 비밀번호 에러 텍스트
@@ -119,7 +119,7 @@ class MultiSelectDistOptionState extends State<MultiSelectDistOption> {
     }
 
     setState(() {});
-    dist = double.tryParse(value) ?? 0.0;
+    // dist = double.tryParse(value) ?? 0.0;
   }
 
   // 해시태그 에러 텍스트
@@ -135,7 +135,7 @@ class MultiSelectDistOptionState extends State<MultiSelectDistOption> {
     }
 
     setState(() {});
-    dist = double.tryParse(value) ?? 0.0;
+    // dist = double.tryParse(value) ?? 0.0;
   }
 
   @override
@@ -212,8 +212,17 @@ class MultiSelectDistOptionState extends State<MultiSelectDistOption> {
                           onChanged: (value) {
                             setState(() {
                               distselectnum = int.tryParse(value) ?? 0;
-                              controller.multiroom.roomDist = distselectnum;
-                              print(controller.multiroom.roomDist);
+                              if (widget.option_dis == '거리') {
+                                controller.multiroom.roomDist = distselectnum;
+                                print('거리 ${controller.multiroom.roomDist}');
+                                print('거리 value $value');
+                              } else if (widget.option_dis == '시간') {
+                                controller.multiroom.roomTime = distselectnum;
+                                print('시간 ${controller.multiroom.roomDist}');
+                                print('시간 value $value');
+                              }
+                              // print('거리 ${controller.multiroom.roomDist}');
+                              // print('거리 value $value');
                               distupdateErrorText();
                             });
                           },

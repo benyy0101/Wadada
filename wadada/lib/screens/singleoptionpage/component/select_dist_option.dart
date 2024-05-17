@@ -18,7 +18,7 @@ class SelectDistOption extends StatefulWidget{
 }
 
 class SelectDistOptionState extends State<SelectDistOption> {
-  double dist = 0.0;
+  int dist = 0;
   int selectnum = 0;
   final TextEditingController controller = TextEditingController(text: "0");
   String? errorText;
@@ -36,7 +36,7 @@ class SelectDistOptionState extends State<SelectDistOption> {
     }
 
     setState(() {});
-    dist = double.tryParse(value) ?? 0.0;
+    // dist = double.tryParse(value) ?? 0.0;
     if (widget.onStateUpdated != null) {
       widget.onStateUpdated!(this);
     }

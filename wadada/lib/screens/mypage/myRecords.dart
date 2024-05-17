@@ -152,32 +152,35 @@ class MyRecords extends StatelessWidget {
                       style: mainTextStyle,
                     ),
                     SizedBox(height: 20),
-                    Row(
-                      children: [
-                        TimeContainer(splithours[0]),
-                        SizedBox(width: 5),
-                        TimeContainer(splithours[1]),
-                        SizedBox(width: 7),
-                        Text(':',
-                            style: TextStyle(
-                                color: GREEN_COLOR,
-                                fontSize: 30,
-                                fontWeight: FontWeight.bold)),
-                        SizedBox(width: 7),
-                        TimeContainer(splitminutes[0]),
-                        SizedBox(width: 5),
-                        TimeContainer(splitminutes[1]),
-                        SizedBox(width: 7),
-                        Text(':',
-                            style: TextStyle(
-                                color: GREEN_COLOR,
-                                fontSize: 30,
-                                fontWeight: FontWeight.bold)),
-                        SizedBox(width: 7),
-                        TimeContainer(splitseconds[0]),
-                        SizedBox(width: 5),
-                        TimeContainer(splitseconds[1]),
-                      ],
+                    Container(
+                      width: MediaQuery.of(context).size.width * 0.9,
+                      child: Row(
+                        children: [
+                          TimeContainer(splithours[0], context),
+                          SizedBox(width: 5),
+                          TimeContainer(splithours[1], context),
+                          SizedBox(width: 7),
+                          Text(':',
+                              style: TextStyle(
+                                  color: GREEN_COLOR,
+                                  fontSize: 30,
+                                  fontWeight: FontWeight.bold)),
+                          SizedBox(width: 7),
+                          TimeContainer(splitminutes[0], context),
+                          SizedBox(width: 5),
+                          TimeContainer(splitminutes[1], context),
+                          SizedBox(width: 7),
+                          Text(':',
+                              style: TextStyle(
+                                  color: GREEN_COLOR,
+                                  fontSize: 30,
+                                  fontWeight: FontWeight.bold)),
+                          SizedBox(width: 7),
+                          TimeContainer(splitseconds[0], context),
+                          SizedBox(width: 5),
+                          TimeContainer(splitseconds[1], context),
+                        ],
+                      ),
                     ),
                     SizedBox(
                       height: 40,
@@ -343,14 +346,14 @@ class ChartContainer extends StatelessWidget {
   }
 }
 
-Widget TimeContainer(String digit) {
+Widget TimeContainer(String digit, BuildContext context) {
   return Container(
     decoration: BoxDecoration(
       color: OATMEAL_COLOR,
       borderRadius: BorderRadius.circular(10),
     ),
-    width: 54,
-    height: 65,
+    width: MediaQuery.of(context).size.width * .12,
+    height: MediaQuery.of(context).size.height * .07,
     child: Center(
       child: Text(
         digit,

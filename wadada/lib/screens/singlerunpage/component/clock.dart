@@ -4,10 +4,11 @@ import 'package:flutter/services.dart';
 import 'package:wadada/common/const/colors.dart';
 import 'package:watch_connectivity/watch_connectivity.dart';
 
-class Clock extends StatefulWidget{
-  final double time;
+class Clock extends StatefulWidget {
+  final int time;
   final ValueNotifier<Duration> elapsedTimeNotifier;
-  const Clock({super.key, required this.time, required this.elapsedTimeNotifier});
+  final VoidCallback onTimerEnd;
+  const Clock({super.key, required this.time, required this.elapsedTimeNotifier, required this.onTimerEnd,});
 
   @override
   State<Clock> createState() => ClockState();
@@ -15,11 +16,12 @@ class Clock extends StatefulWidget{
 
 class ClockState extends State<Clock> {
   Duration _elapsed = Duration.zero;
-  ValueNotifier<Duration> elapsedTimeNotifier = ValueNotifier<Duration>(Duration.zero);
+  ValueNotifier<Duration> elapsedTimeNotifier =
+      ValueNotifier<Duration>(Duration.zero);
   ValueNotifier<Duration> endTimeNotifier = ValueNotifier(Duration.zero);
   Duration get elapsed => _elapsed;
   bool _isRunning = false;
-  
+
   List<String> savetimes = [];
   late Timer _timer;
 
@@ -40,16 +42,17 @@ class ClockState extends State<Clock> {
     if (widget.time > 0) {
       int timerDurationInSeconds = (widget.time * 60).round();
       _elapsed = Duration(seconds: timerDurationInSeconds);
-      
+
       _timer = Timer.periodic(Duration(milliseconds: 100), (timer) {
         if (_isRunning) {
           setState(() {
             _elapsed -= Duration(milliseconds: 100);
-            
+
             if (_elapsed <= Duration.zero) {
               _isRunning = false;
               _timer.cancel();
               _elapsed = Duration.zero;
+              widget.onTimerEnd();
             }
           });
         }
@@ -149,6 +152,7 @@ class ClockState extends State<Clock> {
                         _isRunning = false;
                         _elapsed = Duration.zero;
                         _timer.cancel();
+                        widget.onTimerEnd();
                     }
                 } else {
                     _elapsed += Duration(milliseconds: 100);
@@ -188,7 +192,8 @@ class ClockState extends State<Clock> {
       width: 40,
       height: 50,
       child: Center(
-        child: Text(digit,
+        child: Text(
+          digit,
           style: TextStyle(
             fontSize: 30,
             fontWeight: FontWeight.bold,
@@ -214,36 +219,29 @@ class ClockState extends State<Clock> {
     List<String> splitseconds = _splitTime(formattedSeconds);
 
     return Container(
+      width: MediaQuery.of(context).size.width * 0.9,
       child: Row(
         children: [
           TimeContainer(splithours[0]),
           SizedBox(width: 5),
           TimeContainer(splithours[1]),
-
           SizedBox(width: 7),
-          Text(':', 
-            style: TextStyle(
-              color: GREEN_COLOR,
-              fontSize: 25, 
-              fontWeight: FontWeight.bold
-            )
-          ),
+          Text(':',
+              style: TextStyle(
+                  color: GREEN_COLOR,
+                  fontSize: 30,
+                  fontWeight: FontWeight.bold)),
           SizedBox(width: 7),
-          
           TimeContainer(splitminutes[0]),
           SizedBox(width: 5),
           TimeContainer(splitminutes[1]),
-
           SizedBox(width: 7),
           Text(':',
-            style: TextStyle(
-              color: GREEN_COLOR,
-              fontSize: 25, 
-              fontWeight: FontWeight.bold
-            )
-          ),
+              style: TextStyle(
+                  color: GREEN_COLOR,
+                  fontSize: 30,
+                  fontWeight: FontWeight.bold)),
           SizedBox(width: 7),
-
           TimeContainer(splitseconds[0]),
           SizedBox(width: 5),
           TimeContainer(splitseconds[1]),

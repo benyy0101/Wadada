@@ -89,14 +89,14 @@ class ListTileWidget extends StatelessWidget {
     return Column(
       children: records.map<Widget>((simple) {
         return ListTile(
-            title: Text(simple.recordType),
+            title: Text(modeConverter(simple.recordType)),
             subtitle: Row(
               children: [
                 Text(typeConverter(simple.recordType)),
                 SizedBox(
                   width: 20.0,
                 ),
-                Text(simple.recordDist.toString() + " km"),
+                Text("${simple.recordDist} km"),
               ],
             ),
             trailing: IconButton(
@@ -117,6 +117,16 @@ class ListTileWidget extends StatelessWidget {
             ));
       }).toList(),
     );
+  }
+}
+
+String modeConverter(String target) {
+  if (target == '1') {
+    return '거리모드';
+  } else if (target == '2') {
+    return '시간모드';
+  } else {
+    return '마라톤';
   }
 }
 

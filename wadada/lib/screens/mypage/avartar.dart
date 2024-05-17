@@ -1,25 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:wadada/common/const/colors.dart';
 import 'package:percent_indicator/percent_indicator.dart';
+import 'package:wadada/controller/profileController.dart';
+import 'package:wadada/repository/profileRepo.dart';
 
-class avatarWidget extends StatelessWidget {
-  const avatarWidget({super.key});
+class AvatarWidget extends StatelessWidget {
+  const AvatarWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Column(
         mainAxisAlignment: MainAxisAlignment.start,
-        children: <Widget>[avatarContainer(), levelWidget()]);
+        children: const <Widget>[AvatarContainer(), LevelWidget()]);
   }
 }
 
-class avatarContainer extends StatelessWidget {
-  const avatarContainer({super.key});
+class AvatarContainer extends StatelessWidget {
+  const AvatarContainer({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-        height: 500,
+        height: MediaQuery.of(context).size.height * 0.5,
         color: Colors.white,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -37,23 +40,24 @@ class avatarContainer extends StatelessWidget {
   }
 }
 
-class levelWidget extends StatelessWidget {
-  const levelWidget({super.key});
+class LevelWidget extends StatelessWidget {
+  const LevelWidget({super.key});
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 200,
       width: MediaQuery.of(context).size.width * 0.9,
       child: Card(
         color: OATMEAL_COLOR,
-        child: Center(child: levelContainer()),
+        child: Center(child: LevelContainer()),
       ),
     );
   }
 }
 
-class levelContainer extends StatelessWidget {
-  const levelContainer({super.key});
+class LevelContainer extends StatelessWidget {
+  ProfileController controller =
+      Get.put(ProfileController(repo: ProfileRepository()));
+  LevelContainer({super.key});
   final int level = 123;
   final double percentage = 0.75;
   final int remaining = 29;
@@ -65,47 +69,36 @@ class levelContainer extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Text(
-              "Lv. " + level.toString(),
-              style: TextStyle(fontSize: 30),
-            ),
+            Obx(() {
+              return Text(
+                "Lv. ${controller.profile.value.memberLevel}",
+                style: TextStyle(fontSize: 30),
+              );
+            }),
             SizedBox(
               height: 20.0,
             ),
-            Row(
-              children: <Widget>[
-                LinearPercentIndicator(
-                  width: MediaQuery.of(context).size.width * 0.7,
-                  lineHeight: 14.0,
-                  percent: percentage,
-                  backgroundColor: Colors.white,
-                  progressColor: GREEN_COLOR,
-                  barRadius: Radius.circular(30),
-                ),
-                Text(
-                  (percentage * 100).round().toString() + " %",
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 20.0,
-            ),
-            Row(
-              children: [
-                Text(
-                  "다음 레벨까지 ",
-                  style: TextStyle(fontSize: 20),
-                ),
-                Text(
-                  remaining.toString(),
-                  style: TextStyle(fontSize: 20, color: GREEN_COLOR),
-                ),
-                Text(
-                  " 남았어요!",
-                  style: TextStyle(fontSize: 20),
-                ),
-              ],
-            )
+            Obx(() {
+              if (!controller.isFetching.value) {
+                return CircularProgressIndicator();
+              } else {
+                return Row(
+                  children: <Widget>[
+                    LinearPercentIndicator(
+                      width: MediaQuery.of(context).size.width * 0.7,
+                      lineHeight: 14.0,
+                      percent: controller.profile.value.memberExp / 100,
+                      backgroundColor: Colors.white,
+                      progressColor: GREEN_COLOR,
+                      barRadius: Radius.circular(30),
+                    ),
+                    Text(
+                      "${controller.profile.value.memberExp} %",
+                    ),
+                  ],
+                );
+              }
+            })
           ],
         ));
   }

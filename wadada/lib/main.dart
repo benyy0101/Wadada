@@ -8,8 +8,13 @@ import 'package:get/get_core/src/get_main.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:kakao_flutter_sdk_common/kakao_flutter_sdk_common.dart';
 import 'package:wadada/common/component/tabbars.dart';
+import 'package:wadada/controller/marathonController.dart';
+import 'package:wadada/controller/stompController.dart';
+import 'package:wadada/models/marathon.dart';
+import 'package:wadada/screens/firststartpage/firststartpage.dart';
 import 'package:wadada/screens/mainpage/layout.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:wadada/screens/marathonrunpage/marathonRun.dart';
 //import 'package:wadada/common/pages/mainpage.dart';
 import 'package:wadada/screens/mypage/layout.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -57,9 +62,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        fontFamily: 'pretendard',
-      ),
+      theme: ThemeData(fontFamily: "Pretendard"),
       home: MyHomePage(),
     );
   }
@@ -103,15 +106,31 @@ class _MyHomePageState extends State<MyHomePage> {
       });
     }
     // setState(() {
-    //   _homeWidget = MultiMain();
+    //   MarathonController marathonController = Get.put(MarathonController());
+    //   StompController stompController = Get.put(StompController(roomIdx: 100));
+    //   _homeWidget = MarathonRun(
+    //     time: -1,
+    //     dist: 10,
+    //     appKey: '',
+    //     controller: stompController,
+    //     marathonController: marathonController,
+    //     roomInfo: SimpleMarathon(
+    //         marathonSeq: -1,
+    //         marathonRound: -1,
+    //         marathonDist: 20,
+    //         marathonParticipate: 20,
+    //         marathonStart: DateTime.now(),
+    //         marathonEnd: DateTime.now(),
+    //         isDeleted: false),
+    //   );
     // });
-    // print(_homeWidget);
+    print(_homeWidget);
   }
 
   @override
   Widget build(BuildContext context) {
     return _homeWidget;
-    }
+  }
 }
 
 class MyHttpOverrides extends HttpOverrides {

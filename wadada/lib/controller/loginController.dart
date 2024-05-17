@@ -5,6 +5,7 @@ import 'package:wadada/repository/loginRepo.dart';
 import 'package:wadada/screens/multimainpage/multi_main.dart';
 import 'package:wadada/screens/newprofilepage/layout.dart';
 import 'package:wadada/screens/singlemainpage/single_main.dart';
+import 'package:wadada/screens/newprofilepage/profileReady.dart';
 
 class LoginController extends GetxController {
   final LoginRepository loginRepository;
@@ -32,7 +33,7 @@ class LoginController extends GetxController {
       await storage.write(key: 'kakaoEmail', value: loginInfo.kakao_email);
 
       if (loginInfo.kakao_nickname == '임시') {
-        Get.to(NewProfileLayout());
+        Get.to(ProfileReady());
       } else {
         Get.to(MainLayout());
       }
