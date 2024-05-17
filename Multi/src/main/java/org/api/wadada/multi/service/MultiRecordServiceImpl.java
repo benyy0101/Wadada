@@ -93,7 +93,7 @@ public class MultiRecordServiceImpl implements MultiRecordService {
 //        PointToStringConverter converter = new PointToStringConverter();
 //        Point startLocationPoint = converter.convertToEntityAttribute(gameEndReq.getRecordStartLocation());
 
-
+        multiRecordRepository.save(optional.get());
 
         return new GameEndRes(optional.get().getMultiRecordSeq());
     }
