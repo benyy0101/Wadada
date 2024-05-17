@@ -109,16 +109,19 @@ class _MultiRunState extends State<MultiRun> {
     });
 
     widget.controller.ranking.addListener(() {
-      rankingData = widget.controller.ranking.value;
-      updateRankingData(rankingData);
+      setState(() {
+        rankingData = widget.controller.ranking.value;
       });
+      updateRankingData(rankingData);
+      print('랭킹 데이터////////////////////// $rankingData');
+    });
     _subscribeToTotalDistance();
 
-    myMap.currentLocationNotifier.addListener(() {
-      if (myMap.currentLocationNotifier.value != null) {
-        updateFlagRanking(myMap.currentLocationNotifier.value);
-      }
-    });
+    // myMap.currentLocationNotifier.addListener(() {
+    //   if (myMap.currentLocationNotifier.value != null) {
+    //     updateFlagRanking(myMap.currentLocationNotifier.value);
+    //   }
+    // });
   }
 
   Future<void> updateFlagRanking(LatLng? currentLocation) async {
@@ -1006,6 +1009,8 @@ class _MultiRunState extends State<MultiRun> {
                                 final startIndex = pageIndex * 3;
                                 final endIndex = (startIndex + 3).clamp(0, rankingData!.length);
                                 final currentPageData = rankingData!.sublist(startIndex, endIndex);
+
+                                print('여기 잘 들어오는지 $rankingData');
 
                                 return Column(
                                   children: currentPageData.map((ranking) {

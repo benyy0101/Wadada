@@ -53,7 +53,15 @@ class _MultiRankState extends State<MultiRank> {
   void initState() {
     super.initState();
     loadNickname();  // 비동기 함수 호출
-    widget.controller.newclient.deactivate();
+    if (widget.controller.client.isActive) {
+      widget.controller.client.deactivate();
+      print('client 구독 끊음');
+    }
+
+    if (widget.controller.newclient.isActive) {
+      widget.controller.newclient.deactivate();
+      print('newclient 구독 끊음');
+    }
   }
 
   void _handleEndButtonPress(BuildContext context) {

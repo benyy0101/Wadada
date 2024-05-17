@@ -320,9 +320,10 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
             centerlong: centerlong,
           ),
         ),
-      ).then((_) {
-      controller.client.deactivate();
-      });
+      );
+      // ).then((_) {
+      //   controller.client.deactivate();
+      // });
     }
   }
 
