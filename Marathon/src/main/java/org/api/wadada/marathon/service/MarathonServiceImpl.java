@@ -128,6 +128,22 @@ public class MarathonServiceImpl implements MarathonService {
                 }, delay, TimeUnit.MILLISECONDS);
 
 
+
+
+
+
+                LocalDateTime now = LocalDateTime.now();
+                LocalDateTime scheduledTime = marathonCreateReq.getMarathonEnd();
+
+                // 현재 시간과 예정된 시간 사이의 차이(지연 시간)를 계산
+                long delay2 = ChronoUnit.MILLIS.between(now, scheduledTime);
+
+                // 지연 시간이 음수인 경우 (즉, 이미 지난 시간인 경우) 작업을 예약하지 않음
+                if (delay2 > 0) {
+                    scheduledExecutor.schedule(() -> stopPlayerRankUpdates(0), delay2, TimeUnit.MILLISECONDS);
+                }
+
+
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -146,6 +162,7 @@ public class MarathonServiceImpl implements MarathonService {
 
         MemberInfo memberInfo = MemberInfo.builder().MemberSeq(member.getMemberSeq())
                 .MemberName(member.getMemberNickName())
+                .image(member.getMemberProfileImage())
                 .registTime(LocalDateTime.now()).build();
 
         //마라톤 SEQ에 해당하는 게임정보 확인
