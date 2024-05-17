@@ -79,7 +79,11 @@ class _MarathonState extends State<MarathonRun> {
 
     // _initWebSocketListener();
 
-    myMap = MyMap(appKey: dotenv.env['APP_KEY']!);
+    myMap = MyMap(
+      appKey: dotenv.env['APP_KEY']!,
+      centerplace: LatLng(-1, -1),
+      moderoom: -1,
+    );
     onPageLoaded();
     // _onGameGoChanged();
 
@@ -141,6 +145,7 @@ class _MarathonState extends State<MarathonRun> {
         totalDistanceInt = totalDistance.round();
         double distanceInKm = totalDistance / 1000.0;
         formattedDistance = distanceInKm.toStringAsFixed(2);
+        stompController.dist = totalDistanceInt;
       });
     });
   }
@@ -161,10 +166,7 @@ class _MarathonState extends State<MarathonRun> {
         if (countdown <= 0) {
           timer.cancel();
           iscountdown = false;
-
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            _clockKey.currentState?.start();
-          });
+          _clockKey.currentState?.start();
         }
       });
     });
@@ -235,9 +237,6 @@ class _MarathonState extends State<MarathonRun> {
 
   // 009 controller
   Future<void> _sendRecordToServer() async {
-    final MultiController multiController = Get.put(
-        MultiController(repo: MultiRepository(provider: MultiProvider())));
-
     final startLocation = myMap.startLocation;
     final endLocation = myMap.endLocation;
 
@@ -252,32 +251,30 @@ class _MarathonState extends State<MarathonRun> {
     List<Map<String, double>> distanceSpeed = myMap.getdistanceSpeed();
     List<Map<String, double>> distancePace = myMap.getdistancePace();
 
+    MarathonController marathonController = Get.put(MarathonController());
+
     int totalDistanceInt = totalDistance.floor();
 
-    MultiRoomGameEnd gameEndData = MultiRoomGameEnd(
-      roomIdx: 1, // 수정 필요
-      recordImage: 'your_record_image',
-      recordDist: totalDistanceInt,
-      recordTime: intelapsedseconds,
-      recordStartLocation:
-          "POINT(${startLocation?.latitude} ${startLocation?.longitude})",
-      recordEndLocation:
-          "POINT(${endLocation?.latitude} ${endLocation?.longitude})",
-      recordWay: jsonEncode(coordinates),
-      recordSpeed: jsonEncode(distanceSpeed),
-      recordPace: jsonEncode(distancePace),
-      recordHeartbeat: jsonEncode(distancePace),
-      recordRank: 1, // 수정 필요
-    );
+    marathonController.marathon.value.marathonRecordDist = totalDistanceInt;
+    marathonController.marathon.value.marathonRecordEnd =
+        "POINT(${endLocation?.latitude} ${endLocation?.longitude})";
+    marathonController.marathon.value.marathonRecordStart =
+        "POINT(${startLocation?.latitude} ${startLocation?.longitude})";
+    marathonController.marathon.value.marathonRecordImage = 'your_record_image';
+    marathonController.marathon.value.marathonRecordTime = intelapsedseconds;
+    marathonController.marathon.value.marathonRecordHeartbeat =
+        jsonEncode(distancePace);
+    marathonController.marathon.value.marathonRecordPace =
+        jsonEncode(distancePace);
+    marathonController.marathon.value.marathonRecordSpeed =
+        jsonEncode(distanceSpeed);
 
-    multiController.gameEndInfo = gameEndData;
-    multiController.endGame();
+    marathonController.endMarathon();
   }
 
   void _handleEndButtonPress(BuildContext context) {
     StompController stompController =
         Get.put(StompController(roomIdx: widget.roomInfo.marathonSeq));
-    MarathonRepository repo = MarathonRepository();
     stompController.client.deactivate();
     // print(stompController.client.isActive);
     if (_clockKey.currentState != null) {
@@ -291,24 +288,8 @@ class _MarathonState extends State<MarathonRun> {
 
       Duration elapsedTime = Duration(seconds: elapsedSeconds.round());
 
-      // _sendRecordToServer();
-      Marathon result = Marathon(
-          marathonSeq: 0,
-          marathonRecordRank: 1,
-          marathonRecordStart: 'POINT(1 1)',
-          marathonRecordWay: '',
-          marathonRecordEnd: 'POINT(2 2)',
-          marathonRecordDist: totalDistanceInt,
-          marathonRecordTime: elapsedSeconds.toInt(),
-          marathonRecordImage: '',
-          marathonRecordPace: '',
-          marathonRecordMeanPace: -1,
-          marathonRecordSpeed: '',
-          marathonRecordMeanSpeed: -1,
-          marathonRecordHeartbeat: '',
-          marathonRecordMeanHeartbeat: -1,
-          marathonRecordIsWin: true);
-      repo.endMarathon(result);
+      _sendRecordToServer();
+
       print('스피드 - $distanceSpeed');
       print('페이스 - $distancePace');
 
@@ -446,6 +427,7 @@ class _MarathonState extends State<MarathonRun> {
         formattedDistance: double.parse(formattedDistance));
 
     Clock clockWidget = Clock(
+      onTimerEnd: () {},
       key: _clockKey,
       time: remainingTime,
       elapsedTimeNotifier: elapsedTimeNotifier,
@@ -688,115 +670,60 @@ class _MarathonState extends State<MarathonRun> {
                           : Column(
                               children: [
                                 Expanded(child: Obx(() {
-                                  return PageView.builder(
-                                    itemCount:
-                                        (stompController.rankingList!.length /
-                                                3)
-                                            .ceil(),
-                                    onPageChanged: (pageIndex) {
-                                      setState(() {
-                                        currentPageIndex = pageIndex;
-                                      });
-                                    },
-                                    itemBuilder: (context, pageIndex) {
-                                      final startIndex = pageIndex * 3;
-                                      final endIndex = (startIndex + 3).clamp(0,
-                                          stompController.rankingList!.length);
-                                      final currentPageData = stompController
-                                          .rankingList!
-                                          .sublist(startIndex, endIndex);
-
-                                      return Column(
-                                        children:
-                                            currentPageData.map((ranking) {
-                                          return Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: Row(
-                                              children: [
-                                                Text(
-                                                  '${ranking.memberRank}',
-                                                  style: TextStyle(
-                                                    color: DARK_GREEN_COLOR,
-                                                    fontSize: 23,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
-                                                SizedBox(width: 20),
-                                                if (ranking
-                                                    .memberImage.isNotEmpty)
-                                                  CircleAvatar(
-                                                    backgroundImage:
-                                                        NetworkImage(ranking
-                                                            .memberImage),
-                                                    radius: 20,
-                                                  )
-                                                else
-                                                  CircleAvatar(
-                                                    backgroundColor:
-                                                        Colors.grey,
-                                                    radius: 20,
-                                                    child: Icon(
-                                                      Icons.person,
-                                                      color: Colors.white,
-                                                    ),
-                                                  ),
-                                                SizedBox(width: 15),
-                                                Text(
-                                                  ranking.memberName,
-                                                  style: TextStyle(
-                                                    color: Colors.black,
-                                                    fontSize: 20,
-                                                  ),
-                                                ),
-                                                Spacer(),
-                                                Text(
-                                                  '${(ranking.memberDist / 1000).toStringAsFixed(2)} km',
-                                                  style: TextStyle(
-                                                    color: DARK_GREEN_COLOR,
-                                                    fontSize: 23,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
-                                              ],
+                                  return Column(
+                                    children: stompController.rankingList
+                                        .map((ranking) {
+                                      return Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Row(
+                                          children: [
+                                            Text(
+                                              '${ranking.memberRank}',
+                                              style: TextStyle(
+                                                color: DARK_GREEN_COLOR,
+                                                fontSize: 23,
+                                                fontWeight: FontWeight.bold,
+                                              ),
                                             ),
-                                          );
-                                        }).toList(),
-                                      );
-                                    },
-                                  );
-                                })),
-
-                                // 페이지 인덱스를 나타내는 동그라미들
-                                Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 10),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: List.generate(
-                                        (stompController.rankingList!.length /
-                                                3)
-                                            .ceil(), (index) {
-                                      return GestureDetector(
-                                        onTap: () {
-                                          setState(() {
-                                            currentPageIndex = index;
-                                          });
-                                        },
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(4.0),
-                                          child: Icon(
-                                            Icons.circle,
-                                            size: 10,
-                                            color: currentPageIndex == index
-                                                ? GREEN_COLOR
-                                                : Colors
-                                                    .grey, // 현재 페이지에 해당하는 동그라미는 파란색으로, 그 외에는 회색으로 표시
-                                          ),
+                                            SizedBox(width: 20),
+                                            if (ranking.memberImage.isNotEmpty)
+                                              CircleAvatar(
+                                                backgroundImage: NetworkImage(
+                                                    ranking.memberImage),
+                                                radius: 20,
+                                              )
+                                            else
+                                              CircleAvatar(
+                                                backgroundColor: Colors.grey,
+                                                radius: 20,
+                                                child: Icon(
+                                                  Icons.person,
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                            SizedBox(width: 15),
+                                            Text(
+                                              ranking.memberName,
+                                              style: TextStyle(
+                                                color: Colors.black,
+                                                fontSize: 20,
+                                              ),
+                                            ),
+                                            Spacer(),
+                                            Text(
+                                              '${(ranking.memberDist / 1000).toStringAsFixed(2)} km',
+                                              style: TextStyle(
+                                                color: DARK_GREEN_COLOR,
+                                                fontSize: 23,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       );
-                                    }),
-                                  ),
-                                ),
+                                    }).toList(),
+                                  );
+                                })),
                               ],
                             ),
                     ),

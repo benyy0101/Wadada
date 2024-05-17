@@ -39,6 +39,8 @@ void main() async {
     javaScriptAppKey: javaScriptAppKey,
   );
 
+  print(await KakaoSdk.origin); 
+
   HttpOverrides.global = MyHttpOverrides();
 
   runApp(MyApp());

@@ -65,4 +65,20 @@ class MarathonRepository extends AbstractMarathonRepository {
     print(res);
     return res.data["marathonRecordSeq"];
   }
+
+  Future<void> udpateDistance(
+      int roomSeq, String userName, int userDist, int userTime) async {
+    print("SENDING");
+    print(roomSeq);
+    print(userName);
+    print(userDist);
+    print(userTime);
+    DistanceRecord record = DistanceRecord(
+        roomSeq: roomSeq,
+        userName: userName,
+        userDist: userDist,
+        userTime: userTime);
+    final res = await provider.distSave(record);
+    print(res);
+  }
 }

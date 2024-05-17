@@ -37,7 +37,11 @@ class MyMap extends StatefulWidget {
     return distancePace;
   }
 
-  MyMap({super.key, required this.appKey, required this.centerplace, required this.moderoom});
+  MyMap(
+      {super.key,
+      required this.appKey,
+      required this.centerplace,
+      required this.moderoom});
 
   void _updateTotalDistance(double distance) {
     totalDistanceNotifier.value += distance;
@@ -124,7 +128,8 @@ class MyMapState extends State<MyMap> {
           }
 
           widget.endLocation = LatLng(currentLatitude!, currentLongitude!);
-          widget.currentLocationNotifier.value = LatLng(currentLatitude!, currentLongitude!);
+          widget.currentLocationNotifier.value =
+              LatLng(currentLatitude!, currentLongitude!);
 
           if (previousLatitude != null && previousLongitude != null) {
             double distance = Geolocator.distanceBetween(
@@ -189,7 +194,7 @@ class MyMapState extends State<MyMap> {
             offsetX: 15, // width의 절반 값을 지정합니다.
             offsetY: 15,
             markerImageSrc:
-              'https://github.com/jjeong41/t/assets/103355863/5ff2a217-8cbc-4e41-b6c2-0ff12103b40b',
+                'https://github.com/jjeong41/t/assets/103355863/5ff2a217-8cbc-4e41-b6c2-0ff12103b40b',
             zIndex: 15,
           ));
 
@@ -346,7 +351,7 @@ class MyMapState extends State<MyMap> {
               offsetX: 15,
               offsetY: 44,
               markerImageSrc:
-                'https://github.com/jjeong41/t/assets/103355863/37743a13-bbd0-4744-9e7c-7ef262fc14c0',
+                  'https://github.com/jjeong41/t/assets/103355863/37743a13-bbd0-4744-9e7c-7ef262fc14c0',
               zIndex: 10,
             ));
           }

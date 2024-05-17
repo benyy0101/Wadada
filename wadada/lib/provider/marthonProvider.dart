@@ -69,7 +69,13 @@ class MarathonProvider {
   //MARAHTON-005:
   Future<Response<dynamic>> marathonEnd(Marathon data) async {
     await setAuth();
-    final response = await _dio.post('/result', data: data);
+    final response = await _dio.post('/result', data: data.toJson());
+    return response;
+  }
+
+  Future<Response<dynamic>> distSave(DistanceRecord data) async {
+    await setAuth();
+    final response = await _dio.post('/post', data: data.toJson());
     return response;
   }
 }
