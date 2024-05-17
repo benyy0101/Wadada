@@ -68,10 +68,12 @@ class _MultiRunState extends State<MultiRun> {
   int totalDistanceInt = 0;
   String formattedDistance = '0.00';
   List<dynamic>? rankingData = [];
+  List<dynamic>? flagranking = [];
   ValueNotifier<Duration> elapsedTimeNotifier = ValueNotifier<Duration>(Duration.zero);
   final GlobalKey<ClockState> _clockKey = GlobalKey<ClockState>();
   late Clock clock;
   late MyMap myMap;
+  final GlobalKey<MyMapState> myMapStateKey = GlobalKey<MyMapState>();
   late dynamic unsubscribeFn;
 
   bool allDataReceived = false;
@@ -89,12 +91,11 @@ class _MultiRunState extends State<MultiRun> {
   void initState() {
     super.initState();
 
-    print('설정한 거리 ${widget.dist}');
     int moderoom = widget.roomInfo.roomMode;
 
     // _initWebSocketListener();
 
-    myMap = MyMap(appKey: widget.appKey, centerplace: LatLng(widget.centerlat, widget.centerlong), moderoom: moderoom);
+    myMap = MyMap(appKey: widget.appKey, key: myMapStateKey, centerplace: LatLng(widget.centerlat, widget.centerlong), moderoom: moderoom);
     onPageLoaded();
     // _onGameGoChanged();
     
@@ -102,29 +103,99 @@ class _MultiRunState extends State<MultiRun> {
     startGameGoTimer();
     print('ㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠ: ${widget.controller.gameStartResponse.value}');
 
-    clock = Clock(key: _clockKey, time: widget.time, elapsedTimeNotifier: elapsedTimeNotifier,);
+    clock = Clock(key: _clockKey, time: widget.time, elapsedTimeNotifier: elapsedTimeNotifier, onTimerEnd: _onTimerEnd,);
 
     widget.controller.requestinfo.addListener(() {
       sendrequestInfo();
     });
 
-    widget.controller.ranking.addListener(() {
-      setState(() {
-        rankingData = widget.controller.ranking.value;
+    if (widget.roomInfo.roomMode == 1) {
+      widget.controller.ranking.addListener(() {
+        setState(() {
+          rankingData = widget.controller.ranking.value;
+        });
+        updateRankingData(rankingData);
+        // print('랭킹 데이터////////////////////// $rankingData');
       });
-      updateRankingData(rankingData);
-      print('랭킹 데이터////////////////////// $rankingData');
-    });
+    }
     _subscribeToTotalDistance();
 
-    // myMap.currentLocationNotifier.addListener(() {
-    //   if (myMap.currentLocationNotifier.value != null) {
-    //     updateFlagRanking(myMap.currentLocationNotifier.value);
-    //   }
-    // });
+    if (widget.roomInfo.roomMode == 2) {
+      widget.controller.ranking.addListener(() {
+        setState(() {
+          rankingData = widget.controller.ranking.value;
+        });
+        // print('위젯 타임 ${widget.time}');
+        // print('현재 시간 ${elapsedTimeNotifier.value}');
+        // print('시간 모드 랭킹 데이터////////////////////// $rankingData');
+      });
+    }
+
+    if (widget.roomInfo.roomMode == 3) {
+      myMap.currentLocationNotifier.addListener(() {
+        if (myMap.currentLocationNotifier.value != null) {
+          setState(() {
+            firstflag(myMap.currentLocationNotifier.value);
+          });
+        }
+      });
+
+      widget.controller.flagend.addListener(() {
+        setState(() {
+          flagranking = widget.controller.flagend.value;
+        });
+        updateFlagRanking(flagranking);
+      });
+    }
+
+    myMapStateKey.currentState?.startGame();
   }
 
-  Future<void> updateFlagRanking(LatLng? currentLocation) async {
+  void _onTimerEnd() {
+    updateRanking2Data(rankingData);
+  }
+
+  void updateFlagRanking(List<dynamic>? newFlagData) async {
+    if (newFlagData == null || newFlagData.isEmpty) return;
+
+    final storage = FlutterSecureStorage();
+    String? username1 = await storage.read(key: 'kakaoNickname');
+    final myRank = rankingData!.indexWhere((member) => member['memberNickname'] == username1);
+    List<dynamic>? endranking = newFlagData;
+
+    double elapsedSeconds = _clockKey.currentState!.getElapsedSeconds();
+    _clockKey.currentState!.setRunning(false);
+
+    List<LatLng> coordinates = myMap.getCoordinates();
+    List<Map<String, double>> distanceSpeed = myMap.getdistanceSpeed();
+    List<Map<String, double>> distancePace = myMap.getdistancePace();
+
+    Duration elapsedTime = Duration(seconds: elapsedSeconds.round());
+    String formattedElapsedTime = formatElapsedTime(elapsedTime);
+    _sendRecordToServer();
+    myMapStateKey.currentState?.endGame();
+
+    // 게임 결과 페이지로 이동
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => MultiRank(
+            elapsedTime: elapsedTime,
+            coordinates: coordinates,
+            startLocation: coordinates.first,
+            endLocation: coordinates.last,
+            totaldist: formattedDistance,
+            distanceSpeed: distanceSpeed,
+            distancePace: distancePace,
+            myRank: myRank+1,
+            endRank: endranking,
+            controller: widget.controller,
+        ),
+      ),
+    );
+  }
+
+  void firstflag(LatLng? currentLocation) async {
       double distance = Geolocator.distanceBetween(
         currentLocation!.latitude,
         currentLocation.longitude,
@@ -167,12 +238,51 @@ class _MultiRunState extends State<MultiRun> {
       }
     }
 
+  void updateRanking2Data(List<dynamic>? newRankingData) async {
+    if (newRankingData == null || newRankingData.isEmpty) return;
+
+    final storage = FlutterSecureStorage();
+    String? username1 = await storage.read(key: 'kakaoNickname');
+    final myRank = rankingData!.indexWhere((member) => member['memberNickname'] == username1);
+    List<dynamic>? endranking = newRankingData;
+
+    double elapsedSeconds = _clockKey.currentState!.getElapsedSeconds();
+    _clockKey.currentState!.setRunning(false);
+
+    List<LatLng> coordinates = myMap.getCoordinates();
+    List<Map<String, double>> distanceSpeed = myMap.getdistanceSpeed();
+    List<Map<String, double>> distancePace = myMap.getdistancePace();
+
+    Duration elapsedTime = Duration(seconds: elapsedSeconds.round());
+    String formattedElapsedTime = formatElapsedTime(elapsedTime);
+    _sendRecordToServer();
+    myMapStateKey.currentState?.endGame();
+
+    // 게임 결과 페이지로 이동
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => MultiRank(
+            elapsedTime: elapsedTime,
+            coordinates: coordinates,
+            startLocation: coordinates.first,
+            endLocation: coordinates.last,
+            totaldist: formattedDistance,
+            distanceSpeed: distanceSpeed,
+            distancePace: distancePace,
+            myRank: myRank+1,
+            endRank: endranking,
+            controller: widget.controller,
+        ),
+      ),
+    );
+  }
+
 
   void updateRankingData(List<dynamic>? newRankingData) async {
     if (newRankingData == null || newRankingData.isEmpty) return;
 
     final exceedingMembers = rankingData!.where((member) => member['memberDist'] >= (widget.dist * 1000)).toList();
-    print('거리 초과하는 사람 $exceedingMembers');
 
     if (exceedingMembers.isNotEmpty) {
       final storage = FlutterSecureStorage();
@@ -190,6 +300,7 @@ class _MultiRunState extends State<MultiRun> {
       Duration elapsedTime = Duration(seconds: elapsedSeconds.round());
       String formattedElapsedTime = formatElapsedTime(elapsedTime);
       _sendRecordToServer();
+      myMapStateKey.currentState?.endGame();
 
       // 게임 결과 페이지로 이동
       Navigator.push(
@@ -308,6 +419,8 @@ class _MultiRunState extends State<MultiRun> {
   void dispose() {
     stompClient.deactivate();
     countdownTimer?.cancel();
+    myMapStateKey.currentState?.endGame();
+    myMapStateKey.currentState?.dispose();
     // _requestinfoSubscription.cancel();
     super.dispose();
   }
@@ -576,6 +689,7 @@ class _MultiRunState extends State<MultiRun> {
 
         print('스피드 - $distanceSpeed');
         print('페이스 - $distancePace');
+        myMapStateKey.currentState?.endGame();
 
         Navigator.push(
           context,
@@ -710,32 +824,37 @@ class _MultiRunState extends State<MultiRun> {
 
     if (widget.dist > 0) {
         progressBar = DistBar(dist: widget.dist, formattedDistance: double.parse(formattedDistance));
-    } else if (widget.time > 0) {
-        double elapsedSeconds = _clockKey.currentState?.getElapsedSeconds() ?? 0.0;
-        double elapsedTimeInSeconds = elapsedSeconds;
-
-        progressBar = ValueListenableBuilder<Duration>(
-            valueListenable: elapsedTimeNotifier,
-            builder: (context, elapsedDuration, _) {
-                // Convert Duration to double
-                double elapsedTimeInSeconds = elapsedDuration.inSeconds.toDouble();
-                
-                // Pass the elapsed time in seconds to TimeBar
-                return TimeBar(
-                    initialTime: widget.time,
-                    elapsedTime: elapsedTimeInSeconds,
-                );
-            },
-        );
     }
+    // } else if (widget.time > 0) {
+    //     double elapsedSeconds = _clockKey.currentState?.getElapsedSeconds() ?? 0.0;
+    //     double elapsedTimeInSeconds = elapsedSeconds;
+
+    //     progressBar = ValueListenableBuilder<Duration>(
+    //         valueListenable: elapsedTimeNotifier,
+    //         builder: (context, elapsedDuration, _) {
+    //             // Convert Duration to double
+    //             double elapsedTimeInSeconds = elapsedDuration.inSeconds.toDouble();
+                
+    //             // Pass the elapsed time in seconds to TimeBar
+    //             return TimeBar(
+    //                 initialTime: widget.time,
+    //                 elapsedTime: elapsedTimeInSeconds,
+    //             );
+    //         },
+    //     );
+    // }
 
     Clock clockWidget = Clock(
         key: _clockKey,
         time: widget.time,
         elapsedTimeNotifier: elapsedTimeNotifier,
+        onTimerEnd: _onTimerEnd,
     );
 
-    return Scaffold(
+    return PopScope(
+      canPop: false,
+      child: Stack(
+      children: [Scaffold(
         backgroundColor: Colors.white,
         // appBar: isLoading? null : AppBar(
         appBar: (!isLoading && !iscountdown)? AppBar(
@@ -1094,12 +1213,15 @@ class _MultiRunState extends State<MultiRun> {
               ],
             ),
           ),
+          ],
+        ),
+      ),
 
           if (isLoading)
             Positioned.fill(
-              child: Container(
-                color: OATMEAL_COLOR,
-                child: Center(
+              child: Scaffold(
+                backgroundColor: OATMEAL_COLOR,
+                body: Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -1115,9 +1237,9 @@ class _MultiRunState extends State<MultiRun> {
 
           if (iscountdown)
             Positioned.fill(
-              child: Container(
-                color: OATMEAL_COLOR,
-                child: Center(
+              child: Scaffold(
+                backgroundColor: OATMEAL_COLOR,
+                body: Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -1147,7 +1269,7 @@ class _MultiRunState extends State<MultiRun> {
                 ),
               ),
             ),
-          ]
+        ]
       )
     );
   }
