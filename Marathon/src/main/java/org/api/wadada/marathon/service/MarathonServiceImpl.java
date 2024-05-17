@@ -242,6 +242,7 @@ public class MarathonServiceImpl implements MarathonService {
         MarathonRoomManager marathonRoomManager = marathonGameManager.GetMarathonRoomManager();
         marathonRoomManager.sortMember();
         marathonRoomManager.makeSentence();
+        System.out.println(marathonRoomManager.getRooms().get(0).getSentence());
         marathonRoomManager.sendEndMessage();
     }
     // 종료 조건
