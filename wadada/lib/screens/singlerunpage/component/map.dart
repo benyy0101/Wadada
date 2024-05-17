@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:wadada/common/const/colors.dart';
+import 'package:wadada/models/multiroom.dart';
 
 class MyMap extends StatefulWidget {
   // const SingleFreeRun({super.key, required this.time, required this.dist});
@@ -11,6 +12,8 @@ class MyMap extends StatefulWidget {
   LatLng? startLocation;
   LatLng? endLocation;
   List<LatLng> coordinates = [];
+  LatLng centerplace;
+  final int moderoom;
 
   List<LatLng> getCoordinates() {
     return coordinates;
@@ -21,6 +24,7 @@ class MyMap extends StatefulWidget {
   ValueNotifier<double> paceNotifier = ValueNotifier<double>(0.0);
   ValueNotifier<LatLng?> startLocationNotifier = ValueNotifier<LatLng?>(null);
   ValueNotifier<LatLng?> endLocationNotifier = ValueNotifier<LatLng?>(null);
+  ValueNotifier<LatLng?> currentLocationNotifier = ValueNotifier<LatLng?>(null);
 
   List<Map<String, double>> distanceSpeed = [];
   List<Map<String, double>> distancePace = [];
@@ -33,7 +37,7 @@ class MyMap extends StatefulWidget {
     return distancePace;
   }
 
-  MyMap({super.key, required this.appKey});
+  MyMap({super.key, required this.appKey, required this.centerplace, required this.moderoom});
 
   void _updateTotalDistance(double distance) {
     totalDistanceNotifier.value += distance;
@@ -42,12 +46,12 @@ class MyMap extends StatefulWidget {
   @override
   State<MyMap> createState() => MyMapState();
 
-  void disposeState(GlobalKey<MyMapState> key) {
-    final MyMapState? state = key.currentState;
-    print("dispose");
-    print(state);
-    state?.dispose();
-  }
+  // void disposeState(GlobalKey<MyMapState> key) {
+  //   final MyMapState? state = key.currentState;
+  //   print("dispose");
+  //   print(state);
+  //   state?.dispose();
+  // }
 }
 
 class MyMapState extends State<MyMap> {
@@ -119,6 +123,7 @@ class MyMapState extends State<MyMap> {
           }
 
           widget.endLocation = LatLng(currentLatitude!, currentLongitude!);
+          widget.currentLocationNotifier.value = LatLng(currentLatitude!, currentLongitude!);
 
           if (previousLatitude != null && previousLongitude != null) {
             double distance = Geolocator.distanceBetween(
@@ -184,7 +189,7 @@ class MyMapState extends State<MyMap> {
             offsetY: 15,
             markerImageSrc:
               'https://github.com/jjeong41/t/assets/103355863/5ff2a217-8cbc-4e41-b6c2-0ff12103b40b',
-            zIndex: 10,
+            zIndex: 15,
           ));
           
 
@@ -293,6 +298,7 @@ class MyMapState extends State<MyMap> {
             markerImageSrc:
                 // 'https://w7.pngwing.com/pngs/96/889/png-transparent-marker-map-interesting-places-the-location-on-the-map-the-location-of-the-thumbnail.png',
                 'https://github.com/jjeong41/t/assets/103355863/955c2700-e829-426d-a4a0-4806d3f5c085',
+            zIndex: 12,
           ));
 
           // markers.add(Marker(
@@ -306,6 +312,20 @@ class MyMapState extends State<MyMap> {
           //     // 'https://w7.pngwing.com/pngs/96/889/png-transparent-marker-map-interesting-places-the-location-on-the-map-the-location-of-the-thumbnail.png',
           //     'https://github.com/jjeong41/t/assets/103355863/955c2700-e829-426d-a4a0-4806d3f5c085',
           // ));
+
+          if (widget.moderoom == 3) {
+            markers.add(Marker(
+              markerId: 'flag',
+              latLng: widget.centerplace,
+              width: 50,
+              height: 54,
+              offsetX: 15,
+              offsetY: 44,
+              markerImageSrc:
+                'https://github.com/jjeong41/t/assets/103355863/37743a13-bbd0-4744-9e7c-7ef262fc14c0',
+              zIndex: 10,
+            ));
+          }
 
           polylines.add(
             Polyline(

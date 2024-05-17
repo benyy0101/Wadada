@@ -40,7 +40,7 @@ class MultiController extends GetxController {
   RxList<SimpleRoom> roomList = <SimpleRoom>[].obs;
   int recordSeq = -1;
   MultiRoomGameEnd gameEndInfo = MultiRoomGameEnd(
-      roomIdx: -1,
+      roomSeq: -1,
       recordStartLocation: '',
       recordImage: '',
       recordDist: -1,

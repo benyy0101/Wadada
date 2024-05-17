@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:wadada/common/component/tabbars.dart';
 import 'package:wadada/common/const/colors.dart';
 import 'package:wadada/controller/stompController.dart';
 import 'package:wadada/screens/mainpage/layout.dart';
@@ -52,7 +53,15 @@ class _MultiRankState extends State<MultiRank> {
   void initState() {
     super.initState();
     loadNickname();  // 비동기 함수 호출
-    widget.controller.newclient.deactivate();
+    if (widget.controller.client.isActive) {
+      widget.controller.client.deactivate();
+      print('client 구독 끊음');
+    }
+
+    if (widget.controller.newclient.isActive) {
+      widget.controller.newclient.deactivate();
+      print('newclient 구독 끊음');
+    }
   }
 
   void _handleEndButtonPress(BuildContext context) {
@@ -158,7 +167,7 @@ class _MultiRankState extends State<MultiRank> {
               SizedBox(height: 20),
               GestureDetector(
                   onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => SingleMain()));
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => MainLayout()));
                   },
                   child: Container(
                     width:double.maxFinite,

@@ -4,6 +4,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 // import 'package:flutter/rendering.dart';
 import 'package:wadada/common/const/colors.dart';
+import 'package:wadada/models/multiroom.dart';
 import 'package:wadada/screens/singleresultpage/singleresultpage.dart';
 
 import 'package:wadada/screens/singlerunpage/component/clock.dart';
@@ -58,6 +59,8 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
     myMap = MyMap(
       appKey: widget.appKey,
       key: myMapStateKey,
+      centerplace: LatLng(0.0, 0.0),
+      moderoom: -1,
     );
 
     myMap.startLocationNotifier.addListener(() {
@@ -214,6 +217,7 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
 
     // 평균 속도 계산
     double calculateAverageSpeed(List<Map<String, double>> distanceSpeed) {
+      if (distanceSpeed.isEmpty) return 0.0;
       double totalSpeed = 0.0;
       for (Map<String, double> entry in distanceSpeed) {
         totalSpeed += entry['speed'] ?? 0.0;
@@ -224,6 +228,7 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
 
     // 평균 페이스 계산
     double calculateAveragePace(List<Map<String, double>> distancePace) {
+      if (distancePace.isEmpty) return 0.0;
       double totalPace = 0.0;
       for (Map<String, double> entry in distancePace) {
         totalPace += entry['pace'] ?? 0.0;
@@ -246,21 +251,21 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
     // averagePaceInSecondsPerKm = double.parse(averagePaceInSecondsPerKm.toStringAsFixed(2)) * 1000;
     // double formattedDistanceInMeters = double.parse(formattedDistance) * 1000;
 
-    if (averageSpeed.isNaN || averageSpeed.isInfinite) {
-      averageSpeed = 0.0; // Set a default value or handle the NaN case
-    } else {
-      averageSpeed = double.parse(averageSpeed.toStringAsFixed(2)) * 1000;
-    }
+    // if (averageSpeed.isNaN || averageSpeed.isInfinite) {
+    //   averageSpeed = 0.0; // Set a default value or handle the NaN case
+    // } else {
+    //   averageSpeed = double.parse(averageSpeed.toStringAsFixed(2)) * 1000;
+    // }
 
-    if (averagePaceInSecondsPerKm.isNaN ||
-        averagePaceInSecondsPerKm.isInfinite) {
-      averagePaceInSecondsPerKm =
-          0.0; // Set a default value or handle the NaN case
-    } else {
-      // You can uncomment this line if you want to handle pace as well
-      averagePaceInSecondsPerKm =
-          double.parse(averagePaceInSecondsPerKm.toStringAsFixed(2)) * 1000;
-    }
+    // if (averagePaceInSecondsPerKm.isNaN ||
+    //     averagePaceInSecondsPerKm.isInfinite) {
+    //   averagePaceInSecondsPerKm =
+    //       0.0; // Set a default value or handle the NaN case
+    // } else {
+    //   // You can uncomment this line if you want to handle pace as well
+    //   averagePaceInSecondsPerKm =
+    //       double.parse(averagePaceInSecondsPerKm.toStringAsFixed(2)) * 1000;
+    // }
 
 // Convert to integers
     int intaveragespeed = averageSpeed.toInt();
