@@ -168,7 +168,7 @@ public class RoomServiceImpl implements RoomService {
         boolean isManager = roomDto.removeMember(member.getMemberId());
 
         //방장이면 방 터트리기
-        if (isManager) {
+        if (roomDto.getMemberList().isEmpty()) {
             // 해당 방 멤버 삭제하고 비우기
             roomManager.removeRoom(roomIdx);
             // db에 삭제 요청 날리기
@@ -181,6 +181,13 @@ public class RoomServiceImpl implements RoomService {
             HashMap<Integer, List<RoomMemberRes>> resultMap = new HashMap<>();
             resultMap.put(roomIdx, new ArrayList<>());
             return resultMap;
+        }
+        else{
+            if(isManager){
+                Optional<RoomMemberRes> newManager = roomDto.getMembers().values().stream().findFirst();
+                newManager.ifPresent(RoomMemberRes::isNewManager);
+            }
+
         }
 
         List<RoomMemberRes> memberResList = roomDto.getMemberList();
