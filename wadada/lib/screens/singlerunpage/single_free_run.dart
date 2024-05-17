@@ -1,5 +1,10 @@
 import 'dart:async';
+// import 'dart:html';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:watch_connectivity/watch_connectivity.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 // import 'package:flutter/rendering.dart';
@@ -49,12 +54,33 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
   late Clock clock;
 
   late MyMap myMap;
+
+  // 워치랑
+  final WatchConnectivityBase _watch = WatchConnectivity();
+  final MethodChannel channel = MethodChannel('watch_connectivity');
+  var _supported = false;
+  var _paired = false;
+  var _reachable = false;
+  bool _connected = false;
+  final _log = <String>[];
+  String formattedPace = '';
+  // 마지막으로 전송된 페이스 값
+  String _lastSentPace = '';
+
+  // 워치에서 심박수 가져와
+
+
+
+
   final GlobalKey<MyMapState> myMapStateKey = GlobalKey<MyMapState>();
   @override
   void initState() {
     super.initState();
 
     startTimers();
+    // 여기서 슛?
+    initPlatformState();
+    
 
     myMap = MyMap(
       appKey: widget.appKey,
@@ -79,8 +105,100 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
       onTimerEnd: _onTimerEnd,
     );
     _subscribeToTotalDistance();
+    requestPermissions();
     myMapStateKey.currentState?.startGame();
     // sendLocationToServer();
+    // 워치 초기화
+    _initWear();
+    myMap.paceNotifier.addListener(_onPaceUpdated);
+  }
+
+
+  // 워치 관련코드
+  void _initWear() {
+    _watch.messageStream.listen((message) => setState(() {
+      _connected = true;
+    }));
+  }
+
+  void sendMessage(formattedPace) {
+    final message = {
+      'formattedPace': formattedPace,
+      // 'splitHours': splitHours,
+      // 'splitMinutes': splitMinutes,
+      // 'splitSeconds': splitSeconds,
+     
+    };
+    _watch.sendMessage(message);
+    setState(() => _log.add('메세지: $message'));
+
+  }
+
+  void sendContext(formattedPace) {
+    final context = {
+      'formattedPace': formattedPace,
+
+    };
+    _watch.updateApplicationContext(context);
+    setState(() => _log.add('보내진 context: $context'));
+  }
+
+  void initPlatformState() async {
+    _supported = await _watch.isSupported;
+    _paired = await _watch.isPaired;
+    _reachable = await _watch.isReachable;
+    setState(() {
+
+    });
+  }
+
+  // 워치 권한 허용 관련 코드
+  void requestPermissions() async {
+    Map<Permission, PermissionStatus> statuses = await [
+      Permission.bluetooth,
+      Permission.location,
+      Permission.bluetoothScan,
+      Permission.bluetoothConnect,
+      Permission.bluetoothAdvertise,
+    ].request();
+
+    if (statuses[Permission.bluetooth]?.isGranted == true &&
+        statuses[Permission.location]?.isGranted == true &&
+        statuses[Permission.bluetoothScan]?.isGranted == true &&
+        statuses[Permission.bluetoothConnect]?.isGranted == true &&
+        statuses[Permission.bluetoothAdvertise]?.isGranted == true) {
+      scanForDevices();
+    } else {
+      print("Permissions not granted.");
+    }
+  }
+
+  void scanForDevices() async {
+    FlutterBluePlus.startScan(timeout: Duration(seconds: 5));
+    try {
+      // Get devices connected to the system
+      List<BluetoothDevice> devices = await FlutterBluePlus.systemDevices;
+
+      if (devices.isEmpty) {
+        print("No system devices found.");
+      } else {
+        for (BluetoothDevice device in devices) {
+          print("System device: ${device.advName} (ID: ${device.platformName})");
+        }
+      }
+    } catch (e) {
+      print("Error retrieving system devices: $e");
+    }
+  }
+
+  void _onPaceUpdated() {
+    // 페이스가 업뎃 시 호출
+    String currentFormattedPace = formatPace(myMap.paceNotifier.value);
+    // 현재 페이스가 마지막 전송 페이스랑 다를 경우에만 메시지 슛.
+    if (_lastSentPace != currentFormattedPace) {
+      sendMessage(currentFormattedPace);
+      _lastSentPace = currentFormattedPace; // 페이스를 업뎃
+    }
   }
 
   void startTimers() {
@@ -111,6 +229,8 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
   @override
   void dispose() {
     countdownTimer?.cancel();
+    myMap.paceNotifier.removeListener(_onPaceUpdated);
+
     myMapStateKey.currentState?.dispose();
     super.dispose();
   }
@@ -191,8 +311,9 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
     return '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
   }
 
+
   // 기록을 서버에 전송하는 함수
-  Future<void> _sendRecordToServer() async {
+  Future<void> sendRecordToServer() async {
     final startLocation = myMap.startLocation;
     final endLocation = myMap.endLocation;
     final url = Uri.parse('https://k10a704.p.ssafy.io/Single/result');
@@ -216,6 +337,8 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
     List<LatLng> coordinates = myMap.getCoordinates();
     List<Map<String, double>> distanceSpeed = myMap.getdistanceSpeed();
     List<Map<String, double>> distancePace = myMap.getdistancePace();
+
+    //
 
     // 평균 속도 계산
     double calculateAverageSpeed(List<Map<String, double>> distanceSpeed) {
@@ -320,12 +443,12 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
         print('서버 요청 실패: ${response.statusCode}');
       }
     } catch (e) {
-      print('요청 처리 중 에러 발생: $e');
+      print('요청 처리 중 에러 발생zzzzzzzzzz: $e');
     }
     print(jsonDecode(requestBody));
   }
 
-  void _handleEndButtonPress(BuildContext context) {
+  void handleEndButtonPress(BuildContext context) {
     if (_clockKey.currentState != null) {
       // Duration elapsedTime = _clockKey.currentState!.elapsed;
       double elapsedSeconds = _clockKey.currentState!.getElapsedSeconds();
@@ -339,10 +462,9 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
       String formattedElapsedTime = formatElapsedTime(elapsedTime);
       // final formattedElapsedTime = formatElapsedTime(elapsedTime);
 
-      _sendRecordToServer();
       // final formattedElapsedTime = formatElapsedTime(elapsedTime);
 
-      _sendRecordToServer();
+      sendRecordToServer();
 
       print('스피드 - $distanceSpeed');
       print('페이스 - $distancePace');
@@ -366,8 +488,10 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
 
     // Navigator.push(context, MaterialPageRoute(builder: (context) => SingleResult()));
   }
+  
 
-  void _showEndModal(BuildContext context) {
+  
+  void showEndModal(BuildContext context) {
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
@@ -415,7 +539,7 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
                       // 종료 시 실행할 작업
                       // elapsedTime을 endlocation으로 넘겨주는 로직 추가
                       dispose();
-                      _handleEndButtonPress(context);
+                      handleEndButtonPress(context);
                     },
                     child: Container(
                       width: double.maxFinite,
@@ -637,7 +761,11 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
                             ValueListenableBuilder<double>(
                               valueListenable: myMap.paceNotifier,
                               builder: (context, pace, _) {
-                                String formattedPace = formatPace(pace);
+                                formattedPace = formatPace(pace);
+
+                                // sendMessage(formattedPace);
+
+                                
                                 return Text(formattedPace,
                                   style: TextStyle(
                                     color: GREEN_COLOR,
@@ -698,7 +826,7 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
                   // 종료 버튼
                   GestureDetector(
                     onTap: () {
-                      _showEndModal(context);
+                      showEndModal(context);
                     },
                     child: Container(
                       width:double.maxFinite,
@@ -708,7 +836,7 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
                       ),
                       child: Padding(
                         padding: EdgeInsets.symmetric(
-                          vertical: 15,
+                          vertical: 12,
                         ),
                         child: Text('종료하기',
                           textAlign: TextAlign.center,
@@ -798,3 +926,4 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
     );
   }
 }
+

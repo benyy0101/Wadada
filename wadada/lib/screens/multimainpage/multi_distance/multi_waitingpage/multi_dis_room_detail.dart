@@ -343,12 +343,18 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                       ),
                       child: Padding(
                         padding: EdgeInsets.only(
-                            left: 15, right: 15, top: 10, bottom: 10),
-                        child: Text(
-                          roomInfo.roomTitle,
+                            left: 5, right: 5, top: 5, bottom: 5),
+                        child: IconButton(
+                          icon: Icon(
+                            Icons.link,
+                            color: Colors.white,
+                          ),
+                          onPressed: () {
+                            //클릭하면 복사 슛
+                          },
+
                           // controller.getMultiRoomsByMode(1).roomList[roomIdx],
-                          textAlign: TextAlign.center,
-                          style: TextStyle(color: Colors.white, fontSize: 16),
+                          
                         ),
                       ),
                     ),
