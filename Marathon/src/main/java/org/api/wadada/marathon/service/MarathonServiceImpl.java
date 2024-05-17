@@ -78,6 +78,7 @@ public class MarathonServiceImpl implements MarathonService {
                     marathonTitle(marathonCreateReq.getMarathonTitle()).marathonEnd(marathonCreateReq.getMarathonEnd())
                             .marathonText(marathonCreateReq.getMarathonText()).marathonParticipate(marathonCreateReq.getMarathonParticipate())
                             .marathonType(marathonCreateReq.getMarathonType())
+                    .marathonDist(marathonCreateReq.getMarathonDist())
                                     .marathonRound(marathonCreateReq.getMarathonRound()).build();
             Marathon freshmarathon = marathonRepository.save(marathon);
             try {
