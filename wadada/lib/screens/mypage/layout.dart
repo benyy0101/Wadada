@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:wadada/common/component/logout.dart';
 import 'package:wadada/common/const/colors.dart';
+import 'package:wadada/controller/profileController.dart';
+import 'package:wadada/repository/profileRepo.dart';
 import 'package:wadada/screens/mypage/avartar.dart';
 import 'package:wadada/screens/mypage/editProfile.dart';
 import 'package:wadada/screens/mypage/recordList.dart';
@@ -40,6 +43,9 @@ class _MyPageLayoutState extends State<MyPageLayout>
 
   @override
   Widget build(BuildContext context) {
+    ProfileController controller =
+        Get.put(ProfileController(repo: ProfileRepository()));
+    controller.getProfile();
     return Scaffold(
       backgroundColor: Colors.white,
       body: Container(
@@ -96,7 +102,7 @@ class _MyPageLayoutState extends State<MyPageLayout>
                 height: 100,
                 child: TabBarView(
                   controller: _tabController,
-                  children: [RecordList(), avatarWidget(), EditProfile()],
+                  children: [RecordList(), AvatarWidget(), EditProfile()],
                 ),
               ),
             ),

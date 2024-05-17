@@ -95,26 +95,22 @@ class _SingleRecordState extends State<SingleRecord> {
                   ),
                 ],
               ),
-              width: 400,
+              width: MediaQuery.of(context).size.width * 0.9,
               child: Padding(
                 padding: const EdgeInsets.only(top: 30, bottom: 30),
                 child: Center(
                     child: Text('최근 기록이 없습니다.',
                         style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                        ))),
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                            color: GRAY_900))),
               ));
         } else if (snapshot.hasData) {
           final data = snapshot.data!;
           final recordTime = data['recordTime'];
           final recordDist = data['recordDist'];
-          final recordSpeed = data['recordSpeed'];
           final recordPace = data['recordPace'] as double;
           final recordHeartbeat = data['recordHeartbeat'];
-
-          print(recordDist);
-          print(recordPace);
 
           double changeDist = recordDist / 1000;
           String formattedChangeDist = changeDist.toStringAsFixed(2);
@@ -143,99 +139,87 @@ class _SingleRecordState extends State<SingleRecord> {
                 ),
               ],
             ),
-            width: 400,
+            width: MediaQuery.of(context).size.width * 0.9,
             child: Padding(
-              padding: const EdgeInsets.only(top: 30, left: 30, bottom: 30),
-              child: Column(
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('총 운동거리',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w600,
-                                )),
-                            SizedBox(height: 10),
-                            Text('$formattedChangeDist km',
-                                style: TextStyle(
-                                  color: GREEN_COLOR,
-                                  fontSize: 30,
-                                  fontWeight: FontWeight.w700,
-                                )),
-                          ],
-                        ),
-                      ),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('총 소요시간',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w600,
-                                )),
-                            SizedBox(height: 10),
-                            Text(formattedTime,
-                                style: TextStyle(
-                                  color: GREEN_COLOR,
-                                  fontSize: 30,
-                                  fontWeight: FontWeight.w700,
-                                )),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 30),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('평균 페이스',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w600,
-                                )),
-                            SizedBox(height: 10),
-                            Text(formattedPace,
-                                style: TextStyle(
-                                  color: GREEN_COLOR,
-                                  fontSize: 30,
-                                  fontWeight: FontWeight.w700,
-                                )),
-                          ],
-                        ),
-                      ),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('평균 심박수',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w600,
-                                )),
-                            SizedBox(height: 10),
-                            Text('$recordHeartbeat',
-                                style: TextStyle(
-                                  color: GREEN_COLOR,
-                                  fontSize: 30,
-                                  fontWeight: FontWeight.w700,
-                                )),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
+                padding: const EdgeInsets.only(left: 30, bottom: 30, right: 30),
+                child: GridView(
+                  shrinkWrap: true,
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      childAspectRatio: 1.3,
+                      crossAxisCount: 2,
+                      mainAxisSpacing: 5,
+                      crossAxisSpacing: 5),
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('총 운동거리',
+                            style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                                color: GRAY_900)),
+                        SizedBox(height: 10),
+                        Text('$formattedChangeDist km',
+                            style: TextStyle(
+                              color: GREEN_COLOR,
+                              fontSize: 30,
+                              fontWeight: FontWeight.w700,
+                            )),
+                      ],
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('총 소요시간',
+                            style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                                color: GRAY_900)),
+                        SizedBox(height: 10),
+                        Text(formattedTime,
+                            style: TextStyle(
+                              color: GREEN_COLOR,
+                              fontSize: 30,
+                              fontWeight: FontWeight.w700,
+                            )),
+                      ],
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('평균 페이스',
+                            style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                                color: GRAY_900)),
+                        SizedBox(height: 10),
+                        Text(formattedPace,
+                            style: TextStyle(
+                              color: GREEN_COLOR,
+                              fontSize: formattedPace.length > 8 ? 22 : 30,
+                              fontWeight: FontWeight.w700,
+                            )),
+                      ],
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('평균 심박수',
+                            style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                                color: GRAY_900)),
+                        SizedBox(height: 10),
+                        Text('$recordHeartbeat',
+                            style: TextStyle(
+                              color: GREEN_COLOR,
+                              fontSize: 30,
+                              fontWeight: FontWeight.w700,
+                            )),
+                      ],
+                    ),
+                  ],
+                )),
           );
         } else {
           return Center(child: Text('데이터가 없습니다.'));

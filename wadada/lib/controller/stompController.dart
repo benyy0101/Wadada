@@ -5,16 +5,60 @@ import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:stomp_dart_client/stomp_dart_client.dart';
+import 'package:wadada/controller/marathonController.dart';
+import 'package:wadada/models/marathon.dart';
 import 'package:wadada/models/multiroom.dart';
 import 'package:wadada/models/stomp.dart';
 import 'package:wadada/provider/multiProvider.dart';
+import 'package:wadada/repository/marathonRepo.dart';
 import 'package:wadada/repository/multiRepo.dart';
+import 'package:wadada/screens/marathonrunpage/marathonRun.dart';
 import 'package:wadada/screens/multimainpage/multi_main.dart';
 import 'package:wadada/screens/multirunpage/multirunpage.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
+
+class MarathonRankings {
+  String memberImage;
+  String memberName;
+  int memberDist;
+  int memberTime;
+  int memberRank;
+
+  MarathonRankings(
+      {required this.memberImage,
+      required this.memberName,
+      required this.memberDist,
+      required this.memberTime,
+      required this.memberRank});
+
+  factory MarathonRankings.fromJson(Map<String, dynamic> json) {
+    return MarathonRankings(
+        memberImage: json['memberImage'] as String,
+        memberName: json['memberName'] as String,
+        memberDist: json['memberDist'] as int,
+        memberTime: json['memberTime'] as int,
+        memberRank: json['memberRank'] as int);
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'memberImage': memberImage,
+      'memberName': memberName,
+      'memberDist': memberDist,
+      'memberTime': memberTime,
+      'memberRank': memberRank
+    };
+  }
+
+  @override
+  String toString() {
+    return 'MarathonRankings(memberImage: $memberImage, memberName: $memberName, memberDist: $memberDist, memberTime: $memberTime, memberRank: $memberRank)';
+  }
+}
 
 class StompController extends GetxController {
   StompClient client = StompClient(config: StompConfig(url: ''));
@@ -37,7 +81,8 @@ class StompController extends GetxController {
   ValueNotifier<bool> gamego = ValueNotifier<bool>(false);
   ValueNotifier<int> requestinfo = ValueNotifier<int>(0);
   ValueNotifier<List<dynamic>> ranking = ValueNotifier<List<dynamic>>([]);
-  ValueNotifier<List<dynamic>> memberInfoList = ValueNotifier<List<dynamic>>([]);
+  ValueNotifier<List<dynamic>> memberInfoList =
+      ValueNotifier<List<dynamic>>([]);
   ValueNotifier<Set<dynamic>> multiflag = ValueNotifier<Set<dynamic>>({});
   ValueNotifier<List<dynamic>> centerplace = ValueNotifier<List<dynamic>>([]);
   ValueNotifier<double> userlatitude = ValueNotifier<double>(0.0);
@@ -46,6 +91,7 @@ class StompController extends GetxController {
   late dynamic unsubscribeFn;
   RxList<CurrentMember> members = <CurrentMember>[].obs;
   MultiRepository repo = MultiRepository(provider: MultiProvider());
+  MarathonRepository mrepo = MarathonRepository();
   bool isStart = false;
   bool get1 = false;
   bool getflag = false;
@@ -60,7 +106,19 @@ class StompController extends GetxController {
       memberReady: false,
       manager: false);
   final storage = FlutterSecureStorage();
+  RxList<MarathonRankings> rankingList = <MarathonRankings>[].obs;
+  RxInt marthonSeq = 0.obs;
+  RxInt marathonRecordSeq = 0.obs;
   StompController({required this.roomIdx});
+  Rx<SimpleMarathon> marathonInfo = SimpleMarathon(
+          marathonSeq: -1,
+          marathonRound: -1,
+          marathonDist: -1,
+          marathonParticipate: -1,
+          marathonStart: DateTime.now(),
+          marathonEnd: DateTime.now(),
+          isDeleted: false)
+      .obs;
   // late SimpleRoom roomInfo;
 
   @override
@@ -73,13 +131,12 @@ class StompController extends GetxController {
   }
 
   void attend(int roomIdx) async {
-
     print("-------------attend-------------");
     String? accessToken = await storage.read(key: 'accessToken');
     // bool unsubscribed = false;
     client = StompClient(
       config: StompConfig.sockJS(
-        url: dotenv.env['STOMP_URL']!,
+        url: dotenv.env['MULTI_URL']!,
         onConnect: (p0) {
           client.subscribe(
             destination: '/sub/attend/$roomIdx',
@@ -88,7 +145,6 @@ class StompController extends GetxController {
                   'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNDYzNDMxNDUzIiwiYXV0aCI6IlJPTEVfU09DSUFMIiwiZXhwIjoxNzE1NDA1MzkzfQ.dmjUkVX1sFe9EpYhT3SGO3uC7q1dLIoddBvzhoOSisM'
             },
             callback: (frame) async {
-              
               try {
                 print("Incoming Messages:--------------------");
 
@@ -114,7 +170,6 @@ class StompController extends GetxController {
                     // print(isRecommendButtonPressed);
                     // print(isRecommendButtonPressed);
                   }
-
                 });
 
                 print('깃발 요청 오면 여깅 ${res['body']}');
@@ -153,8 +208,8 @@ class StompController extends GetxController {
                   // print('방장인지 아닌지 $isOwner');
 
                   // if (isOwner) {
-                    // client.deactivate();
-                    // print('여기까지는 됨');
+                  // client.deactivate();
+                  // print('여기까지는 됨');
 
                     int newRoomSeq = res['body']['roomSeq'];
                     print('roomSeq $newRoomSeq');
@@ -196,7 +251,6 @@ class StompController extends GetxController {
             },
           );
         },
-// Pass the onConnect method as a callback here
         webSocketConnectHeaders: {
           "transports": ["websocket"],
           'Authorization': accessToken ??
@@ -224,12 +278,99 @@ class StompController extends GetxController {
     });
   }
 
-  //  void sendFlagRequest(int roomIdx) {
-  //     client.send(destination: 'https://k10a704.p.ssafy.io/Multi/ws/pub/flag/$roomIdx');
-  //     print('목적지 추천 버튼이 눌렸으므로 깃발 요청을 보냅니다.');
-  //     isRecommendButtonPressed = false.obs; // 상태 변수 초기화
-  // }
+/////////////////////////////////////////////마라톤 스톰프/////////////////////////////////////////////////////////////////////////////
+  void attendMarathon(int roomIdx) async {
+    print("-------------attend-------------");
+    String? accessToken = await storage.read(key: 'accessToken');
+    // bool unsubscribed = false;
+    client = StompClient(
+      config: StompConfig.sockJS(
+        url: dotenv.env['MARATHON_URL']!,
+        onConnect: (p0) {
+          client.subscribe(
+            destination: '/sub/attend/$roomIdx',
+            headers: {
+              'Authorization': accessToken ??
+                  'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNDYzNDMxNDUzIiwiYXV0aCI6IlJPTEVfU09DSUFMIiwiZXhwIjoxNzE1NDA1MzkzfQ.dmjUkVX1sFe9EpYhT3SGO3uC7q1dLIoddBvzhoOSisM'
+            },
+            callback: (frame) async {
+              try {
+                print("Incoming Messages:--------------------");
+                //에러메세지: 해당방에 입장해 있거나, 이미 나간 방일때
+                Map<String, dynamic> res = jsonDecode(frame.body!);
+                print(res['body']);
+                if (res['body']['action'] == '1') {
+                  //???? 1번이 뭐하는 액션이였더라
+                } else if ((res['body']['action'] == '/Marathon/start')) {
+                  //마라톤 시작시 위치 정보 송신
+                  String point = '';
+                  LocationPermission permission =
+                      await Geolocator.checkPermission();
+                  if (permission == LocationPermission.denied) {
+                    permission = await Geolocator.requestPermission();
+                  }
+                  try {
+                    Position position = await Geolocator.getCurrentPosition(
+                        desiredAccuracy: LocationAccuracy.high);
+                    point = "POINT(${position.latitude} ${position.longitude})";
+                  } catch (e) {
+                    point = "POINT(${-1} ${-1})";
+                    print("-------------------------------");
+                    print("position not safely retrieved from user");
+                    print(e);
+                  }
+                  // 내 위치 정보 POST
+                  marathonRecordSeq.value = await mrepo.startMarathon(
+                      MarathonStart(
+                          marathonRecordStart: point,
+                          marathonSeq: marthonSeq.value));
 
+                  // print(temp);
+                  //메세지를 기다림
+                } else if ((res['body']['action'] ==
+                    '/Marathon/game/rank/{roomSeq}')) {
+                  //임시로 넘기기
+                  Get.to(MarathonRun(roomInfo: marathonInfo.value));
+                  //게임 페이지로 이동
+                } else if ((res['body']['action'] == '2')) {
+                  //사람들 정보를 받으면 랭킹에 업데이트
+                  String nickName =
+                      await storage.read(key: 'kakaoNickname') ?? '';
+                  if (res['body']['result'].containsKey(nickName)) {
+                    rankingList.value.clear();
+                    res['body']['result'][nickName].map((item) {
+                      rankingList.value.add(MarathonRankings.fromJson(item));
+                    });
+                  } else {
+                    print("사용자 이름 ------------------------------- ${nickName}");
+                    throw Exception("사용자가 정보에 없습니다.");
+                  }
+                }
+              } catch (e) {
+                print("----------ERR DURING SOCKET CONNECTION------------");
+                print(e);
+                rethrow;
+              }
+            },
+          );
+        },
+        webSocketConnectHeaders: {
+          "transports": ["websocket"],
+          'Authorization': accessToken ??
+              'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNDYzNDMxNDUzIiwiYXV0aCI6IlJPTEVfU09DSUFMIiwiZXhwIjoxNzE1NDA1MzkzfQ.dmjUkVX1sFe9EpYhT3SGO3uC7q1dLIoddBvzhoOSisM'
+        },
+        stompConnectHeaders: {
+          'Authorization': accessToken ??
+              'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNDYzNDMxNDUzIiwiYXV0aCI6IlJPTEVfU09DSUFMIiwiZXhwIjoxNzE1NDA1MzkzfQ.dmjUkVX1sFe9EpYhT3SGO3uC7q1dLIoddBvzhoOSisM'
+        },
+        onWebSocketError: (dynamic error) => print(error.toString()),
+      ),
+    );
+
+    client.activate();
+  }
+
+///////////////////////////////////////멀티 스톰프///////////////////////////////////////////////////////////////
   void setupNewSubscription(int newRoomSeq) async {
     // client.deactivate();
     // if (client.isActive) {
@@ -238,7 +379,7 @@ class StompController extends GetxController {
     String? accessToken = await storage.read(key: 'accessToken');
     newclient = StompClient(
       config: StompConfig.sockJS(
-        url: dotenv.env['STOMP_URL']!,
+        url: dotenv.env['MULTI_URL']!,
         onConnect: (p0) {
           newclient.subscribe(
             destination: '/sub/game/$newRoomSeq',
@@ -269,14 +410,14 @@ class StompController extends GetxController {
                     // print('확인 ${response.data}');
 
                     // if (response.statusCode == 200) {
-                      Map<String, dynamic> resp = jsonDecode(frame.body!);
-                      if (resp['body'].runtimeType == String &&
-                          resp['statusCodeValue'] != 200) {
-                        throw Exception(jsonDecode(frame.body!)['body']);
-                      } else if (resp['body'].runtimeType == String) {
-                        resp['body'] = jsonDecode(resp['body']);
-                      }
-                      print('최종 ${resp['body']}');
+                    Map<String, dynamic> resp = jsonDecode(frame.body!);
+                    if (resp['body'].runtimeType == String &&
+                        resp['statusCodeValue'] != 200) {
+                      throw Exception(jsonDecode(frame.body!)['body']);
+                    } else if (resp['body'].runtimeType == String) {
+                      resp['body'] = jsonDecode(resp['body']);
+                    }
+                    print('최종 ${resp['body']}');
 
                       if (resp['body']['message'] == "멤버INFO요청") {
                         requestinfo.value += 1 ;
@@ -284,10 +425,10 @@ class StompController extends GetxController {
                         print('dd');
                       }
 
-                      if (resp['body']['memberInfo'] != null) {
-                        ranking.value = resp['body']['memberInfo'];
-                        print('랭킹 ${ranking.value}');
-                      }
+                    if (resp['body']['memberInfo'] != null) {
+                      ranking.value = resp['body']['memberInfo'];
+                      print('랭킹 ${ranking.value}');
+                    }
 
                       // if (resp['body']['message'] == "ㅇㅇ") {
                         // flagend.value = resp['body']['memberInfo'];
@@ -335,7 +476,7 @@ class StompController extends GetxController {
 //   try {
 //     if (client.isActive) {
 //       String? accessToken = await storage.read(key: 'accessToken');
-      
+
 //       client.subscribe(
 //         destination: '/sub/flag/$roomIdx',
 //         headers: {
@@ -493,7 +634,7 @@ class StompController extends GetxController {
   //                   getflag = false;
   //                   multiflag.value = res['body'];
   //                 }
-                  
+
   //                 } catch(e) {
   //                   print(e);
   //                 }

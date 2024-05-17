@@ -13,13 +13,16 @@ class ProfileController extends GetxController {
   final MypageRepository mypageRepo = MypageRepository(mypageAPI: MypageAPI());
   final storage = FlutterSecureStorage();
   Rx<Profile> profile = Profile(
-          memberNickname: '',
-          memberBirthday: DateTime(1995, 03, 04),
-          memberGender: '',
-          memberEmail: '',
-          memberProfileImage: '')
-      .obs;
+    memberNickname: '',
+    memberBirthday: DateTime(1995, 03, 04),
+    memberGender: '',
+    memberEmail: '',
+    memberProfileImage: '',
+    memberExp: -1,
+    memberLevel: -1,
+  ).obs;
   RxBool isNicknameValid = true.obs;
+  RxBool isFetching = false.obs;
 
   ProfileController({required this.repo});
 
@@ -27,9 +30,22 @@ class ProfileController extends GetxController {
   void onInit() async {
     super.onInit();
     final storage = FlutterSecureStorage();
-    profile.value.memberNickname = (profile.value.memberNickname != ''
-        ? await storage.read(key: 'kakaoNickname')
-        : profile.value.memberNickname)!;
+    String? temp = await storage.read(key: 'kakaoNickname');
+    print('-------------------------');
+    print(temp);
+    profile.value.memberNickname =
+        await storage.read(key: 'kakaoNickname') ?? "";
+  }
+
+  void getProfile() async {
+    try {
+      profile.value = await repo.profileGet();
+      print(profile.value);
+      isFetching.value = true;
+    } catch (e) {
+      print('--------------profile get-----------------');
+      print(e);
+    }
   }
 
   //PROFILE-003
@@ -66,8 +82,8 @@ class ProfileController extends GetxController {
   void uploadImage(String path) async {
     try {
       String? s3url = await mypageRepo.uploadImage(path);
-      // print("-----------------s3url0--------------");
-      // print(s3url);
+      print("-----------------s3url0--------------");
+      print(s3url);
       profile.value.memberProfileImage = s3url;
     } catch (e) {
       print(e);

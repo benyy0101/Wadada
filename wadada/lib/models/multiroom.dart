@@ -1,8 +1,3 @@
-import 'dart:ffi';
-
-import 'package:wadada/models/mypage.dart';
-import 'dart:math';
-
 import 'package:wadada/util/serializable.dart';
 
 class MultiRoom {

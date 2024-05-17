@@ -35,7 +35,7 @@ class ProfileProvider {
 
   Future<Response<dynamic>> profileGet() async {
     await setAuth();
-    final response = await _dio.get('profile');
+    final response = await _dio.get('');
     return response;
   }
 

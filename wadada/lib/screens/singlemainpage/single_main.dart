@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:wadada/common/const/colors.dart';
 import 'package:wadada/controller/profileController.dart';
 import 'package:wadada/repository/profileRepo.dart';
 import 'package:wadada/screens/singleoptionpage/single_free_option.dart';
@@ -22,24 +23,7 @@ class SingleMain extends StatelessWidget {
             SizedBox(
               height: 45,
             ),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: const [
-                Column(
-                  children: [
-                    Text('싱글모드',
-                        style: TextStyle(
-                          color: Colors.black87,
-                          fontSize: 30,
-                          fontWeight: FontWeight.w600,
-                        )),
-                  ],
-                ),
-                SizedBox(
-                  height: 40,
-                ),
-              ],
-            ),
+
             Container(
               child: Row(
                 children: [

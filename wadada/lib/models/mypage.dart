@@ -57,18 +57,21 @@ class SimpleRecord {
   final int recordDist;
   //언제 달렸는지 확인용
   final DateTime recordCreatedAt;
+  int recordMode;
 
   SimpleRecord(
       {required this.recordCreatedAt,
       required this.recordType,
       required this.recordDist,
-      required this.recordSeq});
+      required this.recordSeq,
+      required this.recordMode});
 
   factory SimpleRecord.fromJson(Map<String, dynamic> json) {
     return SimpleRecord(
       recordSeq: json['recordSeq'] ?? 0,
       recordType: json['recordType'] ?? '0',
       recordDist: json['recordDist'] ?? 0,
+      recordMode: json['recordMode'] ?? 0,
       recordCreatedAt: json['recordCreatedAt'] != null
           ? DateTime.parse(json['recordCreatedAt'])
           : DateTime.now(),

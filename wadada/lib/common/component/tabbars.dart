@@ -21,23 +21,31 @@ class MainLayout extends StatelessWidget {
             labelColor: DARK_GREEN_COLOR,
             unselectedLabelColor: Colors.grey,
             tabs: const [
-              Tab(icon: Icon(Icons.person), text: '싱글모드'),
-              Tab(icon: Icon(Icons.groups), text: '멀티모드'),
-              Tab(icon: Icon(Icons.emoji_events), text: '마라톤'),
-              Tab(icon: Icon(Icons.insert_chart), text: '마이페이지'),
+              Tab(
+                  icon: Icon(Icons.person),
+                  text: '싱글',
+                  iconMargin: EdgeInsets.all(0)),
+              Tab(
+                  icon: Icon(Icons.groups),
+                  text: '멀티',
+                  iconMargin: EdgeInsets.all(0)),
+              Tab(
+                  icon: Icon(Icons.emoji_events),
+                  text: '마라톤',
+                  iconMargin: EdgeInsets.all(0)),
+              Tab(
+                  icon: Icon(Icons.insert_chart),
+                  text: '내 정보',
+                  iconMargin: EdgeInsets.all(0)),
             ],
           ),
         ),
         body: TabBarView(
           children: [
             SingleMain(),
-            // Icon(Icons.person),
-            MultiMain(), // 아직 멀티 페이지가 없어서 임시로 넣어놓음
-            // 아직 마라톤도 없어서 임시로 넣어놓음
-            // Icon(Icons.emoji_events),
+            MultiMain(),
             MarathonMain(),
             MyPageLayout(),
-            // Icon(Icons.insert_chart),
           ],
         ),
       ),

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:wadada/common/const/colors.dart';
 
-class SelectMode extends StatelessWidget{
+class SelectMode extends StatelessWidget {
   final String icon, name, des, btn;
   final VoidCallback onTapAction;
-  
+
   const SelectMode({
     super.key,
     required this.icon,
@@ -33,45 +33,40 @@ class SelectMode extends StatelessWidget{
             ),
           ],
         ),
-        width: 400,
+        width: MediaQuery.of(context).size.width * .9,
         child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Row(
-            children: [
-              SizedBox(
-                width: 80,
-                child: Image.asset(icon),
-              ),
-              SizedBox(width:15),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    name,
-                    style: TextStyle(
-                      color: GREEN_COLOR,
-                      fontSize: 25,
-                      fontWeight: FontWeight.w900,
-                    )
-                  ),
-                  SizedBox(height:5),
-                  Text(
-                    des,
-                    style: TextStyle(
-                      color: Colors.black45,
-                      fontSize: 16,
-                    )
-                  ),
-                ],
-              ),
-              SizedBox(width: double.parse(btn)),
-              SizedBox(
-                width: 20,
-                child: Image.asset('assets/images/mode_select_btn.png'),
-              ),
-            ],
-          )
-        ),
+            padding: const EdgeInsets.all(20),
+            child: Row(
+              children: [
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * .15,
+                  child: Image.asset(icon),
+                ),
+                SizedBox(width: 15),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(name,
+                        style: TextStyle(
+                          color: GREEN_COLOR,
+                          fontSize: 25,
+                          fontWeight: FontWeight.w700,
+                        )),
+                    SizedBox(height: 5),
+                    Text(des,
+                        style: TextStyle(
+                          color: Colors.black45,
+                          fontSize: 14,
+                        )),
+                  ],
+                ),
+                SizedBox(width: double.parse(btn)),
+                SizedBox(
+                  width: 20,
+                  child: Image.asset('assets/images/mode_select_btn.png'),
+                ),
+              ],
+            )),
       ),
     );
   }

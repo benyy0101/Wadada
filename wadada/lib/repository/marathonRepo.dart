@@ -6,15 +6,15 @@ abstract class AbstractMarathonRepository {
   Future<List<SimpleMarathon>> getMarathonList();
   Future<List<MarathonParticipant>> getParticipant(String marathonSeq);
   Future<MyMarathonRecord> getRank(String marathonSeq);
-  Future<bool> attendMarathon(String marathonSeq);
-  Future<bool> startMarathon(MarathonStart start);
+  Future<int> attendMarathon(String marathonSeq);
+  Future<int> startMarathon(MarathonStart start);
   Future<int> endMarathon(Marathon marathon);
 }
 
 class MarathonRepository extends AbstractMarathonRepository {
   MarathonProvider provider = MarathonProvider();
   @override
-  Future<bool> attendMarathon(String marathonSeq) async {
+  Future<int> attendMarathon(String marathonSeq) async {
     Response res = await provider.attendMarathon(marathonSeq);
 
     return res.data;
@@ -59,8 +59,10 @@ class MarathonRepository extends AbstractMarathonRepository {
   }
 
   @override
-  Future<bool> startMarathon(MarathonStart start) async {
+  Future<int> startMarathon(MarathonStart start) async {
     Response res = await provider.marathonStart(start);
-    return res.data;
+    print('--------------');
+    print(res);
+    return res.data["marathonRecordSeq"];
   }
 }
