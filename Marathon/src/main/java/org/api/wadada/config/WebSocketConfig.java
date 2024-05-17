@@ -39,7 +39,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registry.addEndpoint("/Marathon/ws")
                 .setAllowedOrigins("https://k10a704.p.ssafy.io", "http://k10a704.p.ssafy.io", "http://localhost:8080","https://localhost:8080")
                 .setAllowedOrigins("https://apic.app");
-//                .withSockJS();
+                .withSockJS();
     }
 
     // 연결 성공 체크
