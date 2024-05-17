@@ -60,8 +60,11 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
   bool _connected = false;
   final _log = <String>[];
   String formattedPace = '';
-  // 클래스 상단에 마지막으로 전송된 페이스 값을 저장할 변수를 추가합니다.
+  // 마지막으로 전송된 페이스 값
   String _lastSentPace = '';
+
+  // 워치에서 심박수 가져와
+
 
 
 
@@ -290,9 +293,6 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
     return '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
   }
 
-  
-
-
 
   // 기록을 서버에 전송하는 함수
   Future<void> sendRecordToServer() async {
@@ -316,6 +316,8 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
     List<LatLng> coordinates = myMap.getCoordinates();
     List<Map<String, double>> distanceSpeed = myMap.getdistanceSpeed();
     List<Map<String, double>> distancePace = myMap.getdistancePace();
+
+    //
 
     // 평균 속도 계산
     double calculateAverageSpeed(List<Map<String, double>> distanceSpeed) {

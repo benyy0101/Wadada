@@ -58,7 +58,7 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        fontFamily: 'Jua',
+        fontFamily: 'pretendard',
       ),
       home: MyHomePage(),
     );

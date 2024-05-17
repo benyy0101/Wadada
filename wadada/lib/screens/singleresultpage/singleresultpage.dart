@@ -116,6 +116,18 @@ class _SingleResultState extends State<SingleResult> {
               SizedBox(height: 10),
               _buildPaceLineChart(),
             ]),
+            SizedBox(height: 30),
+            Column(crossAxisAlignment: CrossAxisAlignment.start, children: const [
+              Text(
+                '심박수',
+                style: TextStyle(
+                  color: GRAY_500,
+                  fontSize: 19,
+                ),
+              ),
+              SizedBox(height: 10),
+              // _buildPaceLineChart(),
+            ]),
             SizedBox(height: 40),
             GestureDetector(
               onTap: () {
@@ -343,4 +355,18 @@ class _SingleResultState extends State<SingleResult> {
       graphType: 'pace',
     );
   }
+
+  // Widget _buildHeartLineChart() {
+  //   List<ChartData> myChartData = widget.distancePace.map((data) {
+  //     return ChartData(
+  //         data['dist']! / 1000, formatPaceAsDecimal(data['heartrate']!));
+  //   }).toList();
+
+  //   // LineChart 사용
+  //   return LineChart<ChartData>(
+  //     chartData: myChartData,
+  //     metrics: 'km/h',
+  //     graphType: 'heartrate',
+  //   );
+  // }
 }

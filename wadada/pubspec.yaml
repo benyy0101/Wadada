@@ -131,9 +131,9 @@ flutter:
   # list giving the asset and other descriptors for the font. For
   # example:
   fonts:
-    - family: Jua
+    - family: pretendard
       fonts:
-        - asset: assets/fonts/Jua-Regular.ttf
+        - asset: assets/fonts/Pretendard-Regular.woff
 
   #
   # For details regarding fonts from package dependencies,

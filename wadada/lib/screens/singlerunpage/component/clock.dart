@@ -63,6 +63,8 @@ class ClockState extends State<Clock> {
     // 워치 초기화
     _initWear();
 
+    // 
+
   }
 
   // 워치 관련코드
@@ -152,8 +154,21 @@ class ClockState extends State<Clock> {
                     _elapsed += Duration(milliseconds: 100);
                 }
                 widget.elapsedTimeNotifier.value = _elapsed;
+
+                // 시간, 분, 초 업데이트 메소드 호출
+                sendTimeUpdate();
             });
     }
+  }
+
+
+  // 시간, 분, 초 업데이트 
+  void sendTimeUpdate() {
+    final hours = _elapsed.inHours.toString().padLeft(2, '0');
+    final minutes = (_elapsed.inMinutes % 60).toString().padLeft(2, '0');
+    final seconds = (_elapsed.inSeconds % 60).toString().padLeft(2, '0');
+    // sendMessage 호출
+    sendMessage(hours, minutes, seconds);
   }
 
   String _formatTime(int value) {
