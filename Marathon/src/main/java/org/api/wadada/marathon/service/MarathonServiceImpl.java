@@ -118,7 +118,11 @@ public class MarathonServiceImpl implements MarathonService {
                                     Thread.currentThread().interrupt();
                                 }
                             }, executor)
-                    ).thenRun(marathonRoomManager::sendMessage);
+                    ).thenRun(() -> {
+                        marathonRoomManager.sendMessage();
+                        // REST API 호출
+                        getPlayerRank(0);
+                    });
 
                 }, delay, TimeUnit.MILLISECONDS);
 
@@ -243,7 +247,6 @@ public class MarathonServiceImpl implements MarathonService {
         MarathonRoomManager marathonRoomManager = marathonGameManager.GetMarathonRoomManager();
         marathonRoomManager.sortMember();
         marathonRoomManager.makeSentence();
-        System.out.println(marathonRoomManager.getRooms().get(0).getSentence());
         marathonRoomManager.sendEndMessage();
     }
     // 종료 조건
