@@ -15,6 +15,12 @@ class SingleMain extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Padding(
+          padding: EdgeInsets.all(0),
+          child: Text('WADADA'),
+        ),
+      ),
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         padding: EdgeInsets.only(left: 30, right: 30),
@@ -23,14 +29,12 @@ class SingleMain extends StatelessWidget {
             SizedBox(
               height: 45,
             ),
-
             Container(
               child: Row(
                 children: [
                   Obx(() {
-                    String nickname =
-                        profileController.profile.value.memberNickname ?? "???";
-                    return Text('$nickname님의 최근 기록',
+                    return Text(
+                        '${profileController.profile.value.memberNickname}님의 최근 기록',
                         style: TextStyle(
                           color: Colors.black54,
                           fontSize: 15,
