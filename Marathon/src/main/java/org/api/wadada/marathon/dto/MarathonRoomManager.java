@@ -10,6 +10,9 @@ import org.api.wadada.error.exception.RestApiException;
 import org.api.wadada.marathon.entity.Member;
 import org.api.wadada.util.DynamicRabbitMqConfigurer;
 import org.geolatte.geom.M;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
@@ -18,6 +21,8 @@ import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
+
+import static org.api.wadada.marathon.dto.GameMessage.MARATHON_INFO_SEND;
 
 @AllArgsConstructor
 @Service
@@ -137,9 +142,9 @@ public class MarathonRoomManager {
     }
     public void sendEndMessage() {
         for (int i = 0; i <= curRooms; i++) {
-            String message = GameMessage.MARATHON_INFO_SEND.toJson();
-            message += rooms.get(i).getSentence();
-            messagingTemplate.convertAndSend("/sub/attend/" + i, message);
+//            String message = GameMessage.MARATHON_INFO_SEND.toJson();
+//            message += rooms.get(i).getSentence();
+            messagingTemplate.convertAndSend("/sub/attend/" + i, rooms.get(i).getSentence());
         }
     }
     public void sortMember() {
