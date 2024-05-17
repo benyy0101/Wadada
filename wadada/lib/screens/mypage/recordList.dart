@@ -90,9 +90,9 @@ class ListTileWidget extends StatelessWidget {
       children: records.map<Widget>((simple) {
         return ListTile(
             title: Text(modeConverter(simple.recordType)),
-            contentPadding: EdgeInsets.all(20),
-            titleTextStyle: TextStyle(fontSize: 22, color: DARK_GREEN_COLOR),
-            subtitleTextStyle: TextStyle(fontSize: 16, color: GRAY_400),
+            contentPadding: EdgeInsets.all(10),
+            titleTextStyle: TextStyle(fontSize: 20, color: DARK_GREEN_COLOR),
+            subtitleTextStyle: TextStyle(fontSize: 14, color: GRAY_400),
             subtitle: Row(
               children: [
                 Text(typeConverter(simple.recordType)),

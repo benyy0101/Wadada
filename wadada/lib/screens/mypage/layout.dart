@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:wadada/common/component/logout.dart';
 import 'package:wadada/common/const/colors.dart';
@@ -52,28 +53,28 @@ class _MyPageLayoutState extends State<MyPageLayout>
                   labelColor: DARK_GREEN_COLOR,
                   indicatorColor: Colors.transparent,
                   unselectedLabelColor: GRAY_400,
-                  tabs: const [
+                  tabs: [
                     Tab(
-                      text: "내 기록",
-                      icon: Icon(
-                        Icons.history_edu_rounded,
-                        size: 30.0,
-                      ),
-                    ),
+                        text: "내 기록",
+                        iconMargin: EdgeInsets.zero,
+                        icon: Image.asset(
+                          'assets/images/person_running_3d_light.png',
+                          width: 50,
+                        )),
                     Tab(
-                      text: "아바타",
-                      icon: Icon(
-                        Icons.sentiment_very_satisfied_rounded,
-                        size: 30.0,
-                      ),
-                    ),
+                        text: "아바타",
+                        iconMargin: EdgeInsets.zero,
+                        icon: Image.asset(
+                          'assets/images/melting_face_3d.png',
+                          width: 50,
+                        )),
                     Tab(
-                      text: "프로필 수정",
-                      icon: Icon(
-                        Icons.access_alarm,
-                        size: 30.0,
-                      ),
-                    ),
+                        text: "프로필 수정",
+                        iconMargin: EdgeInsets.zero,
+                        icon: Image.asset(
+                          'assets/images/bell_3d.png',
+                          width: 50,
+                        )),
                   ],
                 ),
               ),
