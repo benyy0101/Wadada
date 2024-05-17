@@ -572,7 +572,7 @@ class _MultiRunState extends State<MultiRun> {
         Duration elapsedTime = Duration(seconds: elapsedSeconds.round());
         String formattedElapsedTime = formatElapsedTime(elapsedTime);
 
-        _sendRecordToServer();
+        // _sendRecordToServer();
 
         print('스피드 - $distanceSpeed');
         print('페이스 - $distancePace');
@@ -981,8 +981,6 @@ class _MultiRunState extends State<MultiRun> {
                                 final startIndex = pageIndex * 3;
                                 final endIndex = (startIndex + 3).clamp(0, rankingData!.length);
                                 final currentPageData = rankingData!.sublist(startIndex, endIndex);
-
-                                print('여기 잘 들어오는지 $rankingData');
 
                                 return Column(
                                   children: currentPageData.map((ranking) {
