@@ -50,6 +50,23 @@ dependencies:
   fl_chart:
   lottie: ^3.1.0
   stomp_dart_client: ^2.0.0
+  flutter_blue_plus: ^1.30.8
+  url_launcher: ^6.2.6
+  # 워치랑 연결
+  # wdd_watch:
+  #   path: ../wdd_watch
+  # 워치랑 연결하는 패키지
+  watch_connectivity: ^0.2.0
+  # 워치가 맞는지 아닌지
+  is_wear: ^0.0.1+1
+  permission_handler: ^11.3.1
+
+  # wear OS
+  # wear:
+  #   git:
+  #     url: https://github.com/ju851zel/flutter_wear_plugin
+  #     ref: upgrade-versions
+  
   location: ^6.0.2
   flutter_local_notifications: ^17.1.2
   flutter_mobx: ^2.2.1+1

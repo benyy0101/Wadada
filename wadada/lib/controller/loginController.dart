@@ -4,6 +4,7 @@ import 'package:wadada/common/component/tabbars.dart';
 import 'package:wadada/repository/loginRepo.dart';
 import 'package:wadada/screens/multimainpage/multi_main.dart';
 import 'package:wadada/screens/newprofilepage/layout.dart';
+import 'package:wadada/screens/singlemainpage/single_main.dart';
 import 'package:wadada/screens/newprofilepage/profileReady.dart';
 
 class LoginController extends GetxController {

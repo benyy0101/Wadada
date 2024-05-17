@@ -51,8 +51,9 @@ android {
         applicationId "com.ssafy.wadada"
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
-        minSdkVersion 21
-        targetSdkVersion flutter.targetSdkVersion
+        minSdkVersion 23
+        maxSdkVersion 30
+        targetSdkVersion 31
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
     }
@@ -81,4 +82,5 @@ flutter {
 
 dependencies {
     implementation 'com.google.android.material:material:1.13.0-alpha01'
+    implementation 'no.nordicsemi.android:ble:2.2.4' // Nordic Semiconductor의 안드로이드 BLE 라이브러리
 }

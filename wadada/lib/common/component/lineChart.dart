@@ -23,10 +23,15 @@ class ChartData {
         json['dist'] as double,
         json['speed'] as double,
       );
-    } else {
+    } else if (json['pace']) {
       return ChartData(
         json['dist'] as double,
         json['pace'] as double,
+      );
+    } else {
+      return ChartData(
+      json['dist'] as double,
+      json['heartrate'] as double,
       );
     }
   }

@@ -255,19 +255,21 @@ class _MarathonState extends State<MarathonRun> {
 
     int totalDistanceInt = totalDistance.floor();
 
-    marathonController.marathon.value.marathonRecordDist = totalDistanceInt;
-    marathonController.marathon.value.marathonRecordEnd =
-        "POINT(${endLocation?.latitude} ${endLocation?.longitude})";
-    marathonController.marathon.value.marathonRecordStart =
-        "POINT(${startLocation?.latitude} ${startLocation?.longitude})";
-    marathonController.marathon.value.marathonRecordImage = 'your_record_image';
-    marathonController.marathon.value.marathonRecordTime = intelapsedseconds;
-    marathonController.marathon.value.marathonRecordHeartbeat =
-        jsonEncode(distancePace);
-    marathonController.marathon.value.marathonRecordPace =
-        jsonEncode(distancePace);
-    marathonController.marathon.value.marathonRecordSpeed =
-        jsonEncode(distanceSpeed);
+    MultiRoomGameEnd gameEndData = MultiRoomGameEnd(
+      roomSeq: 1, // 수정 필요
+      recordImage: 'your_record_image',
+      recordDist: totalDistanceInt,
+      recordTime: intelapsedseconds,
+      recordStartLocation:
+          "POINT(${startLocation?.latitude} ${startLocation?.longitude})",
+      recordEndLocation:
+          "POINT(${endLocation?.latitude} ${endLocation?.longitude})",
+      recordWay: jsonEncode(coordinates),
+      recordSpeed: jsonEncode(distanceSpeed),
+      recordPace: jsonEncode(distancePace),
+      recordHeartbeat: jsonEncode(distancePace),
+      recordRank: 1, // 수정 필요
+    );
 
     marathonController.endMarathon();
   }
@@ -430,7 +432,7 @@ class _MarathonState extends State<MarathonRun> {
       onTimerEnd: () {},
       key: _clockKey,
       time: remainingTime,
-      elapsedTimeNotifier: elapsedTimeNotifier,
+      elapsedTimeNotifier: elapsedTimeNotifier, 
     );
 
     return Scaffold(
@@ -658,7 +660,7 @@ class _MarathonState extends State<MarathonRun> {
                           const EdgeInsets.only(left: 20, right: 20, top: 10),
                       width: 400,
                       height: 200,
-                      child: stompController.rankingList!.isEmpty
+                      child: stompController.rankingList.isEmpty
                           ? Center(
                               child: Text(
                                 '곧 실시간 순위가 나타납니다',
