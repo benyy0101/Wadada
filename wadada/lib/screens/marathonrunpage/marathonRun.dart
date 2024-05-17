@@ -33,20 +33,8 @@ import 'package:wadada/controller/stompController.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 class MarathonRun extends StatefulWidget {
-  final int time;
-  final int dist;
-  final String appKey;
-  final StompController controller;
-  final MarathonController marathonController;
   SimpleMarathon roomInfo;
-  MarathonRun(
-      {super.key,
-      required this.time,
-      required this.dist,
-      required this.appKey,
-      required this.controller,
-      required this.marathonController,
-      required this.roomInfo});
+  MarathonRun({super.key, required this.roomInfo});
 
   @override
   _MarathonState createState() => _MarathonState();
@@ -67,6 +55,8 @@ class _MarathonState extends State<MarathonRun> {
   ValueNotifier<Duration> elapsedTimeNotifier =
       ValueNotifier<Duration>(Duration.zero);
   final GlobalKey<ClockState> _clockKey = GlobalKey<ClockState>();
+
+  StompController stompController = Get.put(StompController(roomIdx: -1));
   // late Clock clock;
   late MyMap myMap;
   late dynamic unsubscribeFn;
@@ -85,7 +75,7 @@ class _MarathonState extends State<MarathonRun> {
   void initState() {
     super.initState();
 
-    print('설정한 거리 ${widget.dist}');
+    print('설정한 거리 ${widget.roomInfo.marathonDist}');
 
     // _initWebSocketListener();
 
@@ -190,14 +180,14 @@ class _MarathonState extends State<MarathonRun> {
 
   void startGameGoTimer() {
     Timer(Duration(seconds: 30), () {
-      if (!widget.controller.gamego.value) {
+      if (stompController.gamego.value) {
         closeLoadingAndStartCountdown();
       }
     });
   }
 
   void onPageLoaded() {
-    if (widget.controller.gameStartResponse.value) {
+    if (stompController.gameStartResponse.value) {
       myMap.startLocationNotifier.addListener(() {
         if (myMap.startLocation != null) {
           print('보냄');
@@ -206,9 +196,9 @@ class _MarathonState extends State<MarathonRun> {
       });
     }
 
-    widget.controller.gamego.addListener(() {
-      print('gamego value 들어오나 ${widget.controller.gamego.value}');
-      if (widget.controller.gamego.value) {
+    stompController.gamego.addListener(() {
+      print('gamego value 들어오나 ${stompController.gamego.value}');
+      if (stompController.gamego.value) {
         print('closeloadingandstartcountdown true임');
         closeLoadingAndStartCountdown();
       }
@@ -224,6 +214,11 @@ class _MarathonState extends State<MarathonRun> {
   }
 
   String formatPace(double paceInSecondsPerKm) {
+    // Check if the pace is NaN or Infinity
+    if (paceInSecondsPerKm.isNaN || paceInSecondsPerKm.isInfinite) {
+      return "0'00''";
+    }
+
     int minutes = (paceInSecondsPerKm / 60).floor();
     int seconds = (paceInSecondsPerKm % 60).round();
 
@@ -245,8 +240,6 @@ class _MarathonState extends State<MarathonRun> {
 
     final startLocation = myMap.startLocation;
     final endLocation = myMap.endLocation;
-
-    int recordMode = widget.time > 0 ? 2 : 1;
 
     double elapsedSeconds = _clockKey.currentState!.getElapsedSeconds();
     int intelapsedseconds = elapsedSeconds.toInt();
@@ -446,14 +439,15 @@ class _MarathonState extends State<MarathonRun> {
   Widget build(BuildContext context) {
     Widget progressBar = Container();
     int currentPageIndex = 0;
-
+    int remainingTime =
+        widget.roomInfo.marathonEnd.difference(DateTime.now()).inSeconds;
     progressBar = DistBar(
-        dist: widget.dist, formattedDistance: double.parse(formattedDistance));
+        dist: widget.roomInfo.marathonDist,
+        formattedDistance: double.parse(formattedDistance));
 
-    StompController stompController = Get.put(StompController(roomIdx: 100));
     Clock clockWidget = Clock(
       key: _clockKey,
-      time: widget.time,
+      time: remainingTime,
       elapsedTimeNotifier: elapsedTimeNotifier,
     );
 
@@ -603,7 +597,7 @@ class _MarathonState extends State<MarathonRun> {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(widget.time == 0 ? '소요 시간' : '남은 시간',
+                            Text(remainingTime == 0 ? '소요 시간' : '남은 시간',
                                 style: TextStyle(
                                   color: GRAY_500,
                                   fontSize: 19,

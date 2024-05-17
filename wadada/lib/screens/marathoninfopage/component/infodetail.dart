@@ -154,32 +154,37 @@ class InfoDetail extends StatelessWidget {
             onTap: () async {
               int idx = await controller
                   .attendMarathon(marathon.marathonSeq.toString());
-              print('------------------------');
+              print('-----------roomChannel-------------');
               print(idx);
               StompController stompController =
                   Get.put(StompController(roomIdx: 100));
-              MarathonController marathonController =
-                  Get.put(MarathonController());
+              stompController.marathonInfo.value = marathon;
+
               if (idx != -1) {
                 ScaffoldMessenger.of(context)
                     .showSnackBar(SnackBar(content: Text("성공적으로 참여했습니다!🥳")));
+                stompController.marthonSeq.value = marathon.marathonSeq;
                 stompController.attendMarathon(idx);
 
-                Get.to(MarathonRun(
-                  time: -1,
-                  dist: 10,
-                  appKey: '',
-                  controller: stompController,
-                  marathonController: marathonController,
-                  roomInfo: SimpleMarathon(
-                      marathonSeq: -1,
-                      marathonRound: -1,
-                      marathonDist: 20,
-                      marathonParticipate: 20,
-                      marathonStart: DateTime.now(),
-                      marathonEnd: DateTime.now(),
-                      isDeleted: false),
-                ));
+                // await marathonController.startMarathon('1', '1');
+                // print("------------marathonRecordSeq--------------------");
+                // print(marathonController.marathonRecordSeq.value);
+
+                // Get.to(MarathonRun(
+                //   time: -1,
+                //   dist: 10,
+                //   appKey: '',
+                //   controller: stompController,
+                //   marathonController: marathonController,
+                //   roomInfo: SimpleMarathon(
+                //       marathonSeq: -1,
+                //       marathonRound: -1,
+                //       marathonDist: 20,
+                //       marathonParticipate: 20,
+                //       marathonStart: DateTime.now(),
+                //       marathonEnd: DateTime.now(),
+                //       isDeleted: false),
+                // ));
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text("서버가 아파요. 다시 시도해 주세요😡")));

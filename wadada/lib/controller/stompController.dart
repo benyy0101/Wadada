@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:stomp_dart_client/stomp_dart_client.dart';
@@ -105,7 +106,18 @@ class StompController extends GetxController {
       manager: false);
   final storage = FlutterSecureStorage();
   RxList<MarathonRankings> rankingList = <MarathonRankings>[].obs;
+  RxInt marthonSeq = 0.obs;
+  RxInt marathonRecordSeq = 0.obs;
   StompController({required this.roomIdx});
+  Rx<SimpleMarathon> marathonInfo = SimpleMarathon(
+          marathonSeq: -1,
+          marathonRound: -1,
+          marathonDist: -1,
+          marathonParticipate: -1,
+          marathonStart: DateTime.now(),
+          marathonEnd: DateTime.now(),
+          isDeleted: false)
+      .obs;
   // late SimpleRoom roomInfo;
 
   @override
@@ -239,7 +251,6 @@ class StompController extends GetxController {
             },
           );
         },
-// Pass the onConnect method as a callback here
         webSocketConnectHeaders: {
           "transports": ["websocket"],
           'Authorization': accessToken ??
@@ -267,6 +278,7 @@ class StompController extends GetxController {
     });
   }
 
+/////////////////////////////////////////////마라톤 스톰프/////////////////////////////////////////////////////////////////////////////
   void attendMarathon(int roomIdx) async {
     print("-------------attend-------------");
     String? accessToken = await storage.read(key: 'accessToken');
@@ -286,34 +298,62 @@ class StompController extends GetxController {
                 print("Incoming Messages:--------------------");
                 //에러메세지: 해당방에 입장해 있거나, 이미 나간 방일때
                 Map<String, dynamic> res = jsonDecode(frame.body!);
-                print('-----res[body]-----------------');
                 print(res['body']);
-
-                //1
                 if (res['body']['action'] == '1') {
+                  //???? 1번이 뭐하는 액션이였더라
                 } else if ((res['body']['action'] == '/Marathon/start')) {
-                  String point = "POINT(${0} ${0})";
-                  int dead = 0;
+                  //마라톤 시작시 위치 정보 송신
+                  String point = '';
+                  LocationPermission permission =
+                      await Geolocator.checkPermission();
+                  if (permission == LocationPermission.denied) {
+                    permission = await Geolocator.requestPermission();
+                  }
+                  try {
+                    Position position = await Geolocator.getCurrentPosition(
+                        desiredAccuracy: LocationAccuracy.high);
+                    point = "POINT(${position.latitude} ${position.longitude})";
+                  } catch (e) {
+                    point = "POINT(${-1} ${-1})";
+                    print("-------------------------------");
+                    print("position not safely retrieved from user");
+                    print(e);
+                  }
                   // 내 위치 정보 POST
-                  bool temp = await mrepo.startMarathon(MarathonStart(
-                      marathonRecordStart: point, marathonSeq: dead));
-                  print(temp);
+                  marathonRecordSeq.value = await mrepo.startMarathon(
+                      MarathonStart(
+                          marathonRecordStart: point,
+                          marathonSeq: marthonSeq.value));
+
+                  // print(temp);
                   //메세지를 기다림
                 } else if ((res['body']['action'] ==
                     '/Marathon/game/rank/{roomSeq}')) {
-                  // Get.to(MarathonRun(time: time, dist: dist, appKey: appKey, controller: controller, multiController: multiController, roomInfo: roomInfo));
+                  //임시로 넘기기
+                  Get.to(marathonInfo.value);
                   //게임 페이지로 이동
-                } else if ((res['body']['message'] == '')) {
-                } else if ((res['body']['message'] == '')) {
-                } else if ((res['body']['message'] == '')) {}
+                } else if ((res['body']['action'] == '2')) {
+                  //사람들 정보를 받으면 랭킹에 업데이트
+                  String nickName =
+                      await storage.read(key: 'kakaoNickname') ?? '';
+                  if (res['body']['result'].containsKey(nickName)) {
+                    rankingList.value.clear();
+                    res['body']['result'][nickName].map((item) {
+                      rankingList.value.add(MarathonRankings.fromJson(item));
+                    });
+                  } else {
+                    print("사용자 이름 ------------------------------- ${nickName}");
+                    throw Exception("사용자가 정보에 없습니다.");
+                  }
+                }
               } catch (e) {
+                print("----------ERR DURING SOCKET CONNECTION------------");
                 print(e);
                 rethrow;
               }
             },
           );
         },
-// Pass the onConnect method as a callback here
         webSocketConnectHeaders: {
           "transports": ["websocket"],
           'Authorization': accessToken ??
@@ -328,27 +368,9 @@ class StompController extends GetxController {
     );
 
     client.activate();
-
-    // Future.delayed(Duration(milliseconds: 2000), () {
-    //   try {
-    //     if (client.isActive) {
-    //       client.send(destination: '/pub/attend/$roomIdx');
-    //       print("--------------published $roomIdx------------------");
-    //     } else {
-    //       throw Exception("서버가 준비되어 있지 않습니다.");
-    //     }
-    //   } catch (e) {
-    //     print(e);
-    //   }
-    // });
   }
 
-  //  void sendFlagRequest(int roomIdx) {
-  //     client.send(destination: 'https://k10a704.p.ssafy.io/Multi/ws/pub/flag/$roomIdx');
-  //     print('목적지 추천 버튼이 눌렸으므로 깃발 요청을 보냅니다.');
-  //     isRecommendButtonPressed = false.obs; // 상태 변수 초기화
-  // }
-
+///////////////////////////////////////멀티 스톰프///////////////////////////////////////////////////////////////
   void setupNewSubscription(int newRoomSeq) async {
     // client.deactivate();
     // if (client.isActive) {

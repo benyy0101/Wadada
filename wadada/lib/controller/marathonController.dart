@@ -14,6 +14,7 @@ class MarathonController extends GetxController {
   RxList<MarathonParticipant> participantList = <MarathonParticipant>[].obs;
   RxBool isAttend = false.obs;
   RxBool isStart = false.obs;
+  RxInt marathonRecordSeq = 0.obs;
 
   Rx<MyMarathonRecord> marathonRecord = MyMarathonRecord(
           memberName: '', memberImage: '', memberDist: -1, memberTime: -1)
@@ -58,10 +59,10 @@ class MarathonController extends GetxController {
     marathonRecord.value = await repo.getRank(marathonSeq);
   }
 
-  Future<bool> startMarathon(String lat, String long) async {
+  Future<void> startMarathon(String lat, String long) async {
     String point = "POINT(${lat} ${long})";
-    int dead = 0;
-    return await repo.startMarathon(
+    int dead = 125;
+    marathonRecordSeq.value = await repo.startMarathon(
         MarathonStart(marathonRecordStart: point, marathonSeq: dead));
   }
 }
