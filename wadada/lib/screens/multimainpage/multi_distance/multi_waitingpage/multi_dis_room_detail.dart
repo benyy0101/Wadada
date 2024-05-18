@@ -587,9 +587,8 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                                 ValueListenableBuilder<bool>(
                                   valueListenable: centerloading,
                                   builder: (context, isButtonEnabled, _) {
-                                    bool isOwner = controller.isOwner.value;
                                     return ElevatedButton(
-                                      onPressed: isButtonEnabled && isOwner
+                                      onPressed: isButtonEnabled && controller.isOwner.value
                                           ? null
                                           : () {
                                               print('Flag info button pressed');

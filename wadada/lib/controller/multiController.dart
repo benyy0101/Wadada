@@ -30,7 +30,7 @@ class MultiController extends GetxController {
   MultiRoom multiroom = MultiRoom(
       roomPeople: -1,
       roomDist: -1,
-      roomMode: 1,
+      roomMode: 3,
       roomSecret: -1,
       roomTag: '',
       roomTime: -1,

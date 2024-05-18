@@ -179,7 +179,7 @@ class StompController extends GetxController {
                 // 깃발
                 if (res['body']['message'] == "깃발요청") {
                   flagrequested.value = true;
-                  print('나 방장임? $isOwner');
+                  print('나 방장임? ${isOwner.value}');
                 }
 
                 if (res['body']['message'] == "사용자 위치 정보가 없습니다") {
@@ -192,7 +192,7 @@ class StompController extends GetxController {
                   userlatitude.value = res['body']['latitude'];
                   print('${userlatitude.value}');
                   userlongitude.value = res['body']['longitude'];
-                  print('방장인지 아닌지 확인 $isOwner');
+                  print('방장인지 아닌지 확인 ${isOwner.value}');
                 }
 
                 // attend
@@ -204,12 +204,6 @@ class StompController extends GetxController {
                 if (res['body']['message'] == "게임이 시작되었습니다") {
                   print("multigo");
                   gamego.value = true;
-                  // print('gamego 값 ${gamego.value}');
-                  // print('방장인지 아닌지 $isOwner');
-
-                  // if (isOwner) {
-                  // client.deactivate();
-                  // print('여기까지는 됨');
 
                     int newRoomSeq = res['body']['roomSeq'];
                     print('roomSeq $newRoomSeq');
