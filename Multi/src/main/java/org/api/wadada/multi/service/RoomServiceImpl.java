@@ -32,6 +32,7 @@ import org.api.wadada.multi.exception.CreateRoomException;
 import org.api.wadada.multi.exception.NotFoundMemberException;
 import org.api.wadada.multi.exception.NotFoundRoomException;
 import org.api.wadada.multi.repository.*;
+import org.locationtech.jts.io.ParseException;
 import org.springframework.context.event.EventListener;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.messaging.Message;
@@ -299,12 +300,22 @@ public class RoomServiceImpl implements RoomService {
                 pointMessage.put("header", responseHeader);
                 pointMessage.put("body", responseBody);
                 String res = null; // HashMap을 JSON 문자열로 변환
+
                 try {
                     res = mapper.writeValueAsString(pointMessage);
                 } catch (JsonProcessingException e) {
                     throw new RuntimeException(e);
                 }
-
+                Optional<Room> room = roomRepository.findById(roomDto.getRoomSeq());
+                //룸에 목표 좌표 저장
+                if(room.isPresent()){
+                    try {
+                        room.get().setTargetPoint(point.getLatitude(),point.getLongitude());
+                    } catch (ParseException e) {
+                        throw new RuntimeException(e);
+                    }
+                    roomRepository.save(room.get());
+                }
 //                FlagPointRes point = geneticAlgorithmService.findOptimalPoint(roomDto.getRoomPoints());
                 messagingTemplate.convertAndSend("/sub/attend/" + roomIdx, res);
             }
