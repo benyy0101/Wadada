@@ -31,6 +31,9 @@ public class RoomDto{
     private double flagLng;
 
     @Setter
+    private int dist;
+
+    @Setter
     private List<LatLng> roomPoints = new ArrayList<>();
 
     public RoomDto() {

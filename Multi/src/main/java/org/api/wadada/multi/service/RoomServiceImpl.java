@@ -112,9 +112,12 @@ public class RoomServiceImpl implements RoomService {
                 .updatedAt(new Date())
                 .build();
         roomDocumentRepository.save(document);
+
         RoomDto roomDto = new RoomDto();
         roomDto.setRoomSeq(savedRoom.getRoomSeq());
         roomDto.setRoomMode(createRoomReq.getRoomMode());
+        roomDto.setDist(createRoomReq.getRoomDist());
+
         int idx = roomManager.addRoom(savedRoom.getRoomSeq(), roomDto);
         return PostRoomRes.builder().roomIdx(idx).roomSeq(savedRoom.getRoomSeq()).build();
     }
@@ -292,7 +295,7 @@ public class RoomServiceImpl implements RoomService {
                 HashMap<String, Object> responseHeader = new HashMap<>();
                 responseHeader.put("status", 200);
                 responseHeader.put("statusText", "OK");
-                FlagPointRes point = calculatePoint(roomDto.getRoomPoints());
+                FlagPointRes point = geneticAlgorithmService.findOptimalPoint(roomDto.getRoomPoints(),roomDto.getDist());
                 HashMap<String, Object> responseBody = new HashMap<>();
                 responseBody.put("latitude", point.getLatitude());
                 responseBody.put("longitude", point.getLongitude());
