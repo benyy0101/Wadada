@@ -173,7 +173,7 @@ public class MarathonServiceImpl implements MarathonService {
         //마라톤 SEQ에 해당하는 게임정보 확인
         MarathonRoomManager marathonRoomManager = marathonGameManager.GetMarathonRoomManager();
 
-        if (!marathonRoomManager.isStarted() ||
+        if (marathonRoomManager.isStarted() ||
                 ZonedDateTime.of(marathonRoomManager.getStartTime(), ZoneId.systemDefault())
                         .isBefore(ZonedDateTime.now(ZoneId.systemDefault())) || marathonSeq != marathonRoomManager.getMarathonSeq()) {
             throw new RestApiException(CustomErrorCode.MARATHON_ROOM_NOT_ATTEND);
