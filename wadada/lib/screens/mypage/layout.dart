@@ -88,20 +88,7 @@ class _MyPageLayoutState extends State<MyPageLayout>
                 height: 100,
                 child: TabBarView(
                   controller: _tabController,
-                  children: [
-                    RecordList(),
-                    AvatarWidget(),
-                    MarathonRun(
-                      roomInfo: SimpleMarathon(
-                          marathonSeq: -1,
-                          marathonRound: -1,
-                          marathonDist: 1000,
-                          marathonParticipate: 1000,
-                          marathonStart: DateTime.now(),
-                          marathonEnd: DateTime(2024, 5, 19),
-                          isDeleted: false),
-                    )
-                  ],
+                  children: [RecordList(), AvatarWidget(), EditProfile()],
                 ),
               ),
             ),

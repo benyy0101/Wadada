@@ -163,7 +163,7 @@ class _MultiDisWait extends State<MultiDisWait> {
 
     String concatenateTags(List<String> tags) {
       // 태그 리스트 -> 하나의 문자열로
-      return tags.map((tag) => '#$tag').join();
+      return tags.map((tag) => tag).join(' ');
     }
 
     return Scaffold(
@@ -230,6 +230,7 @@ class _MultiDisWait extends State<MultiDisWait> {
                           return null;
                         },
                         inputFieldBuilder: (context, inputFieldValues) {
+                          inputFieldValues.onTagChanged;
                           return Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 0),
                             child: TextField(
@@ -237,7 +238,10 @@ class _MultiDisWait extends State<MultiDisWait> {
                                   inputFieldValues.textEditingController,
                               focusNode: inputFieldValues.focusNode,
                               decoration: InputDecoration(
-                                hintText: '해시태그를 입력하세요',
+                                hintText: tagController.getTags == null ||
+                                        tagController.getTags!.isEmpty
+                                    ? '해시태그를 입력하세요'
+                                    : null,
                                 filled: true,
                                 fillColor: Colors.white,
                                 isDense: true,
@@ -328,8 +332,15 @@ class _MultiDisWait extends State<MultiDisWait> {
                                 contentPadding: const EdgeInsets.all(15.0),
                               ),
                               // 입력창에 뭐가 입력될 때 호출
-                              onChanged: (tag) {
+                              onChanged: (value) {
+                                inputFieldValues.onTagChanged(value);
+                                print("----------------------");
+                                controller.keyword.value =
+                                    concatenateTags(inputFieldValues.tags);
                                 controller.roomSearch(roomMode);
+                                // if (tagController.getTags != null) {
+
+                                // }
                               },
                               // 입력 완료되었을 때
                               onSubmitted: (String tag) {

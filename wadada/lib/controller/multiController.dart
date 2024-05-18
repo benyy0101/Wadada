@@ -116,6 +116,7 @@ class MultiController extends GetxController {
       if (keyword.value == '') {
         roomList.value = await repo.multiRoomGet(mode);
       } else {
+        print("----------------with keyword----------------------");
         roomList.value = await repo.multiRoomSearch(keyword.value);
       }
     } catch (e) {
