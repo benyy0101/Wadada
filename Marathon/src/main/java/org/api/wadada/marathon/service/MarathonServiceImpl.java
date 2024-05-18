@@ -79,7 +79,7 @@ public class MarathonServiceImpl implements MarathonService {
                 //marathonRoomManager.addRoom(new MarathonRoomDto(freshmarathon.getMarathonSeq()));
 
                 //추후 동시에 여러 마라톤 진행할 경우 해당 마라톤SEQ를 위와같이 넣어줘야 함
-                Marathon freshmarathon = null;
+                Marathon freshmarathon;
 
                 long delay = LocalDateTime.now().until(marathonCreateReq.getMarathonStart(), ChronoUnit.MILLIS);
 
@@ -99,6 +99,7 @@ public class MarathonServiceImpl implements MarathonService {
                     scheduledExecutor.schedule(() -> {
                         System.out.println("LocalDateTime.now() = " + LocalDateTime.now());
                         marathonRoomManager.sendStartMessage();
+                        freshmarathon.deleteSoftly();
                         CompletableFuture<Void> tasks = CompletableFuture.anyOf(
                                 //모든사람이 들어왔으면 시작
                                 CompletableFuture.runAsync(() -> {
@@ -133,6 +134,7 @@ public class MarathonServiceImpl implements MarathonService {
                     }, delay, TimeUnit.MILLISECONDS);
                 }
                 else{
+                    freshmarathon = null;
                     throw new RestApiException(CustomErrorCode.MARATHON_ROOM_STARTTIME_INVAILD);
                 }
 
