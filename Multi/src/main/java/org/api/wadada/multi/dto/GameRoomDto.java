@@ -44,6 +44,9 @@ public class GameRoomDto {
 
     private HashMap<String,Integer> disconnected;
     private HashMap<String,Integer> finished;
+    private int roomMode;
+    private double flagLat;
+    private double flagLng;
 
     public void addMember(PlayerInfo member) {
         if (playerInfo.containsKey(member.getName())) {

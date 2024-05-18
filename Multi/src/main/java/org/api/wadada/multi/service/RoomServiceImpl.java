@@ -300,7 +300,8 @@ public class RoomServiceImpl implements RoomService {
                 pointMessage.put("header", responseHeader);
                 pointMessage.put("body", responseBody);
                 String res = null; // HashMap을 JSON 문자열로 변환
-
+                roomDto.setFlagLat(point.getLatitude());
+                roomDto.setFlagLng(point.getLongitude());
                 try {
                     res = mapper.writeValueAsString(pointMessage);
                 } catch (JsonProcessingException e) {
@@ -378,6 +379,15 @@ public class RoomServiceImpl implements RoomService {
             finished.put(member.getMemberId(),0);
         }
 
+        // 좌표 찾아오기
+        Optional<Room> roomOptional = roomRepository.findById(curRoom.getRoomSeq());
+        Room room = roomOptional.get();
+        double tempLat = -1;
+        double tempLng = -1;
+        if(room.getRoomMode()==3){
+            tempLat = curRoom.getFlagLat();
+            tempLng = curRoom.getFlagLng();
+        }
 
         GameRoomDto curGame = GameRoomDto.builder()
                 .roomIdx(roomIdx)
@@ -386,6 +396,9 @@ public class RoomServiceImpl implements RoomService {
                 .playerInfo(infoConcurrentMap)
                 .disconnected(disconnected)
                 .finished(finished)
+                .roomMode(curRoom.getRoomMode())
+                .flagLat(tempLat)
+                .flagLng(tempLng)
                 .roomSeq(curRoom.getRoomSeq()).build();
         removeRoom(curRoom.getRoomSeq(), curRoom.getRoomIdx());
         //연결 끊었다가 새로하는 로직
@@ -445,10 +458,6 @@ public class RoomServiceImpl implements RoomService {
             if (roomDto.getRoomPoints().size() == roomDto.getMembers().size()) {
                 roomDto.getRoomPoints().notifyAll();
             }
-        }
-
-        for(LatLng e:roomDto.getRoomPoints()){
-            log.info(e.toString());
         }
     }
 

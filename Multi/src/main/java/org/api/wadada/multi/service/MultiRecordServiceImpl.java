@@ -17,8 +17,10 @@ import org.api.wadada.multi.dto.req.RequestDataReq;
 import org.api.wadada.multi.dto.res.*;
 import org.api.wadada.multi.entity.Member;
 import org.api.wadada.multi.entity.MultiRecord;
+import org.api.wadada.multi.entity.Room;
 import org.api.wadada.multi.repository.MemberRepository;
 import org.api.wadada.multi.repository.MultiRecordRepository;
+import org.api.wadada.multi.repository.RoomRepository;
 import org.elasticsearch.monitor.os.OsStats;
 import org.hibernate.annotations.Synchronize;
 import org.locationtech.jts.geom.Point;
@@ -39,6 +41,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class MultiRecordServiceImpl implements MultiRecordService {
     private final MultiRecordRepository multiRecordRepository;
+    private final RoomRepository roomRepository;
     private final MemberRepository memberRepository;
     private final RoomManager roomManager;
     private final GameRoomManager gameRoomManager;
@@ -129,7 +132,23 @@ public class MultiRecordServiceImpl implements MultiRecordService {
         GameRoomDto gameRoomDto = gameRoomManager.getAllRooms().get(requestDataReq.getRoomSeq());
         ConcurrentMap<String, PlayerInfo> infoConcurrentMap = gameRoomDto.getPlayerInfo();
         if(infoConcurrentMap.containsKey(member.getMemberId())){
-            gameRoomDto.updatePlayerInfo(member.getMemberId(),requestDataReq.getUserDist(), requestDataReq.getUserTime());
+            if(gameRoomDto.getRoomMode()!=3){  //거리, 시간
+                gameRoomDto.updatePlayerInfo(member.getMemberId(),requestDataReq.getUserDist(), requestDataReq.getUserTime());
+            }else{ //깃발모드
+                double userLat = requestDataReq.getUserLat();
+                double userLng = requestDataReq.getUserLng();
+                double flagLat = gameRoomDto.getFlagLat();
+                double flagLng = gameRoomDto.getFlagLng();
+                //위도 경도로 거리 계산(haversine)
+                double dLat = Math.toRadians(userLat - flagLat);
+                double dLon = Math.toRadians(userLng - flagLng);
+                double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
+                        + Math.cos(Math.toRadians(userLat)) * Math.cos(Math.toRadians(flagLat))
+                        * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+                double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+                int dist = (int) (6371 * c * 1000);
+                gameRoomDto.updatePlayerInfo(member.getMemberId(),-1*dist, requestDataReq.getUserTime());
+            }
         }
         else{
             throw new NullPointerException("멤버의 기록을 게임방에 넣지 못했습니다");
@@ -179,11 +198,15 @@ public class MultiRecordServiceImpl implements MultiRecordService {
                 rank.put(playerInfos.get(i).getMemberId(), i + 1);
             }
             for (PlayerInfo playerInfo : playerInfos) {
+                int dist = playerInfo.getDist();
+                if(dist<0){
+                    dist *= -1;
+                }
                 gameInfoRes.add(GameInfoRes.builder()
                         .memberRank(rank.get(playerInfo.getMemberId()))
                         .memberNickname(playerInfo.getName())
                         .memberProfile(playerInfo.getProfileImage())
-                        .memberDist(playerInfo.getDist())
+                        .memberDist(dist)
                         .memberTime(playerInfo.getTime())
                         .build());
             }

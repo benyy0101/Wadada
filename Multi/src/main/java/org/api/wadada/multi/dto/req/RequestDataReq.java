@@ -9,4 +9,6 @@ public class RequestDataReq {
     private String userName;
     private int userDist;
     private int userTime;
+    private double userLat;
+    private double userLng;
 }
