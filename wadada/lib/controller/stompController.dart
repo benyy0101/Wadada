@@ -96,6 +96,7 @@ class StompController extends GetxController {
   bool get1 = false;
   bool getflag = false;
   RxBool isOwner = false.obs;
+  ValueNotifier<bool> isOwnerNotifier = ValueNotifier<bool>(false);
   int numReady = 0;
   CurrentMember itMe = CurrentMember(
       memberNickname: 'memberNickname',
@@ -721,6 +722,7 @@ class StompController extends GetxController {
       // print(element.memberId);
       if (element.memberId == kakaoId && element.manager == true) {
         isOwner.value = true;
+        isOwnerNotifier.value = true;
       }
     }
     print('isOwner------------------------------');

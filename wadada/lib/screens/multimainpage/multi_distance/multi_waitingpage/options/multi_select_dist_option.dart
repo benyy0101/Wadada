@@ -165,7 +165,6 @@ class MultiSelectDistOptionState extends State<MultiSelectDistOption> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  if (widget.option_dis != '')
                   // 거리
                   Text(
                     widget.option_dis,
@@ -174,9 +173,7 @@ class MultiSelectDistOptionState extends State<MultiSelectDistOption> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  if (widget.option_dis != '')
                   SizedBox(height: 10),
-                  if (widget.option_dis != '')
                   Row(
                     children: [
                       SizedBox(

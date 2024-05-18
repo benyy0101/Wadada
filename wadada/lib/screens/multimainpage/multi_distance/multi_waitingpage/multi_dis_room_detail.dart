@@ -97,8 +97,8 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
       optionMetric = '분';
     } else {
       titleText = '만남모드 - 멀티';
-      roomOption = '';
-      optionMetric = '';
+      roomOption = '거리';
+      optionMetric = 'km';
     }
   }
 
@@ -387,15 +387,13 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                           // 첫 번째 컬럼
                           Column(
                             children: [
-                              SizedBox(height: 10),
-                              if (roomInfo.roomMode != 3)
-                                Icon(
-                                  Icons.location_on,
-                                  color: DARK_GREEN_COLOR,
-                                  size: 28,
-                                ),
-                              if (roomInfo.roomMode != 3)
-                                SizedBox(height: 20),
+                              SizedBox(height: 7),
+                              Icon(
+                                Icons.location_on,
+                                color: DARK_GREEN_COLOR,
+                                size: 28,
+                              ),
+                              SizedBox(height: 20),
                               Icon(
                                 Icons.people,
                                 color: DARK_GREEN_COLOR,
@@ -417,7 +415,6 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               SizedBox(height: 5),
-                              if (roomInfo.roomMode != 3)
                                 Text(
                                   roomOption,
                                   style: TextStyle(
@@ -425,8 +422,7 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                                       fontWeight: FontWeight.bold,
                                       color: DARK_GREEN_COLOR),
                                 ),
-                              if (roomInfo.roomMode != 3)
-                                SizedBox(height: 20),
+                              SizedBox(height: 20),
                               Text(
                                 '참여 인원',
                                 style: TextStyle(
@@ -450,7 +446,7 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               SizedBox(height: 5),
-                              if (roomInfo.roomMode == 1)
+                              if (roomInfo.roomMode == 1 || roomInfo.roomMode == 3)
                                 Text(
                                   '${roomInfo.roomDist} $optionMetric',
                                   style: TextStyle(
@@ -466,7 +462,7 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                                         fontWeight: FontWeight.bold,
                                         color: DARK_GREEN_COLOR),
                                   ),
-                              if (roomInfo.roomMode != 3)
+                              // if (roomInfo.roomMode != 3)
                                 SizedBox(height: 20),
                               //현재인원 받아와야 하는 곳
                               Obx(
@@ -570,74 +566,74 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                                 ValueListenableBuilder<bool>(
                                   valueListenable: centerloading,
                                   builder: (context, isButtonEnabled, _) {
-                                    print('isOwner: ${controller.isOwner.value}');
-                                    print('isButtonEnabled: $isButtonEnabled');
+                                    return ValueListenableBuilder<bool>(
+                                      valueListenable: controller.isOwnerNotifier,
+                                      builder: (context, isOwnerValue, _) {
+                                        print('isOwner: $isOwnerValue');
+                                        print('isButtonEnabled: $isButtonEnabled');
 
-                                    return ElevatedButton(
-                                      onPressed: controller.isOwner.value == false
-                                          ? () {}
-                                          : () {
-                                              print('Flag info button pressed');
-                                              print('활성화 $isButtonEnabled');
-                                              if (!isButtonEnabled) {
-                                                controller.isRecommendButtonPressed.value = true;
-                                                // if (showMap == true) {
-                                                //   setState(() {
-                                                //     showMap = false;
-                                                //   });
-                                                // }
-                                                setState(() {
-                                                  showMap = false;
-                                                });
+                                        return ElevatedButton(
+                                          onPressed: isOwnerValue == false
+                                              ? null
+                                              : () {
+                                                  print('Flag info button pressed');
+                                                  print('활성화 $isButtonEnabled');
+                                                  if (!isButtonEnabled) {
+                                                    controller.isRecommendButtonPressed.value = true;
+                                                    setState(() {
+                                                      showMap = false;
+                                                    });
+                                                  }
+                                                },
+                                          style: ButtonStyle(
+                                            backgroundColor: MaterialStateProperty.resolveWith<Color>((states) {
+                                              if (isButtonEnabled) {
+                                                return Colors.grey;
+                                              } else {
+                                                return DARK_GREEN_COLOR;
                                               }
-                                            },
-                                      style: ButtonStyle(
-                                        backgroundColor: MaterialStateProperty.resolveWith<Color>((states) {
-                                          if (isButtonEnabled) {
-                                            return Colors.grey;
-                                          } else {
-                                            return DARK_GREEN_COLOR;
-                                          }
-                                        }),
-                                        shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                                          RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(10),
+                                            }),
+                                            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                                              RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.circular(10),
+                                              ),
+                                            ),
+                                            padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
+                                              EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                                            ),
                                           ),
-                                        ),
-                                        padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
-                                          EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                                        ),
-                                      ),
-                                      child: const Text(
-                                        '목적지 추천',
-                                        style: TextStyle(fontSize: 18, color: Colors.white),
-                                      ),
+                                          child: const Text(
+                                            '목적지 추천',
+                                            style: TextStyle(fontSize: 18, color: Colors.white),
+                                          ),
+                                        );
+                                      },
                                     );
                                   },
                                 ),
                                 SizedBox(width: 50),
                                 ValueListenableBuilder<bool>(
-                        valueListenable: centerloading,
-                        builder: (context, isMapButtonVisible, _) {
-                          return Visibility(
-                            visible: !isMapButtonVisible && (controller.userlatitude.value != 0.0 || controller.userlongitude.value != 0.0),
-                            child: GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  showMap = !showMap;
-                                });
-                              },
-                              child: Container(
-                                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                                child: Text(
-                                  showMap ? '지도 닫기' : '지도 보기',
-                                  style: TextStyle(fontSize: 18, color: Colors.black),
+                                  valueListenable: centerloading,
+                                  builder: (context, isMapButtonVisible, _) {
+                                    return Visibility(
+                                      visible: !isMapButtonVisible && (controller.userlatitude.value != 0.0 || controller.userlongitude.value != 0.0),
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          setState(() {
+                                            showMap = !showMap;
+                                          });
+                                        },
+                                        child: Container(
+                                          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                                          child: Text(
+                                            showMap ? '지도 닫기' : '지도 보기',
+                                            style: TextStyle(fontSize: 18, color: Colors.black),
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  },
                                 ),
-                              ),
-                            ),
-                          );
-                        },
-                      ),
                               ],
                             ),
                             SizedBox(height: 10),

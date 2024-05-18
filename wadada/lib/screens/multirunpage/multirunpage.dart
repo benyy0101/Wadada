@@ -99,7 +99,7 @@ class _MultiRunState extends State<MultiRun> {
 
     // _initWebSocketListener();
 
-    myMap = MyMap(appKey: widget.appKey, key: myMapStateKey, centerplace: LatLng(widget.centerlat, widget.centerlong), moderoom: moderoom);
+    myMap = MyMap(appKey: widget.appKey, key: myMapStateKey, centerplace: LatLng(widget.centerlat, widget.centerlong), moderoom: moderoom, runmode: 2);
     onPageLoaded();
     // _onGameGoChanged();
     

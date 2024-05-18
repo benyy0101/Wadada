@@ -87,6 +87,7 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
       key: myMapStateKey,
       centerplace: LatLng(0.0, 0.0),
       moderoom: -1,
+      runmode: 1,
     );
 
     myMap.startLocationNotifier.addListener(() {

@@ -50,8 +50,8 @@ class MultiDistanceRoomFormState extends State<MultiDistanceRoomForm> {
       optionMetric = '분';
       modeText = '시간모드 - 멀티';
     } else {
-      roomOption = '';
-      optionMetric = '';
+      roomOption = '거리';
+      optionMetric = 'km';
       modeText = '만남모드 - 멀티';
     }
 
