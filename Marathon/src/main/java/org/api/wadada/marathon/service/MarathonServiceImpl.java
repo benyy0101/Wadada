@@ -99,7 +99,6 @@ public class MarathonServiceImpl implements MarathonService {
                     scheduledExecutor.schedule(() -> {
                         System.out.println("LocalDateTime.now() = " + LocalDateTime.now());
                         marathonRoomManager.sendStartMessage();
-                        freshmarathon.deleteSoftly();
                         CompletableFuture<Void> tasks = CompletableFuture.anyOf(
                                 //모든사람이 들어왔으면 시작
                                 CompletableFuture.runAsync(() -> {
@@ -125,7 +124,7 @@ public class MarathonServiceImpl implements MarathonService {
                             marathonRoomManager.sendMessage();
                             try {
                                 Thread.sleep(5000);
-                                getPlayerRank(0);
+                                getPlayerRank(freshmarathon.getMarathonSeq());
                             } catch (InterruptedException e) {
                                 throw new RuntimeException(e);
                             }
@@ -146,7 +145,7 @@ public class MarathonServiceImpl implements MarathonService {
 
                 // 지연 시간이 음수인 경우 (즉, 이미 지난 시간인 경우) 작업을 예약하지 않음
                 if (delay2 > 0) {
-                    scheduledExecutor.schedule(() -> stopPlayerRankUpdates(0), delay2, TimeUnit.MILLISECONDS);
+                    scheduledExecutor.schedule(() -> stopPlayerRankUpdates(freshmarathon.getMarathonSeq()), delay2, TimeUnit.MILLISECONDS);
                 }
                 else{
                     throw new RestApiException(CustomErrorCode.MARATHON_ROOM_ENDTIME_INVAILD);
@@ -280,11 +279,15 @@ public class MarathonServiceImpl implements MarathonService {
     // 종료 조건
     // (curConnection == MaxConnection) 자동 End API 호출  완주해도 늘어나고, 연결이 끊겨도 늘어남
     // || 누가 End API 호출
-    public void stopPlayerRankUpdates(int roomSeq) {
-        log.info(roomSeq+"게임이 종료되었습니다");
+    public void stopPlayerRankUpdates(int marathonSeq) {
+        log.info(marathonSeq+"게임이 종료되었습니다");
         //게임이 종료 되기 전 방 지우기
+        Optional<Marathon> curMarathon = marathonRepository.findById(marathonSeq);
+        if(!curMarathon.isPresent())
+            throw new RestApiException(CustomErrorCode.NO_ROOM);
+        curMarathon.get().deleteSoftly();
         marathonGameManager.RemoveMarathonGame();
-        ScheduledExecutorService scheduler = roomSchedulers.remove(roomSeq);
+        ScheduledExecutorService scheduler = roomSchedulers.remove(marathonSeq);
         if (scheduler != null) {
             scheduler.shutdown();
             try {
