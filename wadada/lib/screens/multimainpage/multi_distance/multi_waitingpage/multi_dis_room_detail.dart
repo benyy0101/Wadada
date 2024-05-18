@@ -610,7 +610,7 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                                             },
                                       style: ButtonStyle(
                                         backgroundColor: MaterialStateProperty.resolveWith<Color>((states) {
-                                          if (isButtonPressed) {
+                                          if (isButtonEnabled) {
                                             return Colors.grey;
                                           } else {
                                             return DARK_GREEN_COLOR;
