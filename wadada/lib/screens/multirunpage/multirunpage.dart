@@ -146,6 +146,12 @@ class _MultiRunState extends State<MultiRun> {
         }
       });
 
+      widget.controller.ranking.addListener(() {
+        setState(() {
+          rankingData = widget.controller.ranking.value;
+        });
+      });
+
       widget.controller.flagend.addListener(() {
         setState(() {
           flagranking = widget.controller.flagend.value;
