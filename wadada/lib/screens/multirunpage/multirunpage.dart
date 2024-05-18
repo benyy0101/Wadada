@@ -13,6 +13,7 @@ import 'package:wadada/repository/multiRepo.dart';
 import 'package:wadada/screens/multiendpage/multiendpage.dart';
 import 'package:wadada/screens/multirankpage/multirankpage.dart';
 import 'package:wadada/screens/multiresultpage/multiresultpage.dart';
+import 'package:wadada/screens/multirunpage/multierror.dart';
 import 'package:wadada/screens/singleresultpage/singleresultpage.dart';
 
 import 'package:wadada/screens/singlerunpage/component/clock.dart';
@@ -233,7 +234,7 @@ class _MultiRunState extends State<MultiRun> {
             }));
 
           if (response.statusCode == 200) {
-            final data = response.data as Map<String, dynamic>;
+            // final data = response.data as String;
             print('깃발 끝 통신 성공');
             // return data;
           } else if (response.statusCode == 204) {
@@ -365,6 +366,8 @@ class _MultiRunState extends State<MultiRun> {
 
       double elapsedSeconds = _clockKey.currentState!.getElapsedSeconds();
       int intelapsedseconds = elapsedSeconds.toInt();
+      double requestlat = myMap.currentLocationNotifier.value!.latitude;
+      double requestlong = myMap.currentLocationNotifier.value!.longitude;
 
       // int totalDistance1 = totalDistance.toInt();
 
@@ -373,6 +376,8 @@ class _MultiRunState extends State<MultiRun> {
         "userDist": totalDistanceInt,
         "userTime": intelapsedseconds,
         "userName": username1,
+        "userLat": requestlat,
+        "userLng": requestlong,
       });
 
       print('roomSeq111111: ${widget.controller.receivedRoomSeq}');
@@ -459,6 +464,8 @@ class _MultiRunState extends State<MultiRun> {
         if (myMap.startLocation != null) {
             print('보냄');
             sendLocationToServer();
+        } else {
+          Get.to(() => MultiError(controller: widget.controller));
         }
       });
     }

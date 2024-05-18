@@ -95,7 +95,7 @@ class StompController extends GetxController {
   bool isStart = false;
   bool get1 = false;
   bool getflag = false;
-  RxBool isOwner = false.obs;
+  ValueNotifier<bool> isOwner = ValueNotifier<bool>(false);
   int numReady = 0;
   CurrentMember itMe = CurrentMember(
       memberNickname: 'memberNickname',
@@ -425,7 +425,7 @@ class StompController extends GetxController {
                     }
 
                     if (resp['body']['message'] == "게임종료") {
-                      flagend.value = resp['body']['memberInfo'];
+                      flagend.value = ranking.value;
                     }
 
                   } catch (e) {

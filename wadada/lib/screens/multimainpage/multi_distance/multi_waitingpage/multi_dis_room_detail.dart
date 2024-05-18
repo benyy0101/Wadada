@@ -18,6 +18,7 @@ import 'package:wadada/repository/loginRepo.dart';
 import 'package:wadada/repository/multiRepo.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:wadada/screens/multimainpage/multi_main.dart';
+import 'package:wadada/screens/multirunpage/multierror.dart';
 import 'package:wadada/screens/multirunpage/multirunpage.dart';
 import 'package:wadada/screens/singlemainpage/single_main.dart';
 import 'package:wadada/screens/singlerunpage/single_free_run.dart';
@@ -248,7 +249,7 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
       // 위치 서비스가 비활성화되어 있으면 사용자에게 위치 서비스를 활성화하도록 요청
       serviceEnabled = await Geolocator.openLocationSettings();
       if (!serviceEnabled) {
-        // 사용자가 위치 서비스를 활성화하지 않으면 앱을 종료
+        Get.to(() => MultiError(controller: controller));
         return;
       }
     }
@@ -257,7 +258,8 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
     permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.deniedForever) {
       // 사용자가 위치 권한을 영구적으로 거부한 경우 설정 앱으로 이동하여 사용자가 권한을 변경할 수 있도록 안내
-      await Geolocator.openAppSettings();
+      Get.to(() => MultiError(controller: controller));
+      // await Geolocator.openAppSettings();
       return;
     }
 
@@ -268,29 +270,10 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
           permission != LocationPermission.always) {
         // 권한이 부여되지 않으면 사용자에게 메시지를 표시하고 앱을 종료
         // 권한을 받지 못하면 런을 시작할 수 없음
+        Get.to(() => MultiError(controller: controller));
         return;
       }
     }
-
-    // 위치 권한이 허용된 경우, 멀티런 페이지로 이동
-    String appKey = dotenv.env['APP_KEY'] ?? '';
-    // Navigator.push(
-    //   context,
-    //   MaterialPageRoute(
-    //     builder: (context) => MultiRun(
-    //       time: 0,
-    //       dist: roomInfo.roomDist,
-    //       appKey: appKey,
-    //       controller: controller,
-    //       multiController: multiController,
-    //       roomInfo: roomInfo,
-    //     ),
-    //   ),
-    // );
-    // ).then((_) {
-    //   controller.client.deactivate();
-    // });
-    // 위치 권한이 허용된 경우, 멀티런 페이지로 이동
 
     if (mounted) {
       // print('입력받은 시간 ${roomInfo.roomTime}');
