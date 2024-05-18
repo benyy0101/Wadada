@@ -4,6 +4,7 @@ import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 import 'package:wadada/common/component/lineChart.dart';
 import 'package:wadada/common/component/tabbars.dart';
 import 'package:wadada/common/const/colors.dart';
+import 'package:wadada/models/DistanceHeartbeat.dart';
 import 'package:wadada/screens/singlemainpage/single_main.dart';
 // import 'package:fl_chart/fl_chart.dart';
 
@@ -15,6 +16,7 @@ class SingleResult extends StatefulWidget {
   final String totaldist;
   final List<Map<String, double>> distanceSpeed;
   final List<Map<String, double>> distancePace;
+  final List<DistanceHeartbeat>? distanceHeartbeatList;
 
   const SingleResult({
     super.key,
@@ -25,6 +27,7 @@ class SingleResult extends StatefulWidget {
     required this.totaldist,
     required this.distanceSpeed,
     required this.distancePace,
+    this.distanceHeartbeatList,
   });
 
   @override
@@ -35,6 +38,11 @@ class _SingleResultState extends State<SingleResult> {
   KakaoMapController? mapController;
   Set<Polyline> polylines = {};
   Set<Marker> markers = {};
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -117,7 +125,7 @@ class _SingleResultState extends State<SingleResult> {
               _buildPaceLineChart(),
             ]),
             SizedBox(height: 30),
-            Column(crossAxisAlignment: CrossAxisAlignment.start, children: const [
+            Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text(
                 '심박수',
                 style: TextStyle(
@@ -126,7 +134,7 @@ class _SingleResultState extends State<SingleResult> {
                 ),
               ),
               SizedBox(height: 10),
-              // _buildPaceLineChart(),
+              _buildHearbeatLineChart(),
             ]),
             SizedBox(height: 40),
             GestureDetector(
@@ -356,17 +364,20 @@ class _SingleResultState extends State<SingleResult> {
     );
   }
 
-  // Widget _buildHeartLineChart() {
-  //   List<ChartData> myChartData = widget.distancePace.map((data) {
-  //     return ChartData(
-  //         data['dist']! / 1000, formatPaceAsDecimal(data['heartrate']!));
-  //   }).toList();
+  Widget _buildHearbeatLineChart() {
+    if (widget.distanceHeartbeatList == null || widget.distanceHeartbeatList!.isEmpty) {
+      return Text("심박수 데이터가 없습니다.", style: TextStyle(fontSize: 16, color: Colors.grey));
+    }
 
-  //   // LineChart 사용
-  //   return LineChart<ChartData>(
-  //     chartData: myChartData,
-  //     metrics: 'km/h',
-  //     graphType: 'heartrate',
-  //   );
-  // }
+    List<ChartData> myChartData = widget.distanceHeartbeatList!.map((data) {
+      return ChartData(data.distance / 1000, double.parse(data.heartbeat));
+    }).toList();
+
+
+    return LineChart<ChartData>(
+      chartData: myChartData,
+      metrics: 'bpm',
+      graphType: 'heartbeat',
+    );
+  }
 }

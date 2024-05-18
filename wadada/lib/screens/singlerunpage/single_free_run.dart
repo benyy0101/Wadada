@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:wadada/models/DistanceHeartbeat.dart';
 import 'package:watch_connectivity/watch_connectivity.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
@@ -56,8 +57,9 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
   late MyMap myMap;
 
   // 워치랑
-  final WatchConnectivityBase _watch = WatchConnectivity();
-  final MethodChannel channel = MethodChannel('watch_connectivity');
+  final _watch = WatchConnectivity();
+  static const eventChannel = EventChannel('com.ssafy.wadada/watch');
+  final MethodChannel channel = const MethodChannel('watch_connectivity');
   var _supported = false;
   var _paired = false;
   var _reachable = false;
@@ -66,6 +68,7 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
   String formattedPace = '';
   // 마지막으로 전송된 페이스 값
   String _lastSentPace = '';
+  List<DistanceHeartbeat> distanceHeartbeatList = [];
 
   // 워치에서 심박수 가져와
 
@@ -79,8 +82,7 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
 
     startTimers();
     // 여기서 슛?
-    initPlatformState();
-    
+    _enableEventReceiver();
 
     myMap = MyMap(
       appKey: widget.appKey,
@@ -109,23 +111,35 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
     myMapStateKey.currentState?.startGame();
     // sendLocationToServer();
     // 워치 초기화
-    _initWear();
+    _watch.sendMessage({
+      'formattedPace': "0'00",
+    });
     myMap.paceNotifier.addListener(_onPaceUpdated);
   }
 
-
-  // 워치 관련코드
-  void _initWear() {
-    _watch.messageStream.listen((message) => setState(() {
-      print("Received message: $message");
-      if (message.containsKey('heartRate')) {
+  void _enableEventReceiver() {
+    eventChannel.receiveBroadcastStream().listen(
+          (data) {
         setState(() {
-          print('아진짜 제발좀 되라 웨 않 되??????????????');
-          //heartRate = message['heartRate'].toString();
+          var heartbeat = jsonDecode(data);
+          if (heartbeat["heartbeat"] != null) {
+            // 문자열을 정수로 변환
+            int? heartbeatValue = int.tryParse(heartbeat["heartbeat"]);
+
+            if (heartbeatValue != null && heartbeatValue > 0) {
+              distanceHeartbeatList.add(DistanceHeartbeat(totalDistance, heartbeat["heartbeat"]));
+            }
+          } else {
+            print("Heartbeat data is missing or null");
+          }
         });
-      }
-      _connected = true;
-    }));
+      },
+      onError: (error) {
+        setState(() {
+          print("Error: ${error.message}");
+        });
+      },
+    );
   }
 
   void sendMessage(formattedPace) {
@@ -488,7 +502,8 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
             totaldist: formattedDistance,
             distanceSpeed: distanceSpeed,
             distancePace: distancePace,
-          ),
+            distanceHeartbeatList: distanceHeartbeatList.isNotEmpty ? distanceHeartbeatList : null,
+        ),
         ),
       );
     }
