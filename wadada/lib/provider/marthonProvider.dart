@@ -8,7 +8,7 @@ import 'package:wadada/models/profile.dart';
 class MarathonProvider {
   late Dio _dio;
   final storage = FlutterSecureStorage();
-
+  String accessToken = '';
   MarathonProvider() {
     _dio = Dio();
     _dio.options.baseUrl = 'https://k10a704.p.ssafy.io/Marathon';
@@ -19,6 +19,7 @@ class MarathonProvider {
   Future<void> setAuth() async {
     _dio.options.headers['Authorization'] =
         await storage.read(key: 'accessToken');
+    accessToken = _dio.options.headers['Authorization'];
     print(_dio.options.headers['Authorization']);
   }
 
@@ -68,7 +69,8 @@ class MarathonProvider {
 
   //MARAHTON-005:
   Future<Response<dynamic>> marathonEnd(Marathon data) async {
-    await setAuth();
+    //await setAuth();
+    _dio.options.headers['Authorization'] = accessToken;
     final response = await _dio.post('/result', data: data.toJson());
     return response;
   }

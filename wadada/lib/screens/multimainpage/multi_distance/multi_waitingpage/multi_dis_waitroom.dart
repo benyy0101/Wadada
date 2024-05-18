@@ -168,11 +168,11 @@ class _MultiDisWait extends State<MultiDisWait> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(titleText,
-            style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
+        title: Text(titleText, style: TextStyle(fontSize: 20)),
         backgroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
+        automaticallyImplyLeading: false,
       ),
       backgroundColor: Colors.white,
       body: SafeArea(

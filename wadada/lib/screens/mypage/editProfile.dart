@@ -6,7 +6,11 @@ import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:wadada/common/const/colors.dart';
+import 'package:wadada/controller/marathonController.dart';
 import 'package:wadada/controller/profileController.dart';
+import 'package:wadada/models/marathon.dart';
+import 'package:wadada/provider/marthonProvider.dart';
+import 'package:wadada/repository/marathonRepo.dart';
 import 'package:wadada/repository/profileRepo.dart';
 import 'package:wadada/screens/newprofilepage/widget/birthdate.dart';
 import 'package:wadada/screens/newprofilepage/widget/custom_text_form_field.dart';
@@ -340,7 +344,10 @@ class _MyButton extends StatelessWidget {
         const SizedBox(height: 20),
         TextButton(
           onPressed: () {
-            //여기 수정 버튼 필요
+            MarathonProvider provider = MarathonProvider();
+            MarathonRepository repo = MarathonRepository();
+            MarathonController controller = MarathonController();
+            controller.endMarathon();
           },
           style: TextButton.styleFrom(
             backgroundColor: GRAY_400,

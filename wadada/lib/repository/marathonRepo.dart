@@ -23,7 +23,7 @@ class MarathonRepository extends AbstractMarathonRepository {
   @override
   Future<int> endMarathon(Marathon marathon) async {
     Response res = await provider.marathonEnd(marathon);
-    throw res.data;
+    return res.data['marathonRecordSeq'];
   }
 
   @override

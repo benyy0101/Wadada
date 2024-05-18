@@ -147,25 +147,42 @@ class MyMapState extends State<MyMap> {
             // double roundedTotalDistanceKm = double.parse(totalDistanceKm.toStringAsFixed(2));
 
             // 속도 (m/s)
-            double currentSpeed = distance / timeDiff.inSeconds;
+            double currentSpeed = 0;
+            if (timeDiff.inSeconds != 0) {
+              currentSpeed = distance / timeDiff.inSeconds;
+            }
             widget.speedNotifier.value = currentSpeed * 3.6;
             // double roundedSpeed = double.parse(currentSpeed.toStringAsFixed(2));
 
             // 페이스(s/km)
-            double paceInSecondsPerKm = totalTime / (totalDistance / 1000);
+            double paceInSecondsPerKm = 0;
+            if (totalDistance != 0) {
+              paceInSecondsPerKm = totalTime / (totalDistance / 1000);
+            }
+
             widget.paceNotifier.value = paceInSecondsPerKm;
 
             widget._updateTotalDistance(distance);
 
-            widget.distanceSpeed.add({
-              "dist": totalDistance,
-              "speed": currentSpeed,
-            });
+            if (totalDistance.isFinite &&
+                !totalDistance.isNaN &&
+                currentSpeed.isFinite &&
+                !currentSpeed.isNaN) {
+              widget.distanceSpeed.add({
+                "dist": totalDistance,
+                "speed": currentSpeed,
+              });
+            }
 
-            widget.distancePace.add({
-              "dist": totalDistance,
-              "pace": paceInSecondsPerKm,
-            });
+            if (totalDistance.isFinite &&
+                !totalDistance.isNaN &&
+                paceInSecondsPerKm.isFinite &&
+                !paceInSecondsPerKm.isNaN) {
+              widget.distancePace.add({
+                "dist": totalDistance,
+                "pace": paceInSecondsPerKm,
+              });
+            }
           }
           // }
 

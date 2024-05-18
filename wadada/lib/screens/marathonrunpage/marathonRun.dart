@@ -77,7 +77,7 @@ class _MarathonState extends State<MarathonRun> {
     super.initState();
 
     myMap = MyMap(
-      appKey: dotenv.env['APP_KEY']!,
+      appKey: dotenv.env['APP_KEY'] ?? 'f508d67320677608aea64e5d6a9a3005',
       centerplace: LatLng(-1, -1),
       moderoom: -1,
     );
@@ -198,16 +198,28 @@ class _MarathonState extends State<MarathonRun> {
     List<LatLng> coordinates = myMap.getCoordinates();
     List<Map<String, double>> distanceSpeed = myMap.getdistanceSpeed();
     int total = 0;
-    distanceSpeed.forEach((element) {
-      total += element['speed']!.floor();
-    });
-    int meanSpeed = (total / distanceSpeed.length).floor();
+    int meanSpeed = 0;
+    int meanPace = 0;
+    if (distanceSpeed.length > 0) {
+      distanceSpeed.forEach((element) {
+        if (element['speed']!.isNaN || element['speed']!.isInfinite) {
+        } else {
+          total += element['speed']!.floor();
+        }
+      });
+      meanSpeed = (total / distanceSpeed.length).floor();
+    }
     List<Map<String, double>> distancePace = myMap.getdistancePace();
-    total = 0;
-    distancePace.forEach((item) {
-      total += item['pace']!.floor();
-    });
-    int meanPace = (total / distancePace.length).floor();
+    if (distancePace.length > 0) {
+      total = 0;
+      distancePace.forEach((item) {
+        if (item['pace']!.isNaN || item['pace']!.isInfinite) {
+        } else {
+          total += item['pace']!.floor();
+        }
+      });
+      meanPace = (total / distancePace.length).floor();
+    }
 
     MarathonController marathonController = Get.put(MarathonController());
     int myRank = -1;
@@ -217,6 +229,8 @@ class _MarathonState extends State<MarathonRun> {
       }
     });
     int totalDistanceInt = totalDistance.floor();
+    String? temp = await storage.read(key: 'accessToken');
+    print('날리기전 토큰 $temp');
 
     marathonController.marathon.value.marathonSeq = widget.roomInfo.marathonSeq;
     marathonController.marathon.value.marathonRecordRank = myRank;
@@ -263,24 +277,38 @@ class _MarathonState extends State<MarathonRun> {
 
       print('스피드 - $distanceSpeed');
       print('페이스 - $distancePace');
-
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => SingleResult(
-            elapsedTime: elapsedTime,
-            coordinates: coordinates,
-            startLocation: coordinates.first,
-            endLocation: coordinates.last,
-            totaldist: formattedDistance,
-            distanceSpeed: distanceSpeed,
-            distancePace: distancePace,
-            // controller: widget.controller,
-            // myRank: -1,
-            // endRank: const [],
-          ),
+      Get.to(
+        SingleResult(
+          elapsedTime: elapsedTime,
+          coordinates: coordinates,
+          startLocation: coordinates.first,
+          endLocation: coordinates.last,
+          totaldist: formattedDistance,
+          distanceSpeed: distanceSpeed,
+          distancePace: distancePace,
+          // controller: widget.controller,
+          // myRank: -1,
+          // endRank: const [],
         ),
       );
+
+      // Navigator.push(
+      //   context,
+      //   MaterialPageRoute(
+      //     builder: (context) => SingleResult(
+      //       elapsedTime: elapsedTime,
+      //       coordinates: coordinates,
+      //       startLocation: coordinates.first,
+      //       endLocation: coordinates.last,
+      //       totaldist: formattedDistance,
+      //       distanceSpeed: distanceSpeed,
+      //       distancePace: distancePace,
+      //       // controller: widget.controller,
+      //       // myRank: -1,
+      //       // endRank: const [],
+      //     ),
+      //   ),
+      // );
       // Navigator.push(context, MaterialPageRoute(builder: (context) => MultiRank()));
     }
   }
@@ -410,9 +438,12 @@ class _MarathonState extends State<MarathonRun> {
         appBar: (!isLoading && !iscountdown)
             ? AppBar(
                 bottom: PreferredSize(
-                    preferredSize: Size.fromHeight(25),
+                  preferredSize: Size.fromHeight(
+                      50), // Adjust the height to accommodate the padding
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                        bottom: 20), // Add padding below the buttons
                     child: Container(
-                      // height: 40,
                       decoration: BoxDecoration(
                         color: OATMEAL_COLOR,
                         borderRadius: BorderRadius.circular(8),
@@ -473,246 +504,252 @@ class _MarathonState extends State<MarathonRun> {
                           ),
                         ],
                       ),
-                    )),
+                    ),
+                  ),
+                ),
               )
             : null,
         body: Stack(children: [
           Container(
             padding: EdgeInsets.only(left: 30, right: 30),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                IndexedStack(
-                  index: currentTab,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(
-                          height: 20,
-                        ),
-                        progressBar,
-                        SizedBox(height: 35),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('이동거리',
-                                      style: TextStyle(
-                                        color: GRAY_500,
-                                        fontSize: 19,
-                                      )),
-                                  SizedBox(height: 5),
-                                  ValueListenableBuilder<double>(
-                                      valueListenable:
-                                          myMap.totalDistanceNotifier,
-                                      builder: (context, totalDistance, _) {
-                                        return Text('$formattedDistance km',
-                                            style: TextStyle(
-                                              color: GREEN_COLOR,
-                                              fontSize: 30,
-                                              fontWeight: FontWeight.w700,
-                                            ));
-                                      }),
-                                ],
-                              ),
-                            ),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('현재 페이스',
-                                      style: TextStyle(
-                                        color: GRAY_500,
-                                        fontSize: 19,
-                                      )),
-                                  SizedBox(height: 5),
-                                  ValueListenableBuilder<double>(
-                                      valueListenable: myMap.paceNotifier,
-                                      builder: (context, pace, _) {
-                                        String formattedPace = formatPace(pace);
-                                        return Text(formattedPace,
-                                            style: TextStyle(
-                                              color: GREEN_COLOR,
-                                              fontSize: 30,
-                                              fontWeight: FontWeight.w700,
-                                            ));
-                                      }),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 30),
-                        // 소요 시간
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(remainingTime == 0 ? '소요 시간' : '남은 시간',
-                                style: TextStyle(
-                                  color: GRAY_500,
-                                  fontSize: 19,
-                                )),
-                            SizedBox(height: 10),
-                            clockWidget,
-                          ],
-                        ),
-                        SizedBox(height: 30),
-                        // 현재 속도
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('현재 속도',
-                                style: TextStyle(
-                                  color: GRAY_500,
-                                  fontSize: 19,
-                                )),
-                            SizedBox(height: 5),
-                            ValueListenableBuilder<double>(
-                                valueListenable: myMap.speedNotifier,
-                                builder: (context, speed, _) {
-                                  return Text(
-                                      '${speed.toStringAsFixed(2)} km/h',
-                                      style: TextStyle(
-                                        color: GREEN_COLOR,
-                                        fontSize: 30,
-                                        fontWeight: FontWeight.w700,
-                                      ));
-                                }),
-                          ],
-                        ),
-                      ],
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(height: 20),
-                        Text(
-                          '나의 경로',
-                          style: TextStyle(
-                            color: GRAY_500,
-                            fontSize: 19,
+            child: SingleChildScrollView(
+              // Wrap with SingleChildScrollView
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  IndexedStack(
+                    index: currentTab,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            height: 20,
                           ),
-                        ),
-                        SizedBox(height: 10),
-                        myMap, // 지도 위젯
-                      ],
-                    ),
-                  ],
-                ),
-                SizedBox(height: 30),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('실시간 순위',
-                        style: TextStyle(
-                          color: GRAY_500,
-                          fontSize: 19,
-                        )),
-                    SizedBox(height: 15),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Color(0xffF6F4E9),
-                        borderRadius: BorderRadius.circular(20),
-                        boxShadow: const [
-                          BoxShadow(
-                            color: Colors.black12,
-                            spreadRadius: 1,
-                            blurRadius: 2,
-                            offset: Offset(1, 1),
+                          progressBar,
+                          SizedBox(height: 35),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text('이동거리',
+                                        style: TextStyle(
+                                          color: GRAY_500,
+                                          fontSize: 19,
+                                        )),
+                                    SizedBox(height: 5),
+                                    ValueListenableBuilder<double>(
+                                        valueListenable:
+                                            myMap.totalDistanceNotifier,
+                                        builder: (context, totalDistance, _) {
+                                          return Text('$formattedDistance km',
+                                              style: TextStyle(
+                                                color: GREEN_COLOR,
+                                                fontSize: 30,
+                                                fontWeight: FontWeight.w700,
+                                              ));
+                                        }),
+                                  ],
+                                ),
+                              ),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text('현재 페이스',
+                                        style: TextStyle(
+                                          color: GRAY_500,
+                                          fontSize: 19,
+                                        )),
+                                    SizedBox(height: 5),
+                                    ValueListenableBuilder<double>(
+                                        valueListenable: myMap.paceNotifier,
+                                        builder: (context, pace, _) {
+                                          String formattedPace =
+                                              formatPace(pace);
+                                          return Text(formattedPace,
+                                              style: TextStyle(
+                                                color: GREEN_COLOR,
+                                                fontSize: 30,
+                                                fontWeight: FontWeight.w700,
+                                              ));
+                                        }),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 30),
+                          // 소요 시간
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(remainingTime == 0 ? '소요 시간' : '남은 시간',
+                                  style: TextStyle(
+                                    color: GRAY_500,
+                                    fontSize: 19,
+                                  )),
+                              SizedBox(height: 10),
+                              clockWidget,
+                            ],
+                          ),
+                          SizedBox(height: 30),
+                          // 현재 속도
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('현재 속도',
+                                  style: TextStyle(
+                                    color: GRAY_500,
+                                    fontSize: 19,
+                                  )),
+                              SizedBox(height: 5),
+                              ValueListenableBuilder<double>(
+                                  valueListenable: myMap.speedNotifier,
+                                  builder: (context, speed, _) {
+                                    return Text(
+                                        '${speed.toStringAsFixed(2)} km/h',
+                                        style: TextStyle(
+                                          color: GREEN_COLOR,
+                                          fontSize: 30,
+                                          fontWeight: FontWeight.w700,
+                                        ));
+                                  }),
+                            ],
                           ),
                         ],
                       ),
-                      padding:
-                          const EdgeInsets.only(left: 20, right: 20, top: 10),
-                      width: 400,
-                      height: 200,
-                      child: stompController.rankingList.isEmpty
-                          ? Center(
-                              child: Text(
-                                '곧 실시간 순위가 나타납니다',
-                                style:
-                                    TextStyle(fontSize: 16, color: Colors.grey),
-                                textAlign: TextAlign.center,
-                              ),
-                            )
-                          : Column(
-                              children: [
-                                Expanded(child: Obx(() {
-                                  return Column(
-                                    children: stompController.rankingList
-                                        .map((ranking) {
-                                      return Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Row(
-                                          children: [
-                                            Text(
-                                              '${ranking.memberRank}',
-                                              style: TextStyle(
-                                                color: DARK_GREEN_COLOR,
-                                                fontSize: 23,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                            SizedBox(width: 20),
-                                            if (ranking.memberImage.isNotEmpty)
-                                              CircleAvatar(
-                                                backgroundImage: NetworkImage(
-                                                    ranking.memberImage),
-                                                radius: 20,
-                                              )
-                                            else
-                                              CircleAvatar(
-                                                backgroundColor: Colors.grey,
-                                                radius: 20,
-                                                child: Icon(
-                                                  Icons.person,
-                                                  color: Colors.white,
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(height: 20),
+                          Text(
+                            '나의 경로',
+                            style: TextStyle(
+                              color: GRAY_500,
+                              fontSize: 19,
+                            ),
+                          ),
+                          SizedBox(height: 10),
+                          myMap, // 지도 위젯
+                        ],
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 30),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('실시간 순위',
+                          style: TextStyle(
+                            color: GRAY_500,
+                            fontSize: 19,
+                          )),
+                      SizedBox(height: 15),
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Color(0xffF6F4E9),
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: const [
+                            BoxShadow(
+                              color: Colors.black12,
+                              spreadRadius: 1,
+                              blurRadius: 2,
+                              offset: Offset(1, 1),
+                            ),
+                          ],
+                        ),
+                        padding:
+                            const EdgeInsets.only(left: 20, right: 20, top: 10),
+                        width: 400,
+                        height: 200,
+                        child: stompController.rankingList.isEmpty
+                            ? Center(
+                                child: Text(
+                                  '곧 실시간 순위가 나타납니다',
+                                  style: TextStyle(
+                                      fontSize: 16, color: Colors.grey),
+                                  textAlign: TextAlign.center,
+                                ),
+                              )
+                            : Column(
+                                children: [
+                                  Expanded(child: Obx(() {
+                                    return Column(
+                                      children: stompController.rankingList
+                                          .map((ranking) {
+                                        return Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Row(
+                                            children: [
+                                              Text(
+                                                '${ranking.memberRank}',
+                                                style: TextStyle(
+                                                  color: DARK_GREEN_COLOR,
+                                                  fontSize: 23,
+                                                  fontWeight: FontWeight.bold,
                                                 ),
                                               ),
-                                            SizedBox(width: 15),
-                                            Text(
-                                              ranking.memberName,
-                                              style: TextStyle(
-                                                color: Colors.black,
-                                                fontSize: 20,
+                                              SizedBox(width: 20),
+                                              if (ranking
+                                                  .memberImage.isNotEmpty)
+                                                CircleAvatar(
+                                                  backgroundImage: NetworkImage(
+                                                      ranking.memberImage),
+                                                  radius: 20,
+                                                )
+                                              else
+                                                CircleAvatar(
+                                                  backgroundColor: Colors.grey,
+                                                  radius: 20,
+                                                  child: Icon(
+                                                    Icons.person,
+                                                    color: Colors.white,
+                                                  ),
+                                                ),
+                                              SizedBox(width: 15),
+                                              Text(
+                                                ranking.memberName,
+                                                style: TextStyle(
+                                                  color: Colors.black,
+                                                  fontSize: 20,
+                                                ),
                                               ),
-                                            ),
-                                            Spacer(),
-                                            Text(
-                                              '${(ranking.memberDist / 1000).toStringAsFixed(2)} km',
-                                              style: TextStyle(
-                                                color: DARK_GREEN_COLOR,
-                                                fontSize: 23,
-                                                fontWeight: FontWeight.bold,
+                                              Spacer(),
+                                              Text(
+                                                '${(ranking.memberDist / 1000).toStringAsFixed(2)} km',
+                                                style: TextStyle(
+                                                  color: DARK_GREEN_COLOR,
+                                                  fontSize: 23,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
                                               ),
-                                            ),
-                                          ],
-                                        ),
-                                      );
-                                    }).toList(),
-                                  );
-                                })),
-                              ],
-                            ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 50),
-                // 종료 버튼
-                GestureDetector(
-                  onTap: () {
-                    _showEndModal(context);
-                  },
-                  child: Container(
-                    width: double.maxFinite,
-                    decoration: BoxDecoration(
-                      color: GREEN_COLOR,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Padding(
+                                            ],
+                                          ),
+                                        );
+                                      }).toList(),
+                                    );
+                                  })),
+                                ],
+                              ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 50),
+                  // 종료 버튼
+                  GestureDetector(
+                    onTap: () {
+                      _showEndModal(context);
+                    },
+                    child: Container(
+                      width: double.maxFinite,
+                      decoration: BoxDecoration(
+                        color: GREEN_COLOR,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Padding(
                         padding: EdgeInsets.symmetric(
                           vertical: 15,
                         ),
@@ -722,10 +759,15 @@ class _MarathonState extends State<MarathonRun> {
                               color: Colors.white,
                               fontSize: 19,
                               fontWeight: FontWeight.bold,
-                            ))),
+                            )),
+                      ),
+                    ),
                   ),
-                ),
-              ],
+                  SizedBox(
+                    height: 50,
+                  )
+                ],
+              ),
             ),
           ),
           if (isLoading)

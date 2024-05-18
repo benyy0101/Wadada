@@ -10,12 +10,14 @@ import 'package:get/get.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:stomp_dart_client/stomp_dart_client.dart';
 import 'package:wadada/controller/marathonController.dart';
+import 'package:wadada/controller/profileController.dart';
 import 'package:wadada/models/marathon.dart';
 import 'package:wadada/models/multiroom.dart';
 import 'package:wadada/models/stomp.dart';
 import 'package:wadada/provider/multiProvider.dart';
 import 'package:wadada/repository/marathonRepo.dart';
 import 'package:wadada/repository/multiRepo.dart';
+import 'package:wadada/repository/profileRepo.dart';
 import 'package:wadada/screens/marathonrunpage/marathonRun.dart';
 import 'package:wadada/screens/multimainpage/multi_main.dart';
 import 'package:wadada/screens/multirunpage/multirunpage.dart';
@@ -341,8 +343,10 @@ class StompController extends GetxController {
                   //게임 페이지로 이동
                 } else if ((res['body']['action'] == '2')) {
                   //사람들 정보를 받으면 랭킹에 업데이트
+                  ProfileController profileController =
+                      Get.put(ProfileController(repo: ProfileRepository()));
                   String nickName =
-                      await storage.read(key: 'kakaoNickname') ?? '';
+                      profileController.profile.value.memberNickname;
                   print(nickName);
                   print('----------------------');
                   print(res['body']['result']);

@@ -3,8 +3,11 @@ import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:wadada/common/component/logout.dart';
 import 'package:wadada/common/const/colors.dart';
+import 'package:wadada/controller/marathonController.dart';
 import 'package:wadada/controller/profileController.dart';
+import 'package:wadada/models/marathon.dart';
 import 'package:wadada/repository/profileRepo.dart';
+import 'package:wadada/screens/marathonrunpage/marathonRun.dart';
 import 'package:wadada/screens/mypage/avartar.dart';
 import 'package:wadada/screens/mypage/editProfile.dart';
 import 'package:wadada/screens/mypage/recordList.dart';
@@ -36,6 +39,7 @@ class _MyPageLayoutState extends State<MyPageLayout>
   Widget build(BuildContext context) {
     ProfileController controller =
         Get.put(ProfileController(repo: ProfileRepository()));
+    MarathonController marathonController = Get.put(MarathonController());
     controller.getProfile();
     return Scaffold(
       backgroundColor: Colors.white,
@@ -84,7 +88,20 @@ class _MyPageLayoutState extends State<MyPageLayout>
                 height: 100,
                 child: TabBarView(
                   controller: _tabController,
-                  children: [RecordList(), AvatarWidget(), EditProfile()],
+                  children: [
+                    RecordList(),
+                    AvatarWidget(),
+                    MarathonRun(
+                      roomInfo: SimpleMarathon(
+                          marathonSeq: -1,
+                          marathonRound: -1,
+                          marathonDist: 1000,
+                          marathonParticipate: 1000,
+                          marathonStart: DateTime.now(),
+                          marathonEnd: DateTime(2024, 5, 19),
+                          isDeleted: false),
+                    )
+                  ],
                 ),
               ),
             ),
