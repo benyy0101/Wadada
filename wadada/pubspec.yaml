@@ -167,5 +167,11 @@ fonts:
         weight: 800
       - asset: assets/fonts/Pretendard-Black.ttf
         weight: 900
+  - family: Lundry
+    fonts:
+      - asset: assets/fonts/LundryGordic-Regular.ttf
+        weight: 400
+      - asset: assets/fonts/LundryGordic-Bold.ttf
+        weight: 700
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
