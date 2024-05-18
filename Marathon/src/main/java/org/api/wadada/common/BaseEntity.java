@@ -39,8 +39,8 @@ public class BaseEntity {
         this.updatedAt = LocalDateTime.now(); // 객체 업데이트 시, 현재 시각으로 업데이트
     }
 
-    @Transactional
     public void deleteSoftly() {
+        System.out.println("소프트딜리트 실행됨");
         this.isDeleted = Boolean.TRUE;
         updatedAt = LocalDateTime.now();
     }
