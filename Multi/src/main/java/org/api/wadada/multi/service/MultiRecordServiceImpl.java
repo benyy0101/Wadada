@@ -140,7 +140,7 @@ public class MultiRecordServiceImpl implements MultiRecordService {
     @Override
     public void getPlayerRank(int roomSeq) {
         roomSchedulers.computeIfAbsent(roomSeq, k -> Executors.newScheduledThreadPool(1))
-                .scheduleAtFixedRate(() -> updatePlayRank(roomSeq), 0, 6, TimeUnit.SECONDS);
+                .scheduleAtFixedRate(() -> updatePlayRank(roomSeq), 0, 4, TimeUnit.SECONDS);
     }
 
     public void updatePlayRank(int roomSeq){
@@ -219,8 +219,12 @@ public class MultiRecordServiceImpl implements MultiRecordService {
             try {
                 if (!scheduler.awaitTermination(1, TimeUnit.SECONDS)) {
                     scheduler.shutdownNow();
+                    String message = GameMessage.GAME_END_SUCCESS.toJson();
+                    messagingTemplate.convertAndSend("/sub/game/" + roomSeq, message);
                 }
             } catch (InterruptedException e) {
+                String message = GameMessage.GAME_END_FAIL.toJson();
+                messagingTemplate.convertAndSend("/sub/game/" + roomSeq, message);
                 Thread.currentThread().interrupt();
             }
         }

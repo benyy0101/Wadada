@@ -205,10 +205,10 @@ public class MultiController {
     public ResponseEntity<?> isEndGame(@PathVariable int roomSeq){
         try{
             multiRecordService.stopPlayerRankUpdates(roomSeq);
-            return new ResponseEntity<>("게임 종료 성공",HttpStatus.OK);
+            return new ResponseEntity<>(HttpStatus.OK);
         }catch (Exception e){
             e.printStackTrace();
-            return new ResponseEntity<>("게임 종료 실패",HttpStatus.NOT_ACCEPTABLE);
+            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
         }
     }
 
