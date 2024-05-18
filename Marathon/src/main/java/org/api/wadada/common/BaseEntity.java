@@ -2,6 +2,7 @@ package org.api.wadada.common;
 
 
 import jakarta.persistence.*;
+import jakarta.transaction.Transactional;
 import lombok.Getter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -38,6 +39,7 @@ public class BaseEntity {
         this.updatedAt = LocalDateTime.now(); // 객체 업데이트 시, 현재 시각으로 업데이트
     }
 
+    @Transactional
     public void deleteSoftly() {
         this.isDeleted = Boolean.TRUE;
         updatedAt = LocalDateTime.now();

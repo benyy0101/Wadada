@@ -67,7 +67,6 @@ public class MarathonServiceImpl implements MarathonService {
     }
 
     @Override
-    @Transactional
     public Integer startMarathon(Principal principal, MarathonCreateReq marathonCreateReq) {
         Optional<Member> optional = memberRepository.getMemberByMemberId(principal.getName());
         if (optional.isEmpty()) {
