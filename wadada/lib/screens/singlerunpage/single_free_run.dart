@@ -383,6 +383,18 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
       return averagePace;
     }
 
+    int calculateAverageHeartbeat(){
+      if (distanceHeartbeatList.isEmpty) return 0;
+      int totalBeat = 0;
+      int cnt= distanceHeartbeatList.length;
+      for(DistanceHeartbeat beat in distanceHeartbeatList){
+        totalBeat += int.parse(beat.heartbeat);
+      }
+      int averageBeat = (totalBeat / cnt) as int ;
+      return averageBeat;
+    }
+
+
     // // 초 단위의 페이스를 km/h로 변환
     // double convertPaceToKmPerHour(double paceInSecondsPerKm) {
     //     if (paceInSecondsPerKm == 0) return 0.0; // 0으로 나누는 오류 방지
@@ -433,10 +445,10 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
         "recordWay": jsonEncode(coordinates),
         "recordSpeed": jsonEncode(distanceSpeed),
         "recordPace": jsonEncode(distancePace),
-        "recordHeartbeat": jsonEncode(distancePace),
+        "recordHeartbeat": jsonEncode(distanceHeartbeatList),
         "recordMeanSpeed": intaveragespeed, // int
         "recordMeanPace": intaveragepaceinkmperhour, // int
-        "recordMeanHeartbeat": 0 // int
+        "recordMeanHeartbeat": calculateAverageHeartbeat() // int
     });
 
     try {
