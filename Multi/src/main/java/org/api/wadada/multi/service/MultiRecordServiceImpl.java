@@ -239,14 +239,14 @@ public class MultiRecordServiceImpl implements MultiRecordService {
         ScheduledExecutorService scheduler = roomSchedulers.remove(roomSeq);
         if (scheduler != null) {
             scheduler.shutdown();
+            String message = GameMessage.GAME_END_SUCCESS.toJson();
+            messagingTemplate.convertAndSend("/sub/game/" + roomSeq, message);
             try {
                 if (!scheduler.awaitTermination(1, TimeUnit.SECONDS)) {
                     scheduler.shutdownNow();
-                    String message = GameMessage.GAME_END_SUCCESS.toJson();
-                    messagingTemplate.convertAndSend("/sub/game/" + roomSeq, message);
                 }
             } catch (InterruptedException e) {
-                String message = GameMessage.GAME_END_FAIL.toJson();
+                message = GameMessage.GAME_END_FAIL.toJson();
                 messagingTemplate.convertAndSend("/sub/game/" + roomSeq, message);
                 Thread.currentThread().interrupt();
             }
