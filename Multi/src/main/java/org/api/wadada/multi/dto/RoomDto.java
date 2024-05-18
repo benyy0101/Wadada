@@ -43,6 +43,7 @@ public class RoomDto{
             throw new IllegalStateException("방에 삭제할 멤버가 존재하지 않습니다");
         }
         if(members.get(memberId).isManager()){
+            members.remove(memberId);
             return true;
         }
         members.remove(memberId);
