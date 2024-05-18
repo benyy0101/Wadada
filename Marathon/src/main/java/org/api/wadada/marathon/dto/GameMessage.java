@@ -16,13 +16,16 @@ public enum GameMessage {
     MARATHON_CONNECTED("웹소켓연결","1"),
     MARATHON_INFO_SEND("정보전송","2");
 
+
     private final String message; // Java 변수명은 소문자로 시작하는 것이 관례입니다.
     private final String actionEndpoint; // 클라이언트가 호출해야 할 API 엔드포인트
 
     public String toJson() {
         return String.format("{\"header\": {\"status\": 200, \"statusText\": \"OK\"}, \"body\": {\"message\": \"%s\", \"action\": \"%s\"}}", message, actionEndpoint);
     }
-
+    public String toErrorJson() {
+        return String.format("{\"header\": {\"status\": 500, \"statusText\": \"RUNTIME_EXCEPTION\"}, \"body\": {\"message\": \"%s\", \"action\": \"%s\"}}", message, actionEndpoint);
+    }
     public String toJson(int roomSeq) {
         String formattedEndpoint = actionEndpoint.replace("{roomSeq}", String.valueOf(roomSeq));
         return String.format("{\"header\": {\"status\": 200, \"statusText\": \"OK\"}, \"body\": {\"message\": \"%s\", \"action\": \"%s\", \"roomSeq\": %d}}", message, formattedEndpoint, roomSeq);

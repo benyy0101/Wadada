@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -43,6 +44,13 @@ public class MarathonRoomManager {
     private  String exchangeName;
     private  String routingKey;
 
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
+
+    private boolean isStarted;
+
+    private int marathonSeq;
+
     public MarathonRoomManager() {
         this.rooms = new ArrayList<>(MAX_ROOMS);
         for (int i = 0; i < MAX_ROOMS; i++) {
@@ -50,12 +58,15 @@ public class MarathonRoomManager {
         }
     }
 
-    public MarathonRoomManager(SimpMessagingTemplate messagingTemplate,RabbitMQConfig rabbitMQConfig,DynamicRabbitMqConfigurer dynamicRabbitMqConfigurer) {
+    public MarathonRoomManager(SimpMessagingTemplate messagingTemplate,RabbitMQConfig rabbitMQConfig,DynamicRabbitMqConfigurer dynamicRabbitMqConfigurer,LocalDateTime startTime, LocalDateTime endTime,int marathonSeq) {
         this.messagingTemplate = messagingTemplate;
         this.dynamicRabbitMqConfigurer = dynamicRabbitMqConfigurer;
         this.queueName = rabbitMQConfig.getQueueName();
         this.exchangeName = rabbitMQConfig.getExchangeName();
         this.routingKey = rabbitMQConfig.getRoutingKey();
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.marathonSeq = marathonSeq;
         this.rooms = new ArrayList<>(MAX_ROOMS);
         for (int i = 0; i < MAX_ROOMS; i++) {
             rooms.add(null);
@@ -64,10 +75,6 @@ public class MarathonRoomManager {
 
     private int addRoom(MarathonRoomDto room) throws Exception {
         rooms.set(++curRooms, room);
-
-        System.out.println("queueName = " + queueName+(curRooms+1));
-        System.out.println("exchangeName = " + exchangeName);
-        System.out.println("routingKey = " + routingKey+(curRooms+1));
         System.out.println("curRooms = " + curRooms);
         dynamicRabbitMqConfigurer.bindExistingQueueToExchange(queueName+(curRooms+1),exchangeName,routingKey+(curRooms+1));
 
@@ -117,15 +124,18 @@ public class MarathonRoomManager {
             memberInfoMap.put(memberInfo.getMemberName(),memberInfo);
         }
         REAL_max_Person++;
+
         return true;
     }
 
-    public void increaseRealCurPerson() {
+    public synchronized void increaseRealCurPerson() {
         this.REAL_cur_Person++;
+        notifyAll(); // 현재 객체(this, 즉 marathonRoomManager)의 모니터에 대해 notifyAll 호출
     }
 
     public void sendMessage() {
         String message = GameMessage.GAME_START.toJson();
+        isStarted = true;
         for (int i = 0; i <= curRooms; i++) {
             messagingTemplate.convertAndSend("/sub/attend/" + i, message);
         }

@@ -94,6 +94,9 @@ public class MarathonRecord extends BaseEntity {
         this.marathonRecordRank = multiRecordRank;
         this.marathonRecordIsWin =marathonRecordIsWin;
     }
+    public void updateStart(Point marathonRecordStart){
+        this.marathonRecordStart = marathonRecordStart;
+    }
 
 //short
     

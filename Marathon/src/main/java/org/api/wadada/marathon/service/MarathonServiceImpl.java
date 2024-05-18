@@ -29,6 +29,8 @@ import org.springframework.web.socket.messaging.SessionConnectEvent;
 
 import java.security.Principal;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.*;
@@ -72,65 +74,67 @@ public class MarathonServiceImpl implements MarathonService {
         }
         Member member = optional.get();
         if(!member.getMemberNickName().equals("123123")){
-            Marathon marathon = Marathon.builder().
-                    marathonGoal(marathonCreateReq.getMarathonGoal()).
-                    marathonStart(marathonCreateReq.getMarathonStart()).
-                    marathonTitle(marathonCreateReq.getMarathonTitle()).marathonEnd(marathonCreateReq.getMarathonEnd())
-                            .marathonText(marathonCreateReq.getMarathonText()).marathonParticipate(marathonCreateReq.getMarathonParticipate())
-                            .marathonType(marathonCreateReq.getMarathonType())
-                    .marathonDist(marathonCreateReq.getMarathonDist())
-                                    .marathonRound(marathonCreateReq.getMarathonRound()).build();
-            Marathon freshmarathon = marathonRepository.save(marathon);
             try {
 //                MarathonRoomManager marathonRoomManager = marathonGameManager.GetMarathonRoomManager();
                 //marathonRoomManager.addRoom(new MarathonRoomDto(freshmarathon.getMarathonSeq()));
 
                 //추후 동시에 여러 마라톤 진행할 경우 해당 마라톤SEQ를 위와같이 넣어줘야 함
-                marathonGameManager.CreateNewMarathonGame();
-                MarathonRoomManager marathonRoomManager = marathonGameManager.GetMarathonRoomManager();
+                Marathon freshmarathon = null;
 
                 long delay = LocalDateTime.now().until(marathonCreateReq.getMarathonStart(), ChronoUnit.MILLIS);
-                System.out.println("delay = " + delay);
-                System.out.println("LocalDateTime.now() = " + LocalDateTime.now());
 
+                if (delay > 0) {
 
-
-                scheduledExecutor.schedule(() -> {
-                    System.out.println("LocalDateTime.now() = " + LocalDateTime.now());
-                    marathonRoomManager.sendStartMessage();
-                    CompletableFuture<Void> tasks = CompletableFuture.anyOf(
-                            //모든사람이 들어왔으면 시작
-                            CompletableFuture.runAsync(() -> {
-                                synchronized (marathonRoomManager) {
-                                    while (marathonRoomManager.getREAL_cur_Person() < marathonRoomManager.getREAL_max_Person()) {
-                                        try {
-                                            marathonRoomManager.wait();
-                                        } catch (InterruptedException e) {
-                                            Thread.currentThread().interrupt();
+                    Marathon marathon = Marathon.builder().
+                            marathonGoal(marathonCreateReq.getMarathonGoal()).
+                            marathonStart(marathonCreateReq.getMarathonStart()).
+                            marathonTitle(marathonCreateReq.getMarathonTitle()).marathonEnd(marathonCreateReq.getMarathonEnd())
+                            .marathonText(marathonCreateReq.getMarathonText()).marathonParticipate(marathonCreateReq.getMarathonParticipate())
+                            .marathonType(marathonCreateReq.getMarathonType())
+                            .marathonDist(marathonCreateReq.getMarathonDist())
+                            .marathonRound(marathonCreateReq.getMarathonRound()).build();
+                    freshmarathon = marathonRepository.save(marathon);
+                    marathonGameManager.CreateNewMarathonGame(marathonCreateReq.getMarathonStart(),marathonCreateReq.getMarathonEnd(),freshmarathon.getMarathonSeq());
+                    MarathonRoomManager marathonRoomManager = marathonGameManager.GetMarathonRoomManager();
+                    scheduledExecutor.schedule(() -> {
+                        System.out.println("LocalDateTime.now() = " + LocalDateTime.now());
+                        marathonRoomManager.sendStartMessage();
+                        CompletableFuture<Void> tasks = CompletableFuture.anyOf(
+                                //모든사람이 들어왔으면 시작
+                                CompletableFuture.runAsync(() -> {
+                                    synchronized (marathonRoomManager) {
+                                        while (marathonRoomManager.getREAL_cur_Person() < marathonRoomManager.getREAL_max_Person()) {
+                                            try {
+                                                  marathonRoomManager.wait();
+                                            } catch (InterruptedException e) {
+                                                Thread.currentThread().interrupt();
+                                            }
                                         }
                                     }
-                                }
-                            }, executor),
-                            //or 30초지나면 시작
-                            CompletableFuture.runAsync(() -> {
-                                try {
-                                    TimeUnit.SECONDS.sleep(30);
-                                } catch (InterruptedException e)     {
-                                    Thread.currentThread().interrupt();
-                                }
-                            }, executor)
-                    ).thenRun(() -> {
-                        marathonRoomManager.sendMessage();
-                        // REST API 호출
-                        getPlayerRank(0);
-                    });
+                                }, executor),
+                                //or 30초지나면 시작
+                                CompletableFuture.runAsync(() -> {
+                                    try {
+                                        TimeUnit.SECONDS.sleep(30);
+                                    } catch (InterruptedException e)     {
+                                        Thread.currentThread().interrupt();
+                                    }
+                                }, executor)
+                        ).thenRun(() -> {
+                            marathonRoomManager.sendMessage();
+                            try {
+                                Thread.sleep(5000);
+                                getPlayerRank(0);
+                            } catch (InterruptedException e) {
+                                throw new RuntimeException(e);
+                            }
+                        });
 
-                }, delay, TimeUnit.MILLISECONDS);
-
-
-
-
-
+                    }, delay, TimeUnit.MILLISECONDS);
+                }
+                else{
+                    throw new RestApiException(CustomErrorCode.MARATHON_ROOM_STARTTIME_INVAILD);
+                }
 
                 LocalDateTime now = LocalDateTime.now();
                 LocalDateTime scheduledTime = marathonCreateReq.getMarathonEnd();
@@ -142,12 +146,13 @@ public class MarathonServiceImpl implements MarathonService {
                 if (delay2 > 0) {
                     scheduledExecutor.schedule(() -> stopPlayerRankUpdates(0), delay2, TimeUnit.MILLISECONDS);
                 }
-
-
+                else{
+                    throw new RestApiException(CustomErrorCode.MARATHON_ROOM_ENDTIME_INVAILD);
+                }
+                return freshmarathon.getMarathonSeq();
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                throw new RestApiException(CustomErrorCode.MARATHON_ROOM_NOT_CREATED);
             }
-            return freshmarathon.getMarathonSeq();
         }
         throw new SecurityException();
     }
@@ -168,9 +173,21 @@ public class MarathonServiceImpl implements MarathonService {
         //마라톤 SEQ에 해당하는 게임정보 확인
         MarathonRoomManager marathonRoomManager = marathonGameManager.GetMarathonRoomManager();
 
+        if (!marathonRoomManager.isStarted() ||
+                ZonedDateTime.of(marathonRoomManager.getStartTime(), ZoneId.systemDefault())
+                        .isBefore(ZonedDateTime.now(ZoneId.systemDefault())) || marathonSeq != marathonRoomManager.getMarathonSeq()) {
+            throw new RestApiException(CustomErrorCode.MARATHON_ROOM_NOT_ATTEND);
+        }
+
+        MarathonRecord marathonRecord = MarathonRecord.builder()
+                .marathonSeq(marathonSeq)
+                .member(member) // Member 인스턴스 설정
+                .build();
+
+        MarathonRecord optional1 = marathonRecordRepository.save(marathonRecord);
+
         //해당 게임에 Member 넣을 수 있으면 true 없으면 false
         if(marathonRoomManager.InsertMember(memberInfo)){
-            System.out.println("멤버 넣었숨");
             return marathonRoomManager.getCurRooms();
         }
         return -1;
@@ -183,25 +200,16 @@ public class MarathonServiceImpl implements MarathonService {
             Member member = memberOptional.get();
 
             Optional<MarathonRecord> optional = marathonRepository.findByMemberIdandMarathonSeq(member.getMemberSeq(),marathonGameStartReq.getMarathonSeq());
-            if(optional.isPresent()){
-                throw new RestApiException(CustomErrorCode.DUPLICATE_RECORD);
+            if(!optional.isPresent()){
+                throw new RestApiException(CustomErrorCode.MARATHON_ROOM_NOT_ATTEND);
             }
+            optional.get().updateStart(marathonGameStartReq.getMarathonRecordStart());
 
-
-            MarathonRecord marathonRecord = MarathonRecord.builder()
-                    .marathonRecordStart(marathonGameStartReq.getMarathonRecordStart())
-                    .marathonSeq(marathonGameStartReq.getMarathonSeq())
-                    .member(member) // Member 인스턴스 설정
-                    .build();
-
-            MarathonRecord freshRecord = marathonRecordRepository.save(marathonRecord);
             MarathonRoomManager marathonRoomManager = marathonGameManager.GetMarathonRoomManager();
 
             marathonRoomManager.increaseRealCurPerson();
-            System.out.println("marathonRoomManager.getREAL_cur_Person() = " + marathonRoomManager.getREAL_cur_Person());
-            System.out.println("marathonRoomManager.getREAL_max_Person() = " + marathonRoomManager.getREAL_max_Person());
 
-            return new MarathonGameStartRes(freshRecord.getMarathonRecordSeq());
+            return new MarathonGameStartRes(optional.get().getMarathonRecordSeq());
         } else {
             throw new NotFoundMemberException();
         }
@@ -230,7 +238,7 @@ public class MarathonServiceImpl implements MarathonService {
                     marathonGameEndReq.getMarathonRecordHeartbeat(),
                     marathonGameEndReq.isMarathonRecordIsWin());
 
-            return new MarathonGameEndRes();
+            return new MarathonGameEndRes(optional.get().getMarathonRecordSeq());
         } else {
             throw new NotFoundMemberException();
         }
@@ -273,7 +281,7 @@ public class MarathonServiceImpl implements MarathonService {
     public void stopPlayerRankUpdates(int roomSeq) {
         log.info(roomSeq+"게임이 종료되었습니다");
         //게임이 종료 되기 전 방 지우기
-        marathonGameManager.CreateNewMarathonGame();
+        marathonGameManager.RemoveMarathonGame();
         ScheduledExecutorService scheduler = roomSchedulers.remove(roomSeq);
         if (scheduler != null) {
             scheduler.shutdown();
