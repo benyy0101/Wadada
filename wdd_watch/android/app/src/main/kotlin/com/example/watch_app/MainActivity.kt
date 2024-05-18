@@ -13,10 +13,21 @@ import android.Manifest
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.plugin.common.MethodChannel
+import io.flutter.plugin.common.MethodCall
+import androidx.annotation.NonNull
+import com.google.android.gms.wearable.MessageClient
+import com.google.android.gms.wearable.Wearable
+import com.google.android.gms.wearable.NodeClient
+import java.io.Serializable
+import com.google.gson.Gson
 
 // 추가
 import android.util.Log
 import android.widget.Toast
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
+import java.io.ObjectInputStream
+import java.io.ObjectOutputStream
 
 
 class MainActivity: FlutterActivity(), SensorEventListener {
@@ -26,6 +37,9 @@ class MainActivity: FlutterActivity(), SensorEventListener {
     private var lastHeartRate: Float = 0.0f // 최근 심박수
     
     private lateinit var channelHeartRate: MethodChannel
+    private lateinit var messageClient: MessageClient
+    private lateinit var nodeClient: NodeClient
+
     // private lateinit var channelData: MethodChannel
 
     companion object {
@@ -71,11 +85,13 @@ class MainActivity: FlutterActivity(), SensorEventListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         //  저 센서 매니저 인스턴스를 얻어야 센서에 관련된 모든 작업 관리 가능함
         val sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
         val heartRateSensor = sensorManager.getDefaultSensor(Sensor.TYPE_HEART_RATE) // 여기서심박수 센서 겟함
-        
+
+        nodeClient = Wearable.getNodeClient(this)
+        messageClient = Wearable.getMessageClient(this)
+
         // Flutter랑 통신하는ㄱㅓ 
         channelHeartRate = MethodChannel(flutterEngine!!.dartExecutor.binaryMessenger, CHANNEL_HEARTRATE)
         channelHeartRate.setMethodCallHandler { call, result ->
@@ -175,9 +191,54 @@ class MainActivity: FlutterActivity(), SensorEventListener {
 
 
 
+    private val CHANNEL = "com.ssafy.wadada/communication"
 
 
-    
+    override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
+        super.configureFlutterEngine(flutterEngine)
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL).setMethodCallHandler {
+                call, result ->
+            when (call.method) {
+                "sendMessageToMobile" -> {
+                    val message = call.argument<String>("message")
+                    sendMessageToMobile(message ?: "")
+                    result.success("success success")
+                }
+                else -> result.notImplemented()
+            }
+        }
+    }
+
+    private fun sendMessageToMobile(content: String) {
+        val gson = Gson()
+        val messageData = gson.toJson(mapOf("heartbeat" to content))
+        val messageBytes = objectToBytes(messageData)
+
+        nodeClient.connectedNodes.addOnSuccessListener { nodes ->
+            for (node in nodes) {
+                messageClient.sendMessage(node.id, "/message_path", messageBytes).addOnSuccessListener {
+                    Log.d("SendMessage", "Message sent successfully")
+                }.addOnFailureListener { exception ->
+                    Log.e("SendMessage", "Message sending failed", exception)
+                }
+            }
+        }
+    }
+
+
+    private fun objectToBytes(`object`: Any): ByteArray {
+        val baos = ByteArrayOutputStream()
+        val oos = ObjectOutputStream(baos)
+        oos.writeObject(`object`)
+        return baos.toByteArray()
+    }
+
+    private fun objectFromBytes(bytes: ByteArray): Any {
+        val bis = ByteArrayInputStream(bytes)
+        val ois = ObjectInputStream(bis)
+        return ois.readObject()
+    }
+
 
 }
 

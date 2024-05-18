@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:wadada/commons/const/colors.dart';
+import 'package:wadada/screens/components/AndroidCommunication.dart';
 import 'dart:async';
-
 import 'package:watch_connectivity/watch_connectivity.dart';
 
 class runHeart extends StatefulWidget {
@@ -16,14 +16,15 @@ class _runHeartState extends State<runHeart> {
 
   // 코틀린에서 심박센서에서 가져온 값
   static const MethodChannel _channel = MethodChannel('com.ssafy.wadada/heart_rate');
+
   // 초기 심박수 일단 설정을 ??로 해두고
   String _heartRate = '??';
   // 컨트롤러 슛
   final StreamController<String> _streamController = StreamController<String>();
 
   // 워치앱에서 플러터앱으로 보낼 심박수 값 
-  final WatchConnectivityBase _watch = WatchConnectivity();
-  final MethodChannel _watchChannel = MethodChannel('watch_connectivity');
+  final _watch = WatchConnectivity();
+
   var _supported = false;
   var _paired = false;
   var _reachable = false;
@@ -44,8 +45,8 @@ class _runHeartState extends State<runHeart> {
 
     // 워치에서 앱으로 심박수 보내는
     // 워치 연결 상태 확인 및 세션 활성화
-    initPlatformState();
-    _initWear();
+    // initPlatformState();
+    // _initWear();
   }
 
   // 안드로이드 네이티브 코드에서 호출될 메서드 핸들러 (추가)
@@ -61,20 +62,14 @@ class _runHeartState extends State<runHeart> {
   }
 
 
-  // 워치 관련코드
-  void _initWear() {
-    _watch.messageStream.listen((message) => setState(() {
-      _connected = true;
-    }));
-  }
 
-  void sendMessage(_heartRate) {
-    final message = {
-      '_heartRate': _heartRate,
-    };
-    _watch.sendMessage(message);
-    setState(() => _log.add('메세지: $message'));
-
+  void sendMessage(String heartRate) {
+    final message = {'heartRate': heartRate};
+    _watch.sendMessage(message).then((_) {
+      print("Heart rate sent: $heartRate");
+    }).catchError((error) {
+      print("Failed to send heart rate: $error");
+    });
   }
 
   void sendContext(_heartRate) {
@@ -83,15 +78,6 @@ class _runHeartState extends State<runHeart> {
     };
     _watch.updateApplicationContext(context);
     setState(() => _log.add('보내진 context: $context'));
-  }
-
-  void initPlatformState() async {
-    _supported = await _watch.isSupported;
-    _paired = await _watch.isPaired;
-    _reachable = await _watch.isReachable;
-    setState(() {
-
-    });
   }
 
 

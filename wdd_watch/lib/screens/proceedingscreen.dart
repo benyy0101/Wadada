@@ -1,11 +1,15 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:wadada/screens/components/AndroidCommunication.dart';
 import 'package:wadada/screens/components/heartbeat.dart';
 import 'package:wadada/screens/components/pace.dart';
 import 'package:wadada/screens/components/pageindicator.dart';
 import 'package:wadada/screens/components/time.dart';
 import 'package:watch_connectivity/watch_connectivity.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 
 // 진행 중 화면
@@ -26,6 +30,14 @@ class _ProceedingScreenState extends State<ProceedingScreen>
   late PageController _pageViewController;
   late TabController _tabController;
   int _currentPageIndex = 0;
+  static const MethodChannel _channel = MethodChannel('com.ssafy.wadada/heart_rate');
+
+  String _heartRate = '??';
+  // 컨트롤러 슛
+  final StreamController<String> _streamController = StreamController<String>();
+
+  // 워치앱에서 플러터앱으로 보낼 심박수 값
+  final _watch = WatchConnectivity();
 
   final _log = <String>[];
 
@@ -33,13 +45,39 @@ class _ProceedingScreenState extends State<ProceedingScreen>
   final String _splitHours = '';
   final String _splitMinutes = '';
   final String _splitSeconds = '';
-  final _watch = WatchConnectivity();
+
+  void requestPermissions() async {
+    Map<Permission, PermissionStatus> statuses = await [
+      Permission.bluetooth,
+      Permission.location,
+      Permission.bluetoothScan,
+      Permission.bluetoothConnect,
+      Permission.bluetoothAdvertise,
+    ].request();
+
+    if (statuses[Permission.bluetooth]?.isGranted == true &&
+        statuses[Permission.location]?.isGranted == true &&
+        statuses[Permission.bluetoothScan]?.isGranted == true &&
+        statuses[Permission.bluetoothConnect]?.isGranted == true &&
+        statuses[Permission.bluetoothAdvertise]?.isGranted == true) {
+    } else {
+      print("Permissions not granted.");
+    }
+  }
 
   @override
   void initState() {
     super.initState();
     _pageViewController = PageController();
     _tabController = TabController(length: 4, vsync: this);
+    requestPermissions();
+    _channel.setMethodCallHandler(_handleMethod);
+    _streamController.stream.listen((heartRate) {
+      setState(() {
+        _heartRate = heartRate;
+        AndroidCommunication.sendMessageToMobile(heartRate.toString());
+      });
+    });
     _initWear();
   }
 
@@ -50,15 +88,6 @@ class _ProceedingScreenState extends State<ProceedingScreen>
           if (message.containsKey('formattedPace')) {
             _formattedPace = message['formattedPace'].toString();
           }
-          // if (message.containsKey('splitHours')) {
-          //   _splitHours = message['splitHours'];
-          // }
-          // if (message.containsKey('splitMinutes')) {
-          //   _splitMinutes = message['splitMinutes'];
-          // }
-          // if (message.containsKey('splitSeconds')) {
-          //   _splitSeconds = message['splitSeconds'].toString();
-          // }
         },
       ),
     );
@@ -73,11 +102,16 @@ class _ProceedingScreenState extends State<ProceedingScreen>
 
   }
 
-  // void sendContext(formattedPace) {
-  //   final context = {'formattedPace': formattedPace};
-  //   _watch.updateApplicationContext(context);
-  //   setState(() => _log.add('보내진 context: $context'));
-  // }
+  Future<dynamic> _handleMethod(MethodCall call) async {
+    switch (call.method) {
+      case "updateHeartRate":
+      // 심박수 값을 double로 파싱해
+        final double heartRateDouble = double.parse(call.arguments.toString());
+        final int heartRateInt = heartRateDouble.toInt(); // 67.0 이런식으로 나오는거 거슬려서 수정
+        _streamController.add(heartRateInt.toString());
+        break;
+    }
+  }
 
   @override
   void dispose() {
