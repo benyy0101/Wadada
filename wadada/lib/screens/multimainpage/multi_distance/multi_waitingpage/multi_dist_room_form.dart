@@ -56,6 +56,7 @@ class MultiDistanceRoomFormState extends State<MultiDistanceRoomForm> {
     }
 
     return GetBuilder<MultiController>(builder: (MultiController controller) {
+      controller.multiroom.roomMode = roomMode;
       return Scaffold(
         appBar: AppBar(
           title: Text(modeText,

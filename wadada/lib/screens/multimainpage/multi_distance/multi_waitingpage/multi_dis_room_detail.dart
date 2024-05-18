@@ -587,9 +587,12 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                                 ValueListenableBuilder<bool>(
                                   valueListenable: centerloading,
                                   builder: (context, isButtonEnabled, _) {
+                                    print('isOwner: ${controller.isOwner.value}');
+                                    print('isButtonEnabled: $isButtonEnabled');
+
                                     return ElevatedButton(
-                                      onPressed: isButtonEnabled && controller.isOwner.value
-                                          ? null
+                                      onPressed: controller.isOwner.value == false
+                                          ? () {}
                                           : () {
                                               print('Flag info button pressed');
                                               print('활성화 $isButtonEnabled');
@@ -607,7 +610,7 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                                             },
                                       style: ButtonStyle(
                                         backgroundColor: MaterialStateProperty.resolveWith<Color>((states) {
-                                          if (isButtonEnabled) {
+                                          if (isButtonPressed) {
                                             return Colors.grey;
                                           } else {
                                             return DARK_GREEN_COLOR;
