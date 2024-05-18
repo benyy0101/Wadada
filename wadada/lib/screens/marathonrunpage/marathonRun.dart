@@ -13,6 +13,7 @@ import 'package:wadada/models/multiroom.dart';
 import 'package:wadada/provider/multiProvider.dart';
 import 'package:wadada/repository/marathonRepo.dart';
 import 'package:wadada/repository/multiRepo.dart';
+import 'package:wadada/screens/mainpage/layout.dart';
 import 'package:wadada/screens/multirankpage/multirankpage.dart';
 import 'package:wadada/screens/multiresultpage/multiresultpage.dart';
 import 'package:wadada/screens/singleresultpage/singleresultpage.dart';
@@ -75,68 +76,15 @@ class _MarathonState extends State<MarathonRun> {
   void initState() {
     super.initState();
 
-    print('설정한 거리 ${widget.roomInfo.marathonDist}');
-
-    // _initWebSocketListener();
-
     myMap = MyMap(
       appKey: dotenv.env['APP_KEY']!,
       centerplace: LatLng(-1, -1),
       moderoom: -1,
     );
     onPageLoaded();
-    // _onGameGoChanged();
-
-    // widget.controller.gamego.addListener(_onGameGoChanged);
     startGameGoTimer();
     _subscribeToTotalDistance();
   }
-
-  // void updateRankingData(List<dynamic>? newRankingData) async {
-  //   if (newRankingData == null || newRankingData.isEmpty) return;
-
-  //   final exceedingMembers = rankingData!
-  //       .where((member) => member['memberDist'] >= (widget.dist * 1000))
-  //       .toList();
-  //   print('거리 초과하는 사람 $exceedingMembers');
-
-  //   if (exceedingMembers.isNotEmpty) {
-  //     final storage = FlutterSecureStorage();
-  //     String? username1 = await storage.read(key: 'kakaoNickname');
-  //     final myRank = rankingData!
-  //         .indexWhere((member) => member['memberNickname'] == username1);
-  //     List<dynamic>? endranking = newRankingData;
-
-  //     double elapsedSeconds = _clockKey.currentState!.getElapsedSeconds();
-  //     _clockKey.currentState!.setRunning(false);
-
-  //     List<LatLng> coordinates = myMap.getCoordinates();
-  //     List<Map<String, double>> distanceSpeed = myMap.getdistanceSpeed();
-  //     List<Map<String, double>> distancePace = myMap.getdistancePace();
-
-  //     Duration elapsedTime = Duration(seconds: elapsedSeconds.round());
-  //     String formattedElapsedTime = formatElapsedTime(elapsedTime);
-
-  //     // 게임 결과 페이지로 이동
-  //     Navigator.push(
-  //       context,
-  //       MaterialPageRoute(
-  //         builder: (context) => MultiRank(
-  //           elapsedTime: elapsedTime,
-  //           coordinates: coordinates,
-  //           startLocation: coordinates.first,
-  //           endLocation: coordinates.last,
-  //           totaldist: formattedDistance,
-  //           distanceSpeed: distanceSpeed,
-  //           distancePace: distancePace,
-  //           myRank: myRank + 1,
-  //           endRank: endranking,
-  //           controller: widget.controller,
-  //         ),
-  //       ),
-  //     );
-  //   }
-  // }
 
   void _subscribeToTotalDistance() {
     myMap.totalDistanceNotifier.addListener(() {
@@ -239,7 +187,7 @@ class _MarathonState extends State<MarathonRun> {
   Future<void> _sendRecordToServer() async {
     final startLocation = myMap.startLocation;
     final endLocation = myMap.endLocation;
-
+    String nickname = await storage.read(key: 'kakaoNickname') ?? "";
     double elapsedSeconds = _clockKey.currentState!.getElapsedSeconds();
     int intelapsedseconds = elapsedSeconds.toInt();
     print('초 시간? $intelapsedseconds');
@@ -249,27 +197,48 @@ class _MarathonState extends State<MarathonRun> {
 
     List<LatLng> coordinates = myMap.getCoordinates();
     List<Map<String, double>> distanceSpeed = myMap.getdistanceSpeed();
+    int total = 0;
+    distanceSpeed.forEach((element) {
+      total += element['speed']!.floor();
+    });
+    int meanSpeed = (total / distanceSpeed.length).floor();
     List<Map<String, double>> distancePace = myMap.getdistancePace();
+    total = 0;
+    distancePace.forEach((item) {
+      total += item['pace']!.floor();
+    });
+    int meanPace = (total / distancePace.length).floor();
 
     MarathonController marathonController = Get.put(MarathonController());
-
+    int myRank = -1;
+    stompController.rankingList.map((item) {
+      if (item.memberName == nickname) {
+        myRank = item.memberRank;
+      }
+    });
     int totalDistanceInt = totalDistance.floor();
 
-    MultiRoomGameEnd gameEndData = MultiRoomGameEnd(
-      roomSeq: 1, // 수정 필요
-      recordImage: 'your_record_image',
-      recordDist: totalDistanceInt,
-      recordTime: intelapsedseconds,
-      recordStartLocation:
-          "POINT(${startLocation?.latitude} ${startLocation?.longitude})",
-      recordEndLocation:
-          "POINT(${endLocation?.latitude} ${endLocation?.longitude})",
-      recordWay: jsonEncode(coordinates),
-      recordSpeed: jsonEncode(distanceSpeed),
-      recordPace: jsonEncode(distancePace),
-      recordHeartbeat: jsonEncode(distancePace),
-      recordRank: 1, // 수정 필요
-    );
+    marathonController.marathon.value.marathonSeq = widget.roomInfo.marathonSeq;
+    marathonController.marathon.value.marathonRecordRank = myRank;
+    marathonController.marathon.value.marathonRecordStart =
+        "POINT(${startLocation?.latitude} ${startLocation?.longitude})";
+    marathonController.marathon.value.marathonRecordWay =
+        jsonEncode(coordinates);
+    marathonController.marathon.value.marathonRecordEnd =
+        "POINT(${endLocation?.latitude} ${endLocation?.longitude})";
+    marathonController.marathon.value.marathonRecordDist = totalDistanceInt;
+    marathonController.marathon.value.marathonRecordTime = intelapsedseconds;
+    marathonController.marathon.value.marathonRecordImage = '';
+    marathonController.marathon.value.marathonRecordPace =
+        jsonEncode(distancePace);
+    marathonController.marathon.value.marathonRecordMeanPace = meanPace;
+    marathonController.marathon.value.marathonRecordSpeed =
+        jsonEncode(distanceSpeed);
+    marathonController.marathon.value.marathonRecordMeanSpeed = meanSpeed;
+    marathonController.marathon.value.marathonRecordHeartbeat = '';
+    marathonController.marathon.value.marathonRecordMeanHeartbeat = -1;
+    marathonController.marathon.value.marathonRecordIsWin =
+        myRank == 1 ? true : false;
 
     marathonController.endMarathon();
   }
@@ -432,7 +401,7 @@ class _MarathonState extends State<MarathonRun> {
       onTimerEnd: () {},
       key: _clockKey,
       time: remainingTime,
-      elapsedTimeNotifier: elapsedTimeNotifier, 
+      elapsedTimeNotifier: elapsedTimeNotifier,
     );
 
     return Scaffold(
