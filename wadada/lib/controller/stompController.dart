@@ -95,7 +95,7 @@ class StompController extends GetxController {
   bool isStart = false;
   bool get1 = false;
   bool getflag = false;
-  ValueNotifier<bool> isOwner = ValueNotifier<bool>(false);
+  RxBool isOwner = false.obs;
   int numReady = 0;
   CurrentMember itMe = CurrentMember(
       memberNickname: 'memberNickname',

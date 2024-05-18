@@ -157,7 +157,7 @@ class _MultiRunState extends State<MultiRun> {
         setState(() {
           flagranking = widget.controller.flagend.value;
         });
-        // updateFlagRanking(flagranking);
+        updateFlagRanking(flagranking);
       });
     }
   }
