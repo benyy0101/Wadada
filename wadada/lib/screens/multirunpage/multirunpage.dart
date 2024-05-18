@@ -57,8 +57,8 @@ class MultiRun extends StatefulWidget{
 
 class _MultiRunState extends State<MultiRun> {
   late StompClient stompClient;
-  bool isLoading = true;
-  bool iscountdown = false;
+  ValueNotifier<bool> isLoadingNotifier = ValueNotifier<bool>(true);
+  ValueNotifier<bool> isCountdownNotifier = ValueNotifier<bool>(false);
   int countdown = 5;
   Timer? countdownTimer;
   bool showCountdown = false;
@@ -93,6 +93,9 @@ class _MultiRunState extends State<MultiRun> {
 
     int moderoom = widget.roomInfo.roomMode;
 
+    // print('들어온 시간 ${widget.time}');
+    // print('들어온 거리 ${widget.dist}');
+
     // _initWebSocketListener();
 
     myMap = MyMap(appKey: widget.appKey, key: myMapStateKey, centerplace: LatLng(widget.centerlat, widget.centerlong), moderoom: moderoom);
@@ -115,7 +118,6 @@ class _MultiRunState extends State<MultiRun> {
           rankingData = widget.controller.ranking.value;
         });
         updateRankingData(rankingData);
-        // print('랭킹 데이터////////////////////// $rankingData');
       });
     }
     _subscribeToTotalDistance();
@@ -125,13 +127,17 @@ class _MultiRunState extends State<MultiRun> {
         setState(() {
           rankingData = widget.controller.ranking.value;
         });
-        // print('위젯 타임 ${widget.time}');
-        // print('현재 시간 ${elapsedTimeNotifier.value}');
-        // print('시간 모드 랭킹 데이터////////////////////// $rankingData');
       });
     }
 
-    if (widget.roomInfo.roomMode == 3) {
+    isLoadingNotifier.addListener(_checkFlagModeCondition);
+    isCountdownNotifier.addListener(_checkFlagModeCondition);
+
+    myMapStateKey.currentState?.startGame();
+  }
+
+  void _checkFlagModeCondition() {
+    if (widget.roomInfo.roomMode == 3 && !isLoadingNotifier.value && !isCountdownNotifier.value) {
       myMap.currentLocationNotifier.addListener(() {
         if (myMap.currentLocationNotifier.value != null) {
           setState(() {
@@ -144,11 +150,9 @@ class _MultiRunState extends State<MultiRun> {
         setState(() {
           flagranking = widget.controller.flagend.value;
         });
-        updateFlagRanking(flagranking);
+        // updateFlagRanking(flagranking);
       });
     }
-
-    myMapStateKey.currentState?.startGame();
   }
 
   void _onTimerEnd() {
@@ -196,16 +200,18 @@ class _MultiRunState extends State<MultiRun> {
   }
 
   void firstflag(LatLng? currentLocation) async {
-      double distance = Geolocator.distanceBetween(
+      double flagdistance = Geolocator.distanceBetween(
         currentLocation!.latitude,
         currentLocation.longitude,
         widget.centerlat,
         widget.centerlong,
       );
 
-      if (distance < 3) {
-        print('ㅇㅇ');
-        // print('ㅇㅇ');
+      print('깃발이랑 거리 $flagdistance');
+
+      if (flagdistance < 8) {
+        print('깃발이랑 거리 가까움');
+        // // print('ㅇㅇ');
         final dio = Dio();
         final url = Uri.parse('https://k10a704.p.ssafy.io/Multi/game/end/${widget.controller.receivedRoomSeq}');
         final storage = FlutterSecureStorage();
@@ -405,7 +411,7 @@ class _MultiRunState extends State<MultiRun> {
         countdown--;
         if (countdown <= 0) {
           timer.cancel();
-          iscountdown = false;
+          isCountdownNotifier.value = false;
 
           WidgetsBinding.instance.addPostFrameCallback((_) {
             _clockKey.currentState?.start();
@@ -481,8 +487,8 @@ class _MultiRunState extends State<MultiRun> {
 
   void closeLoadingAndStartCountdown() {
     setState(() {
-      isLoading = false;
-      iscountdown = true;
+      isLoadingNotifier.value = false;
+      isCountdownNotifier.value = true;
     });
     startTimers();
   }
@@ -857,7 +863,7 @@ class _MultiRunState extends State<MultiRun> {
       children: [Scaffold(
         backgroundColor: Colors.white,
         // appBar: isLoading? null : AppBar(
-        appBar: (!isLoading && !iscountdown)? AppBar(
+        appBar: (!isLoadingNotifier.value && !isCountdownNotifier.value)? AppBar(
         bottom: PreferredSize(
           preferredSize: Size.fromHeight(25), 
           child: 
@@ -1217,7 +1223,7 @@ class _MultiRunState extends State<MultiRun> {
         ),
       ),
 
-          if (isLoading)
+          if (isLoadingNotifier.value)
             Positioned.fill(
               child: Scaffold(
                 backgroundColor: OATMEAL_COLOR,
@@ -1235,7 +1241,7 @@ class _MultiRunState extends State<MultiRun> {
               ),
             ),
 
-          if (iscountdown)
+          if (isCountdownNotifier.value)
             Positioned.fill(
               child: Scaffold(
                 backgroundColor: OATMEAL_COLOR,

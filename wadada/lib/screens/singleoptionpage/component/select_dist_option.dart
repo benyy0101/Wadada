@@ -19,27 +19,28 @@ class SelectDistOption extends StatefulWidget{
 
 class SelectDistOptionState extends State<SelectDistOption> {
   int dist = 0;
-  int selectnum = 0;
-  final TextEditingController controller = TextEditingController(text: "0");
+  int distselectnum = 0;
+  final TextEditingController distcontroller = TextEditingController();
   String? errorText;
   bool isError = false;
 
   void updateErrorText() {
-    final value = controller.text;
-    // int? intValue = int.tryParse(value);
+    final value = distcontroller.text;
     if (value.startsWith('0') && value.length > 1 || value.isEmpty || int.tryParse(value) == null || int.tryParse(value) == 0) {
         errorText = '정수 값을 입력하세요.';
         isError = true;
     } else {
         errorText = null;
         isError = false;
+        dist = int.tryParse(value) ?? 0;
     }
 
     setState(() {});
-    // dist = double.tryParse(value) ?? 0.0;
     if (widget.onStateUpdated != null) {
       widget.onStateUpdated!(this);
+      print('onStateUpdated called: isError = $isError');
     }
+    // dist = double.tryParse(value) ?? 0.0;
   }
 
   @override
@@ -85,6 +86,7 @@ class SelectDistOptionState extends State<SelectDistOption> {
                         fontSize: 20,
                       ),
                       decoration: InputDecoration(
+                        hintText: '0',
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                           borderSide: BorderSide(
@@ -105,10 +107,10 @@ class SelectDistOptionState extends State<SelectDistOption> {
                         errorText: errorText,
                       ),
                       // textAlign: TextAlign.center,
-                      controller: controller,
+                      controller: distcontroller,
                       onChanged: (value) {
                         setState(() {
-                            selectnum = int.tryParse(value) ?? 0;
+                            distselectnum = int.tryParse(value) ?? 0;
                             updateErrorText();
                         });
                       },

@@ -56,16 +56,16 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
   late MyMap myMap;
 
   // 워치랑
-  final WatchConnectivityBase _watch = WatchConnectivity();
-  final MethodChannel channel = MethodChannel('watch_connectivity');
-  var _supported = false;
-  var _paired = false;
-  var _reachable = false;
-  bool _connected = false;
-  final _log = <String>[];
+  // final WatchConnectivityBase _watch = WatchConnectivity();
+  // final MethodChannel channel = MethodChannel('watch_connectivity');
+  // final _supported = false;
+  // final _paired = false;
+  // final _reachable = false;
+  // final bool _connected = false;
+  // final _log = <String>[];
   String formattedPace = '';
-  // 마지막으로 전송된 페이스 값
-  String _lastSentPace = '';
+  // // 마지막으로 전송된 페이스 값
+  // final String _lastSentPace = '';
 
   // 워치에서 심박수 가져와
 
@@ -79,7 +79,7 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
 
     startTimers();
     // 여기서 슛?
-    initPlatformState();
+    // initPlatformState();
     
 
     myMap = MyMap(
@@ -105,101 +105,101 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
       onTimerEnd: _onTimerEnd,
     );
     _subscribeToTotalDistance();
-    requestPermissions();
+    // requestPermissions();
     myMapStateKey.currentState?.startGame();
     // sendLocationToServer();
     // 워치 초기화
-    _initWear();
-    myMap.paceNotifier.addListener(_onPaceUpdated);
+    // _initWear();
+    // myMap.paceNotifier.addListener(_onPaceUpdated);
   }
 
 
   // 워치 관련코드
-  void _initWear() {
-    _watch.messageStream.listen((message) => setState(() {
-      _connected = true;
-    }));
-  }
+  // void _initWear() {
+  //   _watch.messageStream.listen((message) => setState(() {
+  //     _connected = true;
+  //   }));
+  // }
 
-  void sendMessage(formattedPace) {
-    final message = {
-      'formattedPace': formattedPace,
-      // 'splitHours': splitHours,
-      // 'splitMinutes': splitMinutes,
-      // 'splitSeconds': splitSeconds,
+  // void sendMessage(formattedPace) {
+  //   final message = {
+  //     'formattedPace': formattedPace,
+  //     // 'splitHours': splitHours,
+  //     // 'splitMinutes': splitMinutes,
+  //     // 'splitSeconds': splitSeconds,
      
-    };
-    _watch.sendMessage(message);
-    setState(() => _log.add('메세지: $message'));
+  //   };
+  //   _watch.sendMessage(message);
+  //   setState(() => _log.add('메세지: $message'));
 
-  }
+  // }
 
-  void sendContext(formattedPace) {
-    final context = {
-      'formattedPace': formattedPace,
+  // void sendContext(formattedPace) {
+  //   final context = {
+  //     'formattedPace': formattedPace,
 
-    };
-    _watch.updateApplicationContext(context);
-    setState(() => _log.add('보내진 context: $context'));
-  }
+  //   };
+  //   _watch.updateApplicationContext(context);
+  //   setState(() => _log.add('보내진 context: $context'));
+  // }
 
-  void initPlatformState() async {
-    _supported = await _watch.isSupported;
-    _paired = await _watch.isPaired;
-    _reachable = await _watch.isReachable;
-    setState(() {
+  // void initPlatformState() async {
+  //   _supported = await _watch.isSupported;
+  //   _paired = await _watch.isPaired;
+  //   _reachable = await _watch.isReachable;
+  //   setState(() {
 
-    });
-  }
+  //   });
+  // }
 
   // 워치 권한 허용 관련 코드
-  void requestPermissions() async {
-    Map<Permission, PermissionStatus> statuses = await [
-      Permission.bluetooth,
-      Permission.location,
-      Permission.bluetoothScan,
-      Permission.bluetoothConnect,
-      Permission.bluetoothAdvertise,
-    ].request();
+  // void requestPermissions() async {
+  //   Map<Permission, PermissionStatus> statuses = await [
+  //     Permission.bluetooth,
+  //     Permission.location,
+  //     Permission.bluetoothScan,
+  //     Permission.bluetoothConnect,
+  //     Permission.bluetoothAdvertise,
+  //   ].request();
 
-    if (statuses[Permission.bluetooth]?.isGranted == true &&
-        statuses[Permission.location]?.isGranted == true &&
-        statuses[Permission.bluetoothScan]?.isGranted == true &&
-        statuses[Permission.bluetoothConnect]?.isGranted == true &&
-        statuses[Permission.bluetoothAdvertise]?.isGranted == true) {
-      scanForDevices();
-    } else {
-      print("Permissions not granted.");
-    }
-  }
+  //   if (statuses[Permission.bluetooth]?.isGranted == true &&
+  //       statuses[Permission.location]?.isGranted == true &&
+  //       statuses[Permission.bluetoothScan]?.isGranted == true &&
+  //       statuses[Permission.bluetoothConnect]?.isGranted == true &&
+  //       statuses[Permission.bluetoothAdvertise]?.isGranted == true) {
+  //     scanForDevices();
+  //   } else {
+  //     print("Permissions not granted.");
+  //   }
+  // }
 
-  void scanForDevices() async {
-    FlutterBluePlus.startScan(timeout: Duration(seconds: 5));
-    try {
-      // Get devices connected to the system
-      List<BluetoothDevice> devices = await FlutterBluePlus.systemDevices;
+  // void scanForDevices() async {
+  //   FlutterBluePlus.startScan(timeout: Duration(seconds: 5));
+  //   try {
+  //     // Get devices connected to the system
+  //     List<BluetoothDevice> devices = await FlutterBluePlus.systemDevices;
 
-      if (devices.isEmpty) {
-        print("No system devices found.");
-      } else {
-        for (BluetoothDevice device in devices) {
-          print("System device: ${device.advName} (ID: ${device.platformName})");
-        }
-      }
-    } catch (e) {
-      print("Error retrieving system devices: $e");
-    }
-  }
+  //     if (devices.isEmpty) {
+  //       print("No system devices found.");
+  //     } else {
+  //       for (BluetoothDevice device in devices) {
+  //         print("System device: ${device.advName} (ID: ${device.platformName})");
+  //       }
+  //     }
+  //   } catch (e) {
+  //     print("Error retrieving system devices: $e");
+  //   }
+  // }
 
-  void _onPaceUpdated() {
-    // 페이스가 업뎃 시 호출
-    String currentFormattedPace = formatPace(myMap.paceNotifier.value);
-    // 현재 페이스가 마지막 전송 페이스랑 다를 경우에만 메시지 슛.
-    if (_lastSentPace != currentFormattedPace) {
-      sendMessage(currentFormattedPace);
-      _lastSentPace = currentFormattedPace; // 페이스를 업뎃
-    }
-  }
+  // void _onPaceUpdated() {
+  //   // 페이스가 업뎃 시 호출
+  //   String currentFormattedPace = formatPace(myMap.paceNotifier.value);
+  //   // 현재 페이스가 마지막 전송 페이스랑 다를 경우에만 메시지 슛.
+  //   if (_lastSentPace != currentFormattedPace) {
+  //     sendMessage(currentFormattedPace);
+  //     _lastSentPace = currentFormattedPace; // 페이스를 업뎃
+  //   }
+  // }
 
   void startTimers() {
     Timer(Duration(seconds: 3), () {
@@ -229,7 +229,7 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
   @override
   void dispose() {
     countdownTimer?.cancel();
-    myMap.paceNotifier.removeListener(_onPaceUpdated);
+    // myMap.paceNotifier.removeListener(_onPaceUpdated);
 
     myMapStateKey.currentState?.dispose();
     super.dispose();

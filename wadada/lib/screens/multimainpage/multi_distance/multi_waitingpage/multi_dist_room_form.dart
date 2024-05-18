@@ -40,21 +40,25 @@ class MultiDistanceRoomFormState extends State<MultiDistanceRoomForm> {
     Get.put(MultiController(repo: MultiRepository(provider: MultiProvider())));
     String roomOption;
     String optionMetric;
+    String modeText;
     if (roomMode == 1) {
       roomOption = '거리';
       optionMetric = 'km';
+      modeText = '거리모드 - 멀티';
     } else if (roomMode == 2) {
       roomOption = '시간';
       optionMetric = '분';
+      modeText = '시간모드 - 멀티';
     } else {
       roomOption = '';
       optionMetric = '';
+      modeText = '만남모드 - 멀티';
     }
 
     return GetBuilder<MultiController>(builder: (MultiController controller) {
       return Scaffold(
         appBar: AppBar(
-          title: const Text('거리모드 - 멀티',
+          title: Text(modeText,
               style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,

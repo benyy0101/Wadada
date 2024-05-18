@@ -293,6 +293,8 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
     // 위치 권한이 허용된 경우, 멀티런 페이지로 이동
 
     if (mounted) {
+      // print('입력받은 시간 ${roomInfo.roomTime}');
+      // print('입력받은 거리 ${roomInfo.roomDist}');
       String appKey = dotenv.env['APP_KEY'] ?? '';
       Navigator.push(
         context,
@@ -771,10 +773,12 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                     ),
                   );
                 } else {
+                  bool canStartGame = controller.numReady == controller.members.length - 1;
+                  bool isCenterLocationSet = widget.roomInfo.roomMode == 3 ? (centerlat != 0.0 && centerlong != 0.0) : true;
+
                   return TextButton(
                     onPressed:
-                        // controller.numReady == controller.members.length - 1 && (centerlat != 0.0 && centerlong != 0.0)
-                          controller.numReady == controller.members.length - 1
+                          canStartGame && isCenterLocationSet
                             ? () {
                                 controller.gameStart();
                               }
@@ -782,7 +786,7 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                     style: TextButton.styleFrom(
                       foregroundColor: Colors.white,
                       backgroundColor:
-                          controller.numReady == controller.members.length - 1
+                          canStartGame && isCenterLocationSet
                               ? GREEN_COLOR
                               : Colors.grey[400],
                       padding: EdgeInsets.only(

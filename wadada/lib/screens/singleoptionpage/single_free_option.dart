@@ -81,7 +81,10 @@ class SingleFreeModeState extends State<SingleOption> {
         }
 
         if (selectedTimeOptionState != null) {
-            int time = selectedTimeOptionState.time ?? 0;
+          print('시간모드ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ');
+          print('선택한 시간 ${selectedTimeOptionState.time}');
+          print('선택한 시간ㄴㄴㄴㄴㄴ $selectedTimeOptionState');
+            int time = selectedTimeOptionState.time;
             String appKey = dotenv.env['APP_KEY'] ?? '';
             Navigator.push(
               context,
@@ -90,7 +93,8 @@ class SingleFreeModeState extends State<SingleOption> {
               ),
             );
         } else if (selectedDistOptionState != null) {
-            int dist = selectedDistOptionState.dist ?? 0;
+          print('거리모드ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ');
+            int dist = selectedDistOptionState.dist;
             String appKey = dotenv.env['APP_KEY'] ?? '';
             Navigator.push(
               context,
