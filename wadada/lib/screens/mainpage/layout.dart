@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
@@ -52,43 +53,55 @@ class MainPageLayout extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                const Text(
-                  'Just Bring your Phone',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 30,
-                    color: GREEN_COLOR,
+                const SizedBox(height: 20),
+
+                SizedBox(
+                  height: 150,
+                  child: AnimatedTextKit(
+                    animatedTexts: [
+                      TypewriterAnimatedText(
+                        '나만의 속도로\nWADADA\n달려보세요',
+                        textStyle: const TextStyle(
+                          fontSize: 28.0,
+                          fontWeight: FontWeight.bold,
+                          // color: Color.fromARGB(255, 58, 57, 57),
+                          color: DARK_GREEN_COLOR,
+                        ),
+                        speed: const Duration(milliseconds: 200),
+                      ),
+                    ],
+                    repeatForever: true,
+                    pause: const Duration(milliseconds: 100),
+                    displayFullTextOnTap: true,
+                    stopPauseOnTap: false,
                   ),
                 ),
 
-                const SizedBox(height: 40),
+                const SizedBox(height: 10),
 
-                // Lottie.network(
-                //   'https://lottie.host/a2885500-601c-48ba-b6bc-28fd759bda31/0HzLMJCkqu.json',
-                //   width: 400,
-                //   height: 400,
-                //   fit: BoxFit.fill,
-                // ),
+
 
                 Lottie.asset(
                   'assets/animations/start_animation.json',
-                  width: 400,
-                  height: 400,
+                  width: 300,
+                  height: 300,
                   fit: BoxFit.fill,
                 ),
 
-                const SizedBox(height: 40),
+                const SizedBox(height: 60),
+
 
                 const Text(
-                  "LET's WDD",
+                  "로그인을 통해 서비스를 즐겨보세요!",
                   style: TextStyle(
                     fontWeight: FontWeight.w700,
-                    fontSize: 40,
-                    color: GREEN_COLOR,
+                    fontSize: 18,
+                    // color: GREEN_COLOR,
+                    color: DARK_GREEN_COLOR,
                   ),
                 ),
 
-                const SizedBox(height: 50),
+                const SizedBox(height: 30),
 
                 KakaoLoginButton(),
               ],
