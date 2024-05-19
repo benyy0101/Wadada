@@ -38,8 +38,7 @@ class InfoDetail extends StatelessWidget {
       }
     }
 
-    return SingleChildScrollView(
-      child: Container(
+    return Container(
       padding: EdgeInsets.all(45),
       // color: cardColor,
       child: Column(
@@ -54,7 +53,7 @@ class InfoDetail extends StatelessWidget {
           // SizedBox(height: 40),
           Image.asset(
             'assets/images/sports_medal_3d.png',
-            height: 200,
+            height: 250,
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -216,7 +215,6 @@ class InfoDetail extends StatelessWidget {
           ),
         ],
       ),
-    ),
     );
   }
 }
