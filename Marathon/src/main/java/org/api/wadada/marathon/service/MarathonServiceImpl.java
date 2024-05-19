@@ -279,6 +279,7 @@ public class MarathonServiceImpl implements MarathonService {
     // 종료 조건
     // (curConnection == MaxConnection) 자동 End API 호출  완주해도 늘어나고, 연결이 끊겨도 늘어남
     // || 누가 End API 호출
+    @Transactional
     public void stopPlayerRankUpdates(int marathonSeq) {
         log.info(marathonSeq+"게임이 종료되었습니다");
         //게임이 종료 되기 전 방 지우기
@@ -286,6 +287,8 @@ public class MarathonServiceImpl implements MarathonService {
         if(!curMarathon.isPresent())
             throw new RestApiException(CustomErrorCode.NO_ROOM);
         curMarathon.get().deleteSoftly();
+        System.out.println("curMarathon = " + curMarathon.get().getIsDeleted());
+        marathonRepository.save(curMarathon.get());
         marathonGameManager.RemoveMarathonGame();
         ScheduledExecutorService scheduler = roomSchedulers.remove(marathonSeq);
         if (scheduler != null) {

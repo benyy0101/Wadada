@@ -40,7 +40,6 @@ public class BaseEntity {
     }
 
     public void deleteSoftly() {
-        System.out.println("소프트딜리트 실행됨");
         this.isDeleted = Boolean.TRUE;
         updatedAt = LocalDateTime.now();
     }
