@@ -88,14 +88,6 @@ class SingleMain extends StatelessWidget {
               des: '코스를 뛰고, 기록에 도전하세요.',
               btn: '8',
               onTapAction: () {
-                // Get.to(SingleOption(
-                //   isDistMode: false,
-                // ));
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => SingleOption(isDistMode: false)),
-                );
               },
             ),
             // LogoutButton(),

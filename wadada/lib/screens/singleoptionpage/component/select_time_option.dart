@@ -19,13 +19,13 @@ class SelectTimeOption extends StatefulWidget{
 
 class SelectTimeOptionState extends State<SelectTimeOption> {
   int time = 0;
-  int selectnum = 0;
-  final TextEditingController controller = TextEditingController(text: "0");
+  int timeselectnum = 0;
+  final TextEditingController timecontroller = TextEditingController();
   String? errorText;
   bool isError = false;
 
   void updateErrorText() {
-    final value = controller.text;
+    final value = timecontroller.text;
 
     if (value.startsWith('0') && value.length > 1 || value.isEmpty || int.tryParse(value) == null || int.tryParse(value) == 0) {
         errorText = '정수 값을 입력하세요.';
@@ -36,6 +36,7 @@ class SelectTimeOptionState extends State<SelectTimeOption> {
     } else {
         errorText = null;
         isError = false;
+        time = int.tryParse(value) ?? 0;
     }
 
     setState(() {});
@@ -89,6 +90,7 @@ class SelectTimeOptionState extends State<SelectTimeOption> {
                       fontSize: 20,
                     ),
                     decoration: InputDecoration(
+                      hintText: '0',
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide(
@@ -109,10 +111,10 @@ class SelectTimeOptionState extends State<SelectTimeOption> {
                       errorText: errorText,
                     ),
                     // textAlign: TextAlign.center,
-                    controller: controller,
+                    controller: timecontroller,
                     onChanged: (value) {
                       setState(() {
-                          selectnum = int.tryParse(value) ?? 0;
+                          timeselectnum = int.tryParse(value) ?? 0;
                           updateErrorText();
                       });
                     },

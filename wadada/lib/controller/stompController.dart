@@ -98,6 +98,7 @@ class StompController extends GetxController {
   bool get1 = false;
   bool getflag = false;
   RxBool isOwner = false.obs;
+  ValueNotifier<bool> isOwnerNotifier = ValueNotifier<bool>(false);
   int numReady = 0;
   CurrentMember itMe = CurrentMember(
       memberNickname: 'memberNickname',
@@ -186,7 +187,7 @@ class StompController extends GetxController {
                 // 깃발
                 if (res['body']['message'] == "깃발요청") {
                   flagrequested.value = true;
-                  print('나 방장임? $isOwner');
+                  print('나 방장임? ${isOwner.value}');
                 }
 
                 if (res['body']['message'] == "사용자 위치 정보가 없습니다") {
@@ -199,7 +200,7 @@ class StompController extends GetxController {
                   userlatitude.value = res['body']['latitude'];
                   print('${userlatitude.value}');
                   userlongitude.value = res['body']['longitude'];
-                  print('방장인지 아닌지 확인 $isOwner');
+                  print('방장인지 아닌지 확인 ${isOwner.value}');
                 }
 
                 // attend
@@ -211,12 +212,6 @@ class StompController extends GetxController {
                 if (res['body']['message'] == "게임이 시작되었습니다") {
                   print("multigo");
                   gamego.value = true;
-                  // print('gamego 값 ${gamego.value}');
-                  // print('방장인지 아닌지 $isOwner');
-
-                  // if (isOwner) {
-                  // client.deactivate();
-                  // print('여기까지는 됨');
 
                   int newRoomSeq = res['body']['roomSeq'];
                   print('roomSeq $newRoomSeq');
@@ -362,7 +357,7 @@ class StompController extends GetxController {
 
                     mrepo.udpateDistance(0, nickName, dist, 100);
                   } else {
-                    print("사용자 이름 ------------------------------- ${nickName}");
+                    print("사용자 이름 ------------------------------- $nickName");
                     throw Exception("사용자가 정보에 없습니다.");
                   }
                 }
@@ -451,14 +446,15 @@ class StompController extends GetxController {
                     print('랭킹 ${ranking.value}');
                   }
 
-                  // if (resp['body']['message'] == "ㅇㅇ") {
-                  // flagend.value = resp['body']['memberInfo'];
-                  // }
-                } catch (e) {
-                  print('ㅇㅇ 요청 처리 중 에러 발생: $e');
-                  // return {};
-                }
-              } catch (e) {
+                    if (resp['body']['message'] == "게임종료") {
+                      flagend.value = ranking.value;
+                    }
+
+                  } catch (e) {
+                    print('ㅇㅇ 요청 처리 중 에러 발생: $e');
+                    // return {};
+                  }
+                } catch(e) {
                 print(e);
               }
             },
@@ -747,6 +743,7 @@ class StompController extends GetxController {
       // print(element.memberId);
       if (element.memberId == kakaoId && element.manager == true) {
         isOwner.value = true;
+        isOwnerNotifier.value = true;
       }
     }
     print('isOwner------------------------------');

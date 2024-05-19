@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:wadada/common/const/colors.dart';
 import 'package:wadada/screens/multirunpage/multirunpage.dart';
 import 'package:wadada/screens/singleoptionpage/component/select_dist_option.dart';
 import 'package:wadada/screens/singleoptionpage/component/select_time_option.dart';
+import 'package:wadada/screens/singleoptionpage/singleerror.dart';
 import 'package:wadada/screens/singlerunpage/single_free_run.dart';
 import 'package:geolocator/geolocator.dart';
 
@@ -50,59 +53,53 @@ class SingleFreeModeState extends State<SingleOption> {
     }
 
     if (!hasError) {
-      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-      if (!serviceEnabled) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('위치 서비스가 비활성화되어 있습니다.'),
-          ),
-        );
-        return;
-      }
-
-      LocationPermission permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-        if (permission == LocationPermission.denied) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('위치 권한을 허용해주세요.'),
-            ),
-          );
+        bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+        if (!serviceEnabled) {
+          serviceEnabled = await Geolocator.openLocationSettings();
+          if (!serviceEnabled) {
+            Get.to(() => SingleError());
+            return;
+          }
           return;
         }
-      }
 
-      if (permission == LocationPermission.deniedForever) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('위치 권한을 허용해주세요.'),
-          ),
-        );
-        return;
-      }
+        LocationPermission permission = await Geolocator.checkPermission();
+        if (permission == LocationPermission.denied) {
+          permission = await Geolocator.requestPermission();
+          if (permission != LocationPermission.whileInUse &&
+            permission != LocationPermission.always) {
+          // 권한이 부여되지 않으면 사용자에게 메시지를 표시하고 앱을 종료
+          // 권한을 받지 못하면 런을 시작할 수 없음
+          Get.to(() => SingleError());
+          return;
+        }
+        }
 
-      if (selectedTimeOptionState != null) {
-        int time = selectedTimeOptionState.time ?? 0;
-        String appKey = dotenv.env['APP_KEY'] ?? '';
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) =>
-                SingleFreeRun(dist: 0, time: time, appKey: appKey),
-          ),
-        );
-      } else if (selectedDistOptionState != null) {
-        int dist = selectedDistOptionState.dist ?? 0;
-        String appKey = dotenv.env['APP_KEY'] ?? '';
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) =>
-                SingleFreeRun(dist: dist, time: 0, appKey: appKey),
-          ),
-        );
-      }
+        if (permission == LocationPermission.deniedForever) {
+          Get.to(() => SingleError());
+          return;
+        }
+
+        if (selectedTimeOptionState != null) {
+            int time = selectedTimeOptionState.time;
+            String appKey = dotenv.env['APP_KEY'] ?? '';
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => SingleFreeRun(dist: 0, time: time, appKey: appKey),
+              ),
+            );
+        } else if (selectedDistOptionState != null) {
+          print('거리모드ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ');
+            int dist = selectedDistOptionState.dist;
+            String appKey = dotenv.env['APP_KEY'] ?? '';
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => SingleFreeRun(dist: dist, time: 0, appKey: appKey),
+              ),
+            );
+        }
     }
   }
 

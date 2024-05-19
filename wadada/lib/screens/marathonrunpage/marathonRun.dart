@@ -200,24 +200,24 @@ class _MarathonState extends State<MarathonRun> {
     int total = 0;
     int meanSpeed = 0;
     int meanPace = 0;
-    if (distanceSpeed.length > 0) {
-      distanceSpeed.forEach((element) {
+    if (distanceSpeed.isNotEmpty) {
+      for (var element in distanceSpeed) {
         if (element['speed']!.isNaN || element['speed']!.isInfinite) {
         } else {
           total += element['speed']!.floor();
         }
-      });
+      }
       meanSpeed = (total / distanceSpeed.length).floor();
     }
     List<Map<String, double>> distancePace = myMap.getdistancePace();
-    if (distancePace.length > 0) {
+    if (distancePace.isNotEmpty) {
       total = 0;
-      distancePace.forEach((item) {
+      for (var item in distancePace) {
         if (item['pace']!.isNaN || item['pace']!.isInfinite) {
         } else {
           total += item['pace']!.floor();
         }
-      });
+      }
       meanPace = (total / distancePace.length).floor();
     }
 
