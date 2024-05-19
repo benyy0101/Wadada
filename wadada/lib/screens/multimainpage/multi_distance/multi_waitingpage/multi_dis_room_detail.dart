@@ -497,16 +497,18 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                           return Padding(
                             padding: EdgeInsets.symmetric(
                                 vertical: 2, horizontal: 2),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: DARK_GREEN_COLOR,
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Center(
-                                child: Text(
-                                  tags[index],
-                                  style: TextStyle(
-                                      fontSize: 18, color: Colors.white),
+                            child: Flexible(
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: DARK_GREEN_COLOR,
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    tags[index],
+                                    style: TextStyle(
+                                        fontSize: 18, color: Colors.white),
+                                  ),
                                 ),
                               ),
                             ),
@@ -667,6 +669,7 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                                       child: KakaoMap(
                                         onMapCreated: (mapcontroller) {
                                           mapController = mapcontroller;
+                                          markers.clear();
                                           markers.add(Marker(
                                             markerId: 'flag',
                                             latLng:
