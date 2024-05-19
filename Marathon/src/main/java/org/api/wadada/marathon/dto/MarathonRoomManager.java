@@ -76,6 +76,8 @@ public class MarathonRoomManager {
     private int addRoom(MarathonRoomDto room) throws Exception {
         rooms.set(++curRooms, room);
         System.out.println("curRooms = " + curRooms);
+        System.out.println("queueName = " + queueName);
+        System.out.println("routingKey = " + routingKey);
         dynamicRabbitMqConfigurer.bindExistingQueueToExchange(queueName+(curRooms+1),exchangeName,routingKey+(curRooms+1));
 
         return curRooms;
@@ -110,7 +112,6 @@ public class MarathonRoomManager {
 
         //현재 방(채널)에 100명이 찼으면
         if (++curPerson % 100 == 0) {
-            curRooms++;
             //방 만들고
             curRooms = addRoom(new MarathonRoomDto());
             //해당 방에 멤버 넣기
