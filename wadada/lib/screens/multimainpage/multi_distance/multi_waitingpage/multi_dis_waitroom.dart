@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_state_manager/src/simple/get_state.dart';
 import 'package:textfield_tags/textfield_tags.dart';
+import 'package:wadada/common/component/tabbars.dart';
 import 'package:wadada/common/const/colors.dart';
 import 'package:wadada/controller/multiController.dart';
 import 'package:wadada/models/multiroom.dart';
@@ -173,6 +174,12 @@ class _MultiDisWait extends State<MultiDisWait> {
         elevation: 0,
         centerTitle: true,
         automaticallyImplyLeading: false,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Get.to(MainLayout());
+          },
+        ),
       ),
       backgroundColor: Colors.white,
       body: SafeArea(

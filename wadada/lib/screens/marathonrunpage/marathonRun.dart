@@ -420,7 +420,7 @@ class _MarathonState extends State<MarathonRun> {
     Widget progressBar = Container();
     int currentPageIndex = 0;
     int remainingTime =
-        widget.roomInfo.marathonEnd.difference(DateTime.now()).inSeconds;
+        widget.roomInfo.marathonEnd.difference(DateTime.now()).inMinutes;
     progressBar = DistBar(
         dist: widget.roomInfo.marathonDist,
         formattedDistance: double.parse(formattedDistance));

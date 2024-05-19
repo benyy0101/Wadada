@@ -758,11 +758,11 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                       controller.ready(roomInfo.roomIdx);
                     },
                     style: TextButton.styleFrom(
+                      minimumSize:
+                          ui.Size(MediaQuery.of(context).size.width * .9, 50),
                       foregroundColor: Colors.white,
                       backgroundColor:
-                          isButtonPressed ? Colors.grey[400] : GREEN_COLOR,
-                      padding: EdgeInsets.only(
-                          left: 155, right: 155, top: 10, bottom: 10),
+                          isButtonPressed ? GREEN_COLOR : Colors.grey[400],
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),

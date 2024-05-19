@@ -128,6 +128,8 @@ class _EditProfileState extends State<EditProfile> {
               GestureDetector(onTap: () {
                 showImagePickerOption(context);
               }, child: Obx(() {
+                print("------------current----------------");
+                print(profileController.profile.value.memberProfileImage);
                 return CircleAvatar(
                   radius: 100,
                   backgroundImage: NetworkImage(

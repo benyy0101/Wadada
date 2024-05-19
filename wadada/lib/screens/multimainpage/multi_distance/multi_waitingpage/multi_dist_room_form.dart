@@ -5,6 +5,7 @@ import 'package:wadada/models/multiroom.dart';
 import 'package:wadada/provider/multiProvider.dart';
 import 'package:wadada/repository/multiRepo.dart';
 import 'package:wadada/screens/multimainpage/multi_distance/multi_waitingpage/multi_dis_room_detail.dart';
+import 'package:wadada/screens/multimainpage/multi_distance/multi_waitingpage/multi_dis_waitroom.dart';
 import 'package:wadada/screens/multimainpage/multi_distance/multi_waitingpage/options/multi_select_dist_option.dart';
 
 class MultiDistanceRoomForm extends StatefulWidget {
@@ -59,6 +60,13 @@ class MultiDistanceRoomFormState extends State<MultiDistanceRoomForm> {
       controller.multiroom.roomMode = roomMode;
       return Scaffold(
         appBar: AppBar(
+          automaticallyImplyLeading: false,
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () {
+              Get.to(MultiDisWait(roomMode: roomMode));
+            },
+          ),
           title: Text(modeText,
               style: TextStyle(
                   fontSize: 28,
@@ -142,7 +150,8 @@ class MultiDistanceRoomFormState extends State<MultiDistanceRoomForm> {
                                 controller.multiroom.roomSecret;
                             print('=--------------=');
                             print(controller.cur.roomDist);
-                            print('방 모드------------ # ${controller.cur.roomMode}');
+                            print(
+                                '방 모드------------ # ${controller.cur.roomMode}');
                             print(controller.cur.roomMode);
                             Get.to(MultiRoomDetail(
                               roomInfo: controller.cur,
