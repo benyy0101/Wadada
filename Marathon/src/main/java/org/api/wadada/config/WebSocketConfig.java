@@ -55,8 +55,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     Message<byte[]> message = sessionDisconnectEvent.getMessage();
     StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
     StompCommand command = accessor.getCommand();
-    System.out.println(sessionDisconnectEvent);
-    System.out.println("연결 끊어짐!");
+
 
     }
 

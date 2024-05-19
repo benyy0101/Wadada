@@ -102,15 +102,15 @@ public class MarathonServiceImpl implements MarathonService {
                         CompletableFuture<Void> tasks = CompletableFuture.anyOf(
                                 //모든사람이 들어왔으면 시작
                                 CompletableFuture.runAsync(() -> {
-                                    synchronized (marathonRoomManager) {
-                                        while (marathonRoomManager.getREAL_cur_Person() < marathonRoomManager.getREAL_max_Person()) {
-                                            try {
-                                                  marathonRoomManager.wait();
-                                            } catch (InterruptedException e) {
-                                                Thread.currentThread().interrupt();
-                                            }
-                                        }
-                                    }
+//                                    synchronized (marathonRoomManager) {
+//                                        while (marathonRoomManager.getREAL_cur_Person() < marathonRoomManager.getREAL_max_Person()) {
+//                                            try {
+//                                                  marathonRoomManager.wait();
+//                                            } catch (InterruptedException e) {
+//                                                Thread.currentThread().interrupt();
+//                                            }
+//                                        }
+//                                    }
                                 }, executor),
                                 //or 30초지나면 시작
                                 CompletableFuture.runAsync(() -> {
@@ -283,14 +283,12 @@ public class MarathonServiceImpl implements MarathonService {
     // || 누가 End API 호출
     @Transactional
     public void stopPlayerRankUpdates(int marathonSeq) {
-        log.info(marathonSeq+"게임이 종료되었습니다");
         marathonGameManager.GetMarathonRoomManager().sendGameEndMessage();
         //게임이 종료 되기 전 방 지우기
         Optional<Marathon> curMarathon = marathonRepository.findById(marathonSeq);
         if(!curMarathon.isPresent())
             throw new RestApiException(CustomErrorCode.NO_ROOM);
         curMarathon.get().deleteSoftly();
-        System.out.println("curMarathon = " + curMarathon.get().getIsDeleted());
         marathonRepository.save(curMarathon.get());
         marathonGameManager.RemoveMarathonGame();
         ScheduledExecutorService scheduler = roomSchedulers.remove(marathonSeq);
