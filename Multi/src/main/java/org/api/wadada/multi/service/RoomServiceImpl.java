@@ -295,7 +295,11 @@ public class RoomServiceImpl implements RoomService {
                 HashMap<String, Object> responseHeader = new HashMap<>();
                 responseHeader.put("status", 200);
                 responseHeader.put("statusText", "OK");
-                FlagPointRes point = geneticAlgorithmService.findOptimalPoint(roomDto.getRoomPoints(),roomDto.getDist());
+                // 실제
+//                FlagPointRes point = geneticAlgorithmService.findOptimalPoint(roomDto.getRoomPoints(),roomDto.getDist());
+                // 시연
+                FlagPointRes point = geneticAlgorithmService.findOptimalPoint(roomDto.getRoomPoints(),0.3);
+
                 HashMap<String, Object> responseBody = new HashMap<>();
                 responseBody.put("latitude", point.getLatitude());
                 responseBody.put("longitude", point.getLongitude());

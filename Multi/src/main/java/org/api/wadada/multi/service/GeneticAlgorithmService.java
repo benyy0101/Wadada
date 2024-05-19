@@ -28,7 +28,7 @@ public class GeneticAlgorithmService {
         return R * c;
     }
 
-    private double fitness(LatLng individual, List<LatLng> points, int dist) {
+    private double fitness(LatLng individual, List<LatLng> points, double dist) {
         double penalty = 0;
         double totalDistance = 0;
         for (LatLng point : points) {
@@ -60,7 +60,7 @@ public class GeneticAlgorithmService {
     }
 
 
-    private LatLng select(List<LatLng> population, List<LatLng> points, int dist) {
+    private LatLng select(List<LatLng> population, List<LatLng> points, double dist) {
         Random rand = new Random();
         LatLng best = population.get(rand.nextInt(population.size()));
         double bestFitness = fitness(best, points, dist);
@@ -79,7 +79,7 @@ public class GeneticAlgorithmService {
 
 
     // 최대 최소 설정
-    public FlagPointRes findOptimalPoint(List<LatLng> points, int dist) {
+    public FlagPointRes findOptimalPoint(List<LatLng> points, double dist) {
         List<LatLng> population = new ArrayList<>();
         Random rand = new Random();
         for (int i = 0; i < POPULATION_SIZE; i++) {
