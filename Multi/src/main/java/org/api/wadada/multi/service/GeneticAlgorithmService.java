@@ -34,7 +34,7 @@ public class GeneticAlgorithmService {
         for (LatLng point : points) {
             double distance = haversineDistance(individual, point);
             totalDistance += distance;
-            if (distance < dist - 0.15 || distance > dist + 0.15) {
+            if (distance < dist - 0.01 || distance > dist + 0.01) {
                 penalty += 100000000;
             }
         }
