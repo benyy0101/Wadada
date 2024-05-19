@@ -147,11 +147,18 @@ public class MarathonRoomManager {
             messagingTemplate.convertAndSend("/sub/attend/" + i, message);
         }
     }
-    public void sendEndMessage() {
+    public void sendGameRunningMessage() {
         for (int i = 0; i <= curRooms; i++) {
 //            String message = GameMessage.MARATHON_INFO_SEND.toJson();
 //            message += rooms.get(i).getSentence();
             messagingTemplate.convertAndSend("/sub/attend/" + i, rooms.get(i).getSentence());
+        }
+    }
+    public void sendGameEndMessage() {
+        String message = GameMessage.GAME_START.toJson();
+        isStarted = true;
+        for (int i = 0; i <= curRooms; i++) {
+            messagingTemplate.convertAndSend("/sub/attend/" + i, message);
         }
     }
     public void sortMember() {

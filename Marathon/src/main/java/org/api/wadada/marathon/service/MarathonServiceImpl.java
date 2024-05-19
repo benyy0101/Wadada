@@ -274,7 +274,7 @@ public class MarathonServiceImpl implements MarathonService {
         MarathonRoomManager marathonRoomManager = marathonGameManager.GetMarathonRoomManager();
         marathonRoomManager.sortMember();
         marathonRoomManager.makeSentence();
-        marathonRoomManager.sendEndMessage();
+        marathonRoomManager.sendGameRunningMessage();
     }
     // 종료 조건
     // (curConnection == MaxConnection) 자동 End API 호출  완주해도 늘어나고, 연결이 끊겨도 늘어남
@@ -282,6 +282,7 @@ public class MarathonServiceImpl implements MarathonService {
     @Transactional
     public void stopPlayerRankUpdates(int marathonSeq) {
         log.info(marathonSeq+"게임이 종료되었습니다");
+        marathonGameManager.GetMarathonRoomManager().sendGameEndMessage();
         //게임이 종료 되기 전 방 지우기
         Optional<Marathon> curMarathon = marathonRepository.findById(marathonSeq);
         if(!curMarathon.isPresent())

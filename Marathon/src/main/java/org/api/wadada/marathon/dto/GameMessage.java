@@ -14,7 +14,8 @@ public enum GameMessage {
     GAME_FLAG_ERROR("사용자 위치정보가 없습니다",""),
 
     MARATHON_CONNECTED("웹소켓연결","1"),
-    MARATHON_INFO_SEND("정보전송","2");
+    MARATHON_INFO_SEND("정보전송","2"),
+    MARATHON_GAME_END("게임이끝났습니다","3");
 
 
     private final String message; // Java 변수명은 소문자로 시작하는 것이 관례입니다.
