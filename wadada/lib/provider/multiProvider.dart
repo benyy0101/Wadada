@@ -9,7 +9,7 @@ import 'package:wadada/models/profile.dart';
 class MultiProvider {
   late Dio _dio;
   final storage = FlutterSecureStorage();
-
+  String accessToken = '';
   MultiProvider() {
     _dio = Dio();
     _dio.options.baseUrl = 'https://k10a704.p.ssafy.io/Multi';
@@ -18,9 +18,13 @@ class MultiProvider {
   }
 
   Future<void> setAuth() async {
-    _dio.options.headers['Authorization'] =
-        await storage.read(key: 'accessToken');
-    print(_dio.options.headers['Authorization']);
+    String? temp = await storage.read(key: 'accessToken');
+    if (temp != null) {
+      _dio.options.headers['Authorization'] = temp;
+      accessToken = temp;
+    } else {
+      _dio.options.headers['Authorization'] = accessToken;
+    }
   }
 
   Future<Response<dynamic>> multiRoomGet(String mode) async {

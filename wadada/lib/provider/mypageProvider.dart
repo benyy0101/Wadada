@@ -5,7 +5,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:intl/intl.dart';
 import 'package:wadada/models/mypage.dart';
 
-const serverUrl = "";
+String accessToken = '';
 
 class MypageAPI {
   late Dio _dio;
@@ -18,8 +18,13 @@ class MypageAPI {
   }
 
   Future<void> setAuth() async {
-    _dio.options.headers['Authorization'] =
-        await storage.read(key: 'accessToken');
+    String? temp = await storage.read(key: 'accessToken');
+    if (temp != null) {
+      _dio.options.headers['Authorization'] = temp;
+      accessToken = temp;
+    } else {
+      _dio.options.headers['Authorization'] = accessToken;
+    }
   }
 
   Future<Response<dynamic>> getMonthlyRecord(DateTime date) async {
