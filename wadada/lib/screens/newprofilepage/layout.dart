@@ -107,23 +107,19 @@ class _NewProfileState extends State<NewProfileLayout> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const SizedBox(height: 110),
-            CircleAvatar(
-              radius: 100,
-              backgroundImage: _image != null
-                  ? MemoryImage(_image!)
-                  : const NetworkImage(
-                          "https://www.studiopeople.kr/common/img/default_profile.png")
-                      as ImageProvider,
+            GestureDetector(
+              onTap: () {
+                showImagePickerOption(context);
+              },
+              child: CircleAvatar(
+                radius: 100,
+                backgroundImage: _image != null
+                    ? MemoryImage(_image!)
+                    : const NetworkImage(
+                            "https://www.studiopeople.kr/common/img/default_profile.png")
+                        as ImageProvider,
+              ),
             ),
-            Positioned(
-                bottom: -0,
-                left: 140,
-                child: IconButton(
-                    onPressed: () {
-                      showImagePickerOption(context);
-                    },
-                    icon: const Icon(Icons.add_a_photo))),
-
             const SizedBox(height: 20),
 
             // 닉네임
@@ -333,6 +329,7 @@ class _MyButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -346,7 +343,7 @@ class _MyButton extends StatelessWidget {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20),
             ),
-            minimumSize: const Size(200, 60),
+            minimumSize: Size(width * .3, 60),
           ),
           child: const Text(
             "다음에 만들기",
@@ -367,7 +364,7 @@ class _MyButton extends StatelessWidget {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20),
             ),
-            minimumSize: const Size(200, 60),
+            minimumSize: Size(width * .3, 60),
           ),
           child: const Text(
             '생성하기',
@@ -377,6 +374,7 @@ class _MyButton extends StatelessWidget {
             ),
           ),
         ),
+        const SizedBox(width: 30)
       ],
     );
   }
