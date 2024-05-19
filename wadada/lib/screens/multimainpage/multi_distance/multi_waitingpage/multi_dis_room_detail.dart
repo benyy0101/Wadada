@@ -19,6 +19,7 @@ import 'package:wadada/repository/loginRepo.dart';
 import 'package:wadada/repository/multiRepo.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:wadada/screens/multimainpage/multi_main.dart';
+import 'package:wadada/screens/multirunpage/multierror.dart';
 import 'package:wadada/screens/multirunpage/multirunpage.dart';
 import 'package:wadada/screens/singlemainpage/single_main.dart';
 import 'package:wadada/screens/singlerunpage/single_free_run.dart';
@@ -97,8 +98,8 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
       optionMetric = '분';
     } else {
       titleText = '만남모드 - 멀티';
-      roomOption = '';
-      optionMetric = '';
+      roomOption = '거리';
+      optionMetric = 'km';
     }
   }
 
@@ -248,7 +249,7 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
       // 위치 서비스가 비활성화되어 있으면 사용자에게 위치 서비스를 활성화하도록 요청
       serviceEnabled = await Geolocator.openLocationSettings();
       if (!serviceEnabled) {
-        // 사용자가 위치 서비스를 활성화하지 않으면 앱을 종료
+        Get.to(() => MultiError(controller: controller));
         return;
       }
     }
@@ -257,7 +258,8 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
     permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.deniedForever) {
       // 사용자가 위치 권한을 영구적으로 거부한 경우 설정 앱으로 이동하여 사용자가 권한을 변경할 수 있도록 안내
-      await Geolocator.openAppSettings();
+      Get.to(() => MultiError(controller: controller));
+      // await Geolocator.openAppSettings();
       return;
     }
 
@@ -268,31 +270,14 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
           permission != LocationPermission.always) {
         // 권한이 부여되지 않으면 사용자에게 메시지를 표시하고 앱을 종료
         // 권한을 받지 못하면 런을 시작할 수 없음
+        Get.to(() => MultiError(controller: controller));
         return;
       }
     }
 
-    // 위치 권한이 허용된 경우, 멀티런 페이지로 이동
-    String appKey = dotenv.env['APP_KEY'] ?? '';
-    // Navigator.push(
-    //   context,
-    //   MaterialPageRoute(
-    //     builder: (context) => MultiRun(
-    //       time: 0,
-    //       dist: roomInfo.roomDist,
-    //       appKey: appKey,
-    //       controller: controller,
-    //       multiController: multiController,
-    //       roomInfo: roomInfo,
-    //     ),
-    //   ),
-    // );
-    // ).then((_) {
-    //   controller.client.deactivate();
-    // });
-    // 위치 권한이 허용된 경우, 멀티런 페이지로 이동
-
     if (mounted) {
+      // print('입력받은 시간 ${roomInfo.roomTime}');
+      // print('입력받은 거리 ${roomInfo.roomDist}');
       String appKey = dotenv.env['APP_KEY'] ?? '';
       Navigator.push(
         context,
@@ -403,14 +388,13 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                           // 첫 번째 컬럼
                           Column(
                             children: [
-                              SizedBox(height: 10),
-                              if (roomInfo.roomMode != 3)
-                                Icon(
-                                  Icons.location_on,
-                                  color: DARK_GREEN_COLOR,
-                                  size: 28,
-                                ),
-                              if (roomInfo.roomMode != 3) SizedBox(height: 20),
+                              SizedBox(height: 7),
+                              Icon(
+                                Icons.location_on,
+                                color: DARK_GREEN_COLOR,
+                                size: 28,
+                              ),
+                              SizedBox(height: 20),
                               Icon(
                                 Icons.people,
                                 color: DARK_GREEN_COLOR,
@@ -432,7 +416,6 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               SizedBox(height: 5),
-                              if (roomInfo.roomMode != 3)
                                 Text(
                                   roomOption,
                                   style: TextStyle(
@@ -440,7 +423,7 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                                       fontWeight: FontWeight.bold,
                                       color: DARK_GREEN_COLOR),
                                 ),
-                              if (roomInfo.roomMode != 3) SizedBox(height: 20),
+                              SizedBox(height: 20),
                               Text(
                                 '참여 인원',
                                 style: TextStyle(
@@ -464,7 +447,7 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               SizedBox(height: 5),
-                              if (roomInfo.roomMode == 1)
+                              if (roomInfo.roomMode == 1 || roomInfo.roomMode == 3)
                                 Text(
                                   '${roomInfo.roomDist} $optionMetric',
                                   style: TextStyle(
@@ -474,13 +457,14 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                                 ),
                               if (roomInfo.roomMode == 2)
                                 Text(
-                                  '${roomInfo.roomTime} $optionMetric',
-                                  style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                      color: DARK_GREEN_COLOR),
-                                ),
-                              if (roomInfo.roomMode != 3) SizedBox(height: 20),
+                                    '${roomInfo.roomTime} $optionMetric',
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                        color: DARK_GREEN_COLOR),
+                                  ),
+                              // if (roomInfo.roomMode != 3)
+                                SizedBox(height: 20),
                               //현재인원 받아와야 하는 곳
                               Obx(
                                 () => Text(
@@ -576,133 +560,122 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                       SizedBox(height: 20),
                       Visibility(
                         visible: roomInfo.roomMode == 3,
-                        child: Column(children: [
-                          Row(
-                            children: [
-                              ValueListenableBuilder<bool>(
-                                valueListenable: centerloading,
-                                builder: (context, isButtonEnabled, _) {
-                                  bool isOwner = controller.isOwner.value;
-                                  return ElevatedButton(
-                                    onPressed: isButtonEnabled && isOwner
-                                        ? null
-                                        : () {
-                                            print('Flag info button pressed');
-                                            print('활성화 $isButtonEnabled');
-                                            if (!isButtonEnabled) {
-                                              controller
-                                                  .isRecommendButtonPressed
-                                                  .value = true;
-                                              // if (showMap == true) {
-                                              //   setState(() {
-                                              //     showMap = false;
-                                              //   });
-                                              // }
-                                              setState(() {
-                                                showMap = false;
-                                              });
-                                            }
-                                          },
-                                    style: ButtonStyle(
-                                      backgroundColor: MaterialStateProperty
-                                          .resolveWith<Color>((states) {
-                                        if (isButtonEnabled) {
-                                          return Colors.grey;
-                                        } else {
-                                          return DARK_GREEN_COLOR;
-                                        }
-                                      }),
-                                      shape: MaterialStateProperty.all<
-                                          RoundedRectangleBorder>(
-                                        RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                        ),
-                                      ),
-                                      padding: MaterialStateProperty.all<
-                                          EdgeInsetsGeometry>(
-                                        EdgeInsets.symmetric(
-                                            horizontal: 10, vertical: 5),
-                                      ),
-                                    ),
-                                    child: const Text(
-                                      '목적지 추천',
-                                      style: TextStyle(
-                                          fontSize: 18, color: Colors.white),
-                                    ),
-                                  );
-                                },
-                              ),
-                              SizedBox(width: 50),
-                              ValueListenableBuilder<bool>(
-                                valueListenable: centerloading,
-                                builder: (context, isMapButtonVisible, _) {
-                                  return Visibility(
-                                    visible: !isMapButtonVisible &&
-                                        (controller.userlatitude.value != 0.0 ||
-                                            controller.userlongitude.value !=
-                                                0.0),
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        setState(() {
-                                          showMap = !showMap;
-                                        });
+                        child: Column(
+                          children: [
+                            Row(
+                              children: [
+                                ValueListenableBuilder<bool>(
+                                  valueListenable: centerloading,
+                                  builder: (context, isButtonEnabled, _) {
+                                    return ValueListenableBuilder<bool>(
+                                      valueListenable: controller.isOwnerNotifier,
+                                      builder: (context, isOwnerValue, _) {
+                                        print('isOwner: $isOwnerValue');
+                                        print('isButtonEnabled: $isButtonEnabled');
+
+                                        return ElevatedButton(
+                                          onPressed: isOwnerValue == false
+                                              ? null
+                                              : () {
+                                                  print('Flag info button pressed');
+                                                  print('활성화 $isButtonEnabled');
+                                                  if (!isButtonEnabled) {
+                                                    controller.isRecommendButtonPressed.value = true;
+                                                    setState(() {
+                                                      showMap = false;
+                                                    });
+                                                  }
+                                                },
+                                          style: ButtonStyle(
+                                            backgroundColor: MaterialStateProperty.resolveWith<Color>((states) {
+                                              if (isButtonEnabled) {
+                                                return Colors.grey;
+                                              } else {
+                                                return DARK_GREEN_COLOR;
+                                              }
+                                            }),
+                                            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                                              RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.circular(10),
+                                              ),
+                                            ),
+                                            padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
+                                              EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                                            ),
+                                          ),
+                                          child: const Text(
+                                            '목적지 추천',
+                                            style: TextStyle(fontSize: 18, color: Colors.white),
+                                          ),
+                                        );
                                       },
-                                      child: Container(
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 10, vertical: 5),
-                                        child: Text(
-                                          showMap ? '지도 닫기' : '지도 보기',
-                                          style: TextStyle(
-                                              fontSize: 18,
-                                              color: Colors.black),
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                },
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 10),
-                          Visibility(
-                            visible: showMap && !centerloading.value,
-                            child: ValueListenableBuilder<double>(
-                              valueListenable: controller.userlatitude,
-                              builder: (context, centerlat, _) {
-                                return ValueListenableBuilder<double>(
-                                  valueListenable: controller.userlongitude,
-                                  builder: (context, centerlong, _) {
-                                    return SizedBox(
-                                      width: 400,
-                                      height: 230,
-                                      child: KakaoMap(
-                                        onMapCreated: (mapcontroller) {
-                                          mapController = mapcontroller;
-                                          markers.add(Marker(
-                                            markerId: 'flag',
-                                            latLng:
-                                                LatLng(centerlat, centerlong),
-                                            width: 50,
-                                            height: 54,
-                                            offsetX: 15,
-                                            offsetY: 44,
-                                            markerImageSrc:
-                                                'https://github.com/jjeong41/t/assets/103355863/37743a13-bbd0-4744-9e7c-7ef262fc14c0',
-                                          ));
-                                          setState(() {});
+                                    );
+                                  },
+                                ),
+                                SizedBox(width: 50),
+                                ValueListenableBuilder<bool>(
+                                  valueListenable: centerloading,
+                                  builder: (context, isMapButtonVisible, _) {
+                                    return Visibility(
+                                      visible: !isMapButtonVisible && (controller.userlatitude.value != 0.0 || controller.userlongitude.value != 0.0),
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          setState(() {
+                                            showMap = !showMap;
+                                          });
                                         },
-                                        markers: markers.toList(),
-                                        center: LatLng(centerlat, centerlong),
+                                        child: Container(
+                                          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                                          child: Text(
+                                            showMap ? '지도 닫기' : '지도 보기',
+                                            style: TextStyle(fontSize: 18, color: Colors.black),
+                                          ),
+                                        ),
                                       ),
                                     );
                                   },
-                                );
-                              },
+                                ),
+                              ],
                             ),
-                          ),
-                        ]),
+                            SizedBox(height: 10),
+                            Visibility(
+                              visible: showMap && !centerloading.value,
+                              child: ValueListenableBuilder<double>(
+                                valueListenable: controller.userlatitude,
+                                builder: (context, centerlat, _) {
+                                  return ValueListenableBuilder<double>(
+                                    valueListenable: controller.userlongitude,
+                                    builder: (context, centerlong, _) {
+                                      return SizedBox(
+                                        width: 400,
+                                        height: 230,
+                                        child: KakaoMap(
+                                          onMapCreated: (mapcontroller) {
+                                            mapController = mapcontroller;
+                                            markers.add(Marker(
+                                              markerId: 'flag',
+                                              latLng: LatLng(centerlat, centerlong),
+                                              width: 50,
+                                              height: 54,
+                                              offsetX: 15,
+                                              offsetY: 44,
+                                              markerImageSrc: 'https://github.com/jjeong41/t/assets/103355863/37743a13-bbd0-4744-9e7c-7ef262fc14c0',
+                                            ));
+                                            setState(() {});
+                                          },
+                                          markers: markers.toList(),
+                                          center: LatLng(centerlat, centerlong),
+                                        ),
+                                      );
+                                    },
+                                  );
+                                },
+                              ),
+                            ),
+                          ]
+                        ),
                       ),
+
                       SizedBox(height: 10),
                       Obx(() {
                         final members = controller.members;
@@ -782,10 +755,12 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                     ),
                   );
                 } else {
+                  bool canStartGame = controller.numReady == controller.members.length - 1;
+                  bool isCenterLocationSet = widget.roomInfo.roomMode == 3 ? (centerlat != 0.0 && centerlong != 0.0) : true;
+
                   return TextButton(
                     onPressed:
-                        // controller.numReady == controller.members.length - 1 && (centerlat != 0.0 && centerlong != 0.0)
-                        controller.numReady == controller.members.length - 1
+                          canStartGame && isCenterLocationSet
                             ? () {
                                 controller.gameStart();
                               }
@@ -795,7 +770,7 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                           ui.Size(MediaQuery.of(context).size.width * .9, 50),
                       foregroundColor: Colors.white,
                       backgroundColor:
-                          controller.numReady == controller.members.length - 1
+                          canStartGame && isCenterLocationSet
                               ? GREEN_COLOR
                               : Colors.grey[400],
                       shape: RoundedRectangleBorder(

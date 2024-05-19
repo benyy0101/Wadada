@@ -87,6 +87,7 @@ class MultiSelectDistOptionState extends State<MultiSelectDistOption> {
       disterrorText = '달릴 거리를 입력하세요.';
     } else {
       disterrorText = null;
+      
     }
 
     setState(() {});
@@ -217,7 +218,7 @@ class MultiSelectDistOptionState extends State<MultiSelectDistOption> {
                                 print('거리 value $value');
                               } else if (widget.option_dis == '시간') {
                                 controller.multiroom.roomTime = distselectnum;
-                                print('시간 ${controller.multiroom.roomDist}');
+                                print('시간 ${controller.multiroom.roomTime}');
                                 print('시간 value $value');
                               }
                               // print('거리 ${controller.multiroom.roomDist}');
@@ -235,7 +236,7 @@ class MultiSelectDistOptionState extends State<MultiSelectDistOption> {
                               fontWeight: FontWeight.bold))
                     ],
                   ),
-
+                  if (widget.option_dis != '')
                   SizedBox(height: 40),
 
                   // 참여인원

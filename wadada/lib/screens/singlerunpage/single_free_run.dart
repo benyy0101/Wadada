@@ -62,7 +62,7 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
   final MethodChannel channel = const MethodChannel('watch_connectivity');
   var _supported = false;
   var _paired = false;
-  var _reachable = false;
+  final _reachable = false;
   bool _connected = false;
   final _log = <String>[];
   String formattedPace = '';
@@ -104,27 +104,19 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
       onTimerEnd: _onTimerEnd,
     );
     _subscribeToTotalDistance();
-    requestPermissions();
+    // requestPermissions();
     myMapStateKey.currentState?.startGame();
     // sendLocationToServer();
     // 워치 초기화
     _watch.sendMessage({
       'formattedPace': "0'00",
     });
-    myMap.paceNotifier.addListener(_onPaceUpdated);
+    // myMap.paceNotifier.addListener(_onPaceUpdated);
   }
 
-<<<<<<< HEAD
   void _enableEventReceiver() {
     eventChannel.receiveBroadcastStream().listen(
-          (data) {
-=======
-  // 워치 관련코드
-  void _initWear() {
-    _watch.messageStream.listen((message) => setState(() {
-      print("Received message: $message");
-      if (message.containsKey('heartRate')) {
->>>>>>> front
+      (data) {
         setState(() {
           var heartbeat = jsonDecode(data);
           if (heartbeat["heartbeat"] != null) {
@@ -132,7 +124,8 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
             int? heartbeatValue = int.tryParse(heartbeat["heartbeat"]);
 
             if (heartbeatValue != null && heartbeatValue > 0) {
-              distanceHeartbeatList.add(DistanceHeartbeat(totalDistance, heartbeat["heartbeat"]));
+              distanceHeartbeatList.add(
+                  DistanceHeartbeat(totalDistance, heartbeat["heartbeat"]));
             }
           } else {
             print("Heartbeat data is missing or null");
@@ -213,15 +206,15 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
     }
   }
 
-  void _onPaceUpdated() {
-    // 페이스가 업뎃 시 호출
-    String currentFormattedPace = formatPace(myMap.paceNotifier.value);
-    // 현재 페이스가 마지막 전송 페이스랑 다를 경우에만 메시지 슛.
-    if (_lastSentPace != currentFormattedPace) {
-      sendMessage(currentFormattedPace);
-      _lastSentPace = currentFormattedPace; // 페이스를 업뎃
-    }
-  }
+  // void _onPaceUpdated() {
+  //   // 페이스가 업뎃 시 호출
+  //   String currentFormattedPace = formatPace(myMap.paceNotifier.value);
+  //   // 현재 페이스가 마지막 전송 페이스랑 다를 경우에만 메시지 슛.
+  //   if (_lastSentPace != currentFormattedPace) {
+  //     sendMessage(currentFormattedPace);
+  //     _lastSentPace = currentFormattedPace; // 페이스를 업뎃
+  //   }
+  // }
 
   void startTimers() {
     Timer(Duration(seconds: 3), () {
@@ -251,7 +244,7 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
   @override
   void dispose() {
     countdownTimer?.cancel();
-    myMap.paceNotifier.removeListener(_onPaceUpdated);
+    // myMap.paceNotifier.removeListener(_onPaceUpdated);
 
     myMapStateKey.currentState?.dispose();
     super.dispose();
@@ -379,17 +372,16 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
       return averagePace;
     }
 
-    int calculateAverageHeartbeat(){
+    int calculateAverageHeartbeat() {
       if (distanceHeartbeatList.isEmpty) return 0;
       int totalBeat = 0;
-      int cnt= distanceHeartbeatList.length;
-      for(DistanceHeartbeat beat in distanceHeartbeatList){
+      int cnt = distanceHeartbeatList.length;
+      for (DistanceHeartbeat beat in distanceHeartbeatList) {
         totalBeat += int.parse(beat.heartbeat);
       }
-      int averageBeat = (totalBeat / cnt) as int ;
+      int averageBeat = (totalBeat / cnt) as int;
       return averageBeat;
     }
-
 
     // // 초 단위의 페이스를 km/h로 변환
     // double convertPaceToKmPerHour(double paceInSecondsPerKm) {
@@ -431,22 +423,6 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
     // print('총 거리 $totalDistance');
 
     final requestBody = jsonEncode({
-<<<<<<< HEAD
-        "recordMode": recordMode,
-        "singleRecordSeq": recordSeq,
-        "recordImage": 'https://github.com/jjeong41/t/assets/103355863/4e6d205d-694e-458c-b992-8ea7c27b85b1',
-        "recordDist": totalDistance,
-        "recordTime": intelapsedseconds, // int
-        "recordStartLocation": "POINT(${startLocation?.latitude} ${startLocation?.longitude})",
-        "recordEndLocation": "POINT(${endLocation?.latitude} ${endLocation?.longitude})",
-        "recordWay": jsonEncode(coordinates),
-        "recordSpeed": jsonEncode(distanceSpeed),
-        "recordPace": jsonEncode(distancePace),
-        "recordHeartbeat": jsonEncode(distanceHeartbeatList),
-        "recordMeanSpeed": intaveragespeed, // int
-        "recordMeanPace": intaveragepaceinkmperhour, // int
-        "recordMeanHeartbeat": calculateAverageHeartbeat() // int
-=======
       "recordMode": recordMode,
       "singleRecordSeq": recordSeq,
       "recordImage":
@@ -460,11 +436,10 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
       "recordWay": jsonEncode(coordinates),
       "recordSpeed": jsonEncode(distanceSpeed),
       "recordPace": jsonEncode(distancePace),
-      "recordHeartbeat": jsonEncode(distancePace),
+      "recordHeartbeat": jsonEncode(distanceHeartbeatList),
       "recordMeanSpeed": intaveragespeed, // int
       "recordMeanPace": intaveragepaceinkmperhour, // int
-      "recordMeanHeartbeat": 0 // int
->>>>>>> front
+      "recordMeanHeartbeat": calculateAverageHeartbeat() // int
     });
 
     try {
@@ -530,8 +505,9 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
             totaldist: formattedDistance,
             distanceSpeed: distanceSpeed,
             distancePace: distancePace,
-            distanceHeartbeatList: distanceHeartbeatList.isNotEmpty ? distanceHeartbeatList : null,
-        ),
+            distanceHeartbeatList:
+                distanceHeartbeatList.isNotEmpty ? distanceHeartbeatList : null,
+          ),
         ),
       );
     }
@@ -710,39 +686,18 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
         child: Stack(children: [
           Scaffold(
             backgroundColor: Colors.white,
-            appBar: AppBar(
-              leading: null,
-              actions: [
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 0),
-                  child: Text(
-                    isLocked
-                        ? '잠금을 풀려면 2초 이상 누르세요.는 시도해봤는데 아직 안됨'
-                        : '화면을 잠글 수 있습니다',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 14,
-                    ),
-                  ),
-                ),
-                IconButton(
-                  icon: Icon(isLocked ? Icons.lock : Icons.lock_open),
-                  onPressed: onLockButtonPressed,
-                ),
-              ],
-              automaticallyImplyLeading: false,
-              backgroundColor: Colors.white,
-            ),
-            body: Stack(children: [
-              AbsorbPointer(
-                absorbing: isLocked,
-                child: Container(
+            body: Stack(
+              children: [
+                Container(
                   padding: EdgeInsets.only(left: 30, right: 30),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      SizedBox(height: 45),
                       progressBar,
-
+                      SizedBox(
+                        height: 45,
+                      ),
                       // 나의경로
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -883,38 +838,8 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
                     ],
                   ),
                 ),
-              ),
-
-              // if (isLoading)
-              //   Positioned.fill(
-              //       child: Container(
-              //           // color: Colors.white.withOpacity(0.7),
-              //           color: OATMEAL_COLOR,
-              //           child: Center(
-              //               child: CircularProgressIndicator(),
-              //           ),
-              //       ),
-              //   ),
-
-              if (isLocked)
-                GestureDetector(
-                  onLongPress: onUnlockButtonPressed,
-                  child: Container(
-                    color: Colors.black.withOpacity(0),
-                    child: Center(
-                        // child: Text(
-                        //     '잠금을 해제하려면\n화면을 몇 초 동안 누르세요.',
-                        //     style: TextStyle(
-                        //         color: Colors.white,
-                        //         fontSize: 20,
-                        //         fontWeight: FontWeight.bold,
-                        //     ),
-                        //     textAlign: TextAlign.center,
-                        // ),
-                        ),
-                  ),
-                ),
-            ]),
+              ],
+            ),
           ),
           if (isLoading)
             Positioned.fill(

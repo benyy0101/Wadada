@@ -327,6 +327,9 @@ class MyMapState extends State<MyMap> {
       );
     }
 
+    // double mapWidth = widget.runmode == 2 ? 600 : 400;
+    // double mapHeight = widget.runmode == 2 ? 350 : 230;
+
     return SizedBox(
       width: 400,
       height: 230,

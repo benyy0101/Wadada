@@ -109,14 +109,14 @@ class MarathonCard extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      Icon(Icons.calendar_month_rounded, color: textColor),
+                      Icon(Icons.calendar_month_sharp, color: DARK_GREEN_COLOR),
                       SizedBox(width: 10),
                       Text(
                         '일시',
                         style: TextStyle(
                           fontSize: 17,
                           fontWeight: FontWeight.bold,
-                          color: textColor,
+                          color: DARK_GREEN_COLOR,
                         ),
                       ),
                       SizedBox(width: 58),
@@ -134,14 +134,14 @@ class MarathonCard extends StatelessWidget {
                   SizedBox(height: 8),
                   Row(
                     children: [
-                      Icon(Icons.flag_outlined, color: textColor),
+                      Icon(Icons.location_on, color: DARK_GREEN_COLOR),
                       SizedBox(width: 10),
                       Text(
                         '거리',
                         style: TextStyle(
                           fontSize: 17,
                           fontWeight: FontWeight.bold,
-                          color: textColor,
+                          color: DARK_GREEN_COLOR,
                         ),
                       ),
                       SizedBox(width: 58),
@@ -159,14 +159,14 @@ class MarathonCard extends StatelessWidget {
                   SizedBox(height: 8),
                   Row(
                     children: [
-                      Icon(Icons.people_alt_rounded, color: textColor),
+                      Icon(Icons.people_alt_rounded, color: DARK_GREEN_COLOR),
                       SizedBox(width: 10),
                       Text(
                         '참여 인원',
                         style: TextStyle(
                           fontSize: 17,
                           fontWeight: FontWeight.bold,
-                          color: textColor,
+                          color: DARK_GREEN_COLOR,
                         ),
                       ),
                       SizedBox(width: 20),
