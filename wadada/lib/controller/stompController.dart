@@ -81,6 +81,7 @@ class StompController extends GetxController {
   // RxBool gamego = false.obs;
   ValueNotifier<bool> gameStartResponse = ValueNotifier<bool>(false);
   ValueNotifier<bool> gamego = ValueNotifier<bool>(false);
+  ValueNotifier<bool> gameEnd = ValueNotifier<bool>(false);
   ValueNotifier<int> requestinfo = ValueNotifier<int>(0);
   ValueNotifier<List<dynamic>> ranking = ValueNotifier<List<dynamic>>([]);
   ValueNotifier<List<dynamic>> memberInfoList =
@@ -356,6 +357,8 @@ class StompController extends GetxController {
                     print(rankingList);
 
                     mrepo.udpateDistance(0, nickName, dist, 100);
+                  } else if (res['body']['action'] == '3') {
+                    gameEnd.value = true;
                   } else {
                     print("사용자 이름 ------------------------------- $nickName");
                     throw Exception("사용자가 정보에 없습니다.");
@@ -446,15 +449,14 @@ class StompController extends GetxController {
                     print('랭킹 ${ranking.value}');
                   }
 
-                    if (resp['body']['message'] == "게임종료") {
-                      flagend.value = ranking.value;
-                    }
-
-                  } catch (e) {
-                    print('ㅇㅇ 요청 처리 중 에러 발생: $e');
-                    // return {};
+                  if (resp['body']['message'] == "게임종료") {
+                    flagend.value = ranking.value;
                   }
-                } catch(e) {
+                } catch (e) {
+                  print('ㅇㅇ 요청 처리 중 에러 발생: $e');
+                  // return {};
+                }
+              } catch (e) {
                 print(e);
               }
             },

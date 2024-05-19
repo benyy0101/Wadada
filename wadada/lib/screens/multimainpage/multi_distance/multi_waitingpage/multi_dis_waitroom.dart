@@ -159,7 +159,7 @@ class _MultiDisWait extends State<MultiDisWait> {
     } else if (roomMode == 2) {
       titleText = '시간모드 - 멀티';
     } else {
-      titleText = '만남모드 - 멀티';
+      titleText = '깃발모드 - 멀티';
     }
 
     String concatenateTags(List<String> tags) {

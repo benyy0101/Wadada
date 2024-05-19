@@ -184,13 +184,15 @@ class ClockState extends State<Clock> {
   }
 
   Widget TimeContainer(String digit) {
+    double height = MediaQuery.of(context).size.height;
+    double width = MediaQuery.of(context).size.width;
     return Container(
       decoration: BoxDecoration(
         color: OATMEAL_COLOR,
         borderRadius: BorderRadius.circular(10),
       ),
-      width: 48,
-      height: 60,
+      width: width * .115,
+      height: height * .07,
       child: Center(
         child: Text(
           digit,

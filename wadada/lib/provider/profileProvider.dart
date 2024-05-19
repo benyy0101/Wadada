@@ -22,6 +22,8 @@ class ProfileProvider {
     } else {
       _dio.options.headers['Authorization'] = accessToken;
     }
+    print("-----------------token--------------------");
+    print(_dio.options.headers['Authorization']);
   }
 
   Future<Response<dynamic>> profileDelete() async {

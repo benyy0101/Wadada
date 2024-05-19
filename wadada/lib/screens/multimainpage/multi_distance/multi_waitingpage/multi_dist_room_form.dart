@@ -53,7 +53,7 @@ class MultiDistanceRoomFormState extends State<MultiDistanceRoomForm> {
     } else {
       roomOption = '거리';
       optionMetric = 'km';
-      modeText = '만남모드 - 멀티';
+      modeText = '깃발모드 - 멀티';
     }
 
     return GetBuilder<MultiController>(builder: (MultiController controller) {

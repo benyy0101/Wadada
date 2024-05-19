@@ -97,7 +97,7 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
       roomOption = '시간';
       optionMetric = '분';
     } else {
-      titleText = '만남모드 - 멀티';
+      titleText = '깃발모드 - 멀티';
       roomOption = '거리';
       optionMetric = 'km';
     }

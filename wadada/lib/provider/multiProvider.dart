@@ -25,6 +25,8 @@ class MultiProvider {
     } else {
       _dio.options.headers['Authorization'] = accessToken;
     }
+    print("-----------------token--------------------");
+    print(_dio.options.headers['Authorization']);
   }
 
   Future<Response<dynamic>> multiRoomGet(String mode) async {
