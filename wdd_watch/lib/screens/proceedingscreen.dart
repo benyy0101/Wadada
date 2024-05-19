@@ -69,7 +69,7 @@ class _ProceedingScreenState extends State<ProceedingScreen>
   void initState() {
     super.initState();
     _pageViewController = PageController();
-    _tabController = TabController(length: 4, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
     requestPermissions();
     _channel.setMethodCallHandler(_handleMethod);
     _streamController.stream.listen((heartRate) {
@@ -130,18 +130,15 @@ class _ProceedingScreenState extends State<ProceedingScreen>
         PageView(
           controller: _pageViewController,
           onPageChanged: _handlePageViewChanged,
-          children: <Widget>[
-            const Center(
+          children: const <Widget>[
+            Center(
               child: runPace(),
             ),
-            const Center(
+            Center(
               child: runTime(),
             ),
-            const Center(
-              child: runHeart(),
-            ),
             Center(
-              child: Text('지도띄울예정', style: textTheme.titleLarge),
+              child: runHeart(),
             ),
           ],
         ),
