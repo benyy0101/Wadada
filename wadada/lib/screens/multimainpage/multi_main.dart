@@ -20,15 +20,6 @@ class MultiMain extends StatelessWidget {
               SizedBox(
                 height: 45,
               ),
-              Text('멀티모드',
-                  style: TextStyle(
-                    color: Colors.black87,
-                    fontSize: 30,
-                    fontWeight: FontWeight.w600,
-                  )),
-              SizedBox(
-                height: 60,
-              ),
               MultiSelectMode(
                 icon: 'assets/images/shoes.png',
                 name: '거리모드',

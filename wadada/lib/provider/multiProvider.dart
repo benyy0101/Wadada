@@ -34,8 +34,9 @@ class MultiProvider {
 
   Future<Response<dynamic>> multiRoomSearch(String title) async {
     await setAuth();
+    print(title);
     final response = await _dio.get(
-      '/$title',
+      '/tag/$title',
     );
     return response;
   }

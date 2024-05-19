@@ -223,3 +223,40 @@ class MyMarathonRecord {
     );
   }
 }
+
+class DistanceRecord {
+  int roomSeq;
+  String userName;
+  int userDist;
+  int userTime;
+
+  DistanceRecord({
+    required this.roomSeq,
+    required this.userName,
+    required this.userDist,
+    required this.userTime,
+  });
+
+  @override
+  String toString() {
+    return 'DistanceRecord{roomSeq: $roomSeq, userName: $userName, userDist: $userDist, userTime: $userTime}';
+  }
+
+  factory DistanceRecord.fromJson(Map<String, dynamic> json) {
+    return DistanceRecord(
+      roomSeq: json['roomSeq'] as int? ?? 0,
+      userName: json['userName'] as String? ?? '',
+      userDist: json['userDist'] as int? ?? 0,
+      userTime: json['userTime'] as int? ?? 0,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'roomSeq': roomSeq,
+      'userName': userName,
+      'userDist': userDist,
+      'userTime': userTime,
+    };
+  }
+}
