@@ -112,8 +112,15 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
   // 워치 관련코드
   void _initWear() {
     _watch.messageStream.listen((message) => setState(() {
-          _connected = true;
-        }));
+      print("Received message: $message");
+      if (message.containsKey('heartRate')) {
+        setState(() {
+          print('아진짜 제발좀 되라 웨 않 되??????????????');
+          //heartRate = message['heartRate'].toString();
+        });
+      }
+      _connected = true;
+    }));
   }
 
   void sendMessage(formattedPace) {
