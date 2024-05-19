@@ -28,7 +28,7 @@ class DisRoomInfoCard extends StatelessWidget {
         .where((tag) => tag.isNotEmpty)
         .map((tag) => Container(
               padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              margin: EdgeInsets.only(right: 8),
+              margin: EdgeInsets.only(right: 5),
               decoration: BoxDecoration(
                 color: DARK_GREEN_COLOR,
                 borderRadius: BorderRadius.circular(10),

@@ -18,7 +18,7 @@ class MultiMain extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               SizedBox(
-                height: 45,
+                height: 20,
               ),
               MultiSelectMode(
                 icon: 'assets/images/shoes.png',

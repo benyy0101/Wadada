@@ -38,7 +38,7 @@ class MarathonCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cardColor = isPast ? Color(0xffF2F2F2) : OATMEAL_COLOR;
-    final textColor = isPast ? GRAY_400 : Colors.black;
+    final textColor = isPast ? GRAY_400 : DARK_GREEN_COLOR;
 
     return GestureDetector(
       onTap: onTap,
@@ -109,14 +109,14 @@ class MarathonCard extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      Icon(Icons.calendar_month_sharp, color: DARK_GREEN_COLOR),
+                      Icon(Icons.calendar_month_sharp, color: textColor),
                       SizedBox(width: 10),
                       Text(
                         '일시',
                         style: TextStyle(
                           fontSize: 17,
                           fontWeight: FontWeight.bold,
-                          color: DARK_GREEN_COLOR,
+                          color: textColor,
                         ),
                       ),
                       SizedBox(width: 58),
@@ -134,14 +134,14 @@ class MarathonCard extends StatelessWidget {
                   SizedBox(height: 8),
                   Row(
                     children: [
-                      Icon(Icons.location_on, color: DARK_GREEN_COLOR),
+                      Icon(Icons.location_on, color: textColor),
                       SizedBox(width: 10),
                       Text(
                         '거리',
                         style: TextStyle(
                           fontSize: 17,
                           fontWeight: FontWeight.bold,
-                          color: DARK_GREEN_COLOR,
+                          color: textColor,
                         ),
                       ),
                       SizedBox(width: 58),
@@ -159,14 +159,14 @@ class MarathonCard extends StatelessWidget {
                   SizedBox(height: 8),
                   Row(
                     children: [
-                      Icon(Icons.people_alt_rounded, color: DARK_GREEN_COLOR),
+                      Icon(Icons.people_alt_rounded, color: textColor),
                       SizedBox(width: 10),
                       Text(
                         '참여 인원',
                         style: TextStyle(
                           fontSize: 17,
                           fontWeight: FontWeight.bold,
-                          color: DARK_GREEN_COLOR,
+                          color: textColor,
                         ),
                       ),
                       SizedBox(width: 20),
