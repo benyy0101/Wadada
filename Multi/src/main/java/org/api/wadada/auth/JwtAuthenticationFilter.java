@@ -28,9 +28,9 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
         String token = jwtTokenProvider.resolveToken(httpServletRequest);
         // auth 경우는 토큰 검사 X
         Set<String> excludedPaths = new HashSet<>(Arrays.asList("/auth/reissue", "/auth/login"));
-        log.info(httpServletRequest.getRequestURI());
+//        log.info(httpServletRequest.getRequestURI());
         if (!excludedPaths.contains(httpServletRequest.getRequestURI())) {
-             log.info("Here!");
+//             log.info("Here!");
             // 2. validateToken으로 토큰 유효성 검사
             if (token != null && jwtTokenProvider.validateToken(token)) {
                 // 토큰이 유효할 경우 토큰에서 Authentication 객체를 가지고 와서 SecurityContext에 저장

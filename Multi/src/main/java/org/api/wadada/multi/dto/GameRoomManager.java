@@ -14,8 +14,8 @@ import java.util.concurrent.ConcurrentMap;
 public class GameRoomManager {
 
     private final List<GameRoomDto> playrooms;
-    private static final int MAX_ROOMS = 40;
-    private int[] roomSeqList = new int[40];
+    private static final int MAX_ROOMS = 70;
+    private int[] roomSeqList = new int[70];
     private final ConcurrentMap<Integer,Integer> roomSeqTable = new ConcurrentHashMap<>();
 
     public GameRoomManager() {
@@ -31,6 +31,8 @@ public class GameRoomManager {
 //        roomSeqTable.put(room.getRoomIdx(),roomSeq);
         Optional<Integer> emptyIndex = getEmptyIndex();
         if (emptyIndex.isPresent()) {
+            roomSeqTable.put(roomSeq, emptyIndex.get() );
+            roomSeqList[emptyIndex.get()] = roomSeq;
             room.setListeners(new ArrayList<>());
             playrooms.set(emptyIndex.get(), room);
             return emptyIndex.get();
@@ -39,16 +41,14 @@ public class GameRoomManager {
         }
     }
 
-    public void removeRoom(int index) {
-        if (index < 0 || index >= MAX_ROOMS) {
-            throw new IndexOutOfBoundsException("잘못된 방 인덱스");
-        }
-        GameRoomDto room = playrooms.get(index);
+    public void removeRoom(int roomSeq) {
+        int roomIdx = roomSeqTable.get(roomSeq);
+        GameRoomDto room = playrooms.get(roomIdx);
         // 해당 방 멤버 모두 삭제
         if(room != null){
             room.removeAllMembers();
         }
-        playrooms.set(index, null);
+        playrooms.set(roomIdx, null);
     }
 
     public Optional<Integer> getEmptyIndex() {

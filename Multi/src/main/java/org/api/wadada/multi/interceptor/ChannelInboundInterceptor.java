@@ -5,7 +5,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.api.wadada.auth.JwtTokenProvider;
+import org.api.wadada.multi.dto.GameRoomDto;
+import org.api.wadada.multi.dto.GameRoomManager;
 import org.springframework.messaging.MessageChannel;
+import org.springframework.messaging.converter.SimpleMessageConverter;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
@@ -16,8 +20,7 @@ import org.springframework.messaging.Message;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.security.Principal;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 
 @Slf4j
@@ -26,7 +29,8 @@ import java.util.Objects;
 public class ChannelInboundInterceptor  implements ChannelInterceptor {
 
     private final JwtTokenProvider jwtTokenProvider;
-
+    private final GameRoomManager gameRoomManager;
+    private SimpMessagingTemplate messagingTemplate;
     /**
      * 메세지를 보내기 전에 실행되는 interceptor 메소드
      *
@@ -37,15 +41,13 @@ public class ChannelInboundInterceptor  implements ChannelInterceptor {
     @Transactional(readOnly = true)
     public Message<?> preSend(Message<?> message, MessageChannel channel){
         StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
-        log.info(accessor.toString());
         StompCommand command = accessor.getCommand();
 
         if(StompCommand.CONNECT.equals(command)){
             String token = Objects.requireNonNull(accessor.getFirstNativeHeader("Authorization")).substring(7);
-            log.info(token);
+//            messagingTemplate.convertAndSend(destination, "hihi");
             if (jwtTokenProvider.validateToken(token)) {
                 Authentication authentication = jwtTokenProvider.getAuthentication(token);
-                log.info(authentication.getPrincipal().toString());
                 accessor.setUser(authentication);
             }
             else {
@@ -55,6 +57,18 @@ public class ChannelInboundInterceptor  implements ChannelInterceptor {
         if (StompCommand.SUBSCRIBE.equals(command)) {
             Principal principal = accessor.getUser();
             setValue(accessor,"userName",principal.getName());
+            String destination = accessor.getDestination();
+
+        }
+        if(StompCommand.DISCONNECT.equals(command)){
+            String userName = accessor.getUser().getName();
+            List<GameRoomDto> list = gameRoomManager.getAllRooms().values().stream().toList();
+            // 어떤 방에 있는지 찾아서
+            for(GameRoomDto dto: list){
+                if(dto.getPlayerInfo().containsKey(userName)){
+                    dto.getDisconnected().put(userName,dto.getDisconnected().get(userName)+1);
+                }
+            }
         }
 
 

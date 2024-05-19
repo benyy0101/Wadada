@@ -1,10 +1,18 @@
 package org.api.wadada.multi.dto;
 
 import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 import org.api.wadada.multi.dto.game.GameUpdateListener;
 import org.api.wadada.multi.dto.game.PlayerInfo;
+import org.springframework.context.event.EventListener;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.simp.stomp.StompCommand;
+import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
+import org.springframework.messaging.support.MessageHeaderAccessor;
+import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -12,6 +20,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Slf4j
 @Getter
 public class GameRoomDto {
 
@@ -22,14 +31,22 @@ public class GameRoomDto {
     @Setter
     private int curPeople;
 
-    // curPeople 값을 증가시키는 메서드
 
+    private int roomDist;
+    private int roomTime;
+    //깃발 체크?
+    private boolean flag;
 
-    // curPeople 값을 가져오는 메서드
     @Setter
     private List<GameUpdateListener> listeners;
 
     private ConcurrentMap<String,PlayerInfo> playerInfo;
+
+    private HashMap<String,Integer> disconnected;
+    private HashMap<String,Integer> finished;
+    private int roomMode;
+    private double flagLat;
+    private double flagLng;
 
     public void addMember(PlayerInfo member) {
         if (playerInfo.containsKey(member.getName())) {
@@ -81,5 +98,23 @@ public class GameRoomDto {
             listener.onGameUpdate(this);
         }
     }
+
+    public void updatePlayerInfo(String memberId, int dist, int time){
+        PlayerInfo info = this.playerInfo.get(memberId);
+        info.setDist(dist);
+        info.setTime(time);
+        this.playerInfo.put(memberId,info);
+    }
+
+    public int getDisconnected(String memberId) {
+        int value = this.disconnected.get(memberId);
+        return value;
+    }
+
+    public int getFinished(String memberId) {
+        int value = this.finished.get(memberId);
+        return value;
+    }
+
 
 }

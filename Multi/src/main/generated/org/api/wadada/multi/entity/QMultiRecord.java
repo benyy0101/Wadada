@@ -19,13 +19,9 @@ public class QMultiRecord extends EntityPathBase<MultiRecord> {
 
     public static final QMultiRecord multiRecord = new QMultiRecord("multiRecord");
 
-    public final org.api.wadada.common.QBaseEntity _super = new org.api.wadada.common.QBaseEntity(this);
+    public final DateTimePath<java.time.LocalDateTime> createdAt = createDateTime("createdAt", java.time.LocalDateTime.class);
 
-    //inherited
-    public final DateTimePath<java.time.LocalDateTime> createdAt = _super.createdAt;
-
-    //inherited
-    public final BooleanPath isDeleted = _super.isDeleted;
+    public final BooleanPath isDeleted = createBoolean("isDeleted");
 
     public final NumberPath<Integer> memberSeq = createNumber("memberSeq", Integer.class);
 
@@ -59,10 +55,11 @@ public class QMultiRecord extends EntityPathBase<MultiRecord> {
 
     public final StringPath multiRecordWay = createString("multiRecordWay");
 
+    public final StringPath recordMode = createString("recordMode");
+
     public final NumberPath<Integer> roomSeq = createNumber("roomSeq", Integer.class);
 
-    //inherited
-    public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;
+    public final DateTimePath<java.time.LocalDateTime> updatedAt = createDateTime("updatedAt", java.time.LocalDateTime.class);
 
     public QMultiRecord(String variable) {
         super(MultiRecord.class, forVariable(variable));

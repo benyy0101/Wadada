@@ -13,16 +13,12 @@ import org.locationtech.jts.geom.Point;
 @Builder
 @Getter
 public class GameEndReq {
-    private Integer roomIdx;
+    private Integer roomSeq;
     private String recordImage;
     private Integer recordDist;
     private Integer recordTime;
 
-    @JsonDeserialize(using = PointDeserializer.class)
-    private Point recordStartLocation;
-
-    @JsonDeserialize(using = PointDeserializer.class)
-    private Point recordEndLocation;
+    private String recordEndLocation;
     private String recordWay;
     private String recordSpeed;
     private String recordHeartbeat;

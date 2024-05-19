@@ -24,6 +24,18 @@ public class RoomDto{
     @Setter
     private int roomIdx;
 
+    @Setter
+    private double flagLat;
+
+    @Setter
+    private double flagLng;
+
+    @Setter
+    private int dist;
+
+    @Setter
+    private List<LatLng> roomPoints = new ArrayList<>();
+
     public RoomDto() {
         this.members = new ConcurrentHashMap<>();
     }
@@ -40,6 +52,7 @@ public class RoomDto{
             throw new IllegalStateException("방에 삭제할 멤버가 존재하지 않습니다");
         }
         if(members.get(memberId).isManager()){
+            members.remove(memberId);
             return true;
         }
         members.remove(memberId);
@@ -65,5 +78,8 @@ public class RoomDto{
         members.clear();
     }
 
+    public void addPoint(double lat, double lng){
+        this.roomPoints.add(new LatLng(lat,lng));
+    }
 
 }
