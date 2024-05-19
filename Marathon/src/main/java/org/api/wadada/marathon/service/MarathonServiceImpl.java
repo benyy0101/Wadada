@@ -101,17 +101,17 @@ public class MarathonServiceImpl implements MarathonService {
                         marathonRoomManager.sendStartMessage();
                         CompletableFuture<Void> tasks = CompletableFuture.anyOf(
                                 //모든사람이 들어왔으면 시작
-                                CompletableFuture.runAsync(() -> {
-//                                    synchronized (marathonRoomManager) {
-//                                        while (marathonRoomManager.getREAL_cur_Person() < marathonRoomManager.getREAL_max_Person()) {
-//                                            try {
-//                                                  marathonRoomManager.wait();
-//                                            } catch (InterruptedException e) {
-//                                                Thread.currentThread().interrupt();
-//                                            }
-//                                        }
-//                                    }
-                                }, executor),
+//                                CompletableFuture.runAsync(() -> {
+////                                    synchronized (marathonRoomManager) {
+////                                        while (marathonRoomManager.getREAL_cur_Person() < marathonRoomManager.getREAL_max_Person()) {
+////                                            try {
+////                                                  marathonRoomManager.wait();
+////                                            } catch (InterruptedException e) {
+////                                                Thread.currentThread().interrupt();
+////                                            }
+////                                        }
+////                                    }
+//                                }, executor),
                                 //or 30초지나면 시작
                                 CompletableFuture.runAsync(() -> {
                                     try {
