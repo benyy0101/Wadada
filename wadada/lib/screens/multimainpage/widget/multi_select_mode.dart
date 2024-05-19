@@ -50,7 +50,7 @@ class MultiSelectMode extends StatelessWidget {
                         style: TextStyle(
                           color: GREEN_COLOR,
                           fontSize: 25,
-                          fontWeight: FontWeight.w500,
+                          fontWeight: FontWeight.bold,
                         )),
                     SizedBox(height: 5),
                     Text(des,

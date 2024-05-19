@@ -42,6 +42,8 @@ class ClockState extends State<Clock> {
   @override
   void initState() {
     super.initState();
+
+    print('시간 ${widget.time}');
     // 넘어온 값 0 이상이면 타이머
     if (widget.time > 0) {
       int timerDurationInSeconds = (widget.time * 60).round();
@@ -68,7 +70,7 @@ class ClockState extends State<Clock> {
 
     initPlatformState();
     // 워치 초기화
-    _initWear();
+    // _initWear();
 
     //
   }
@@ -91,15 +93,15 @@ class ClockState extends State<Clock> {
     setState(() => _log.add('메세지: $message'));
   }
 
-  void sendContext(formattedHours, formattedMinutes, formattedSeconds) {
-    final context = {
-      'formattedHours': formattedHours,
-      'formattedMinutes': formattedMinutes,
-      'formattedSeconds': formattedSeconds,
-    };
-    _watch.updateApplicationContext(context);
-    setState(() => _log.add('보내진 context: $context'));
-  }
+  // void sendContext(formattedHours, formattedMinutes, formattedSeconds) {
+  //   final context = {
+  //     'formattedHours': formattedHours,
+  //     'formattedMinutes': formattedMinutes,
+  //     'formattedSeconds': formattedSeconds,
+  //   };
+  //   _watch.updateApplicationContext(context);
+  //   setState(() => _log.add('보내진 context: $context'));
+  // }
 
   void initPlatformState() async {
     // _supported = await _watch.isSupported;
@@ -170,7 +172,7 @@ class ClockState extends State<Clock> {
     final minutes = (_elapsed.inMinutes % 60).toString().padLeft(2, '0');
     final seconds = (_elapsed.inSeconds % 60).toString().padLeft(2, '0');
     // sendMessage 호출
-    sendMessage(hours, minutes, seconds);
+    // sendMessage(hours, minutes, seconds);
   }
 
   String _formatTime(int value) {
@@ -216,7 +218,7 @@ class ClockState extends State<Clock> {
     List<String> splitminutes = _splitTime(formattedMinutes);
     List<String> splitseconds = _splitTime(formattedSeconds);
 
-    return Container(
+    return SizedBox(
       width: MediaQuery.of(context).size.width * 0.9,
       child: Row(
         children: [
