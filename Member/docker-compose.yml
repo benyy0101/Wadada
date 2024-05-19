@@ -1,0 +1,16 @@
+version: '3'
+services:
+  member:
+    build: .
+    container_name: member
+    env_file:
+      - .env
+    networks:
+      - deploy
+    volumes:
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+
+networks:
+  deploy:
+    external : true
