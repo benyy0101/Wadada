@@ -652,6 +652,7 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                                         child: KakaoMap(
                                           onMapCreated: (mapcontroller) {
                                             mapController = mapcontroller;
+                                            markers.clear();
                                             markers.add(Marker(
                                               markerId: 'flag',
                                               latLng: LatLng(centerlat, centerlong),
