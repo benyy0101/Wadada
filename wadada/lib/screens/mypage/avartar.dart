@@ -10,9 +10,12 @@ class AvatarWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return SingleChildScrollView(
+      child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
-        children: const <Widget>[AvatarContainer(), LevelWidget()]);
+        children: const <Widget>[AvatarContainer(), LevelWidget(), SizedBox(height: 50,)],
+      ),
+    );
   }
 }
 
@@ -34,7 +37,7 @@ class AvatarContainer extends StatelessWidget {
             Text(
               "짚신이",
               style: TextStyle(color: DARK_GREEN_COLOR, fontSize: 30),
-            )
+            ),
           ],
         ));
   }
@@ -44,7 +47,7 @@ class LevelWidget extends StatelessWidget {
   const LevelWidget({super.key});
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: MediaQuery.of(context).size.width * 0.9,
       child: Card(
         color: OATMEAL_COLOR,
@@ -98,7 +101,7 @@ class LevelContainer extends StatelessWidget {
                   ],
                 );
               }
-            })
+            }),
           ],
         ));
   }

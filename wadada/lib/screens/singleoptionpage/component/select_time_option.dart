@@ -79,7 +79,7 @@ class SelectTimeOptionState extends State<SelectTimeOption> {
             Row(
               children: [
                 SizedBox(
-                  width: 200,
+                  width: 150,
                   child: TextField(
                     keyboardType: TextInputType.number,
                     inputFormatters: [

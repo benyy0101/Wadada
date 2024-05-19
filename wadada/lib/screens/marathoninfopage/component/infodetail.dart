@@ -17,7 +17,7 @@ class InfoDetail extends StatelessWidget {
     final textColor = isPast ? GRAY_400 : Colors.black;
     final cardColor = isPast ? Color(0xffF2F2F2) : OATMEAL_COLOR;
     MarathonController controller = Get.put(MarathonController());
-    String _formatDateTime(DateTime dateTime) {
+    String formatDateTime(DateTime dateTime) {
       if (dateTime.minute != 0) {
         String formattedDateTime =
             '${dateTime.month}월 ${dateTime.day}일 ${dateTime.hour}시 ${dateTime.minute}분';
@@ -38,7 +38,8 @@ class InfoDetail extends StatelessWidget {
       }
     }
 
-    return Container(
+    return SingleChildScrollView(
+      child: Container(
       padding: EdgeInsets.all(45),
       // color: cardColor,
       child: Column(
@@ -53,7 +54,7 @@ class InfoDetail extends StatelessWidget {
           // SizedBox(height: 40),
           Image.asset(
             'assets/images/sports_medal_3d.png',
-            height: 250,
+            height: 200,
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -94,7 +95,7 @@ class InfoDetail extends StatelessWidget {
               SizedBox(width: 58),
               Expanded(
                 child: Text(
-                  '${_formatDateTime(marathon.marathonStart)}\n ~\n${_formatDateTime(marathon.marathonEnd)}',
+                  '${formatDateTime(marathon.marathonStart)}\n ~\n${formatDateTime(marathon.marathonEnd)}',
                   style: TextStyle(
                     fontSize: 17,
                     color: textColor,
@@ -111,6 +112,8 @@ class InfoDetail extends StatelessWidget {
               Text(
                 '거리',
                 style: TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.bold,
                   color: textColor,
                 ),
               ),
@@ -213,6 +216,7 @@ class InfoDetail extends StatelessWidget {
           ),
         ],
       ),
+    ),
     );
   }
 }

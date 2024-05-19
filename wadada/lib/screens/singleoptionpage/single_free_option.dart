@@ -107,128 +107,136 @@ class SingleFreeModeState extends State<SingleOption> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Container(
-        padding: EdgeInsets.only(left: 30, right: 30),
-        child: Column(
-          children: [
-            SizedBox(
-              height: 45,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.only(
+              left: 30,
+              right: 30,
+              bottom: MediaQuery.of(context).viewInsets.bottom,
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+            child: Column(
               children: [
-                Column(
+                SizedBox(
+                  height: 45,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    if (widget.isDistMode)
-                      Text('거리모드 - 싱글',
-                          style: TextStyle(
-                            color: GRAY_900,
-                            fontSize: 20,
-                          )),
-                    if (!widget.isDistMode)
-                      Text('시간모드 - 싱글',
-                          style: TextStyle(
-                            color: GRAY_900,
-                            fontSize: 20,
-                          )),
-                  ],
-                )
-              ],
-            ),
-            SizedBox(
-              height: 40,
-            ),
-            if (widget.isDistMode) // 거리 모드
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '거리 설정',
-                    style: TextStyle(color: GRAY_500, fontSize: 19),
-                  ),
-                  SizedBox(height: 10),
-                  SelectDistOption(
-                    option: '거리',
-                    optionstr: '(km)',
-                    onStateUpdated: (state) {
-                      setState(() {
-                        distOptionState = state;
-                      });
-                    },
-                  ),
-                ],
-              ),
-            if (!widget.isDistMode) // 시간 모드
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '시간 설정',
-                    style: TextStyle(color: Colors.black54, fontSize: 19),
-                  ),
-                  SizedBox(height: 10),
-                  SelectTimeOption(
-                    option: '시간',
-                    optionstr: '(분)',
-                    onStateUpdated: (state) {
-                      setState(() {
-                        timeOptionState = state;
-                      });
-                    },
-                  ),
-                ],
-              ),
-            SizedBox(height: 80),
-            Row(
-              children: [
-                Expanded(
-                  child: GestureDetector(
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                            color: Color(0xffADB5BD),
-                            borderRadius: BorderRadius.circular(10)),
-                        child: Padding(
-                            padding: EdgeInsets.symmetric(
-                              vertical: 15,
-                            ),
-                            child: Text('취소',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 17,
-                                  fontWeight: FontWeight.bold,
-                                ))),
-                      )),
-                ),
-                SizedBox(width: 20),
-                Expanded(
-                  child: GestureDetector(
-                    onTap: clickstart,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Color(0xff5BC879),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Padding(
-                          padding: EdgeInsets.symmetric(
-                            vertical: 15,
-                          ),
-                          child: Text('시작하기',
-                              textAlign: TextAlign.center,
+                    Column(
+                      children: [
+                        if (widget.isDistMode)
+                          Text('거리모드 - 싱글',
                               style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 17,
-                                fontWeight: FontWeight.bold,
-                              ))),
-                    ),
+                                color: GRAY_900,
+                                fontSize: 20,
+                              )),
+                        if (!widget.isDistMode)
+                          Text('시간모드 - 싱글',
+                              style: TextStyle(
+                                color: GRAY_900,
+                                fontSize: 20,
+                              )),
+                      ],
+                    )
+                  ],
+                ),
+                SizedBox(
+                  height: 40,
+                ),
+                if (widget.isDistMode) // 거리 모드
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '거리 설정',
+                        style: TextStyle(color: GRAY_500, fontSize: 19),
+                      ),
+                      SizedBox(height: 10),
+                      SelectDistOption(
+                        option: '거리',
+                        optionstr: '(km)',
+                        onStateUpdated: (state) {
+                          setState(() {
+                            distOptionState = state;
+                          });
+                        },
+                      ),
+                    ],
                   ),
+                if (!widget.isDistMode) // 시간 모드
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '시간 설정',
+                        style: TextStyle(color: Colors.black54, fontSize: 19),
+                      ),
+                      SizedBox(height: 10),
+                      SelectTimeOption(
+                        option: '시간',
+                        optionstr: '(분)',
+                        onStateUpdated: (state) {
+                          setState(() {
+                            timeOptionState = state;
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                SizedBox(height: 80),
+                Row(
+                  children: [
+                    Expanded(
+                      child: GestureDetector(
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                                color: Color(0xffADB5BD),
+                                borderRadius: BorderRadius.circular(10)),
+                            child: Padding(
+                                padding: EdgeInsets.symmetric(
+                                  vertical: 15,
+                                ),
+                                child: Text('취소',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 17,
+                                      fontWeight: FontWeight.bold,
+                                    ))),
+                          )),
+                    ),
+                    SizedBox(width: 20),
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: clickstart,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Color(0xff5BC879),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Padding(
+                              padding: EdgeInsets.symmetric(
+                                vertical: 15,
+                              ),
+                              child: Text('시작하기',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.bold,
+                                  ))),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
-          ],
+          ),
         ),
       ),
     );
