@@ -160,7 +160,8 @@ public class MarathonServiceImpl implements MarathonService {
 
     @Override
     public Integer isMarathonReady(Principal principal,int marathonSeq) throws Exception {
-        Optional<Member> optional = memberRepository.getMemberByMemberId(principal.getName());
+        Optional<Member> optional;
+        optional = memberRepository.getMemberByMemberId(principal.getName());
         if (optional.isEmpty()) {
             throw new NotFoundMemberException();
         }
@@ -189,6 +190,7 @@ public class MarathonServiceImpl implements MarathonService {
 
         //해당 게임에 Member 넣을 수 있으면 true 없으면 false
         if(marathonRoomManager.InsertMember(memberInfo)){
+            log.info(memberInfo.getMemberName()+"방에입장했습니다");
             return marathonRoomManager.getCurRooms();
         }
         return -1;

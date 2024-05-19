@@ -110,6 +110,7 @@ public class MarathonRoomManager {
 
         //현재 방(채널)에 100명이 찼으면
         if (++curPerson % 100 == 0) {
+            curRooms++;
             //방 만들고
             curRooms = addRoom(new MarathonRoomDto());
             //해당 방에 멤버 넣기
