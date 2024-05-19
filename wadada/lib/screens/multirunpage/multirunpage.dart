@@ -873,370 +873,380 @@ class _MultiRunState extends State<MultiRun> {
     return PopScope(
       canPop: false,
       child: Stack(
-      children: [
-        Scaffold(
-        backgroundColor: Colors.white,
-        // appBar: isLoading? null : AppBar(
-        appBar: (!isLoadingNotifier.value && !isCountdownNotifier.value)? AppBar(
-        bottom: PreferredSize(
-          preferredSize: Size.fromHeight(25), 
-          child: 
-            Container(
-              // height: 40,
-              decoration: BoxDecoration(
-                color: OATMEAL_COLOR,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: ToggleButtons(
-                isSelected: [currentTab == 0, currentTab == 1],
-                onPressed: _toggleButton,
-                fillColor: OATMEAL_COLOR,
-                borderColor: Colors.transparent,
-                borderRadius: BorderRadius.circular(8),
-                splashColor: Colors.transparent,
-                highlightColor: Colors.transparent,
-                borderWidth: 0,
+        children: [
+          Scaffold(
+            backgroundColor: Colors.white,
+            appBar: (!isLoadingNotifier.value && !isCountdownNotifier.value)
+                ? AppBar(
+                    bottom: PreferredSize(
+                      preferredSize: Size.fromHeight(25),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: OATMEAL_COLOR,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: ToggleButtons(
+                          isSelected: [currentTab == 0, currentTab == 1],
+                          onPressed: _toggleButton,
+                          fillColor: OATMEAL_COLOR,
+                          borderColor: Colors.transparent,
+                          borderRadius: BorderRadius.circular(8),
+                          splashColor: Colors.transparent,
+                          highlightColor: Colors.transparent,
+                          borderWidth: 0,
+                          children: [
+                            Container(
+                              width: 150,
+                              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 11),
+                              decoration: currentTab == 0
+                                  ? BoxDecoration(
+                                      color: GREEN_COLOR,
+                                      borderRadius: BorderRadius.circular(8),
+                                    )
+                                  : null,
+                              child: Text(
+                                '정보',
+                                style: TextStyle(
+                                  color: currentTab == 0 ? Colors.white : Colors.grey,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 17,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                            Container(
+                              width: 150,
+                              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 11),
+                              decoration: currentTab == 1
+                                  ? BoxDecoration(
+                                      color: GREEN_COLOR,
+                                      borderRadius: BorderRadius.circular(8),
+                                    )
+                                  : null,
+                              child: Text(
+                                '지도',
+                                style: TextStyle(
+                                  color: currentTab == 1 ? Colors.white : Colors.grey,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 17,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  )
+                : null,
+            body: SingleChildScrollView(
+              child: Stack(
                 children: [
                   Container(
-                    width: 150,
-                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 11),
-                    decoration: currentTab == 0
-                        ? BoxDecoration(
-                            color: GREEN_COLOR,
-                            borderRadius: BorderRadius.circular(8),
-                          )
-                        : null,
-                    child: Text('정보',
-                      style: TextStyle(
-                        color: currentTab == 0 ? Colors.white : Colors.grey,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 17,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  Container(
-                    width: 150,
-                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 11),
-                    decoration: currentTab == 1
-                        ? BoxDecoration(
-                            color: GREEN_COLOR,
-                            borderRadius: BorderRadius.circular(8),
-                          )
-                        : null,
-                    child: Text('지도',
-                      style: TextStyle(
-                        color: currentTab == 1 ? Colors.white : Colors.grey,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 17,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ],
-            ),
-            )
-          ),
-        ): null,
-        body: Stack(
-          children: [
-          Container(
-            padding: EdgeInsets.only(left: 30, right: 30),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                IndexedStack(
-                  index: currentTab,
-                  children: [
-                    Column(
+                    padding: EdgeInsets.only(left: 30, right: 30),
+                    child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        SizedBox(
-                            height: 20,
-                        ),
-                        progressBar,
-                        SizedBox(height: 35),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text('이동거리',
-                                      style: TextStyle(
-                                          color: GRAY_500,
-                                          fontSize: 19,
-                                      )
-                                    ),
-                                    SizedBox(height: 5),
-                                    ValueListenableBuilder<double>(
-                                      valueListenable: myMap.totalDistanceNotifier,
-                                      builder: (context, totalDistance, _) {
-                                        return Text('$formattedDistance km',
-                                          style: TextStyle(
-                                            color: GREEN_COLOR,
-                                            fontSize: 30,
-                                            fontWeight: FontWeight.w700,
-                                          )
-                                        );
-                                      }
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text('현재 페이스',
-                                      style: TextStyle(
-                                          color: GRAY_500,
-                                          fontSize: 19,
-                                      )
-                                    ),
-                                    SizedBox(height: 5),
-                                    ValueListenableBuilder<double>(
-                                      valueListenable: myMap.paceNotifier,
-                                      builder: (context, pace, _) {
-                                        String formattedPace = formatPace(pace);
-                                        return Text(formattedPace,
-                                          style: TextStyle(
-                                            color: GREEN_COLOR,
-                                            fontSize: 30,
-                                            fontWeight: FontWeight.w700,
-                                          )
-                                        );
-                                      }
-                                    ),
-                                  ],
-                                ),
-                                ),
-                              ],
-                            ),
-                        SizedBox(height: 30),
-                        // 소요 시간
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        IndexedStack(
+                          index: currentTab,
                           children: [
-                            Text(widget.time == 0? '소요 시간' : '남은 시간',
-                              style: TextStyle(
-                                color: GRAY_500,
-                                fontSize: 19,
-                              )
-                            ),
-                            SizedBox(height: 10),
-                            clockWidget,
-                          ],
-                        ),
-                        SizedBox(height: 30),
-                        // 현재 속도
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('현재 속도',
-                              style: TextStyle(
-                                color: GRAY_500,
-                                fontSize: 19,
-                              )
-                            ),
-                            SizedBox(height: 5),
-                            ValueListenableBuilder<double>(
-                              valueListenable: myMap.speedNotifier,
-                              builder: (context, speed, _) {
-                                return Text('${speed.toStringAsFixed(2)} km/h',
-                                  style: TextStyle(
-                                    color: GREEN_COLOR,
-                                    fontSize: 30,
-                                    fontWeight: FontWeight.w700,
-                                  )
-                                );
-                              }
-                            ),
-                          ],),
-                          ],
-                        ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                          SizedBox(height: 20),
-                          Text('나의 경로',
-                              style: TextStyle(
-                                  color: GRAY_500,
-                                  fontSize: 19,
-                              ),
-                          ),
-                          SizedBox(height: 10),
-                          myMap, // 지도 위젯
-                        ],
-                    ),
-                  ],
-                ),
-                SizedBox(height: 30),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('실시간 순위',
-                        style: TextStyle(
-                          color: GRAY_500,
-                          fontSize: 19,
-                        )
-                      ),
-                      SizedBox(height: 15),
-                      Container(
-                        decoration: BoxDecoration(
-                        color: Color(0xffF6F4E9),
-                        borderRadius: BorderRadius.circular(20),
-                        boxShadow: const [
-                          BoxShadow(
-                            color: Colors.black12,
-                            spreadRadius: 1,
-                            blurRadius: 2,
-                            offset: Offset(1, 1),
-                          ),
-                        ],
-                      ),
-                      padding: const EdgeInsets.only(left: 20, right: 20, top: 10),
-                      width: 400,
-                      height: 200,
-                      child: rankingData!.isEmpty
-                        ? Center(
-                            child: Text(
-                              '곧 실시간 순위가 나타납니다',
-                              style: TextStyle(fontSize: 16, color: Colors.grey),
-                              textAlign: TextAlign.center,
-                            ),
-                          )
-                      : Column(
-                      children: [
-                          Expanded(
-                            child: PageView.builder(
-                              itemCount: (rankingData!.length / 3).ceil(),
-                              onPageChanged: (pageIndex) {
-                                setState(() {
-                                  currentPageIndex = pageIndex;
-                                });
-                              },
-                              itemBuilder: (context, pageIndex) {
-                                final startIndex = pageIndex * 3;
-                                final endIndex = (startIndex + 3).clamp(0, rankingData!.length);
-                                final currentPageData = rankingData!.sublist(startIndex, endIndex);
-
-                                return Column(
-                                  children: currentPageData.map((ranking) {
-                                    return Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Row(
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                SizedBox(height: 20),
+                                progressBar,
+                                SizedBox(height: 35),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
-                                          Text('${ranking['memberRank']}',
+                                          Text(
+                                            '이동거리',
                                             style: TextStyle(
-                                              color: DARK_GREEN_COLOR,
-                                              fontSize: 23,
-                                              fontWeight: FontWeight.bold,
+                                              color: GRAY_500,
+                                              fontSize: 19,
                                             ),
                                           ),
-                                          SizedBox(width: 20),
-                                          if (ranking['memberProfile'] != null && ranking['memberProfile'].isNotEmpty)
-                                            CircleAvatar(
-                                              backgroundImage: NetworkImage(ranking['memberProfile']),
-                                              radius: 20,
-                                            )
-                                          else
-                                            CircleAvatar(
-                                              backgroundColor: Colors.grey,
-                                              radius: 20,
-                                              child: Icon(
-                                                Icons.person,
-                                                color: Colors.white,
-                                              ),
-                                            ),
-                                          SizedBox(width: 15),
-                                          Text('${ranking['memberNickname']}',
-                                            style: TextStyle(
-                                              color: Colors.black,
-                                              fontSize: 20,
-                                            ),
-                                          ),
-                                          Spacer(),
-                                          Text('${(ranking['memberDist'] / 1000).toStringAsFixed(2)} km',
-                                            style: TextStyle(
-                                              color: DARK_GREEN_COLOR,
-                                              fontSize: 23,
-                                              fontWeight: FontWeight.bold,
-                                            ),
+                                          SizedBox(height: 5),
+                                          ValueListenableBuilder<double>(
+                                            valueListenable: myMap.totalDistanceNotifier,
+                                            builder: (context, totalDistance, _) {
+                                              return Text(
+                                                '$formattedDistance km',
+                                                style: TextStyle(
+                                                  color: GREEN_COLOR,
+                                                  fontSize: 30,
+                                                  fontWeight: FontWeight.w700,
+                                                ),
+                                              );
+                                            },
                                           ),
                                         ],
                                       ),
-                                    );
-                                  }).toList(),
-                                );
-                              },
-                            ),
-                          ),
-              
-                          // 페이지 인덱스를 나타내는 동그라미들
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 10),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: List.generate((rankingData!.length / 3).ceil(), (index) {
-                                return GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      currentPageIndex = index;
-                                    });
-                                  },
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(4.0),
-                                    child: Icon(
-                                      Icons.circle,
-                                      size: 10,
-                                      color: currentPageIndex == index ? GREEN_COLOR : Colors.grey, // 현재 페이지에 해당하는 동그라미는 파란색으로, 그 외에는 회색으로 표시
                                     ),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            '현재 페이스',
+                                            style: TextStyle(
+                                              color: GRAY_500,
+                                              fontSize: 19,
+                                            ),
+                                          ),
+                                          SizedBox(height: 5),
+                                          ValueListenableBuilder<double>(
+                                            valueListenable: myMap.paceNotifier,
+                                            builder: (context, pace, _) {
+                                              String formattedPace = formatPace(pace);
+                                              return Text(
+                                                formattedPace,
+                                                style: TextStyle(
+                                                  color: GREEN_COLOR,
+                                                  fontSize: 30,
+                                                  fontWeight: FontWeight.w700,
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 30),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      widget.time == 0 ? '소요 시간' : '남은 시간',
+                                      style: TextStyle(
+                                        color: GRAY_500,
+                                        fontSize: 19,
+                                      ),
+                                    ),
+                                    SizedBox(height: 10),
+                                    clockWidget,
+                                  ],
+                                ),
+                                SizedBox(height: 30),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      '현재 속도',
+                                      style: TextStyle(
+                                        color: GRAY_500,
+                                        fontSize: 19,
+                                      ),
+                                    ),
+                                    SizedBox(height: 5),
+                                    ValueListenableBuilder<double>(
+                                      valueListenable: myMap.speedNotifier,
+                                      builder: (context, speed, _) {
+                                        return Text(
+                                          '${speed.toStringAsFixed(2)} km/h',
+                                          style: TextStyle(
+                                            color: GREEN_COLOR,
+                                            fontSize: 30,
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                SizedBox(height: 20),
+                                Text(
+                                  '나의 경로',
+                                  style: TextStyle(
+                                    color: GRAY_500,
+                                    fontSize: 19,
                                   ),
-                                );
-                              }),
+                                ),
+                                SizedBox(height: 10),
+                                myMap, // 지도 위젯
+                              ],
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 30),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '실시간 순위',
+                              style: TextStyle(
+                                color: GRAY_500,
+                                fontSize: 19,
+                              ),
+                            ),
+                            SizedBox(height: 15),
+                            Container(
+                              decoration: BoxDecoration(
+                                color: Color(0xffF6F4E9),
+                                borderRadius: BorderRadius.circular(20),
+                                boxShadow: const [
+                                  BoxShadow(
+                                    color: Colors.black12,
+                                    spreadRadius: 1,
+                                    blurRadius: 2,
+                                    offset: Offset(1, 1),
+                                  ),
+                                ],
+                              ),
+                              padding: const EdgeInsets.only(left: 20, right: 20, top: 10),
+                              width: 400,
+                              height: 200,
+                              child: rankingData!.isEmpty
+                                  ? Center(
+                                      child: Text(
+                                        '곧 실시간 순위가 나타납니다',
+                                        style: TextStyle(fontSize: 16, color: Colors.grey),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    )
+                                  : Column(
+                                      children: [
+                                        Expanded(
+                                          child: PageView.builder(
+                                            itemCount: (rankingData!.length / 3).ceil(),
+                                            onPageChanged: (pageIndex) {
+                                              setState(() {
+                                                currentPageIndex = pageIndex;
+                                              });
+                                            },
+                                            itemBuilder: (context, pageIndex) {
+                                              final startIndex = pageIndex * 3;
+                                              final endIndex = (startIndex + 3).clamp(0, rankingData!.length);
+                                              final currentPageData = rankingData!.sublist(startIndex, endIndex);
+
+                                              return Column(
+                                                children: currentPageData.map((ranking) {
+                                                  return Padding(
+                                                    padding: const EdgeInsets.all(8.0),
+                                                    child: Row(
+                                                      children: [
+                                                        Text(
+                                                          '${ranking['memberRank']}',
+                                                          style: TextStyle(
+                                                            color: DARK_GREEN_COLOR,
+                                                            fontSize: 23,
+                                                            fontWeight: FontWeight.bold,
+                                                          ),
+                                                        ),
+                                                        SizedBox(width: 20),
+                                                        if (ranking['memberProfile'] != null &&
+                                                            ranking['memberProfile'].isNotEmpty)
+                                                          CircleAvatar(
+                                                            backgroundImage: NetworkImage(ranking['memberProfile']),
+                                                            radius: 20,
+                                                          )
+                                                        else
+                                                          CircleAvatar(
+                                                            backgroundColor: Colors.grey,
+                                                            radius: 20,
+                                                            child: Icon(
+                                                              Icons.person,
+                                                              color: Colors.white,
+                                                            ),
+                                                          ),
+                                                        SizedBox(width: 15),
+                                                        Text(
+                                                          '${ranking['memberNickname']}',
+                                                          style: TextStyle(
+                                                            color: Colors.black,
+                                                            fontSize: 20,
+                                                          ),
+                                                        ),
+                                                        Spacer(),
+                                                        Text(
+                                                          '${(ranking['memberDist'] / 1000).toStringAsFixed(2)} km',
+                                                          style: TextStyle(
+                                                            color: DARK_GREEN_COLOR,
+                                                            fontSize: 23,
+                                                            fontWeight: FontWeight.bold,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  );
+                                                }).toList(),
+                                              );
+                                            },
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(vertical: 10),
+                                          child: Row(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            children: List.generate((rankingData!.length / 3).ceil(), (index) {
+                                              return GestureDetector(
+                                                onTap: () {
+                                                  setState(() {
+                                                    currentPageIndex = index;
+                                                  });
+                                                },
+                                                child: Padding(
+                                                  padding: const EdgeInsets.all(4.0),
+                                                  child: Icon(
+                                                    Icons.circle,
+                                                    size: 10,
+                                                    color: currentPageIndex == index ? GREEN_COLOR : Colors.grey,
+                                                  ),
+                                                ),
+                                              );
+                                            }),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 50),
+                        GestureDetector(
+                          onTap: () {
+                            _showEndModal(context);
+                          },
+                          child: Container(
+                            width: double.maxFinite,
+                            decoration: BoxDecoration(
+                              color: GREEN_COLOR,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(
+                                vertical: 15,
+                              ),
+                              child: Text(
+                                '종료하기',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 19,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                             ),
                           ),
-                        ],
-                      
-                      ),
-                      ),
-                    ],
-                  ),
-                SizedBox(height: 50),
-                // 종료 버튼
-                GestureDetector(
-                  onTap: () {
-                    _showEndModal(context);
-                  },
-                  child: Container(
-                    width:double.maxFinite,
-                    decoration: BoxDecoration(
-                      color: GREEN_COLOR,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(
-                        vertical: 15,
-                      ),
-                      child: Text('종료하기',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 19,
-                          fontWeight: FontWeight.bold,
-                        )
-                      )
+                        ),
+                        SizedBox(height: 30),
+                      ],
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
-          ],
-        ),
-      ),
-
           if (isLoadingNotifier.value)
             Positioned.fill(
               child: Scaffold(
@@ -1249,12 +1259,11 @@ class _MultiRunState extends State<MultiRun> {
                       CircularProgressIndicator(
                         color: GREEN_COLOR,
                       ),
-                    ]
+                    ],
                   ),
-                )
+                ),
               ),
             ),
-
           if (isCountdownNotifier.value)
             Positioned.fill(
               child: Scaffold(
@@ -1289,8 +1298,9 @@ class _MultiRunState extends State<MultiRun> {
                 ),
               ),
             ),
-        ]
-      )
+        ],
+      ),
     );
+
   }
 }

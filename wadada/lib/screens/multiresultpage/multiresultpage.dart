@@ -491,7 +491,7 @@ class _MultiResultState extends State<MultiResult> {
         color: OATMEAL_COLOR,
         borderRadius: BorderRadius.circular(10),
       ),
-      width: 54,
+      width: 43,
       height: 65,
       child: Center(
         child: Text(

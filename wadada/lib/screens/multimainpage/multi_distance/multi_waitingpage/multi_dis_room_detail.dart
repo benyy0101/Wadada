@@ -97,7 +97,7 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
       roomOption = '시간';
       optionMetric = '분';
     } else {
-      titleText = '깃발모드 - 멀티';
+      titleText = '만남모드 - 멀티';
       roomOption = '거리';
       optionMetric = 'km';
     }
@@ -488,8 +488,7 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                       SizedBox(height: 20),
                       GridView.count(
                         crossAxisCount: 2,
-                        childAspectRatio:
-                            3, // Adjust the aspect ratio as needed
+                        childAspectRatio: 3, // Number of columns
                         shrinkWrap:
                             true, // Ensure that the GridView only occupies the space it needs
                         physics:
@@ -498,17 +497,17 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                           return Padding(
                             padding: EdgeInsets.symmetric(
                                 vertical: 2, horizontal: 2),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: DARK_GREEN_COLOR,
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Center(
-                                child: Text(
-                                  tags[index],
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    color: Colors.white,
+                            child: Flexible(
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: DARK_GREEN_COLOR,
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    tags[index],
+                                    style: TextStyle(
+                                        fontSize: 18, color: Colors.white),
                                   ),
                                 ),
                               ),
@@ -643,7 +642,7 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                                         padding: EdgeInsets.symmetric(
                                             horizontal: 10, vertical: 5),
                                         child: Text(
-                                          showMap ? '지도 닫기' : '지도 보기',
+                                          showMap ? '위치 확인' : '위치 확인',
                                           style: TextStyle(
                                               fontSize: 18,
                                               color: Colors.black),
@@ -758,11 +757,11 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                       controller.ready(roomInfo.roomIdx);
                     },
                     style: TextButton.styleFrom(
-                      minimumSize:
-                          ui.Size(MediaQuery.of(context).size.width * .9, 50),
                       foregroundColor: Colors.white,
                       backgroundColor:
-                          isButtonPressed ? GREEN_COLOR : Colors.grey[400],
+                          isButtonPressed ? Colors.grey[400] : GREEN_COLOR,
+                      minimumSize:
+                          ui.Size(MediaQuery.of(context).size.width * .9, 50),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
