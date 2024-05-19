@@ -7,6 +7,7 @@ class CustomTextFormField extends StatelessWidget {
   final bool obscureText;
   final bool autofocus;
   final ValueChanged<String>? onChanged;
+  final TextEditingController? controller;
 
   const CustomTextFormField({
     required this.onChanged,
@@ -14,41 +15,43 @@ class CustomTextFormField extends StatelessWidget {
     this.obscureText = false,
     this.hintText,
     this.errorText,
+    this.controller,
     super.key,
   });
 
   @override
   Widget build(BuildContext context) {
-  const baseBorder = OutlineInputBorder(
-  borderSide: BorderSide(
-  color: DARK_GREEN_COLOR,
-  width: 1.0,
-  ),
-  );
-
-  return TextFormField(
-    cursorColor: DARK_GREEN_COLOR,
-    // 비밀번호 입력할 때
-    obscureText: obscureText,
-    autofocus: autofocus,
-    onChanged: onChanged,
-    decoration: InputDecoration(
-      contentPadding: const EdgeInsets.all(20),
-      hintText: hintText,
-      errorText: errorText,
-      hintStyle: const TextStyle(
-        color: GRAY_400,
-        fontSize: 14.0,
+    const baseBorder = OutlineInputBorder(
+      borderSide: BorderSide(
+        color: DARK_GREEN_COLOR,
+        width: 1.0,
       ),
-      fillColor: Colors.white12,
-      filled: true,
-      border: baseBorder,
-      focusedBorder: baseBorder.copyWith(
-        borderSide: baseBorder.borderSide.copyWith(
-        color: GREEN_COLOR,
+    );
+
+    return TextFormField(
+      controller: controller,
+      cursorColor: DARK_GREEN_COLOR,
+      // 비밀번호 입력할 때
+      obscureText: obscureText,
+      autofocus: autofocus,
+      onChanged: onChanged,
+      decoration: InputDecoration(
+        contentPadding: const EdgeInsets.all(20),
+        hintText: hintText,
+        errorText: errorText,
+        hintStyle: const TextStyle(
+          color: GRAY_400,
+          fontSize: 14.0,
+        ),
+        fillColor: Colors.white12,
+        filled: true,
+        border: baseBorder,
+        focusedBorder: baseBorder.copyWith(
+          borderSide: baseBorder.borderSide.copyWith(
+            color: GREEN_COLOR,
+          ),
         ),
       ),
-    ),
     );
   }
 }

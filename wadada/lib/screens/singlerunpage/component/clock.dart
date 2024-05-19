@@ -8,7 +8,12 @@ class Clock extends StatefulWidget {
   final int time;
   final ValueNotifier<Duration> elapsedTimeNotifier;
   final VoidCallback onTimerEnd;
-  const Clock({super.key, required this.time, required this.elapsedTimeNotifier, required this.onTimerEnd,});
+  const Clock({
+    super.key,
+    required this.time,
+    required this.elapsedTimeNotifier,
+    required this.onTimerEnd,
+  });
 
   @override
   State<Clock> createState() => ClockState();
@@ -28,13 +33,12 @@ class ClockState extends State<Clock> {
   // 워치랑
   final WatchConnectivityBase _watch = WatchConnectivity();
   final MethodChannel channel = MethodChannel('watch_connectivity');
-  var _supported = false;
-  var _paired = false;
-  var _reachable = false;
+  // var _supported = false;
+  // var _paired = false;
+  // var _reachable = false;
   bool _connected = false;
   final _log = <String>[];
-  
-  
+
   @override
   void initState() {
     super.initState();
@@ -58,25 +62,24 @@ class ClockState extends State<Clock> {
         }
       });
     } else {
-        // 넘어온 값 0이면 스톱워치
-        _timer = Timer.periodic(Duration(milliseconds: 100), _onTick);
-      }
-    
+      // 넘어온 값 0이면 스톱워치
+      _timer = Timer.periodic(Duration(milliseconds: 100), _onTick);
+    }
+
     initPlatformState();
     // 워치 초기화
     _initWear();
 
-    // 
-
+    //
   }
 
   // 워치 관련코드
   void _initWear() {
     _watch.messageStream.listen((message) => setState(() {
-      _connected = true;
-    }));
+          _connected = true;
+        }));
   }
-  
+
   // sendMessage  워치한테 보내는 함수(실행해야 메세지가 전송됨 -> 주기적으로 호출)
   void sendMessage(formattedHours, formattedMinutes, formattedSeconds) {
     final message = {
@@ -86,7 +89,6 @@ class ClockState extends State<Clock> {
     };
     _watch.sendMessage(message);
     setState(() => _log.add('메세지: $message'));
-
   }
 
   void sendContext(formattedHours, formattedMinutes, formattedSeconds) {
@@ -100,21 +102,18 @@ class ClockState extends State<Clock> {
   }
 
   void initPlatformState() async {
-    _supported = await _watch.isSupported;
-    _paired = await _watch.isPaired;
-    _reachable = await _watch.isReachable;
-    setState(() {
-
-    });
+    // _supported = await _watch.isSupported;
+    // _paired = await _watch.isPaired;
+    // _reachable = await _watch.isReachable;
+    setState(() {});
   }
-
 
   void start() {
     setState(() {
-        _isRunning = true;
+      _isRunning = true;
     });
   }
-  
+
   void setRunning(bool isRunning) {
     print('setRunning called with: $isRunning');
     setState(() {
@@ -146,27 +145,26 @@ class ClockState extends State<Clock> {
       // });
 
       setState(() {
-                if (widget.time > 0) {
-                    _elapsed -= Duration(milliseconds: 100);
-                    if (_elapsed <= Duration.zero) {
-                        _isRunning = false;
-                        _elapsed = Duration.zero;
-                        _timer.cancel();
-                        widget.onTimerEnd();
-                    }
-                } else {
-                    _elapsed += Duration(milliseconds: 100);
-                }
-                widget.elapsedTimeNotifier.value = _elapsed;
+        if (widget.time > 0) {
+          _elapsed -= Duration(milliseconds: 100);
+          if (_elapsed <= Duration.zero) {
+            _isRunning = false;
+            _elapsed = Duration.zero;
+            _timer.cancel();
+            widget.onTimerEnd();
+          }
+        } else {
+          _elapsed += Duration(milliseconds: 100);
+        }
+        widget.elapsedTimeNotifier.value = _elapsed;
 
-                // 시간, 분, 초 업데이트 메소드 호출
-                sendTimeUpdate();
-            });
+        // 시간, 분, 초 업데이트 메소드 호출
+        sendTimeUpdate();
+      });
     }
   }
 
-
-  // 시간, 분, 초 업데이트 
+  // 시간, 분, 초 업데이트
   void sendTimeUpdate() {
     final hours = _elapsed.inHours.toString().padLeft(2, '0');
     final minutes = (_elapsed.inMinutes % 60).toString().padLeft(2, '0');
@@ -189,8 +187,8 @@ class ClockState extends State<Clock> {
         color: OATMEAL_COLOR,
         borderRadius: BorderRadius.circular(10),
       ),
-      width: 40,
-      height: 50,
+      width: 48,
+      height: 60,
       child: Center(
         child: Text(
           digit,

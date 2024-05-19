@@ -90,6 +90,9 @@ class ListTileWidget extends StatelessWidget {
       children: records.map<Widget>((simple) {
         return ListTile(
             title: Text(modeConverter(simple.recordType)),
+            contentPadding: EdgeInsets.all(10),
+            titleTextStyle: TextStyle(fontSize: 20, color: DARK_GREEN_COLOR),
+            subtitleTextStyle: TextStyle(fontSize: 14, color: GRAY_400),
             subtitle: Row(
               children: [
                 Text(typeConverter(simple.recordType)),
@@ -113,7 +116,10 @@ class ListTileWidget extends StatelessWidget {
                 //               recordType: simple.recordType,
                 //             )));
               },
-              icon: const Icon(Icons.arrow_forward_ios_rounded),
+              icon: const Icon(
+                Icons.arrow_forward_ios_rounded,
+                color: GRAY_500,
+              ),
             ));
       }).toList(),
     );
