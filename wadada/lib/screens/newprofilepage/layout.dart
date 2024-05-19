@@ -126,10 +126,12 @@ class _NewProfileState extends State<NewProfileLayout> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 70.0),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // 닉네임 입력
-                  const Row(
+                  const Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       _NickName(),
                       _SubTitle(),
@@ -199,7 +201,8 @@ class _NewProfileState extends State<NewProfileLayout> {
               ),
             ),
             const SizedBox(height: 60),
-            _MyButton()
+            _MyButton(),
+            SizedBox(height: 60)
           ],
         ),
       ),
@@ -268,7 +271,7 @@ class _SubTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     // ignore: prefer_const_constructors
     return Text(
-      '       2자 이상 14자 이하의 닉네임을 정해주세요',
+      '2자 이상 14자 이하의 닉네임을 정해주세요',
       // ignore: prefer_const_constructors
       style: TextStyle(
         fontSize: 11,
@@ -343,7 +346,7 @@ class _MyButton extends StatelessWidget {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20),
             ),
-            minimumSize: Size(width * .3, 60),
+            minimumSize: Size(width * .4, 60),
           ),
           child: const Text(
             "다음에 만들기",
@@ -364,7 +367,7 @@ class _MyButton extends StatelessWidget {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20),
             ),
-            minimumSize: Size(width * .3, 60),
+            minimumSize: Size(width * .4, 60),
           ),
           child: const Text(
             '생성하기',
@@ -374,7 +377,6 @@ class _MyButton extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(width: 30)
       ],
     );
   }
