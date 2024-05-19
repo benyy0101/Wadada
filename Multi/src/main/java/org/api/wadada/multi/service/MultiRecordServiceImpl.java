@@ -57,7 +57,7 @@ public class MultiRecordServiceImpl implements MultiRecordService {
 //        PointToStringConverter converter = new PointToStringConverter();
 //        Point startLocationPoint = converter.convertToEntityAttribute(gameStartReq.getRecordStartLocation());
         WKTReader reader = new WKTReader();
-        Point point = (Point) reader.read("POINT (1 1)");
+        Point point = (Point) reader.read(gameStartReq.getRecordStartLocation());
 
         MultiRecord multiRecord = MultiRecord.builder().multiRecordStart(point)
                 .memberSeq(optional.get().getMemberSeq())
@@ -78,18 +78,21 @@ public class MultiRecordServiceImpl implements MultiRecordService {
         return new GameStartRes(multiRecord.getMultiRecordSeq());
     }
 
-    public GameEndRes saveEndMulti(Principal principal, GameEndReq gameEndReq){
+    public GameEndRes saveEndMulti(Principal principal, GameEndReq gameEndReq) throws ParseException {
         // 멤버 조회
         Optional<Member> optionalMember = memberRepository.getMemberByMemberId(principal.getName());
         if(optionalMember.isEmpty()){
             throw new NullPointerException("멤버를 찾을 수 없습니다");
         }
 
+        WKTReader reader = new WKTReader();
+        Point point = (Point) reader.read(gameEndReq.getRecordEndLocation());
+
         Optional<MultiRecord> optional = multiRecordRepository.findByMemberIdandRoomSeq(optionalMember.get().getMemberSeq(),gameEndReq.getRoomSeq());
         if(optional.isEmpty()){
             throw new NullPointerException("기록을 찾을 수 없습니다");
         }
-        optional.get().updateEnd(gameEndReq.getRecordEndLocation(),gameEndReq.getRecordTime(),gameEndReq.getRecordDist(),
+        optional.get().updateEnd(point,gameEndReq.getRecordTime(),gameEndReq.getRecordDist(),
                 gameEndReq.getRecordImage(),gameEndReq.getRecordRank(),gameEndReq.getRecordWay(),gameEndReq.getRecordPace(),
                 gameEndReq.getRecordSpeed(),gameEndReq.getRecordHeartbeat());
 
