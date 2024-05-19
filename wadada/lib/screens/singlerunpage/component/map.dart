@@ -14,7 +14,6 @@ class MyMap extends StatefulWidget {
   List<LatLng> coordinates = [];
   LatLng centerplace;
   final int moderoom;
-  int runmode; // 싱글멀티판단
 
   List<LatLng> getCoordinates() {
     return coordinates;
@@ -38,7 +37,7 @@ class MyMap extends StatefulWidget {
     return distancePace;
   }
 
-  MyMap({super.key, required this.appKey, required this.centerplace, required this.moderoom, required this.runmode});
+  MyMap({super.key, required this.appKey, required this.centerplace, required this.moderoom});
 
   void _updateTotalDistance(double distance) {
     totalDistanceNotifier.value += distance;
@@ -306,12 +305,12 @@ class MyMapState extends State<MyMap> {
       );
     }
 
-    double mapWidth = widget.runmode == 2 ? 600 : 400;
-    double mapHeight = widget.runmode == 2 ? 350 : 230;
+    // double mapWidth = widget.runmode == 2 ? 600 : 400;
+    // double mapHeight = widget.runmode == 2 ? 350 : 230;
 
     return SizedBox(
-      width: mapWidth,
-      height: mapHeight,
+      width: 400,
+      height: 230,
       child: KakaoMap(
         onMapCreated: (controller) {
           mapController = controller;

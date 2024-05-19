@@ -79,7 +79,7 @@ class _MarathonState extends State<MarathonRun> {
 
     // _initWebSocketListener();
 
-    myMap = MyMap(appKey: dotenv.env['APP_KEY']!, centerplace: LatLng(0, 0), moderoom: 1, runmode: 1);
+    myMap = MyMap(appKey: dotenv.env['APP_KEY']!, centerplace: LatLng(0, 0), moderoom: 1);
     onPageLoaded();
     // _onGameGoChanged();
 

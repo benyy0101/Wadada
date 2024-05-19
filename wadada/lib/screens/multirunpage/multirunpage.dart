@@ -99,7 +99,7 @@ class _MultiRunState extends State<MultiRun> {
 
     // _initWebSocketListener();
 
-    myMap = MyMap(appKey: widget.appKey, key: myMapStateKey, centerplace: LatLng(widget.centerlat, widget.centerlong), moderoom: moderoom, runmode: 2);
+    myMap = MyMap(appKey: widget.appKey, key: myMapStateKey, centerplace: LatLng(widget.centerlat, widget.centerlong), moderoom: moderoom);
     onPageLoaded();
     // _onGameGoChanged();
     
@@ -873,7 +873,8 @@ class _MultiRunState extends State<MultiRun> {
     return PopScope(
       canPop: false,
       child: Stack(
-      children: [Scaffold(
+      children: [
+        Scaffold(
         backgroundColor: Colors.white,
         // appBar: isLoading? null : AppBar(
         appBar: (!isLoadingNotifier.value && !isCountdownNotifier.value)? AppBar(

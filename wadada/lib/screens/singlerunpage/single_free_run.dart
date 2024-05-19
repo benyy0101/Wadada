@@ -87,7 +87,6 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
       key: myMapStateKey,
       centerplace: LatLng(0.0, 0.0),
       moderoom: -1,
-      runmode: 1,
     );
 
     myMap.startLocationNotifier.addListener(() {
@@ -664,38 +663,14 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
       children: [
         Scaffold(
         backgroundColor: Colors.white,
-        appBar: AppBar(
-          leading: null,
-          actions: [
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 0),
-              child: Text(
-                isLocked
-                    ? '잠금을 풀려면 2초 이상 누르세요.는 시도해봤는데 아직 안됨'
-                    : '화면을 잠글 수 있습니다',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 14,
-                ),
-              ),
-            ),
-            IconButton(
-              icon: Icon(isLocked ? Icons.lock : Icons.lock_open),
-              onPressed: onLockButtonPressed,
-            ),
-          ],
-          automaticallyImplyLeading: false,
-          backgroundColor: Colors.white,
-        ),
         body: Stack(
             children: [
-              AbsorbPointer(
-                absorbing: isLocked,
-            child: Container(
+              Container(
               padding: EdgeInsets.only(left: 30, right: 30),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  SizedBox(height: 45),
                   progressBar,
                   SizedBox(
                       height: 45,
@@ -853,40 +828,8 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
                 ],
               ),
             ),
+            ],
           ),
-              
-
-          // if (isLoading)
-          //   Positioned.fill(
-          //       child: Container(
-          //           // color: Colors.white.withOpacity(0.7),
-          //           color: OATMEAL_COLOR,
-          //           child: Center(
-          //               child: CircularProgressIndicator(),
-          //           ),
-          //       ),
-          //   ),
-
-          if (isLocked)
-            GestureDetector(
-                onLongPress: onUnlockButtonPressed,
-                child: Container(
-                    color: Colors.black.withOpacity(0),
-                    child: Center(
-                      // child: Text(
-                      //     '잠금을 해제하려면\n화면을 몇 초 동안 누르세요.',
-                      //     style: TextStyle(
-                      //         color: Colors.white,
-                      //         fontSize: 20,
-                      //         fontWeight: FontWeight.bold,
-                      //     ),
-                      //     textAlign: TextAlign.center,
-                      // ),
-                    ),
-                ),
-            ),
-          ]
-        ), 
       ),
       if (isLoading)
             Positioned.fill(

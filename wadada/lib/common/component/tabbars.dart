@@ -26,7 +26,7 @@ class MainLayout extends StatelessWidget {
                   text: '싱글',
                   iconMargin: EdgeInsets.all(0)),
               Tab(
-                  icon: Icon(Icons.groups),
+                  icon: Icon(Icons.group),
                   text: '멀티',
                   iconMargin: EdgeInsets.all(0)),
               Tab(
