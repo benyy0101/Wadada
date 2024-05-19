@@ -19,7 +19,12 @@ class MainLayout extends StatelessWidget {
           automaticallyImplyLeading: false,
           title: Padding(
             padding: EdgeInsets.all(0),
-            child: Text('WADADA'),
+            child: Text('WADADA',
+              style: TextStyle(
+                fontFamily: 'Lundry',
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
         ),
         bottomNavigationBar: BottomAppBar(

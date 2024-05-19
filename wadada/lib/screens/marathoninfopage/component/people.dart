@@ -175,7 +175,7 @@ class _ParticipantsListState extends State<ParticipantsList> {
               final endIndex = (startIndex + itemsPerPage)
                   .clamp(0, widget.peopleData.length);
               print(widget.peopleData.length);
-              if (widget.peopleData.length == 0) {
+              if (widget.peopleData.isEmpty) {
                 print("NOBODY HERE");
                 return Center(
                   child: Text("아무도 없습니다."),
@@ -198,7 +198,7 @@ class _ParticipantsListState extends State<ParticipantsList> {
                           backgroundImage: NetworkImage(person.memberImage),
                           radius: 44,
                         ),
-                        SizedBox(height: 8),
+                        SizedBox(height: 5),
                         Text(
                           person.memberName,
                           style: TextStyle(

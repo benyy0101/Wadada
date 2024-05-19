@@ -627,7 +627,7 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                                         child: Container(
                                           padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                                           child: Text(
-                                            showMap ? '지도 닫기' : '지도 보기',
+                                            showMap ? '위치 확인' : '위치 확인',
                                             style: TextStyle(fontSize: 18, color: Colors.black),
                                           ),
                                         ),
@@ -743,8 +743,8 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                       foregroundColor: Colors.white,
                       backgroundColor:
                           isButtonPressed ? Colors.grey[400] : GREEN_COLOR,
-                      padding: EdgeInsets.only(
-                          left: 155, right: 155, top: 10, bottom: 10),
+                      minimumSize:
+                          ui.Size(MediaQuery.of(context).size.width * .9, 50),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),

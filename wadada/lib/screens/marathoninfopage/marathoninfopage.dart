@@ -145,37 +145,22 @@ class _MultiInfoState extends State<MarathonInfo> {
         ),
       ),
       backgroundColor: Colors.white,
-      body: Container(
-        child: SizedBox(
-          height: MediaQuery.of(context).size.height -
-              kToolbarHeight, // 앱바 높이를 제외한 전체 높이로 설정
-          child: Center(
-            child: Padding(
-              padding: EdgeInsets.only(bottom: 50),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  if (currentTab == 0)
-                    // Expanded(
-                    //   child: InfoDetail(
-                    //     marathon: widget.marathon,
-                    //     isPast: isPast,
-                    //   ),
-                    // ),
-                    InfoDetail(
-                      marathon: widget.marathon,
-                      isPast: isPast,
-                    ),
-                  if (currentTab == 1)
-                    Expanded(
-                      child: People(
-                        marathon: widget.marathon,
-                        isPast: isPast,
-                      ),
-                    ),
-                ],
-              ),
-            ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.only(bottom: 50),
+          child: Column(
+            children: [
+              if (currentTab == 0)
+                InfoDetail(
+                  marathon: widget.marathon,
+                  isPast: isPast,
+                ),
+              if (currentTab == 1)
+                People(
+                  marathon: widget.marathon,
+                  isPast: isPast,
+                ),
+            ],
           ),
         ),
       ),

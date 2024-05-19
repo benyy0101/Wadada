@@ -312,7 +312,7 @@ class _SingleResultState extends State<SingleResult> {
         color: OATMEAL_COLOR,
         borderRadius: BorderRadius.circular(10),
       ),
-      width: 48,
+      width: 43,
       height: 60,
       child: Center(
         child: Text(
