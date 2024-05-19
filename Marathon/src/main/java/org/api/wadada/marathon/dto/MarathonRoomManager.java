@@ -157,7 +157,7 @@ public class MarathonRoomManager {
         }
     }
     public void sendGameEndMessage() {
-        String message = GameMessage.GAME_START.toJson();
+        String message = GameMessage.MARATHON_GAME_END.toJson();
         isStarted = true;
         for (int i = 0; i <= curRooms; i++) {
             messagingTemplate.convertAndSend("/sub/attend/" + i, message);
