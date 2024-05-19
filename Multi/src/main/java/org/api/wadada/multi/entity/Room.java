@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.api.wadada.common.BaseEntity;
 import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.io.WKTReader;
 
 import java.util.ArrayList;
 
@@ -55,4 +57,11 @@ public class Room extends BaseEntity {
         this.roomMaker = roomMaker;
         this.roomTargetPoint = roomTargetPoint;
     }
+
+    public void setTargetPoint(double lat,double lng) throws ParseException {
+        WKTReader reader = new WKTReader();
+        String wktString = String.format("POINT (%f %f)", lat, lng);
+        this.roomTargetPoint = (Point) reader.read(wktString);
+    }
+
 }

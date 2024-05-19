@@ -3,9 +3,11 @@ package org.api.wadada.multi.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.api.wadada.multi.dto.game.GameMessage;
-import org.api.wadada.multi.dto.req.CreateRoomReq;
-import org.api.wadada.multi.dto.req.GameEndReq;
-import org.api.wadada.multi.dto.req.GameStartReq;
+import org.api.wadada.multi.dto.req.*;
+import org.api.wadada.multi.dto.res.GameEndRes;
+import org.api.wadada.multi.dto.res.GameResultRes;
+import org.api.wadada.multi.dto.res.GameStartRes;
+import org.api.wadada.multi.dto.res.RoomMemberRes;
 import org.api.wadada.multi.dto.res.*;
 import org.api.wadada.multi.exception.CanNotJoinRoomException;
 import org.api.wadada.multi.exception.CreateRoomException;
@@ -19,6 +21,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -121,13 +124,10 @@ public class MultiController {
 
 
     @MessageMapping("/game/start/{roomIdx}")
-    @SendTo("/sub/attend/{roomIdx}")
     public ResponseEntity<String> startGameInfo(@DestinationVariable int roomIdx) {
-        // 게임 시작 정보 메시지 생성 (API 요청 URL 포함)
 
-        String message = GameMessage.GAME_START_INFO_REQUEST.toJson();
         roomService.startGame(roomIdx);
-        return new ResponseEntity<>(message,HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 
@@ -162,6 +162,56 @@ public class MultiController {
             throw new RuntimeException(e);
         }
     }
+
+    @MessageMapping("/flag/{roomIdx}")
+    @SendTo("/sub/attend/{roomIdx}")
+    public void getFlagPoint(@DestinationVariable int roomIdx){
+        roomService.getFlagPoint(roomIdx);
+    }
+
+    @PostMapping("/flag")
+    public ResponseEntity<?> requestLocation(@RequestBody UserPointReq userPointReq){
+
+        try {
+            roomService.saveUserPoint(userPointReq);
+            return new ResponseEntity<>("좌표 저장에 성공했습니다",HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>("좌표 저장에 실패했습니다.",HttpStatus.NOT_ACCEPTABLE);
+        }
+    }
+
+    @PostMapping("/game/data")
+    public ResponseEntity<?> requestPlayerInfoData(Principal principal, @RequestBody RequestDataReq requestDataReq){
+        try {
+            multiRecordService.savePlayerData(principal, requestDataReq);
+            return new ResponseEntity<>("플레이어 info 저장에 성공했습니다",HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>("플레이어 info 저장에 실패했습니다.",HttpStatus.NOT_ACCEPTABLE);
+        }
+    }
+
+    // 1. 게임 시작하면 해당 api 요청
+    // 2. requestPlayerInfoData로 현재 멤버의 데이터를 저장
+    // 3.
+    @GetMapping("/game/rank/{roomSeq}")
+//    @SendTo("/sub/game/{roomSeq}")
+    public ResponseEntity<?> getPlayerRank(@PathVariable int roomSeq){
+        log.info("roomSeq"+ roomSeq);
+        multiRecordService.getPlayerRank(roomSeq);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping("/game/end/{roomSeq}")
+    public ResponseEntity<?> isEndGame(@PathVariable int roomSeq){
+        try{
+            multiRecordService.stopPlayerRankUpdates(roomSeq);
+            return new ResponseEntity<>(HttpStatus.OK);
+        }catch (Exception e){
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+        }
+    }
+
 
 
 }

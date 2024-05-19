@@ -13,8 +13,7 @@ import org.locationtech.jts.geom.Point;
 @Builder
 @Getter
 public class GameStartReq {
-    @JsonDeserialize(using = PointDeserializer.class)
-    private Point recordStartLocation;
+    private String recordStartLocation;
     private Integer roomSeq;
     private Integer recordPeople;
 }

@@ -23,6 +23,7 @@ public class RoomMemberRes {
     public void changeReady(){
         this.memberReady = !this.memberReady;
     }
+    public void isNewManager(){this.isManager = true;}
 
     public static RoomMemberRes of(boolean isManager,Member member){
         return RoomMemberRes.builder()

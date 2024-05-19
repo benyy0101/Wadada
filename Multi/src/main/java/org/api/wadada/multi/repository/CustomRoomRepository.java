@@ -45,11 +45,20 @@ public class CustomRoomRepository {
             boolQueryBuilder.must(Query.of(q -> q.fuzzy(fuzzyQuery)));
         }
 
+        boolQueryBuilder.filter(Query.of(q -> q
+                .term(t -> t
+                        .field("is_deleted")
+                        .value(false)
+                )
+        ));
+
         // BoolQuery를 Query 객체로 변환
         Query query = Query.of(q -> q.bool(boolQueryBuilder.build()));
         SearchRequest searchRequest = SearchRequest.of(s -> s
                 .index("room")
-                .query(query));
+                .query(query)
+                .size(500));
+
         try {
             SearchResponse<RoomDocument> response = client.search(searchRequest, RoomDocument.class);
             return response.hits().hits().stream()
@@ -61,5 +70,8 @@ public class CustomRoomRepository {
         }
     }
 
+    public void saveDocument(RoomDocument roomDocument) {
+        elasticsearchOperations.save(roomDocument);
+    }
 
 }
