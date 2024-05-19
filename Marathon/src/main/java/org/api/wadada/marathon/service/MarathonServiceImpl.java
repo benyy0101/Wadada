@@ -266,7 +266,7 @@ public class MarathonServiceImpl implements MarathonService {
     @Override
     public void getPlayerRank(int roomSeq) {
         roomSchedulers.computeIfAbsent(roomSeq, k -> Executors.newScheduledThreadPool(1))
-                .scheduleAtFixedRate(() -> updatePlayRank(roomSeq), 0, 6, TimeUnit.SECONDS);
+                .scheduleAtFixedRate(() -> updatePlayRank(roomSeq), 0, 1, TimeUnit.SECONDS);
     }
 
     public void updatePlayRank(int roomSeq){
