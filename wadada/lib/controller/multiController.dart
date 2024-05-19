@@ -53,7 +53,7 @@ class MultiController extends GetxController {
       recordRank: -1);
 
   MultiController({required this.repo});
-
+  RxString keyword = ''.obs;
   Future<int> creatMultiRoom(MultiRoom roomInfo) async {
     try {
       info = await repo.createRoom(roomInfo);
@@ -105,6 +105,19 @@ class MultiController extends GetxController {
       int result = await repo.endGame(gameEndInfo);
       if (result.runtimeType != int && result == recordSeq) {
         throw Exception("recordSeq가 일치하지 않습니다.");
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  void roomSearch(int mode) async {
+    try {
+      if (keyword.value == '') {
+        roomList.value = await repo.multiRoomGet(mode);
+      } else {
+        print("----------------with keyword----------------------");
+        roomList.value = await repo.multiRoomSearch(keyword.value);
       }
     } catch (e) {
       print(e);

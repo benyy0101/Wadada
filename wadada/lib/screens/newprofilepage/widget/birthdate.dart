@@ -27,35 +27,38 @@ class CalendarState extends State<Calendar> {
         borderRadius: BorderRadius.circular(4.0),
         color: Colors.transparent,
         child: TextButton(
-          style: TextButton.styleFrom(
-            backgroundColor: GREEN_COLOR,
-            padding:
-                const EdgeInsets.symmetric(vertical: 13.0, horizontal: 30.0),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(4.0),
+            style: TextButton.styleFrom(
+              backgroundColor: GREEN_COLOR,
+              padding:
+                  const EdgeInsets.symmetric(vertical: 13.0, horizontal: 30.0),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(4.0),
+              ),
             ),
-          ),
-          onPressed: () async {
-            final selectedDate = await showDatePicker(
-              context: context,
-              initialDate: date,
-              firstDate: DateTime(1910),
-              lastDate: DateTime.now(),
-            );
-            if (selectedDate != null) {
-              setState(() {
-                date = selectedDate;
-              });
-            }
-          },
-          child: Text(
-            DateFormat('yyyy년 MM월 dd일').format(date),
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 20.0,
-            ),
-          ),
-        ),
+            onPressed: () async {
+              final selectedDate = await showDatePicker(
+                context: context,
+                initialDate: date,
+                firstDate: DateTime(1910),
+                lastDate: DateTime.now(),
+              );
+              if (selectedDate != null) {
+                setState(() {
+                  date = selectedDate;
+                  profileController.profile.value.memberBirthday = date;
+                });
+              }
+            },
+            child: Obx(() {
+              return Text(
+                DateFormat('yyyy년 MM월 dd일')
+                    .format(profileController.profile.value.memberBirthday),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 20.0,
+                ),
+              );
+            })),
       ),
     );
   }

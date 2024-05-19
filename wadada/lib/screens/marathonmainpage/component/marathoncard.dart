@@ -17,11 +17,11 @@ class MarathonCard extends StatelessWidget {
   String _formatDateTime(DateTime dateTime) {
     if (dateTime.minute != 0) {
       String formattedDateTime =
-          '${dateTime.year}년 ${dateTime.month}월 ${dateTime.day}일 ${dateTime.hour}시 ${dateTime.minute}분';
+          '${dateTime.month}월 ${dateTime.day}일 ${dateTime.hour}시 ${dateTime.minute}분';
       return formattedDateTime;
     } else {
       String formattedDateTime =
-          '${dateTime.year}년 ${dateTime.month}월 ${dateTime.day}일 ${dateTime.hour}시';
+          '${dateTime.month}월 ${dateTime.day}일 ${dateTime.hour}시';
       return formattedDateTime;
     }
   }
@@ -107,6 +107,7 @@ class MarathonCard extends StatelessWidget {
                   ),
                   SizedBox(height: 20),
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Icon(Icons.calendar_month_sharp, color: DARK_GREEN_COLOR),
                       SizedBox(width: 10),
@@ -121,7 +122,7 @@ class MarathonCard extends StatelessWidget {
                       SizedBox(width: 58),
                       Expanded(
                         child: Text(
-                          '${_formatDateTime(marathon.marathonStart)} ~ ${_formatDateTime(marathon.marathonEnd)}',
+                          '${_formatDateTime(marathon.marathonStart)}\n ~ \n${_formatDateTime(marathon.marathonEnd)}',
                           style: TextStyle(
                             fontSize: 17,
                             color: textColor,

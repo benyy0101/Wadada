@@ -37,7 +37,11 @@ class MyMap extends StatefulWidget {
     return distancePace;
   }
 
-  MyMap({super.key, required this.appKey, required this.centerplace, required this.moderoom});
+  MyMap(
+      {super.key,
+      required this.appKey,
+      required this.centerplace,
+      required this.moderoom});
 
   void _updateTotalDistance(double distance) {
     totalDistanceNotifier.value += distance;
@@ -124,7 +128,8 @@ class MyMapState extends State<MyMap> {
           }
 
           widget.endLocation = LatLng(currentLatitude!, currentLongitude!);
-          widget.currentLocationNotifier.value = LatLng(currentLatitude!, currentLongitude!);
+          widget.currentLocationNotifier.value =
+              LatLng(currentLatitude!, currentLongitude!);
 
           if (previousLatitude != null && previousLongitude != null) {
             double distance = Geolocator.distanceBetween(
@@ -142,25 +147,42 @@ class MyMapState extends State<MyMap> {
             // double roundedTotalDistanceKm = double.parse(totalDistanceKm.toStringAsFixed(2));
 
             // 속도 (m/s)
-            double currentSpeed = distance / timeDiff.inSeconds;
+            double currentSpeed = 0;
+            if (timeDiff.inSeconds != 0) {
+              currentSpeed = distance / timeDiff.inSeconds;
+            }
             widget.speedNotifier.value = currentSpeed * 3.6;
             // double roundedSpeed = double.parse(currentSpeed.toStringAsFixed(2));
 
             // 페이스(s/km)
-            double paceInSecondsPerKm = totalTime / (totalDistance / 1000);
+            double paceInSecondsPerKm = 0;
+            if (totalDistance != 0) {
+              paceInSecondsPerKm = totalTime / (totalDistance / 1000);
+            }
+
             widget.paceNotifier.value = paceInSecondsPerKm;
 
             widget._updateTotalDistance(distance);
 
-            widget.distanceSpeed.add({
-              "dist": totalDistance,
-              "speed": currentSpeed,
-            });
+            if (totalDistance.isFinite &&
+                !totalDistance.isNaN &&
+                currentSpeed.isFinite &&
+                !currentSpeed.isNaN) {
+              widget.distanceSpeed.add({
+                "dist": totalDistance,
+                "speed": currentSpeed,
+              });
+            }
 
-            widget.distancePace.add({
-              "dist": totalDistance,
-              "pace": paceInSecondsPerKm,
-            });
+            if (totalDistance.isFinite &&
+                !totalDistance.isNaN &&
+                paceInSecondsPerKm.isFinite &&
+                !paceInSecondsPerKm.isNaN) {
+              widget.distancePace.add({
+                "dist": totalDistance,
+                "pace": paceInSecondsPerKm,
+              });
+            }
           }
           // }
 
@@ -189,7 +211,7 @@ class MyMapState extends State<MyMap> {
             offsetX: 15, // width의 절반 값을 지정합니다.
             offsetY: 15,
             markerImageSrc:
-              'https://github.com/jjeong41/t/assets/103355863/5ff2a217-8cbc-4e41-b6c2-0ff12103b40b',
+                'https://github.com/jjeong41/t/assets/103355863/5ff2a217-8cbc-4e41-b6c2-0ff12103b40b',
             zIndex: 15,
           ));
 
@@ -349,7 +371,7 @@ class MyMapState extends State<MyMap> {
               offsetX: 15,
               offsetY: 44,
               markerImageSrc:
-                'https://github.com/jjeong41/t/assets/103355863/37743a13-bbd0-4744-9e7c-7ef262fc14c0',
+                  'https://github.com/jjeong41/t/assets/103355863/37743a13-bbd0-4744-9e7c-7ef262fc14c0',
               zIndex: 10,
             ));
           }

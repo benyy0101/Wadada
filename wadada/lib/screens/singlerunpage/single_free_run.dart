@@ -56,21 +56,18 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
   late MyMap myMap;
 
   // 워치랑
-  // final WatchConnectivityBase _watch = WatchConnectivity();
-  // final MethodChannel channel = MethodChannel('watch_connectivity');
-  // final _supported = false;
-  // final _paired = false;
-  // final _reachable = false;
-  // final bool _connected = false;
-  // final _log = <String>[];
+  final WatchConnectivityBase _watch = WatchConnectivity();
+  final MethodChannel channel = MethodChannel('watch_connectivity');
+  var _supported = false;
+  var _paired = false;
+  final _reachable = false;
+  bool _connected = false;
+  final _log = <String>[];
   String formattedPace = '';
-  // // 마지막으로 전송된 페이스 값
-  // final String _lastSentPace = '';
+  // 마지막으로 전송된 페이스 값
+  final String _lastSentPace = '';
 
   // 워치에서 심박수 가져와
-
-
-
 
   final GlobalKey<MyMapState> myMapStateKey = GlobalKey<MyMapState>();
   @override
@@ -79,8 +76,7 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
 
     startTimers();
     // 여기서 슛?
-    // initPlatformState();
-    
+    initPlatformState();
 
     myMap = MyMap(
       appKey: widget.appKey,
@@ -113,83 +109,85 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
     // myMap.paceNotifier.addListener(_onPaceUpdated);
   }
 
-
   // 워치 관련코드
-  // void _initWear() {
-  //   _watch.messageStream.listen((message) => setState(() {
-  //     _connected = true;
-  //   }));
-  // }
+  void _initWear() {
+    _watch.messageStream.listen((message) => setState(() {
+      print("Received message: $message");
+      if (message.containsKey('heartRate')) {
+        setState(() {
+          print('아진짜 제발좀 되라 웨 않 되??????????????');
+          //heartRate = message['heartRate'].toString();
+        });
+      }
+      _connected = true;
+    }));
+  }
 
-  // void sendMessage(formattedPace) {
-  //   final message = {
-  //     'formattedPace': formattedPace,
-  //     // 'splitHours': splitHours,
-  //     // 'splitMinutes': splitMinutes,
-  //     // 'splitSeconds': splitSeconds,
-     
-  //   };
-  //   _watch.sendMessage(message);
-  //   setState(() => _log.add('메세지: $message'));
+  void sendMessage(formattedPace) {
+    final message = {
+      'formattedPace': formattedPace,
+      // 'splitHours': splitHours,
+      // 'splitMinutes': splitMinutes,
+      // 'splitSeconds': splitSeconds,
+    };
+    _watch.sendMessage(message);
+    setState(() => _log.add('메세지: $message'));
+  }
 
-  // }
+  void sendContext(formattedPace) {
+    final context = {
+      'formattedPace': formattedPace,
+    };
+    _watch.updateApplicationContext(context);
+    setState(() => _log.add('보내진 context: $context'));
+  }
 
-  // void sendContext(formattedPace) {
-  //   final context = {
-  //     'formattedPace': formattedPace,
-
-  //   };
-  //   _watch.updateApplicationContext(context);
-  //   setState(() => _log.add('보내진 context: $context'));
-  // }
-
-  // void initPlatformState() async {
-  //   _supported = await _watch.isSupported;
-  //   _paired = await _watch.isPaired;
-  //   _reachable = await _watch.isReachable;
-  //   setState(() {
-
-  //   });
-  // }
+  void initPlatformState() async {
+    _supported = await _watch.isSupported;
+    _paired = await _watch.isPaired;
+    // _reachable = await _watch.isReachable;
+    setState(() {});
+  }
 
   // 워치 권한 허용 관련 코드
-  // void requestPermissions() async {
-  //   Map<Permission, PermissionStatus> statuses = await [
-  //     Permission.bluetooth,
-  //     Permission.location,
-  //     Permission.bluetoothScan,
-  //     Permission.bluetoothConnect,
-  //     Permission.bluetoothAdvertise,
-  //   ].request();
+  void requestPermissions() async {
+    Map<Permission, PermissionStatus> statuses = await [
+      Permission.bluetooth,
+      Permission.location,
+      Permission.bluetoothScan,
+      Permission.bluetoothConnect,
+      Permission.bluetoothAdvertise,
+    ].request();
 
-  //   if (statuses[Permission.bluetooth]?.isGranted == true &&
-  //       statuses[Permission.location]?.isGranted == true &&
-  //       statuses[Permission.bluetoothScan]?.isGranted == true &&
-  //       statuses[Permission.bluetoothConnect]?.isGranted == true &&
-  //       statuses[Permission.bluetoothAdvertise]?.isGranted == true) {
-  //     scanForDevices();
-  //   } else {
-  //     print("Permissions not granted.");
-  //   }
-  // }
+    if (statuses[Permission.bluetooth]?.isGranted == true &&
+        statuses[Permission.location]?.isGranted == true &&
+        statuses[Permission.bluetoothScan]?.isGranted == true &&
+        statuses[Permission.bluetoothConnect]?.isGranted == true &&
+        statuses[Permission.bluetoothAdvertise]?.isGranted == true) {
+      scanForDevices();
+    } else {
+      print("Permissions not granted.");
+    }
+  }
 
-  // void scanForDevices() async {
-  //   FlutterBluePlus.startScan(timeout: Duration(seconds: 5));
-  //   try {
-  //     // Get devices connected to the system
-  //     List<BluetoothDevice> devices = await FlutterBluePlus.systemDevices;
+  void scanForDevices() async {
+    FlutterBluePlus.startScan(timeout: Duration(seconds: 5));
+    try {
+      // Get devices connected to the system
+      List<BluetoothDevice> devices = await FlutterBluePlus.systemDevices;
 
-  //     if (devices.isEmpty) {
-  //       print("No system devices found.");
-  //     } else {
-  //       for (BluetoothDevice device in devices) {
-  //         print("System device: ${device.advName} (ID: ${device.platformName})");
-  //       }
-  //     }
-  //   } catch (e) {
-  //     print("Error retrieving system devices: $e");
-  //   }
-  // }
+      if (devices.isEmpty) {
+        print("No system devices found.");
+      } else {
+        for (BluetoothDevice device in devices) {
+          print(
+              "System device: ${device.advName} (ID: ${device.platformName})");
+        }
+      }
+    } catch (e) {
+      print("Error retrieving system devices: $e");
+    }
+  }
 
   // void _onPaceUpdated() {
   //   // 페이스가 업뎃 시 호출
@@ -220,7 +218,7 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
 
           WidgetsBinding.instance.addPostFrameCallback((_) {
             _clockKey.currentState?.start();
-        });
+          });
         }
       });
     });
@@ -242,7 +240,6 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
     String? accessToken = await storage.read(key: 'accessToken');
     int recordMode = widget.time > 0 ? 2 : 1;
 
-
     if (startLocation != null) {
       final url = Uri.parse('https://k10a704.p.ssafy.io/Single/start');
       final storage = FlutterSecureStorage();
@@ -253,7 +250,6 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
         "recordStartLocation":
             "POINT(${startLocation.latitude} ${startLocation.longitude})"
       });
-
 
       try {
         final response = await dio.post(
@@ -266,7 +262,6 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
                 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNDYzNDMxNDUzIiwiYXV0aCI6IlJPTEVfU09DSUFMIiwiZXhwIjoxNzE1NDA1MzkzfQ.dmjUkVX1sFe9EpYhT3SGO3uC7q1dLIoddBvzhoOSisM',
           }),
         );
-
 
         if (response.statusCode == 200) {
           // 서버 응답 성공 처리
@@ -311,7 +306,6 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
     return '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
   }
 
-
   // 기록을 서버에 전송하는 함수
   Future<void> sendRecordToServer() async {
     final startLocation = myMap.startLocation;
@@ -322,7 +316,6 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
     final dio = Dio();
 
     int recordMode = widget.time > 0 ? 2 : 1;
-
 
     // final elapsedTime = _clockKey.currentState?.elapsed ?? Duration.zero;
     // final formattedElapsedTime = formatElapsedTime(elapsedTime);
@@ -402,20 +395,23 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
     // print('총 거리 $totalDistance');
 
     final requestBody = jsonEncode({
-        "recordMode": recordMode,
-        "singleRecordSeq": recordSeq,
-        "recordImage": 'https://github.com/jjeong41/t/assets/103355863/4e6d205d-694e-458c-b992-8ea7c27b85b1',
-        "recordDist": totalDistance,
-        "recordTime": intelapsedseconds, // int
-        "recordStartLocation": "POINT(${startLocation?.latitude} ${startLocation?.longitude})",
-        "recordEndLocation": "POINT(${endLocation?.latitude} ${endLocation?.longitude})",
-        "recordWay": jsonEncode(coordinates),
-        "recordSpeed": jsonEncode(distanceSpeed),
-        "recordPace": jsonEncode(distancePace),
-        "recordHeartbeat": jsonEncode(distancePace),
-        "recordMeanSpeed": intaveragespeed, // int
-        "recordMeanPace": intaveragepaceinkmperhour, // int
-        "recordMeanHeartbeat": 0 // int
+      "recordMode": recordMode,
+      "singleRecordSeq": recordSeq,
+      "recordImage":
+          'https://github.com/jjeong41/t/assets/103355863/4e6d205d-694e-458c-b992-8ea7c27b85b1',
+      "recordDist": totalDistance,
+      "recordTime": intelapsedseconds, // int
+      "recordStartLocation":
+          "POINT(${startLocation?.latitude} ${startLocation?.longitude})",
+      "recordEndLocation":
+          "POINT(${endLocation?.latitude} ${endLocation?.longitude})",
+      "recordWay": jsonEncode(coordinates),
+      "recordSpeed": jsonEncode(distanceSpeed),
+      "recordPace": jsonEncode(distancePace),
+      "recordHeartbeat": jsonEncode(distancePace),
+      "recordMeanSpeed": intaveragespeed, // int
+      "recordMeanPace": intaveragepaceinkmperhour, // int
+      "recordMeanHeartbeat": 0 // int
     });
 
     try {
@@ -488,9 +484,7 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
 
     // Navigator.push(context, MaterialPageRoute(builder: (context) => SingleResult()));
   }
-  
 
-  
   void showEndModal(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -646,15 +640,15 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
     // String formattedDistance = totalDistance.toStringAsFixed(2);
 
     void onLockButtonPressed() {
-        setState(() {
-            isLocked = !isLocked;
-        });
+      setState(() {
+        isLocked = !isLocked;
+      });
     }
 
     void onUnlockButtonPressed() {
-        setState(() {
-            isLocked = false;
-        });
+      setState(() {
+        isLocked = false;
+      });
     }
 
     return PopScope(
@@ -693,51 +687,48 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
                   SizedBox(height: 35),
                   // 이동거리, 현재 페이스
                       // formattedDistance = totalDistance.toStringAsFixed(2);
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('이동거리',
-                              style: TextStyle(
-                                  color: GRAY_500,
-                                  fontSize: 19,
-                              )
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('이동거리',
+                                    style: TextStyle(
+                                      color: GRAY_500,
+                                      fontSize: 19,
+                                    )),
+                                SizedBox(height: 5),
+                                ValueListenableBuilder<double>(
+                                    valueListenable:
+                                        myMap.totalDistanceNotifier,
+                                    builder: (context, totalDistance, _) {
+                                      // double distanceInKm = totalDistance / 1000.0;
+                                      // formattedDistance = distanceInKm.toStringAsFixed(2);
+                                      return Text('$formattedDistance km',
+                                          style: TextStyle(
+                                            color: GREEN_COLOR,
+                                            fontSize: 30,
+                                            fontWeight: FontWeight.w700,
+                                          ));
+                                    }),
+                              ],
                             ),
-                            SizedBox(height: 5),
-                            ValueListenableBuilder<double>(
-                              valueListenable: myMap.totalDistanceNotifier,
-                              builder: (context, totalDistance, _) {
-                                // double distanceInKm = totalDistance / 1000.0;
-                                // formattedDistance = distanceInKm.toStringAsFixed(2);
-                                return Text('$formattedDistance km',
-                                  style: TextStyle(
-                                    color: GREEN_COLOR,
-                                    fontSize: 30,
-                                    fontWeight: FontWeight.w700,
-                                  )
-                                );
-                              }
-                            ),
-                          ],
-                        ),
-                      ),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('현재 페이스',
-                              style: TextStyle(
-                                  color: GRAY_500,
-                                  fontSize: 19,
-                              )
-                            ),
-                            SizedBox(height: 5),
-                            ValueListenableBuilder<double>(
-                              valueListenable: myMap.paceNotifier,
-                              builder: (context, pace, _) {
-                                formattedPace = formatPace(pace);
+                          ),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('현재 페이스',
+                                    style: TextStyle(
+                                      color: GRAY_500,
+                                      fontSize: 19,
+                                    )),
+                                SizedBox(height: 5),
+                                ValueListenableBuilder<double>(
+                                    valueListenable: myMap.paceNotifier,
+                                    builder: (context, pace, _) {
+                                      formattedPace = formatPace(pace);
 
                                 // sendMessage(formattedPace);
 
@@ -865,9 +856,6 @@ class _SingleFreeRunState extends State<SingleFreeRun> {
                 ),
               ),
             ),
-        ]
-      )
-    );
+        ]));
   }
 }
-

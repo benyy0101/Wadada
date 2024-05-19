@@ -39,6 +39,8 @@ void main() async {
     javaScriptAppKey: javaScriptAppKey,
   );
 
+  print(await KakaoSdk.origin);
+
   HttpOverrides.global = MyHttpOverrides();
 
   runApp(MyApp());
@@ -118,7 +120,7 @@ class _MyHomePageState extends State<MyHomePage> {
     //         marathonSeq: -1,
     //         marathonRound: -1,
     //         marathonDist: 20,
-    //         marathonParticipate: 20,
+    //         marathonParzoqticipate: 20,
     //         marathonStart: DateTime.now(),
     //         marathonEnd: DateTime.now(),
     //         isDeleted: false),

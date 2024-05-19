@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:wadada/common/const/colors.dart';
 
-class SelectDistOption extends StatefulWidget{
+class SelectDistOption extends StatefulWidget {
   final String option, optionstr;
   final Function(SelectDistOptionState)? onStateUpdated;
-  
+
   const SelectDistOption({
     super.key,
     required this.option,
@@ -26,9 +26,13 @@ class SelectDistOptionState extends State<SelectDistOption> {
 
   void updateErrorText() {
     final value = distcontroller.text;
-    if (value.startsWith('0') && value.length > 1 || value.isEmpty || int.tryParse(value) == null || int.tryParse(value) == 0) {
-        errorText = '정수 값을 입력하세요.';
-        isError = true;
+    // int? intValue = int.tryParse(value);
+    if (value.startsWith('0') && value.length > 1 ||
+        value.isEmpty ||
+        int.tryParse(value) == null ||
+        int.tryParse(value) == 0) {
+      errorText = '정수 값을 입력하세요.';
+      isError = true;
     } else {
         errorText = null;
         isError = false;
@@ -120,16 +124,14 @@ class SelectDistOptionState extends State<SelectDistOption> {
                   Text(
                     widget.optionstr,
                     style: TextStyle(
-                      color: DARK_GREEN_COLOR,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold
-                    )
-                  )
-                ],
-              ),
-            ],
-          ),
+                        color: DARK_GREEN_COLOR,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold))
+              ],
+            ),
+          ],
         ),
-      );
+      ),
+    );
   }
 }

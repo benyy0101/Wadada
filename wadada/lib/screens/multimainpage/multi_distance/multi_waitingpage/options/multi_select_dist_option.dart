@@ -33,7 +33,6 @@ class MultiSelectDistOptionState extends State<MultiSelectDistOption> {
   late int distselectnum = 0;
   late int peopleselectnum = 0;
   late int passwordselectnum = 0;
-  final List<String> _tags = [];
   late double _distanceToField;
   double? roomDist;
   double? roomPeople;

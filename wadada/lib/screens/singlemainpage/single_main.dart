@@ -21,16 +21,14 @@ class SingleMain extends StatelessWidget {
         child: Column(
           children: [
             SizedBox(
-              height: 45,
+              height: 10,
             ),
-
             Container(
               child: Row(
                 children: [
                   Obx(() {
-                    String nickname =
-                        profileController.profile.value.memberNickname ?? "???";
-                    return Text('$nickname님의 최근 기록',
+                    return Text(
+                        '${profileController.profile.value.memberNickname}님의 최근 기록',
                         style: TextStyle(
                           color: Colors.black54,
                           fontSize: 15,
@@ -63,7 +61,7 @@ class SingleMain extends StatelessWidget {
               },
             ),
             SizedBox(
-              height: 25,
+              height: 20,
             ),
             SelectMode(
               icon: 'assets/images/clock.png',
@@ -82,7 +80,7 @@ class SingleMain extends StatelessWidget {
               },
             ),
             SizedBox(
-              height: 25,
+              height: 20,
             ),
             SelectMode(
               icon: 'assets/images/map.png',
@@ -92,12 +90,8 @@ class SingleMain extends StatelessWidget {
               onTapAction: () {
               },
             ),
-            SizedBox(
-              height: 30,
-            ),
             // LogoutButton(),
             // TestButton(),
-
           ],
         ),
       ),
