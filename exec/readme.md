@@ -197,19 +197,130 @@ Wadada 프로젝트는 단순한 런닝 앱을 넘어서는 새로운 경험을 
 2. docker run -p 3306:3306 -v /home/ubuntu/mysql:/etc/mysql/conf.d -e MYSQL_ROOT_PASSWORD='ssafy102!' --name mysql mysql:latest
 
 ## II . logstash 빌드 및 배포
+
+* logstash.yml
+
+    ```
+    http.host: "0.0.0.0"
+    xpack.monitoring.elasticsearch.hosts: [ "엘라스틱서치 경로" ]
+    xpack.monitoring.enabled: true
+    xpack.monitoring.elasticsearch.username: elastic 유저명
+    xpack.monitoring.elasticsearch.password: elastic 비밀번호
+
+    ```
+
+* logstash.conf
+
+    ```
+
+    input {
+        jdbc {
+            jdbc_driver_library => "/usr/share/logstash/driver/mysql-connector-java-8.0.26.jar"
+            jdbc_driver_class => "com.mysql.cj.jdbc.Driver"
+            jdbc_connection_string => "jdbc:mysql://{host_ip}:{port}/{db명}"
+            jdbc_user => "{db_id}"
+            jdbc_password => "{db_pw}"
+            jdbc_paging_enabled => true
+            jdbc_page_size => "50000"
+            tracking_column => "updated_at"
+            statement => "SELECT * FROM wadada.room WHERE updated_at > :sql_last_value ORDER BY updated_at"
+            schedule => "* * * * *"
+            use_column_value => true
+            tracking_column_type => "timestamp"
+            clean_run => true
+        }
+    }
+    output{
+        elasticsearch {
+            hosts => ["엘라스틱주소"]
+            user => "{es_id}"
+            ssl => false
+            password => "{es_pw}"
+            document_id => "%{room_seq}"
+            index => "room"
+        }
+    }
+
+    ```
+
+* pipelines.yml
+
+    ```
+    - pipeline.id: main
+    path.config: "/usr/share/logstash/config/logstash.conf"
+
+    ```
+
 ### 1. 환경변수 형태
 ### 2. 빌드하기
 ### 3. 배포하기
+
+1. wget https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-8.0.26.zip
+
+2. unzip mysql-connector-java-8.0.26.zip
+
+3. docker run --name logstash   -v /var/lib/docker/volumes/logstash/_data/config/logstash.conf:/usr/share/logstash/config/logstash.conf   -v /var/lib/docker/volumes/logstash/_data/config/mysql-connector-java-8.0.26.jar:/usr/share/logstash/driver/mysql-connector-java-8.0.26.jar   -v /var/lib/docker/volumes/logstash/_data/config/logstash.yml:/usr/share/logstash/config/logstash.yml  -d logstash:8.13.0
 
 ## II . Kibana 빌드 및 배포
 ### 1. 환경변수 형태
+
+* kibana.yml
+
+    ```
+    # Default Kibana configuration for docker target
+    server.host: "0.0.0.0"
+    server.shutdownTimeout: "5s"
+    elasticsearch.hosts: [ "엘라스틱서치 경로" ]
+    monitoring.ui.container.elasticsearch.enabled: true
+    elasticsearch.serviceAccountToken: "엘라스틱서치에서 발급받은 토큰"
+
+    ```
+
 ### 2. 빌드하기
 ### 3. 배포하기
 
+docker run -d --link elastic:elasticsearch -p 5601:5601 -v /var/lib/docker/volumes/kibana/_data/config/kibana.yml:/usr/share/kibana/config/kibana.yml --name kibana kibana:8.13.0
+
 ## II . Elasticsearch 빌드 및 배포
 ### 1. 환경변수 형태
+
+* elastic.yml
+
+    ```
+    # Enable security features
+    xpack.security.enabled: true
+
+    xpack.security.enrollment.enabled: true
+
+    # Enable encryption for HTTP API client connections, such as Kibana, Logstash, and Agents
+    xpack.security.http.ssl:
+    enabled: false
+    keystore.path: certs/http.p12
+
+    # Enable encryption and mutual authentication between cluster nodes
+    xpack.security.transport.ssl:
+    enabled: false
+    verification_mode: certificate
+    keystore.path: certs/transport.p12
+    truststore.path: certs/transport.p12
+
+    ```
+
+    초기 유저 명 : elastic
+
+    docker exec -it elastic bash
+
+* 비밀번호 변경
+
+    bin/elasticsearch-reset-password -u elastic
+
+* kibana 엑세스 토큰 발급
+
+    bin/elasticsearch-service-tokens create elastic/kibana token-name
+
 ### 2. 빌드하기
 ### 3. 배포하기
+docker run -p 9200:9200 -p 9300:9300 -v /var/lib/docker/volumes/elastic/_data/config/elastic.yml:/usr/share/logstash/config/elastic.yml  elastic:/usr/share/elastic -e "discovery.type=single-node" --name elastic elasticsearch:8.13.0
 
 ## II . Redis 빌드 및 배포
 ### 1. 환경변수 형태
@@ -217,6 +328,65 @@ Wadada 프로젝트는 단순한 런닝 앱을 넘어서는 새로운 경험을 
 ### 3. 배포하기
 1. sudo mkdir redis
 2. docker run --name redis -p 6379:6379 -v /home/ubuntu/redis:/data -v /home/ubuntu/redis/redis.conf:/usr/local/etc/redis/redis.conf -d redis redis-server /usr/local/etc/redis/redis.conf 
+
+## II . FLUTTER APK 추출
+
+
+1. android 폴더에서 key 생성(앱 서명)
+
+keytool -genkey -v -keystore key.jks -keyalg RSA -keysize 2048 -validity 10000 -alias key
+
+2. android 폴더 내 keystore 디렉토리 생성 후 key 넣기(앱 서명)
+
+3. keystore에 keystore.password파일 만든 후 비밀번호 입력(앱 서명)
+
+4. .gitignore에  /keystore 추가(앱 서명)
+
+5. app - proguard-rules.pro 파일 생성(앱 권한설정)
+    
+    ```
+    ## Flutter wrapper
+    -keep class io.flutter.app.** { *; }
+    -keep class io.flutter.plugin.**  { *; }
+    -keep class io.flutter.util.**  { *; }
+    -keep class io.flutter.view.**  { *; }
+    -keep class io.flutter.**  { *; }
+    -keep class io.flutter.plugins.**  { *; }
+    -keep class com.facebook.** {*;}
+    # 기타 필요한 권한 추가
+    -dontwarn io.flutter.embedding.**
+    ```
+
+6. app - build.gradle에 추가
+
+    ```
+    signingConfigs {
+            release {
+                storeFile file('../keystore/key.jks')
+                storePassword file('../keystore/keystore.password').text.trim()
+                keyPassword file('../keystore/keystore.password').text.trim()
+                keyAlias 'key'
+            }
+        }
+
+        buildTypes {
+            release {
+                shrinkResources false   // 난독화 적용 시 true
+                minifyEnabled false    //  난독화 적용 시 true
+                proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+                // TODO: Add your own signing config for the release build.
+                // Signing with the debug keys for now, so `flutter run --release` works.
+                signingConfig signingConfigs.release
+
+            }
+        }
+    ```
+
+7. apk 생성 ——— 경로 /build/app/outputs/apk/release/app-release.apk(APK 추출)
+
+```
+flutter build apk --release --target-platform=android-arm64
+```
 
 ## 공통 환경변수
 
@@ -277,7 +447,7 @@ RABBITMQ_MARATHON3_ROUTING_KEY=
 - galaxy watch API
 
 ## III. DB 덤프 파일 최신본
-Wadada.sql
+wadada_dump.sql
 
 ### 4. 서비스 이용 방법
 서비스를 이용하는 방법은 다음과 같습니다:
