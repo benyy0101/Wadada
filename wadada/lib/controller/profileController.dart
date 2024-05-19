@@ -12,7 +12,7 @@ class ProfileController extends GetxController {
   final ProfileRepository repo;
   final MypageRepository mypageRepo = MypageRepository(mypageAPI: MypageAPI());
   final storage = FlutterSecureStorage();
-  Rx<Profile> profile = Profile(
+  late Rx<Profile> profile = Profile(
     memberNickname: '',
     memberBirthday: DateTime(1995, 03, 04),
     memberGender: '',
@@ -29,12 +29,12 @@ class ProfileController extends GetxController {
   @override
   void onInit() async {
     super.onInit();
-    final storage = FlutterSecureStorage();
-    String? temp = await storage.read(key: 'kakaoNickname');
-    print('-------------------------');
-    print(temp);
-    profile.value.memberNickname =
-        await storage.read(key: 'kakaoNickname') ?? "";
+    profile.value = await repo.profileGet();
+    // final storage = FlutterSecureStorage();
+    // String? temp = await storage.read(key: 'kakaoNickname');
+    // print('-------------------------');
+    // print(temp);
+    // profile.value.memberNickname = temp ?? "";
   }
 
   void getProfile() async {
@@ -49,7 +49,7 @@ class ProfileController extends GetxController {
   }
 
   //PROFILE-003
-  void patchProfile(Profile newProfile) async {
+  patchProfile(Profile newProfile) async {
     try {
       await repo.profilePatch(newProfile);
       await storage.write(

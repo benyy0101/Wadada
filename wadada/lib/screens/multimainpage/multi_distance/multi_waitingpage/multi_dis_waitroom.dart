@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_state_manager/src/simple/get_state.dart';
+import 'package:textfield_tags/textfield_tags.dart';
 import 'package:wadada/common/const/colors.dart';
 import 'package:wadada/controller/multiController.dart';
 import 'package:wadada/models/multiroom.dart';
@@ -148,6 +149,7 @@ class _MultiDisWait extends State<MultiDisWait> {
   @override
   Widget build(BuildContext context) {
     late String titleText = '';
+    StringTagController tagController = StringTagController();
     // controller.getMultiRoomsByMode(1);
     print('roomMode------------------------------');
     print(roomMode);
@@ -159,13 +161,18 @@ class _MultiDisWait extends State<MultiDisWait> {
       titleText = '만남모드 - 멀티';
     }
 
+    String concatenateTags(List<String> tags) {
+      // 태그 리스트 -> 하나의 문자열로
+      return tags.map((tag) => tag).join(' ');
+    }
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(titleText,
-            style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
+        title: Text(titleText, style: TextStyle(fontSize: 20)),
         backgroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
+        automaticallyImplyLeading: false,
       ),
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -207,10 +214,146 @@ class _MultiDisWait extends State<MultiDisWait> {
                 Row(
                   children: [
                     Expanded(
-                      child: CustomSearchField(
-                        controller:
-                            TextEditingController(), // You can pass your own TextEditingController
-                        hintText: '해시태그를 검색하세요',
+                      child: TextFieldTags<String>(
+                        textfieldTagsController: tagController,
+                        textSeparators: const [' ', ','],
+                        letterCase: LetterCase.normal,
+                        validator: (String tag) {
+                          if (tagController.getTags!.length >= 3) {
+                            return '해시태그는 최대 3개까지만 추가할 수 있습니다!';
+                          }
+                          if (tag == 'php') {
+                            return '안됩니달라!';
+                          } else if (tagController.getTags!.contains(tag)) {
+                            return '이미 입력한 단어입니다!';
+                          }
+                          return null;
+                        },
+                        inputFieldBuilder: (context, inputFieldValues) {
+                          inputFieldValues.onTagChanged;
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 0),
+                            child: TextField(
+                              controller:
+                                  inputFieldValues.textEditingController,
+                              focusNode: inputFieldValues.focusNode,
+                              decoration: InputDecoration(
+                                hintText: tagController.getTags == null ||
+                                        tagController.getTags!.isEmpty
+                                    ? '해시태그를 입력하세요'
+                                    : null,
+                                filled: true,
+                                fillColor: Colors.white,
+                                isDense: true,
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: BorderSide(
+                                    color: Color(0xffe9e9e9),
+                                    width: 1.0,
+                                  ),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                    borderSide: BorderSide(
+                                      color: GRAY_400,
+                                      width: 1.0,
+                                    )),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: BorderSide(
+                                    color: Color.fromARGB(255, 74, 137, 92),
+                                    width: 1.0,
+                                  ),
+                                ),
+                                helperStyle: const TextStyle(
+                                  color: Color.fromARGB(255, 167, 167, 167),
+                                ),
+                                errorText: inputFieldValues.error,
+                                prefixIconConstraints: BoxConstraints(
+                                    maxWidth:
+                                        MediaQuery.of(context).size.width *
+                                            0.75),
+                                prefixIcon: inputFieldValues.tags.isNotEmpty
+                                    ? SingleChildScrollView(
+                                        controller: inputFieldValues
+                                            .tagScrollController,
+                                        scrollDirection: Axis.horizontal,
+                                        child: Container(
+                                          padding:
+                                              EdgeInsets.fromLTRB(10, 0, 10, 0),
+                                          child: Row(
+                                              children: inputFieldValues.tags
+                                                  .map((String tag) {
+                                            return Container(
+                                              decoration: BoxDecoration(
+                                                borderRadius: BorderRadius.all(
+                                                  Radius.circular(20.0),
+                                                ),
+                                                color: DARK_GREEN_COLOR,
+                                              ),
+                                              margin: const EdgeInsets.only(
+                                                  right: 10.0),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 10.0,
+                                                      vertical: 4.0),
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  InkWell(
+                                                    child: Text(
+                                                      '#$tag',
+                                                      style: const TextStyle(
+                                                          color: Colors.white),
+                                                    ),
+                                                    onTap: () {},
+                                                  ),
+                                                  const SizedBox(width: 4.0),
+                                                  InkWell(
+                                                    child: const Icon(
+                                                      Icons.cancel,
+                                                      size: 14.0,
+                                                      color: Color.fromARGB(
+                                                          255, 233, 233, 233),
+                                                    ),
+                                                    onTap: () {
+                                                      inputFieldValues
+                                                          .onTagRemoved(tag);
+                                                    },
+                                                  )
+                                                ],
+                                              ),
+                                            );
+                                          }).toList()),
+                                        ))
+                                    : null,
+                                contentPadding: const EdgeInsets.all(15.0),
+                              ),
+                              // 입력창에 뭐가 입력될 때 호출
+                              onChanged: (value) {
+                                inputFieldValues.onTagChanged(value);
+                                print("----------------------");
+                                controller.keyword.value =
+                                    concatenateTags(inputFieldValues.tags);
+                                controller.roomSearch(roomMode);
+                                // if (tagController.getTags != null) {
+
+                                // }
+                              },
+                              // 입력 완료되었을 때
+                              onSubmitted: (String tag) {
+                                String concatenatedTags =
+                                    concatenateTags(tagController.getTags!);
+                                controller.multiroom.roomTag = concatenatedTags;
+                                print(controller.info.roomTag);
+                                print(
+                                    '아 제발 쫌 쫌 쫌 !!!!!!!!! :$concatenatedTags');
+                              },
+                            ),
+                          );
+                        },
                       ),
                     ),
                   ],

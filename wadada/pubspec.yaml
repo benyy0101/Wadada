@@ -67,7 +67,7 @@ dependencies:
   #   git:
   #     url: https://github.com/ju851zel/flutter_wear_plugin
   #     ref: upgrade-versions
-  
+
   location: ^6.0.2
   flutter_local_notifications: ^17.1.2
   flutter_mobx: ^2.2.1+1

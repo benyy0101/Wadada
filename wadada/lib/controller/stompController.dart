@@ -10,12 +10,14 @@ import 'package:get/get.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:stomp_dart_client/stomp_dart_client.dart';
 import 'package:wadada/controller/marathonController.dart';
+import 'package:wadada/controller/profileController.dart';
 import 'package:wadada/models/marathon.dart';
 import 'package:wadada/models/multiroom.dart';
 import 'package:wadada/models/stomp.dart';
 import 'package:wadada/provider/multiProvider.dart';
 import 'package:wadada/repository/marathonRepo.dart';
 import 'package:wadada/repository/multiRepo.dart';
+import 'package:wadada/repository/profileRepo.dart';
 import 'package:wadada/screens/marathonrunpage/marathonRun.dart';
 import 'package:wadada/screens/multimainpage/multi_main.dart';
 import 'package:wadada/screens/multirunpage/multirunpage.dart';
@@ -37,8 +39,8 @@ class MarathonRankings {
 
   factory MarathonRankings.fromJson(Map<String, dynamic> json) {
     return MarathonRankings(
-        memberImage: json['memberImage'] as String,
-        memberName: json['memberName'] as String,
+        memberImage: json['memberImage'] as String? ?? '',
+        memberName: json['memberName'] as String? ?? '',
         memberDist: json['memberDist'] as int,
         memberTime: json['memberTime'] as int,
         memberRank: json['memberRank'] as int);
@@ -119,6 +121,11 @@ class StompController extends GetxController {
           marathonEnd: DateTime.now(),
           isDeleted: false)
       .obs;
+  RxBool isGameReady = true.obs;
+  RxBool isCountDown = false.obs;
+
+  int dist = 0;
+
   // late SimpleRoom roomInfo;
 
   @override
@@ -211,14 +218,14 @@ class StompController extends GetxController {
                   // client.deactivate();
                   // print('여기까지는 됨');
 
-                    int newRoomSeq = res['body']['roomSeq'];
-                    print('roomSeq $newRoomSeq');
+                  int newRoomSeq = res['body']['roomSeq'];
+                  print('roomSeq $newRoomSeq');
 
-                    client.deactivate();
-                    // await Future.delayed(Duration(seconds: 2));
+                  client.deactivate();
+                  // await Future.delayed(Duration(seconds: 2));
 
-                    setupNewSubscription(newRoomSeq);
-                    // client.deactivate();
+                  setupNewSubscription(newRoomSeq);
+                  // client.deactivate();
 
                   return;
                 }
@@ -297,8 +304,10 @@ class StompController extends GetxController {
               try {
                 print("Incoming Messages:--------------------");
                 //에러메세지: 해당방에 입장해 있거나, 이미 나간 방일때
+
                 Map<String, dynamic> res = jsonDecode(frame.body!);
                 print(res['body']);
+                print(res['body']['action']);
                 if (res['body']['action'] == '1') {
                   //???? 1번이 뭐하는 액션이였더라
                 } else if ((res['body']['action'] == '/Marathon/start')) {
@@ -324,23 +333,34 @@ class StompController extends GetxController {
                       MarathonStart(
                           marathonRecordStart: point,
                           marathonSeq: marthonSeq.value));
-
+                  isGameReady.value = true;
+                  Get.to(MarathonRun(roomInfo: marathonInfo.value));
                   // print(temp);
                   //메세지를 기다림
                 } else if ((res['body']['action'] ==
                     '/Marathon/game/rank/{roomSeq}')) {
-                  //임시로 넘기기
-                  Get.to(MarathonRun(roomInfo: marathonInfo.value));
+                  gamego.value = true;
                   //게임 페이지로 이동
                 } else if ((res['body']['action'] == '2')) {
                   //사람들 정보를 받으면 랭킹에 업데이트
+                  ProfileController profileController =
+                      Get.put(ProfileController(repo: ProfileRepository()));
                   String nickName =
-                      await storage.read(key: 'kakaoNickname') ?? '';
+                      profileController.profile.value.memberNickname;
+                  print(nickName);
+                  print('----------------------');
+                  print(res['body']['result']);
                   if (res['body']['result'].containsKey(nickName)) {
-                    rankingList.value.clear();
-                    res['body']['result'][nickName].map((item) {
-                      rankingList.value.add(MarathonRankings.fromJson(item));
+                    rankingList.clear();
+                    print("marathon");
+                    print(res['body']['result'][nickName].length);
+                    res['body']['result'][nickName].forEach((item) {
+                      print(item);
+                      rankingList.add(MarathonRankings.fromJson(item));
                     });
+                    print(rankingList);
+
+                    mrepo.udpateDistance(0, nickName, dist, 100);
                   } else {
                     print("사용자 이름 ------------------------------- ${nickName}");
                     throw Exception("사용자가 정보에 없습니다.");
@@ -389,55 +409,56 @@ class StompController extends GetxController {
             },
             callback: (frame) async {
               try {
-                  final url = Uri.parse('https://k10a704.p.ssafy.io/Multi/game/rank/$newRoomSeq');
-                  final storage = FlutterSecureStorage();
-                  String? accessToken = await storage.read(key: 'accessToken');
-                  final dio = Dio();
+                final url = Uri.parse(
+                    'https://k10a704.p.ssafy.io/Multi/game/rank/$newRoomSeq');
+                final storage = FlutterSecureStorage();
+                String? accessToken = await storage.read(key: 'accessToken');
+                final dio = Dio();
 
-                  try {
-                    dynamic response;
-                    if (isOwner.value) {
-                      if (get1 == false) {
-                        response = await dio.get(url.toString(),
-                            options: Options(headers: {
-                              'Content-Type': 'application/json',
-                              'Accept': 'application/json',
-                              'authorization': accessToken
-                            }));
-                        get1 = true;
-                      }
+                try {
+                  dynamic response;
+                  if (isOwner.value) {
+                    if (get1 == false) {
+                      response = await dio.get(url.toString(),
+                          options: Options(headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'authorization': accessToken
+                          }));
+                      get1 = true;
                     }
-                    // print('확인 ${response.data}');
-
-                    // if (response.statusCode == 200) {
-                    Map<String, dynamic> resp = jsonDecode(frame.body!);
-                    if (resp['body'].runtimeType == String &&
-                        resp['statusCodeValue'] != 200) {
-                      throw Exception(jsonDecode(frame.body!)['body']);
-                    } else if (resp['body'].runtimeType == String) {
-                      resp['body'] = jsonDecode(resp['body']);
-                    }
-                    print('최종 ${resp['body']}');
-
-                      if (resp['body']['message'] == "멤버INFO요청") {
-                        requestinfo.value += 1 ;
-                        // requestinfo.value = '';
-                        print('dd');
-                      }
-
-                    if (resp['body']['memberInfo'] != null) {
-                      ranking.value = resp['body']['memberInfo'];
-                      print('랭킹 ${ranking.value}');
-                    }
-
-                      // if (resp['body']['message'] == "ㅇㅇ") {
-                        // flagend.value = resp['body']['memberInfo'];
-                      // }
-                  } catch (e) {
-                    print('ㅇㅇ 요청 처리 중 에러 발생: $e');
-                    // return {};
                   }
-                } catch(e) {
+                  // print('확인 ${response.data}');
+
+                  // if (response.statusCode == 200) {
+                  Map<String, dynamic> resp = jsonDecode(frame.body!);
+                  if (resp['body'].runtimeType == String &&
+                      resp['statusCodeValue'] != 200) {
+                    throw Exception(jsonDecode(frame.body!)['body']);
+                  } else if (resp['body'].runtimeType == String) {
+                    resp['body'] = jsonDecode(resp['body']);
+                  }
+                  print('최종 ${resp['body']}');
+
+                  if (resp['body']['message'] == "멤버INFO요청") {
+                    requestinfo.value += 1;
+                    // requestinfo.value = '';
+                    print('dd');
+                  }
+
+                  if (resp['body']['memberInfo'] != null) {
+                    ranking.value = resp['body']['memberInfo'];
+                    print('랭킹 ${ranking.value}');
+                  }
+
+                  // if (resp['body']['message'] == "ㅇㅇ") {
+                  // flagend.value = resp['body']['memberInfo'];
+                  // }
+                } catch (e) {
+                  print('ㅇㅇ 요청 처리 중 에러 발생: $e');
+                  // return {};
+                }
+              } catch (e) {
                 print(e);
               }
             },

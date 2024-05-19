@@ -56,12 +56,12 @@ class _SingleResultState extends State<SingleResult> {
 
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: Text(
           '나의 기록',
           style: TextStyle(
-            color: Colors.black,
-            fontSize: 30,
-            fontWeight: FontWeight.w600,
+            color: GRAY_900,
+            fontSize: 20,
           ),
         ),
         centerTitle: true,
@@ -312,8 +312,8 @@ class _SingleResultState extends State<SingleResult> {
         color: OATMEAL_COLOR,
         borderRadius: BorderRadius.circular(10),
       ),
-      width: 54,
-      height: 65,
+      width: 48,
+      height: 60,
       child: Center(
         child: Text(
           digit,
