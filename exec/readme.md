@@ -181,11 +181,23 @@ Wadada 프로젝트는 단순한 런닝 앱을 넘어서는 새로운 경험을 
 ## II . nginx 빌드 및 배포
 ### 1. 환경변수 형태
 - sudo mkdir nginx
+- nginx.conf파일 하단에 추가
+```
+stream {
+    server {
+        listen 5432 udp;
+        proxy_pass udp:5432;
+        proxy_bind $remote_addr transparent;
+    }
+}
+```
+
 ### 2. 빌드하기
 - cd S10P12A207/nginx
 - docker build -t proxynginx .
 ### 3. 배포하기
 - docker run -p 80:80 -p 443:443 --name proxynginx -d --network deploy -v /home/ubuntu/nginx/default.conf:/etc/nginx/conf.d/default.conf -v /etc/letsencrypt/archive/j10a102.p.ssafy.io:/etc/nginx/ssl/ proxynginx
+
 
 # AWS Database 서버
 
@@ -392,8 +404,13 @@ flutter build apk --release --target-platform=android-arm64
 
 ### Front
 ```
-
-
+NATIVE_APP_KEY = 9430c9bd5cf24477bf3ccb0cde068f16
+JAVASCRIPT_APP_KEY = 671973e2cb29da502bdead673817f346
+SERVER_URL = https://k10a704.p.ssafy.io
+MULTI_URL = https://k10a704.p.ssafy.io/Multi/ws
+STOMP_URL = https://k10a704.p.ssafy.io/Multi/ws
+MARATHON_URL = https://k10a704.p.ssafy.io/Marathon/ws
+APP_KEY='f508d67320677608aea64e5d6a9a3005'
 ```
 
 ### BackEnd
