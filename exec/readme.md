@@ -9,7 +9,6 @@ WADADA 프로젝트
 │       ├── [DataBase]
 │       └── [Infra]
 ├── EC2 Server 설정사항
-├── 쉽게 실행하는 방법
 ├── 각각 실행하는 방법
 │   ├── II. Member 빌드 및 배포
 │   ├── II. Single 빌드 및 배포
