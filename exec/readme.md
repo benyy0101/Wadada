@@ -403,13 +403,13 @@ flutter build apk --release --target-platform=android-arm64
 
 ### Front
 ```
-NATIVE_APP_KEY = 9430c9bd5cf24477bf3ccb0cde068f16
-JAVASCRIPT_APP_KEY = 671973e2cb29da502bdead673817f346
-SERVER_URL = https://k10a704.p.ssafy.io
-MULTI_URL = https://k10a704.p.ssafy.io/Multi/ws
-STOMP_URL = https://k10a704.p.ssafy.io/Multi/ws
-MARATHON_URL = https://k10a704.p.ssafy.io/Marathon/ws
-APP_KEY='f508d67320677608aea64e5d6a9a3005'
+NATIVE_APP_KEY = 
+JAVASCRIPT_APP_KEY = 
+SERVER_URL =
+MULTI_URL = 
+STOMP_URL = 
+MARATHON_URL = 
+APP_KEY=
 ```
 
 ### BackEnd
