@@ -17,9 +17,14 @@ class MarathonProvider {
   }
 
   Future<void> setAuth() async {
-    _dio.options.headers['Authorization'] =
-        await storage.read(key: 'accessToken');
-    accessToken = _dio.options.headers['Authorization'];
+    String? temp = await storage.read(key: 'accessToken');
+    if (temp != null) {
+      _dio.options.headers['Authorization'] = temp;
+      accessToken = temp;
+    } else {
+      _dio.options.headers['Authorization'] = accessToken;
+    }
+    print("-----------------token--------------------");
     print(_dio.options.headers['Authorization']);
   }
 

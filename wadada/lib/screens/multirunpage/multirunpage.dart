@@ -214,10 +214,7 @@ class _MultiRunState extends State<MultiRun> {
         widget.centerlong,
       );
 
-      print('깃발이랑 거리 $flagdistance');
-
       if (flagdistance < 8) {
-        print('깃발이랑 거리 가까움');
         // // print('ㅇㅇ');
         final dio = Dio();
         final url = Uri.parse('https://k10a704.p.ssafy.io/Multi/game/end/${widget.controller.receivedRoomSeq}');
@@ -1022,7 +1019,7 @@ class _MultiRunState extends State<MultiRun> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      widget.time == 0 ? '소요 시간' : '남은 시간',
+                                      widget.roomInfo.roomMode == 2 ? '남은 시간' : '소요 시간',
                                       style: TextStyle(
                                         color: GRAY_500,
                                         fontSize: 19,

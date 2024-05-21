@@ -41,6 +41,7 @@ class People extends StatelessWidget {
   Widget build(BuildContext context) {
     MarathonController controller = Get.put(MarathonController());
     controller.getAttendant(marathon.marathonSeq.toString());
+    print(controller.participantList);
     return Container(
       padding: EdgeInsets.all(16),
       child: Column(
@@ -56,10 +57,11 @@ class People extends StatelessWidget {
           if (isPast)
             Expanded(child: _RankingList())
           else
-            Expanded(
-                child: ParticipantsList(
-              peopleData: controller.participantList.value,
-            ))
+            Expanded(child: Obx(() {
+              return ParticipantsList(
+                peopleData: controller.participantList.value,
+              );
+            }))
         ],
       ),
     );

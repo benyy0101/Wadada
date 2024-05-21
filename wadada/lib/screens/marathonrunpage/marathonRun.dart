@@ -58,6 +58,7 @@ class _MarathonState extends State<MarathonRun> {
   final GlobalKey<ClockState> _clockKey = GlobalKey<ClockState>();
 
   StompController stompController = Get.put(StompController(roomIdx: -1));
+
   // late Clock clock;
   late MyMap myMap;
   late dynamic unsubscribeFn;
@@ -420,7 +421,7 @@ class _MarathonState extends State<MarathonRun> {
     Widget progressBar = Container();
     int currentPageIndex = 0;
     int remainingTime =
-        widget.roomInfo.marathonEnd.difference(DateTime.now()).inSeconds;
+        widget.roomInfo.marathonEnd.difference(DateTime.now()).inMinutes;
     progressBar = DistBar(
         dist: widget.roomInfo.marathonDist,
         formattedDistance: double.parse(formattedDistance));
@@ -432,11 +433,18 @@ class _MarathonState extends State<MarathonRun> {
       elapsedTimeNotifier: elapsedTimeNotifier,
     );
 
+    stompController.gameEnd.addListener(() {
+      if (stompController.gameEnd.value) {
+        _handleEndButtonPress(context);
+      }
+    });
+
     return Scaffold(
         backgroundColor: Colors.white,
         // appBar: isLoading? null : AppBar(
         appBar: (!isLoading && !iscountdown)
             ? AppBar(
+                automaticallyImplyLeading: false,
                 bottom: PreferredSize(
                   preferredSize: Size.fromHeight(
                       50), // Adjust the height to accommodate the padding
@@ -664,7 +672,7 @@ class _MarathonState extends State<MarathonRun> {
                         padding:
                             const EdgeInsets.only(left: 20, right: 20, top: 10),
                         width: 400,
-                        height: 200,
+                        height: stompController.rankingList.value.length * 100,
                         child: stompController.rankingList.isEmpty
                             ? Center(
                                 child: Text(
@@ -714,7 +722,7 @@ class _MarathonState extends State<MarathonRun> {
                                                 ranking.memberName,
                                                 style: TextStyle(
                                                   color: Colors.black,
-                                                  fontSize: 20,
+                                                  fontSize: 18,
                                                 ),
                                               ),
                                               Spacer(),
