@@ -313,33 +313,29 @@ class ChartContainer extends StatelessWidget {
   const ChartContainer({super.key, required this.data, required this.title});
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              SizedBox(
-                height: 40,
-              ),
-              Text(
-                title,
-                textAlign: TextAlign.left,
-                style: TextStyle(
-                    fontSize: 20, fontWeight: FontWeight.bold, color: GRAY_500),
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              LineChart<ChartData>(
-                chartData: data,
-                metrics: 'hz',
-                graphType: 'speed',
-              )
-            ],
-          )
+          SizedBox(height: 40),
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.grey[500],
+            ),
+          ),
+          SizedBox(height: 20),
+          Container(
+            height: 200, // Adjust height based on your requirement
+            child: LineChart<ChartData>(
+              chartData: data,
+              metrics: 'hz',
+              graphType: 'speed',
+            ),
+          ),
         ],
       ),
     );

@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:ffi';
-// import 'dart:ffi'; 
+// import 'dart:ffi';
 import 'dart:math';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
@@ -416,13 +416,13 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               SizedBox(height: 5),
-                                Text(
-                                  roomOption,
-                                  style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                      color: DARK_GREEN_COLOR),
-                                ),
+                              Text(
+                                roomOption,
+                                style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                    color: DARK_GREEN_COLOR),
+                              ),
                               SizedBox(height: 20),
                               Text(
                                 '참여 인원',
@@ -447,7 +447,8 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               SizedBox(height: 5),
-                              if (roomInfo.roomMode == 1 || roomInfo.roomMode == 3)
+                              if (roomInfo.roomMode == 1 ||
+                                  roomInfo.roomMode == 3)
                                 Text(
                                   '${roomInfo.roomDist} $optionMetric',
                                   style: TextStyle(
@@ -457,14 +458,14 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                                 ),
                               if (roomInfo.roomMode == 2)
                                 Text(
-                                    '${roomInfo.roomTime} $optionMetric',
-                                    style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold,
-                                        color: DARK_GREEN_COLOR),
-                                  ),
+                                  '${roomInfo.roomTime} $optionMetric',
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: DARK_GREEN_COLOR),
+                                ),
                               // if (roomInfo.roomMode != 3)
-                                SizedBox(height: 20),
+                              SizedBox(height: 20),
                               //현재인원 받아와야 하는 곳
                               Obx(
                                 () => Text(
@@ -496,18 +497,16 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                           return Padding(
                             padding: EdgeInsets.symmetric(
                                 vertical: 2, horizontal: 2),
-                            child: Flexible(
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: DARK_GREEN_COLOR,
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    tags[index],
-                                    style: TextStyle(
-                                        fontSize: 18, color: Colors.white),
-                                  ),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: DARK_GREEN_COLOR,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  tags[index],
+                                  style: TextStyle(
+                                      fontSize: 18, color: Colors.white),
                                 ),
                               ),
                             ),
@@ -560,123 +559,139 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                       SizedBox(height: 20),
                       Visibility(
                         visible: roomInfo.roomMode == 3,
-                        child: Column(
-                          children: [
-                            Row(
-                              children: [
-                                ValueListenableBuilder<bool>(
-                                  valueListenable: centerloading,
-                                  builder: (context, isButtonEnabled, _) {
-                                    return ValueListenableBuilder<bool>(
-                                      valueListenable: controller.isOwnerNotifier,
-                                      builder: (context, isOwnerValue, _) {
-                                        print('isOwner: $isOwnerValue');
-                                        print('isButtonEnabled: $isButtonEnabled');
+                        child: Column(children: [
+                          Row(
+                            children: [
+                              ValueListenableBuilder<bool>(
+                                valueListenable: centerloading,
+                                builder: (context, isButtonEnabled, _) {
+                                  return ValueListenableBuilder<bool>(
+                                    valueListenable: controller.isOwnerNotifier,
+                                    builder: (context, isOwnerValue, _) {
+                                      print('isOwner: $isOwnerValue');
+                                      print(
+                                          'isButtonEnabled: $isButtonEnabled');
 
-                                        return ElevatedButton(
-                                          onPressed: isOwnerValue == false
-                                              ? null
-                                              : () {
-                                                  print('Flag info button pressed');
-                                                  print('활성화 $isButtonEnabled');
-                                                  if (!isButtonEnabled) {
-                                                    controller.isRecommendButtonPressed.value = true;
-                                                    setState(() {
-                                                      showMap = false;
-                                                    });
-                                                  }
-                                                },
-                                          style: ButtonStyle(
-                                            backgroundColor: MaterialStateProperty.resolveWith<Color>((states) {
-                                              if (isButtonEnabled) {
-                                                return Colors.grey;
-                                              } else {
-                                                return DARK_GREEN_COLOR;
-                                              }
-                                            }),
-                                            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                                              RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.circular(10),
-                                              ),
-                                            ),
-                                            padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
-                                              EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                                      return ElevatedButton(
+                                        onPressed: isOwnerValue == false
+                                            ? null
+                                            : () {
+                                                print(
+                                                    'Flag info button pressed');
+                                                print('활성화 $isButtonEnabled');
+                                                if (!isButtonEnabled) {
+                                                  controller
+                                                      .isRecommendButtonPressed
+                                                      .value = true;
+                                                  setState(() {
+                                                    showMap = false;
+                                                  });
+                                                }
+                                              },
+                                        style: ButtonStyle(
+                                          backgroundColor: MaterialStateProperty
+                                              .resolveWith<Color>((states) {
+                                            if (isButtonEnabled) {
+                                              return Colors.grey;
+                                            } else {
+                                              return DARK_GREEN_COLOR;
+                                            }
+                                          }),
+                                          shape: MaterialStateProperty.all<
+                                              RoundedRectangleBorder>(
+                                            RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
                                             ),
                                           ),
-                                          child: const Text(
-                                            '목적지 추천',
-                                            style: TextStyle(fontSize: 18, color: Colors.white),
-                                          ),
-                                        );
-                                      },
-                                    );
-                                  },
-                                ),
-                                SizedBox(width: 50),
-                                ValueListenableBuilder<bool>(
-                                  valueListenable: centerloading,
-                                  builder: (context, isMapButtonVisible, _) {
-                                    return Visibility(
-                                      visible: !isMapButtonVisible && (controller.userlatitude.value != 0.0 || controller.userlongitude.value != 0.0),
-                                      child: GestureDetector(
-                                        onTap: () {
-                                          setState(() {
-                                            showMap = !showMap;
-                                          });
-                                        },
-                                        child: Container(
-                                          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                                          child: Text(
-                                            showMap ? '위치 확인' : '위치 확인',
-                                            style: TextStyle(fontSize: 18, color: Colors.black),
+                                          padding: MaterialStateProperty.all<
+                                              EdgeInsetsGeometry>(
+                                            EdgeInsets.symmetric(
+                                                horizontal: 10, vertical: 5),
                                           ),
                                         ),
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: 10),
-                            Visibility(
-                              visible: showMap && !centerloading.value,
-                              child: ValueListenableBuilder<double>(
-                                valueListenable: controller.userlatitude,
-                                builder: (context, centerlat, _) {
-                                  return ValueListenableBuilder<double>(
-                                    valueListenable: controller.userlongitude,
-                                    builder: (context, centerlong, _) {
-                                      return SizedBox(
-                                        width: 400,
-                                        height: 230,
-                                        child: KakaoMap(
-                                          onMapCreated: (mapcontroller) {
-                                            mapController = mapcontroller;
-                                            markers.clear();
-                                            markers.add(Marker(
-                                              markerId: 'flag',
-                                              latLng: LatLng(centerlat, centerlong),
-                                              width: 50,
-                                              height: 54,
-                                              offsetX: 15,
-                                              offsetY: 44,
-                                              markerImageSrc: 'https://github.com/jjeong41/t/assets/103355863/37743a13-bbd0-4744-9e7c-7ef262fc14c0',
-                                            ));
-                                            setState(() {});
-                                          },
-                                          markers: markers.toList(),
-                                          center: LatLng(centerlat, centerlong),
+                                        child: const Text(
+                                          '목적지 추천',
+                                          style: TextStyle(
+                                              fontSize: 18,
+                                              color: Colors.white),
                                         ),
                                       );
                                     },
                                   );
                                 },
                               ),
+                              SizedBox(width: 50),
+                              ValueListenableBuilder<bool>(
+                                valueListenable: centerloading,
+                                builder: (context, isMapButtonVisible, _) {
+                                  return Visibility(
+                                    visible: !isMapButtonVisible &&
+                                        (controller.userlatitude.value != 0.0 ||
+                                            controller.userlongitude.value !=
+                                                0.0),
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          showMap = !showMap;
+                                        });
+                                      },
+                                      child: Container(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 10, vertical: 5),
+                                        child: Text(
+                                          showMap ? '위치 확인' : '위치 확인',
+                                          style: TextStyle(
+                                              fontSize: 18,
+                                              color: Colors.black),
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 10),
+                          Visibility(
+                            visible: showMap && !centerloading.value,
+                            child: ValueListenableBuilder<double>(
+                              valueListenable: controller.userlatitude,
+                              builder: (context, centerlat, _) {
+                                return ValueListenableBuilder<double>(
+                                  valueListenable: controller.userlongitude,
+                                  builder: (context, centerlong, _) {
+                                    return SizedBox(
+                                      width: 400,
+                                      height: 230,
+                                      child: KakaoMap(
+                                        onMapCreated: (mapcontroller) {
+                                          mapController = mapcontroller;
+                                          markers.clear();
+                                          markers.add(Marker(
+                                            markerId: 'flag',
+                                            latLng:
+                                                LatLng(centerlat, centerlong),
+                                            width: 50,
+                                            height: 54,
+                                            offsetX: 15,
+                                            offsetY: 44,
+                                            markerImageSrc:
+                                                'https://github.com/jjeong41/t/assets/103355863/37743a13-bbd0-4744-9e7c-7ef262fc14c0',
+                                          ));
+                                          setState(() {});
+                                        },
+                                        markers: markers.toList(),
+                                        center: LatLng(centerlat, centerlong),
+                                      ),
+                                    );
+                                  },
+                                );
+                              },
                             ),
-                          ]
-                        ),
+                          ),
+                        ]),
                       ),
-
                       SizedBox(height: 10),
                       Obx(() {
                         final members = controller.members;
@@ -756,24 +771,25 @@ class _MultiRoomDetailState extends State<MultiRoomDetail> {
                     ),
                   );
                 } else {
-                  bool canStartGame = controller.numReady == controller.members.length - 1;
-                  bool isCenterLocationSet = widget.roomInfo.roomMode == 3 ? (centerlat != 0.0 && centerlong != 0.0) : true;
+                  bool canStartGame =
+                      controller.numReady == controller.members.length - 1;
+                  bool isCenterLocationSet = widget.roomInfo.roomMode == 3
+                      ? (centerlat != 0.0 && centerlong != 0.0)
+                      : true;
 
                   return TextButton(
-                    onPressed:
-                          canStartGame && isCenterLocationSet
-                            ? () {
-                                controller.gameStart();
-                              }
-                            : null,
+                    onPressed: canStartGame && isCenterLocationSet
+                        ? () {
+                            controller.gameStart();
+                          }
+                        : null,
                     style: TextButton.styleFrom(
                       minimumSize:
                           ui.Size(MediaQuery.of(context).size.width * .9, 50),
                       foregroundColor: Colors.white,
-                      backgroundColor:
-                          canStartGame && isCenterLocationSet
-                              ? GREEN_COLOR
-                              : Colors.grey[400],
+                      backgroundColor: canStartGame && isCenterLocationSet
+                          ? GREEN_COLOR
+                          : Colors.grey[400],
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),

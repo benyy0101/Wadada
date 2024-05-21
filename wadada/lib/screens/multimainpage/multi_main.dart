@@ -37,7 +37,7 @@ class MultiMain extends StatelessWidget {
               MultiSelectMode(
                 icon: 'assets/images/clock.png',
                 name: '시간모드',
-                des: '목표한 거리만큼 달려보세요.',
+                des: '정해진 시간만큼 달려보세요.',
                 btn: '28',
                 onTapAction: () {
                   Get.to(MultiDisWait(
@@ -50,7 +50,7 @@ class MultiMain extends StatelessWidget {
               ),
               MultiSelectMode(
                 icon: 'assets/images/map.png',
-                name: '만남모드',
+                name: '깃발모드',
                 des: '목표한 장소에서 만나보세요.',
                 btn: '28',
                 onTapAction: () {

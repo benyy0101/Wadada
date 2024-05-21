@@ -31,6 +31,7 @@ class _MarathonMainState extends State<MarathonMain> {
   @override
   Widget build(BuildContext context) {
     MarathonController controller = Get.put(MarathonController());
+    
     return Scaffold(
       backgroundColor: Colors.white,
       // appBar: AppBar(

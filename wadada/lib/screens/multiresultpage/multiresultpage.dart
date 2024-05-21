@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 import 'package:wadada/common/component/lineChart.dart';
 import 'package:wadada/common/component/tabbars.dart';
@@ -83,11 +84,16 @@ class _MultiResultState extends State<MultiResult> {
             fontWeight: FontWeight.w600,
           ),
         ),
+        automaticallyImplyLeading: false,
+        leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () {
+              Get.to(MainLayout());
+            }),
         centerTitle: true,
         bottom: PreferredSize(
-          preferredSize: Size.fromHeight(50), 
-          child: 
-            Container(
+            preferredSize: Size.fromHeight(50),
+            child: Container(
               height: 40,
               decoration: BoxDecoration(
                 color: OATMEAL_COLOR,
@@ -112,7 +118,8 @@ class _MultiResultState extends State<MultiResult> {
                             borderRadius: BorderRadius.circular(8),
                           )
                         : null,
-                    child: Text('순위',
+                    child: Text(
+                      '순위',
                       style: TextStyle(
                         color: currentTab == 0 ? Colors.white : Colors.grey,
                         fontWeight: FontWeight.bold,
@@ -130,7 +137,8 @@ class _MultiResultState extends State<MultiResult> {
                             borderRadius: BorderRadius.circular(8),
                           )
                         : null,
-                    child: Text('나의 통계',
+                    child: Text(
+                      '나의 통계',
                       style: TextStyle(
                         color: currentTab == 1 ? Colors.white : Colors.grey,
                         fontWeight: FontWeight.bold,
@@ -140,217 +148,212 @@ class _MultiResultState extends State<MultiResult> {
                     ),
                   ),
                 ],
-            ),
-            )
-          ),
+              ),
+            )),
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.symmetric(horizontal: 30),
         child: Column(
           children: [
-            IndexedStack(
-              index: currentTab,
-              children: [
-                Column(
-                  children: [
-                    SizedBox(height: 40),
-                    SizedBox(
-                      child: Column(
-                        children: widget.endRank.asMap().entries.map((entry) {
-                          int index = entry.key;
-                          var ranking = entry.value;
-                          return Column(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.only(left: 10, right: 10, top: 25, bottom: 25),
-                                child: Row(
-                                  children: [
-                                    Text(
-                                      '${ranking['memberRank']}',
-                                      style: TextStyle(
-                                        color: DARK_GREEN_COLOR,
-                                        fontSize: 23,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    SizedBox(width: 20),
-                                    if (ranking['memberProfile'] != null &&
-                                        ranking['memberProfile'].isNotEmpty)
-                                      CircleAvatar(
-                                        backgroundImage: NetworkImage(ranking['memberProfile']),
-                                        radius: 20,
-                                      )
-                                    else
-                                      CircleAvatar(
-                                        backgroundColor: Colors.grey,
-                                        radius: 20,
-                                        child: Icon(
-                                          Icons.person,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                    SizedBox(width: 15),
-                                    Text(
-                                      '${ranking['memberNickname']}',
-                                      style: TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 20,
-                                      ),
-                                    ),
-                                    Spacer(),
-                                    Text(
-                                      '${(ranking['memberDist'] / 1000).toStringAsFixed(2)} km',
-                                      style: TextStyle(
-                                        color: DARK_GREEN_COLOR,
-                                        fontSize: 23,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ],
+            IndexedStack(index: currentTab, children: [
+              Column(children: [
+                SizedBox(height: 40),
+                SizedBox(
+                  child: Column(
+                    children: widget.endRank.asMap().entries.map((entry) {
+                      int index = entry.key;
+                      var ranking = entry.value;
+                      return Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(
+                                left: 10, right: 10, top: 25, bottom: 25),
+                            child: Row(
+                              children: [
+                                Text(
+                                  '${ranking['memberRank']}',
+                                  style: TextStyle(
+                                    color: DARK_GREEN_COLOR,
+                                    fontSize: 23,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
-                              ),
-                              if (index < widget.endRank.length - 1) 
-                                Divider(color: GRAY_400),
-                            ],
-                          );
-                        }).toList(),
+                                SizedBox(width: 20),
+                                if (ranking['memberProfile'] != null &&
+                                    ranking['memberProfile'].isNotEmpty)
+                                  CircleAvatar(
+                                    backgroundImage:
+                                        NetworkImage(ranking['memberProfile']),
+                                    radius: 20,
+                                  )
+                                else
+                                  CircleAvatar(
+                                    backgroundColor: Colors.grey,
+                                    radius: 20,
+                                    child: Icon(
+                                      Icons.person,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                SizedBox(width: 15),
+                                Text(
+                                  '${ranking['memberNickname']}',
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 20,
+                                  ),
+                                ),
+                                Spacer(),
+                                Text(
+                                  '${(ranking['memberDist'] / 1000).toStringAsFixed(2)} km',
+                                  style: TextStyle(
+                                    color: DARK_GREEN_COLOR,
+                                    fontSize: 23,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          if (index < widget.endRank.length - 1)
+                            Divider(color: GRAY_400),
+                        ],
+                      );
+                    }).toList(),
+                  ),
+                ),
+                SizedBox(height: 40),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => MainLayout(),
                       ),
+                    );
+                  },
+                  child: Container(
+                    width: double.maxFinite,
+                    decoration: BoxDecoration(
+                      color: GREEN_COLOR,
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                    SizedBox(height: 40),
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => MainLayout(),
-                          ),
-                        );
-                      },
-                      child: Container(
-                        width:double.maxFinite,
-                        decoration: BoxDecoration(
-                          color: GREEN_COLOR,
-                          borderRadius: BorderRadius.circular(10),
+                    child: Padding(
+                        padding: EdgeInsets.symmetric(
+                          vertical: 15,
                         ),
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(
-                            vertical: 15,
-                          ),
-                          child: Text('종료하기',
+                        child: Text('종료하기',
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
-                            )
-                          )
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 40),
-                  ]
+                            ))),
+                  ),
                 ),
-                Column(
-                  children: [
+                SizedBox(height: 40),
+              ]),
+              Column(
+                children: [
                   SizedBox(height: 15),
-                  _buildTimeAndRouteSection(formattedHours, formattedMinutes, formattedSeconds),
+                  _buildTimeAndRouteSection(
+                      formattedHours, formattedMinutes, formattedSeconds),
                   SizedBox(height: 40),
                   // _buildDistanceSection(),
                   SizedBox(
                     width: 400,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            '이동 거리',
-                            style: TextStyle(
-                              color: GRAY_500,
-                              fontSize: 19,
-                            ),
-                            textAlign: TextAlign.left,
+                      children: [
+                        Text(
+                          '이동 거리',
+                          style: TextStyle(
+                            color: GRAY_500,
+                            fontSize: 19,
                           ),
-                          SizedBox(height: 5),
-                          Text(
-                            '${widget.totaldist} km',
-                            style: TextStyle(
-                              color: GREEN_COLOR,
-                              fontSize: 30,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                          ],
+                          textAlign: TextAlign.left,
                         ),
-                      ),
-                      SizedBox(height: 30),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('속도 (km/h)',
-                            style: TextStyle(
-                              color: GRAY_500,
-                              fontSize: 19,
-                            ),
-                          ),
-                          SizedBox(height: 10),
-                          _buildSpeedLineChart(),
-                            ]
-                      ),
-                      SizedBox(height: 30),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('페이스',
-                            style: TextStyle(
-                              color: GRAY_500,
-                              fontSize: 19,
-                            ),
-                          ),
-                          SizedBox(height: 10),
-                          _buildPaceLineChart(),
-                            ]
-                      ),
-                      SizedBox(height: 40),
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => MainLayout(),
-                            ),
-                          );
-                        },
-                        child: Container(
-                          width:double.maxFinite,
-                          decoration: BoxDecoration(
+                        SizedBox(height: 5),
+                        Text(
+                          '${widget.totaldist} km',
+                          style: TextStyle(
                             color: GREEN_COLOR,
-                            borderRadius: BorderRadius.circular(10),
+                            fontSize: 30,
+                            fontWeight: FontWeight.w700,
                           ),
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(
-                              vertical: 15,
-                            ),
-                            child: Text('종료하기',
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 30),
+                  Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '속도 (km/h)',
+                          style: TextStyle(
+                            color: GRAY_500,
+                            fontSize: 19,
+                          ),
+                        ),
+                        SizedBox(height: 10),
+                        _buildSpeedLineChart(),
+                      ]),
+                  SizedBox(height: 30),
+                  Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '페이스',
+                          style: TextStyle(
+                            color: GRAY_500,
+                            fontSize: 19,
+                          ),
+                        ),
+                        SizedBox(height: 10),
+                        _buildPaceLineChart(),
+                      ]),
+                  SizedBox(height: 40),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => MainLayout(),
+                        ),
+                      );
+                    },
+                    child: Container(
+                      width: double.maxFinite,
+                      decoration: BoxDecoration(
+                        color: GREEN_COLOR,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Padding(
+                          padding: EdgeInsets.symmetric(
+                            vertical: 15,
+                          ),
+                          child: Text('종료하기',
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
-                              )
-                            )
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 40),
-                    ],),
-                  ]
-                ),
-              ],
+                              ))),
+                    ),
+                  ),
+                  SizedBox(height: 40),
+                ],
+              ),
+            ]),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildTimeAndRouteSection(String hours, String minutes, String seconds) {
+  Widget _buildTimeAndRouteSection(
+      String hours, String minutes, String seconds) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -425,7 +428,8 @@ class _MultiResultState extends State<MultiResult> {
                 latLng: widget.startLocation!,
                 width: 30,
                 height: 54,
-                markerImageSrc: 'https://github.com/jjeong41/t/assets/103355863/4e6d205d-694e-458c-b992-8ea7c27b85b1',
+                markerImageSrc:
+                    'https://github.com/jjeong41/t/assets/103355863/4e6d205d-694e-458c-b992-8ea7c27b85b1',
               ),
             );
           }
@@ -437,7 +441,8 @@ class _MultiResultState extends State<MultiResult> {
                 latLng: widget.endLocation!,
                 width: 30,
                 height: 54,
-                markerImageSrc: 'https://github.com/jjeong41/t/assets/103355863/f52baea5-c46e-47ec-b541-80a0b081f6db',
+                markerImageSrc:
+                    'https://github.com/jjeong41/t/assets/103355863/f52baea5-c46e-47ec-b541-80a0b081f6db',
               ),
             );
           }
@@ -458,10 +463,10 @@ class _MultiResultState extends State<MultiResult> {
 
           LatLng southWest = LatLng(minLat, minLng);
           LatLng northEast = LatLng(maxLat, maxLng);
-          
+
           List<LatLng> bounds = [
-              LatLng(minLat, minLng),
-              LatLng(maxLat, maxLng)
+            LatLng(minLat, minLng),
+            LatLng(maxLat, maxLng)
           ];
           mapController?.fitBounds(bounds);
         },
@@ -500,20 +505,19 @@ class _MultiResultState extends State<MultiResult> {
       ),
     );
   }
-  
+
   Widget _buildSpeedLineChart() {
     List<ChartData> myChartData = widget.distanceSpeed.map((data) {
       return ChartData(
           // (data['dist']! * 1000).toInt(),
           data['dist']! / 1000,
-          data['speed']! * 3.6
-      );
+          data['speed']! * 3.6);
     }).toList();
 
     return LineChart<ChartData>(
-        chartData: myChartData,
-        metrics: '',
-        graphType: 'speed',
+      chartData: myChartData,
+      metrics: '',
+      graphType: 'speed',
     );
   }
 
@@ -523,21 +527,19 @@ class _MultiResultState extends State<MultiResult> {
 
     double paceInMinutesAndSeconds = minutes + (seconds / 60);
     return paceInMinutesAndSeconds;
-}
+  }
 
   Widget _buildPaceLineChart() {
     List<ChartData> myChartData = widget.distancePace.map((data) {
-        return ChartData(
-            data['dist']! / 1000,
-            formatPaceAsDecimal(data['pace']!)
-        );
+      return ChartData(
+          data['dist']! / 1000, formatPaceAsDecimal(data['pace']!));
     }).toList();
 
     // LineChart 사용
     return LineChart<ChartData>(
-        chartData: myChartData,
-        metrics: 'km/h',
-        graphType: 'pace',
+      chartData: myChartData,
+      metrics: 'km/h',
+      graphType: 'pace',
     );
   }
 }
