@@ -1,0 +1,76 @@
+  spring:
+    config:
+      import:
+        - optional:file:.env[.properties]
+    servlet:
+      multipart:
+        max-file-size: 50MB
+        max-request-size: 50MB
+    jpa:
+      hibernate:
+        ddl-auto: none
+      show-sql: true
+      format_sql: true
+      use_sql_comments: true
+      properties:
+        hibernate:
+          dialect: org.hibernate.dialect.MySQLDialect
+    application:
+      name: wadada
+
+    datasource:
+      url: ${MYSQL_URL}
+      username: ${MYSQL_USERNAME}
+      password: ${MYSQL_PASSWORD}
+      driver-class-name: com.mysql.cj.jdbc.Driver
+    data:
+      redis:
+        host: ${REDIS_HOST}
+        port: ${REDIS_PORT}
+        password: ${REDIS_PASSWORD}
+    #      port: ${ REDIS_PORT }
+    jwt:
+      header: Authorization
+      secret: ${JWT_KEY}
+      access-token-validity-in-seconds: ${JWT_ACCESS_VALIDITY_SECONDS}
+      refresh-token-validity-in-seconds: ${JWT_REFRESH_VALIDITY_SECONDS}
+
+    security:
+      oauth2:
+        client:
+          registration:
+            kakao:
+              client-id: ${CLIENT_ID}
+
+  aes:
+    secret-key: ${AES_KEY}
+
+  cloud:
+    aws:
+      credentials:
+        access-key: ${CLOUD_AWS_CREDENTIALS_ACCESS_KEY}
+        secret-key: ${CLOUD_AWS_CREDENTIALS_SECRET_KEY}
+      region:
+        static: ${CLOUD_AWS_CREDENTIALS_REGION_STATIC}
+      s3:
+        bucket: ${CLOUD_AWS_CREDENTIALS_S3_BUCKET}
+  #cloud:
+  #  aws:
+  #    s3:
+  #      bucket: ${ S3_BUCKET }
+  #    credentials:
+  #      access-key: ${ S3_ACCESS }
+  #      secret-key: ${ S3_SECRET }
+  #    region:
+  #      static: ap-northeast-2
+  #      auto: false
+  #    stack:
+  #      auto: false
+
+  server:
+    port: 8080
+    servlet:
+      context-path: /Wadada
+    tomcat:
+      max-swallow-size: 50MB
+      max-http-post-size: 50MB
